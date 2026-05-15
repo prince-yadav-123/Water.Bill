@@ -29,7 +29,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Water.Bill.Application\Water.Bill.Application.csproj" />
-    <ProjectReference Include="..\Water.Bill.Core\Water.Bill.Core.csproj" />
+    <Reference Include="Water.Bill.Core">
+      <HintPath>..\Water.Bill.Core\bin\$(Configuration)\net8.0\Water.Bill.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

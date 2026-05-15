@@ -14,14 +14,24 @@ public class PermissionService : IPermissionService
 
     public async Task<IReadOnlyList<MenuItemDto>> GetMenuTreeAsync(Guid tenantId, CancellationToken ct = default)
     {
-        var items = await _db.Menuitems
+        var items = await LoadMenuTreeAsync(tenantId, ct);
+
+        if (items.Count == 0 && tenantId != Guid.Empty)
+        {
+            items = await LoadMenuTreeAsync(Guid.Empty, ct);
+        }
+
+        return items.Select(MapMenuItem).ToList();
+    }
+
+    private async Task<List<Menuitem>> LoadMenuTreeAsync(Guid tenantId, CancellationToken ct)
+    {
+        return await _db.Menuitems
             .AsNoTracking()
             .Where(x => x.TenantId == tenantId && x.ParentId == null && x.IsActive == true && !x.IsDeleted)
             .Include(x => x.InverseParent.Where(c => c.IsActive == true && !c.IsDeleted).OrderBy(c => c.Order))
             .OrderBy(x => x.Order)
             .ToListAsync(ct);
-
-        return items.Select(MapMenuItem).ToList();
     }
 
     public async Task<HashSet<string>> GetViewableModulesAsync(Guid roleId, CancellationToken ct = default)

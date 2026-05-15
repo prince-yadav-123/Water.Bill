@@ -3,12 +3,40 @@
   "WorkspaceRootPath": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6255752E-3F6F-4842-A4FE-FA9AE4049463}|src\\Water.Bill.API\\Water.Bill.API.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{6255752E-3F6F-4842-A4FE-FA9AE4049463}|src\\Water.Bill.API\\Water.Bill.API.csproj|solutionrelative:src\\water.bill.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.consumerportal\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}|src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj|solutionrelative:src\\water.bill.consumerportal\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2B9EE9D-5735-4AFC-932F-47B9ECFDE7D9}|src\\Water.Bill.Infrastructure\\Water.Bill.Infrastructure.csproj|c:\\users\\lekesh\\prince yadav\\vedang projects\\water bill\\vedangsoft.bpms\\water.bill\\src\\water.bill.infrastructure\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,7 +66,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,7 +86,98 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "site.css",
+              "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\wwwroot\\css\\site.css",
+              "ToolTip": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "src\\Water.Bill.ConsumerPortal\\wwwroot\\css\\site.css",
+              "ViewState": "AgIAAHcBAAAAAAAAAAAiwIgBAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-05-15T09:12:17.344Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\Account\\Login.cshtml",
+              "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\Views\\Account\\Login.cshtml",
+              "ToolTip": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\Account\\Login.cshtml",
+              "RelativeToolTip": "src\\Water.Bill.ConsumerPortal\\Views\\Account\\Login.cshtml",
+              "ViewState": "AgIAADkAAAAAAAAAAADgv0YAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-15T09:12:04.18Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\Dashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\Views\\Dashboard\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\Dashboard\\Index.cshtml",
+              "RelativeToolTip": "src\\Water.Bill.ConsumerPortal\\Views\\Dashboard\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-15T09:11:57.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "src\\Water.Bill.ConsumerPortal\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAGwAAAAAAAAAAAAAAHgAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-15T09:11:17.528Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\Views\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "src\\Water.Bill.ConsumerPortal\\Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-15T09:11:05.64Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Properties\\launchSettings.json",
+              "RelativeToolTip": "src\\Water.Bill.ConsumerPortal\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-15T06:20:34.843Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.API\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "src\\Water.Bill.API\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.API\\Properties\\launchSettings.json",
+              "RelativeToolTip": "src\\Water.Bill.API\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-15T06:10:45.483Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\appsettings.json",
               "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\appsettings.json",
@@ -71,7 +190,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "appsettings.Development.json",
               "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\appsettings.Development.json",
               "RelativeDocumentMoniker": "src\\Water.Bill.ConsumerPortal\\appsettings.Development.json",
@@ -84,7 +203,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 9,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.Infrastructure\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "src\\Water.Bill.Infrastructure\\Data\\ApplicationDbContext.cs",
@@ -92,12 +211,11 @@
               "RelativeToolTip": "src\\Water.Bill.Infrastructure\\Data\\ApplicationDbContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAP4AAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-14T14:48:32.67Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-14T14:48:32.67Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 10,
               "Title": "ZeroConsumerjuneConfiguration.cs",
               "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.Infrastructure\\Data\\EntityConfigurations\\ZeroConsumerjuneConfiguration.cs",
               "RelativeDocumentMoniker": "src\\Water.Bill.Infrastructure\\Data\\EntityConfigurations\\ZeroConsumerjuneConfiguration.cs",
@@ -105,12 +223,11 @@
               "RelativeToolTip": "src\\Water.Bill.Infrastructure\\Data\\EntityConfigurations\\ZeroConsumerjuneConfiguration.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-14T14:48:26.224Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-14T14:48:26.224Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 11,
               "Title": "MasterDeptDetailConfiguration.cs",
               "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.Infrastructure\\Data\\EntityConfigurations\\MasterDeptDetailConfiguration.cs",
               "RelativeDocumentMoniker": "src\\Water.Bill.Infrastructure\\Data\\EntityConfigurations\\MasterDeptDetailConfiguration.cs",
@@ -118,12 +235,11 @@
               "RelativeToolTip": "src\\Water.Bill.Infrastructure\\Data\\EntityConfigurations\\MasterDeptDetailConfiguration.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-14T14:48:21.756Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-14T14:48:21.756Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 12,
               "Title": "appsettings.Development.json",
               "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.API\\appsettings.Development.json",
               "RelativeDocumentMoniker": "src\\Water.Bill.API\\appsettings.Development.json",
@@ -131,12 +247,11 @@
               "RelativeToolTip": "src\\Water.Bill.API\\appsettings.Development.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-14T14:23:15.558Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-14T14:23:15.558Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 13,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.API\\appsettings.json",
               "RelativeDocumentMoniker": "src\\Water.Bill.API\\appsettings.json",
@@ -144,8 +259,7 @@
               "RelativeToolTip": "src\\Water.Bill.API\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABTAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-14T14:23:01.5Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-14T14:23:01.5Z"
             }
           ]
         }

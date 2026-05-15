@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-palette="aqua">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NoidaJal Razor — Preview</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="razor/Content/site.css"/>
+<link rel="stylesheet" href="razor/Content/razor-views.css"/>
+<style>
+  .doc-bar{position:sticky;top:0;z-index:50;background:#0f172a;color:#fff;padding:10px 22px;display:flex;align-items:center;gap:14px;font:600 13px/1 ui-sans-serif,system-ui}
+  .doc-bar .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(255,255,255,.08);border-radius:999px;font-weight:500;font-size:12px}
+  .doc-bar select{margin-left:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;padding:6px 10px;border-radius:8px;font:inherit}
+  iframe.preview{border:none;width:100%;height:calc(100vh - 42px);display:block;background:var(--bg)}
+</style>
+</head>
+<body style="margin:0;background:#f1f5f9">
+  <div class="doc-bar">
+    <i class="fa fa-code"></i>
+    <span>Razor view preview</span>
+    <span class="pill"><i class="fa fa-folder-open"></i> razor/Views/</span>
+    <span class="pill"><i class="fa fa-image"></i> Content/img/noidajal-logo.png</span>
+    <select id="view-picker">
+      <option value="dashboard">Dashboard — Index.cshtml</option>
+      <option value="login">Login — Login.cshtml</option>
+    </select>
+  </div>
+  <iframe id="frame" class="preview" src="razor-preview/dashboard.html"></iframe>
+  <script>
+    document.getElementById('view-picker').addEventListener('change', e => {
+      document.getElementById('frame').src = 'razor-preview/' + e.target.value + '.html';
+    });
+  </script>
+</body>
+</html>

@@ -48,6 +48,10 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllerRoute(
+        name: "root",
+        pattern: "",
+        defaults: new { controller = "Account", action = "Login" });
+    app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Dashboard}/{action=Index}/{id?}");
     app.MapControllers();

@@ -1,0 +1,64 @@
+@{
+    ViewBag.Title = "Complaints";
+    ViewBag.Route = "complaint";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-head"><div><h1 class="page-title">Complaints &amp; service requests</h1><div class="page-sub">Raise a ticket — average response under 6 hours.</div></div></div>
+
+<div class="panel">
+    <div class="panel-title">What's the issue?</div>
+    <div class="issue-grid">
+        @{
+            var issues = new[] {
+                new { I="faucet-drip", T="Leak in line", S="Visible drip, wet patch" },
+                new { I="ban", T="No water supply", S="Tap completely dry" },
+                new { I="droplet-slash", T="Low pressure", S="Trickle from tap" },
+                new { I="vial", T="Quality issue", S="Color, smell or taste" },
+                new { I="gauge", T="Meter problem", S="Broken / wrong reading" },
+                new { I="receipt", T="Billing dispute", S="Wrong amount, slab" }
+            };
+        }
+        @foreach (var x in issues)
+        {
+            <label class="issue-card">
+                <input type="radio" name="Issue" />
+                <i class="fa fa-@x.I"></i>
+                <div class="issue-t">@x.T</div>
+                <div class="issue-s">@x.S</div>
+            </label>
+        }
+    </div>
+
+    @using (Html.BeginForm("Complaint","Home", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <label class="lbl mt">Describe the problem</label>
+        <textarea class="field-area" rows="4" placeholder="Tell us where, when and what's happening..."></textarea>
+
+        <div class="grid-2 mt">
+            <div><label class="lbl">When did it start?</label><div class="field"><i class="fa fa-clock"></i><input type="date" /></div></div>
+            <div><label class="lbl">Preferred visit slot</label>
+                <select class="select w"><option>Morning (9-12)</option><option>Afternoon (12-3)</option><option>Evening (3-6)</option></select>
+            </div>
+        </div>
+        <label class="upload-tile wide mt"><i class="fa fa-camera"></i> Add photos (optional, up to 4)<input type="file" hidden multiple /></label>
+
+        <div class="form-actions">
+            <a class="btn" href="@Url.Action("Index","Home")">Cancel</a>
+            <button type="submit" class="btn btn-primary">Raise ticket <i class="fa fa-paper-plane"></i></button>
+        </div>
+    }
+</div>
+
+<div class="panel mt">
+    <div class="panel-head"><div class="panel-title">Your open tickets</div><a href="#" class="panel-link">All tickets <i class="fa fa-arrow-right"></i></a></div>
+    <table class="data-table">
+        <thead><tr><th>Ticket</th><th>Issue</th><th>Raised</th><th>Status</th><th>SLA</th></tr></thead>
+        <tbody>
+            <tr><td class="mono">NJC-78421</td><td>Leak in inlet line</td><td>14 Mar 2026</td><td><span class="badge ok">Resolved</span></td><td>&mdash;</td></tr>
+            <tr><td class="mono">NJC-79014</td><td>Meter glass fogged</td><td>02 Apr 2026</td><td><span class="badge info">Technician assigned</span></td><td>Today 4 PM</td></tr>
+            <tr><td class="mono">NJC-79188</td><td>Billing dispute</td><td>08 Apr 2026</td><td><span class="badge warn">Under review</span></td><td>11 Apr</td></tr>
+        </tbody>
+    </table>
+</div>

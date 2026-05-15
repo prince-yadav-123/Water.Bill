@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Water.Bill.Application.DTOs.Auth;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Core.Enums;
 
@@ -30,12 +31,12 @@ public class AccountController : Controller
 
         ViewData["Title"] = "Login";
         ViewData["ReturnUrl"] = returnUrl;
-        return View(new LoginRequestDto());
+        return View(new ConsumerLoginViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginRequestDto model, string? returnUrl = null)
+    public async Task<IActionResult> Login(ConsumerLoginViewModel model, string? returnUrl = null)
     {
         ViewData["Title"] = "Login";
         ViewData["ReturnUrl"] = returnUrl;
@@ -43,9 +44,22 @@ public class AccountController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
+        if (model.LoginMethod != ConsumerLoginMethods.UsernameEmail)
+        {
+            ModelState.AddModelError(string.Empty, "OTP login is ready for integration. Please use Username/Email sign in for now.");
+            return View(model);
+        }
+
         try
         {
-            var result = await _authService.LoginAsync(model);
+            var request = new LoginRequestDto
+            {
+                Username = model.UsernameOrEmail?.Trim() ?? string.Empty,
+                Password = model.Password ?? string.Empty,
+                RememberMe = model.RememberMe
+            };
+
+            var result = await _authService.LoginAsync(request);
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
             var userAgent = Request.Headers.UserAgent.ToString();
             var sessionToken = await _sessionService.CreateSessionAsync(result.User.Id, ip, userAgent);
@@ -67,7 +81,7 @@ public class AccountController : Controller
 
             await HttpContext.SignInAsync(AppConstants.CookieScheme, principal, new AuthenticationProperties
             {
-                IsPersistent = model.RememberMe,
+                IsPersistent = request.RememberMe,
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
             });
 

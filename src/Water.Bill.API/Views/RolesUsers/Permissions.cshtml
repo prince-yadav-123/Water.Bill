@@ -1,0 +1,116 @@
+@model PermissionMatrixViewModel
+@{
+    ViewData["Title"] = "Permission Matrix";
+    var actions = new[] { "View", "Add", "Edit", "Delete", "Download", "Export", "Approve", "Forward", "Print" };
+    var selectedRole = Model.SelectedRole;
+    var permissionMap = Model.Permissions.ToDictionary(x => x.Module, StringComparer.OrdinalIgnoreCase);
+    string Key(string module, string action) => $"perm_{module.Replace(" ", "_").Replace("&", "and")}_{action}";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Permission Matrix</h1>
+        <p>Assign module-level permissions to roles.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-3">
+        <section class="wb-page-card">
+            <h2 class="wb-section-title mb-3">Select Role</h2>
+            <div class="wb-list-stack">
+                @foreach (var role in Model.Roles)
+                {
+                    <a class="wb-role-link @(selectedRole?.Id == role.Id ? "active" : "")" asp-action="Permissions" asp-route-roleId="@role.Id">@role.Name</a>
+                }
+            </div>
+        </section>
+    </div>
+    <div class="col-lg-9">
+        @if (selectedRole is null)
+        {
+            <section class="wb-page-card"><div class="wb-empty">Create a role first, then assign permissions.</div></section>
+        }
+        else
+        {
+            <section class="wb-page-card">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                    <div>
+                        <h2 class="wb-section-title">@selectedRole.Name Permissions</h2>
+                        <div class="text-muted small">View controls menu visibility; other actions protect pages and commands.</div>
+                    </div>
+                    <div class="wb-actions">
+                        <button class="btn btn-sm btn-outline-primary" type="button" onclick="setAllPermissions(true)">Grant All</button>
+                        <button class="btn btn-sm btn-outline-primary" type="button" onclick="setAllPermissions(false)">Revoke All</button>
+                    </div>
+                </div>
+
+                <form asp-action="SavePermissions" asp-route-roleId="@selectedRole.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle wb-table wb-permission-table">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    @foreach (var action in actions)
+                                    {
+                                        <th class="text-center">
+                                            <span>@action</span>
+                                            <button class="wb-col-toggle" type="button" onclick="toggleColumn('@action')">All</button>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var module in Model.Modules)
+                            {
+                                permissionMap.TryGetValue(module, out var permission);
+                                bool IsChecked(string action) => action switch
+                                {
+                                    "View" => permission?.CanView ?? false,
+                                    "Add" => permission?.CanAdd ?? false,
+                                    "Edit" => permission?.CanEdit ?? false,
+                                    "Delete" => permission?.CanDelete ?? false,
+                                    "Download" => permission?.CanDownload ?? false,
+                                    "Export" => permission?.CanExport ?? false,
+                                    "Approve" => permission?.CanApprove ?? false,
+                                    "Forward" => permission?.CanForward ?? false,
+                                    "Print" => permission?.CanPrint ?? false,
+                                    _ => false
+                                };
+                                <tr>
+                                    <td class="fw-semibold">@module</td>
+                                    @foreach (var action in actions)
+                                    {
+                                        <td class="text-center">
+                                            <input class="form-check-input perm-cb" type="checkbox" name="@Key(module, action)" data-action="@action" checked="@IsChecked(action)" />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="wb-actions mt-3">
+                        <button class="btn btn-primary" type="submit">Save Permissions</button>
+                        <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
+                    </div>
+                </form>
+            </section>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function setAllPermissions(value) {
+    document.querySelectorAll('.perm-cb').forEach(function(cb) { cb.checked = value; });
+}
+function toggleColumn(action) {
+    var boxes = Array.from(document.querySelectorAll('.perm-cb[data-action="' + action + '"]'));
+    var allChecked = boxes.every(function(cb) { return cb.checked; });
+    boxes.forEach(function(cb) { cb.checked = !allChecked; });
+}
+</script>
+}

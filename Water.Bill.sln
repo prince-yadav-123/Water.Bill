@@ -10,10 +10,24 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Water.Bill.Application", "src\Water.Bill.Application\Water.Bill.Application.csproj", "{4164D8BA-2FA2-4452-8CA1-CD9406B93779}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Water.Bill.Infrastructure", "src\Water.Bill.Infrastructure\Water.Bill.Infrastructure.csproj", "{A2B9EE9D-5735-4AFC-932F-47B9ECFDE7D9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1970761D-AB45-434D-A591-BA1D9A3B20FF} = {1970761D-AB45-434D-A591-BA1D9A3B20FF}
+		{4164D8BA-2FA2-4452-8CA1-CD9406B93779} = {4164D8BA-2FA2-4452-8CA1-CD9406B93779}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Water.Bill.API", "src\Water.Bill.API\Water.Bill.API.csproj", "{6255752E-3F6F-4842-A4FE-FA9AE4049463}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1970761D-AB45-434D-A591-BA1D9A3B20FF} = {1970761D-AB45-434D-A591-BA1D9A3B20FF}
+		{4164D8BA-2FA2-4452-8CA1-CD9406B93779} = {4164D8BA-2FA2-4452-8CA1-CD9406B93779}
+		{A2B9EE9D-5735-4AFC-932F-47B9ECFDE7D9} = {A2B9EE9D-5735-4AFC-932F-47B9ECFDE7D9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Water.Bill.ConsumerPortal", "src\Water.Bill.ConsumerPortal\Water.Bill.ConsumerPortal.csproj", "{B10FFEB9-67AE-4DE7-80E3-AF3CC8F5428B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1970761D-AB45-434D-A591-BA1D9A3B20FF} = {1970761D-AB45-434D-A591-BA1D9A3B20FF}
+		{4164D8BA-2FA2-4452-8CA1-CD9406B93779} = {4164D8BA-2FA2-4452-8CA1-CD9406B93779}
+		{A2B9EE9D-5735-4AFC-932F-47B9ECFDE7D9} = {A2B9EE9D-5735-4AFC-932F-47B9ECFDE7D9}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

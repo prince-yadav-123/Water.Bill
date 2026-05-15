@@ -3,6 +3,7 @@ namespace Water.Bill.Core.Common;
 public static class AppConstants
 {
     public const string CookieScheme = "WaterBillCookie";
+    public static readonly Guid DefaultTenantId = Guid.Parse("50000000-0000-0000-0000-000000000001");
 
     public static class Roles
     {

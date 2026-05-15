@@ -1,0 +1,32 @@
+@model Approle
+@{
+    ViewData["Title"] = "Edit Role";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Edit Role</h1>
+        <p>Update role name and description.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-form-card">
+    <form asp-action="EditRole" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label class="form-label" asp-for="Name">Role Name</label>
+            <input class="form-control" asp-for="Name" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Description">Description</label>
+            <input class="form-control" asp-for="Description" />
+        </div>
+        <div class="wb-actions">
+            <button class="btn btn-primary" type="submit">Save Changes</button>
+            <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

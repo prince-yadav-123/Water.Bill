@@ -1,0 +1,66 @@
+@{
+    ViewBag.Title = "Help & Support";
+    ViewBag.Route = "help";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-head"><div><h1 class="page-title">How can we help?</h1><div class="page-sub">Browse common questions or reach our 24&times;7 helpline.</div></div></div>
+
+<div class="search-hero">
+    <i class="fa fa-search"></i>
+    <input placeholder="Search articles, e.g. 'change UPI ID', 'meter reading'..." />
+</div>
+
+<div class="help-grid">
+    @{
+        var cats = new[] {
+            new { I="receipt", T="Bills &amp; payments", N=18 },
+            new { I="droplet", T="Usage &amp; meter",      N=11 },
+            new { I="plus-circle", T="New connection",     N=14 },
+            new { I="wrench", T="Complaints &amp; service",N=22 },
+            new { I="user",   T="Account &amp; security",  N=9 },
+            new { I="scale-balanced", T="Tariff &amp; policies", N=7 }
+        };
+    }
+    @foreach (var c in cats)
+    {
+        <a class="help-card" href="#"><div class="help-ic"><i class="fa fa-@c.I"></i></div><div class="help-t">@Html.Raw(c.T)</div><div class="help-s">@c.N articles</div></a>
+    }
+</div>
+
+<div class="two-col" style="margin-top:24px">
+    <div class="panel">
+        <div class="panel-title">Top FAQs</div>
+        @{
+            var faqs = new[] {
+                "How do I download a paid bill receipt?",
+                "What happens if I pay after the due date?",
+                "How is my water bill calculated?",
+                "How do I report a leak or no-water issue?",
+                "Can I transfer my connection to a new owner?"
+            };
+        }
+        @for (int i = 0; i < faqs.Length; i++)
+        {
+            <div class="faq">
+                <button class="faq-q" onclick="njToggleFaq(@i)">
+                    <span>@faqs[i]</span>
+                    <i id="faq-ic-@i" class="fa fa-chevron-down"></i>
+                </button>
+                <div id="faq-@(i)" class="faq-a" style="display:none">
+                    Open your bill from <strong>Bill History</strong>, click the download icon. PDFs are signed and stamped — accepted for reimbursement and audit.
+                </div>
+            </div>
+        }
+    </div>
+
+    <div>
+        <div class="panel">
+            <div class="panel-title">Talk to us</div>
+            <div class="contact-row"><i class="fa fa-headset"></i><div><strong>Toll-free helpline</strong><span class="mono">1800 200 3344</span><br /><span>Hindi + English &middot; 24&times;7</span></div></div>
+            <div class="contact-row"><i class="fa fa-comments"></i><div><strong>Live chat</strong><span>Average wait 1 min &middot; 9 AM-9 PM</span></div><button class="btn btn-sm">Start chat</button></div>
+            <div class="contact-row"><i class="fa fa-envelope"></i><div><strong>Email</strong><span>support@@noidajal.in</span></div></div>
+            <div class="contact-row"><i class="fa fa-location-dot"></i><div><strong>Walk-in</strong><span>Jal Bhawan, Sector 6, Noida</span><br /><span>Mon-Sat &middot; 10 AM-5 PM</span></div></div>
+        </div>
+    </div>
+</div>

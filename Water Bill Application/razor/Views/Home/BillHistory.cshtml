@@ -1,0 +1,58 @@
+@{
+    ViewBag.Title = "Bill History";
+    ViewBag.Route = "history";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-head">
+    <div><h1 class="page-title">Bill history</h1><div class="page-sub">Every bill on connection NJL-20A-184721.</div></div>
+    <div style="display:flex;gap:10px">
+        <button class="btn"><i class="fa fa-filter"></i> Filter</button>
+        <button class="btn"><i class="fa fa-file-arrow-down"></i> Export CSV</button>
+    </div>
+</div>
+
+<div class="filter-bar">
+    <div class="field grow"><i class="fa fa-search"></i><input placeholder="Search by bill no., month, amount..." /></div>
+    <select class="select"><option>All years</option><option>FY 2025-26</option><option>FY 2024-25</option></select>
+    <select class="select"><option>All statuses</option><option>Paid</option><option>Due</option><option>Overdue</option></select>
+</div>
+
+<div class="panel">
+    <table class="data-table">
+        <thead>
+            <tr><th>Bill no.</th><th>Period</th><th>Units</th><th class="r">Amount</th><th>Status</th><th>Paid via</th><th></th></tr>
+        </thead>
+        <tbody>
+            @{
+                var rows = new[] {
+                    new { Id="NJB-202603-84721", P="Mar 2026", U="24.5", A="1,847", S="due",  M="—" },
+                    new { Id="NJB-202602-71204", P="Feb 2026", U="22.0", A="1,654", S="paid", M="UPI · HDFC" },
+                    new { Id="NJB-202601-58931", P="Jan 2026", U="20.1", A="1,512", S="paid", M="Net Banking · SBI" },
+                    new { Id="NJB-202512-46217", P="Dec 2025", U="18.4", A="1,384", S="paid", M="UPI · GPay" },
+                    new { Id="NJB-202511-34108", P="Nov 2025", U="19.8", A="1,489", S="paid", M="Debit Card" },
+                    new { Id="NJB-202510-21997", P="Oct 2025", U="22.6", A="1,698", S="paid", M="UPI · PhonePe" },
+                    new { Id="NJB-202509-19844", P="Sep 2025", U="24.1", A="1,812", S="paid", M="UPI · GPay" },
+                    new { Id="NJB-202508-17231", P="Aug 2025", U="28.5", A="2,141", S="paid", M="Net Banking · ICICI" }
+                };
+            }
+            @foreach (var r in rows)
+            {
+                <tr>
+                    <td><span class="mono">@r.Id</span></td>
+                    <td>@r.P</td>
+                    <td>@r.U kL</td>
+                    <td class="r">&#8377; @r.A</td>
+                    <td>
+                        @if (r.S == "due") { <span class="badge warn">Due 15 May</span> } else { <span class="badge ok">Paid</span> }
+                    </td>
+                    <td>@r.M</td>
+                    <td class="r">
+                        <a href="#" class="row-link" title="Download"><i class="fa fa-download"></i></a>
+                        <a href="#" class="row-link" title="View"><i class="fa fa-eye"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

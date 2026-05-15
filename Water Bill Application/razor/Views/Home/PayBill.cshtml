@@ -1,0 +1,122 @@
+@{
+    ViewBag.Title = "Pay Bill";
+    ViewBag.Route = "pay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-head"><div><h1 class="page-title">Pay your bill</h1><div class="page-sub">3 quick steps. Secure payment via UPI, card, net banking or wallet.</div></div></div>
+
+<div class="stepper">
+    <div class="step active" data-stepind="1"><div class="step-n">1</div><div class="step-t">Review</div></div>
+    <div class="step-line"></div>
+    <div class="step" data-stepind="2"><div class="step-n">2</div><div class="step-t">Method</div></div>
+    <div class="step-line"></div>
+    <div class="step" data-stepind="3"><div class="step-n">3</div><div class="step-t">Confirm</div></div>
+</div>
+
+@using (Html.BeginForm("PayBill","Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- STEP 1: REVIEW -->
+    <div data-step="1">
+        <div class="two-col">
+            <div class="panel">
+                <div class="panel-head"><div class="panel-title">Bill summary</div><span class="badge warn">Due 15 May 2026</span></div>
+                <table class="kv">
+                    <tr><th>Bill number</th><td class="mono">NJB-202603-84721</td></tr>
+                    <tr><th>Billing period</th><td>01 Mar &mdash; 31 Mar 2026</td></tr>
+                    <tr><th>Connection</th><td>Sector 50 &middot; A-123 <span class="mono" style="color:var(--ink3)">NJL-20A-184721</span></td></tr>
+                    <tr><th>Meter reading</th><td>2,847 &rarr; 2,871.5 (24.5 kL)</td></tr>
+                    <tr><th>Tariff slab</th><td>Domestic-II</td></tr>
+                </table>
+                <hr class="hr-soft" />
+                <table class="kv">
+                    <tr><th>Water charges</th><td class="r">&#8377; 1,612.00</td></tr>
+                    <tr><th>Sewerage charges</th><td class="r">&#8377; 184.00</td></tr>
+                    <tr><th>Late payment fee</th><td class="r">&#8377; 0.00</td></tr>
+                    <tr><th>Govt. cess (2%)</th><td class="r">&#8377; 51.00</td></tr>
+                </table>
+                <div class="total-row"><span>Total payable</span><strong>&#8377; 1,847.00</strong></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">Tips</div>
+                <ul class="tip-list">
+                    <li><i class="fa fa-shield-check"></i> All payments use 256-bit TLS encryption.</li>
+                    <li><i class="fa fa-bolt"></i> Pay via UPI for instant receipt.</li>
+                    <li><i class="fa fa-percent"></i> 1% cashback on autopay (UPI Lite).</li>
+                    <li><i class="fa fa-headset"></i> Help: <span class="mono">1800 200 3344</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a class="btn" href="@Url.Action("Index","Home")">Cancel</a>
+            <button type="button" class="btn btn-primary" onclick="njGoStep(2)">Continue <i class="fa fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 2: METHOD -->
+    <div data-step="2" style="display:none">
+        <div class="method-grid">
+            @{
+                var methods = new[] {
+                    new { K = "upi",  T = "UPI",        S = "GPay, PhonePe, Paytm", I = "mobile-screen", Tag = "Fastest" },
+                    new { K = "card", T = "Card",       S = "Debit / Credit",        I = "credit-card", Tag = (string)null },
+                    new { K = "nb",   T = "Net Banking",S = "All major banks",       I = "building-columns", Tag = (string)null },
+                    new { K = "wal",  T = "Wallet",     S = "Paytm, Mobikwik",       I = "wallet", Tag = (string)null }
+                };
+            }
+            @for (int i = 0; i < methods.Length; i++)
+            {
+                var m = methods[i];
+                <label class="method-card">
+                    <input type="radio" name="Method" value="@m.K" @(i == 0 ? "checked" : "") />
+                    <div class="method-card-body">
+                        <div class="method-icon"><i class="fa fa-@m.I"></i></div>
+                        <div class="method-text">
+                            <div class="method-t">@m.T @if (m.Tag != null) { <span class="chip">@m.Tag</span> }</div>
+                            <div class="method-s">@m.S</div>
+                        </div>
+                        <i class="fa fa-check tick"></i>
+                    </div>
+                </label>
+            }
+        </div>
+
+        <div class="panel" style="margin-top:18px">
+            <label class="lbl">UPI ID</label>
+            <div class="field"><i class="fa fa-at"></i><input name="UpiId" placeholder="yourname@@upi" /></div>
+            <div class="upi-chips">
+                <button type="button" class="chip-btn">@@oksbi</button>
+                <button type="button" class="chip-btn">@@okhdfcbank</button>
+                <button type="button" class="chip-btn">@@okicici</button>
+                <button type="button" class="chip-btn">@@paytm</button>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn" onclick="njGoStep(1)"><i class="fa fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn btn-primary" onclick="njGoStep(3)">Review &amp; pay <i class="fa fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- STEP 3: CONFIRM -->
+    <div data-step="3" style="display:none">
+        <div class="confirm-card">
+            <div class="confirm-l">You are paying</div>
+            <div class="confirm-amount"><span class="rupee">&#8377;</span>1,847<span class="dec">.00</span></div>
+            <div class="confirm-bits">
+                <span><i class="fa fa-receipt"></i> NJB-202603-84721</span>
+                <span><i class="fa fa-mobile-screen"></i> UPI &middot; aarav@@oksbi</span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fa fa-lock"></i> Confirm &amp; pay securely</button>
+            <div class="confirm-foot">By continuing you agree to NoidaJal's <a href="#">payment terms</a>.</div>
+        </div>
+
+        <div class="form-actions" style="justify-content:center">
+            <button type="button" class="btn" onclick="njGoStep(2)"><i class="fa fa-arrow-left"></i> Change method</button>
+        </div>
+    </div>
+}

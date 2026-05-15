@@ -42,6 +42,13 @@ public class MenuFormViewModel
     public IReadOnlyList<Menuitem> ParentItems { get; set; } = [];
 }
 
+public class MenuReorderViewModel
+{
+    public Guid Id { get; set; }
+    public int Order { get; set; }
+    public Guid? ParentId { get; set; }
+}
+
 public class SecuritySettingsViewModel
 {
     public SecuritySettingsDto Settings { get; set; } = new();

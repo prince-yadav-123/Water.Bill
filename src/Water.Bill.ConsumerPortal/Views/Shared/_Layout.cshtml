@@ -1,11 +1,12 @@
 @using System.Security.Claims
 @using Water.Bill.Application.Interfaces
 @using Water.Bill.Application.DTOs.Menu
+@using Water.Bill.Core.Common
 @inject IPermissionService PermissionService
 
 @{
     var currentPath = Context.Request.Path.Value ?? "";
-    var tenantId = new Guid("50000000-0000-0000-0000-000000000001");
+    var tenantId = AppConstants.DefaultTenantId;
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
     var userName = User.Identity?.Name ?? "";
     var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
@@ -25,39 +26,90 @@
         if (string.IsNullOrWhiteSpace(item.Module)) return true;
         return viewableModules.Count == 0 || viewableModules.Contains(item.Module);
     }
+
+    IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
+        => item.Children.Where(CanSee).OrderBy(x => x.Order).ToList();
+
+    bool IsCurrent(MenuItemDto item)
+    {
+        if (!string.IsNullOrWhiteSpace(item.Url) &&
+            currentPath.StartsWith(item.Url, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return item.Children.Any(IsCurrent);
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Water Billing</title>
+    <title>@ViewData["Title"] - Noida Jal</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body class="wb-body">
+<body class="wb-body" data-sidebar-storage-key="water-bill-consumer-sidebar-collapsed">
     @if (isAuthenticated)
     {
-        <aside class="wb-sidebar">
+        <div class="wb-sidebar-backdrop" data-sidebar-dismiss></div>
+        <aside class="wb-sidebar" id="consumerSidebar">
             <div class="wb-brand">
-                <div class="wb-brand-icon">WB</div>
-                <div>
-                    <div class="wb-brand-title">Water Billing</div>
+                <img class="wb-brand-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" />
+                <div class="wb-brand-copy">
+                    <div class="wb-brand-title">Noida Jal</div>
                     <div class="wb-brand-sub">Consumer Services</div>
                 </div>
+                <button class="wb-sidebar-toggle" type="button" data-sidebar-toggle aria-label="Toggle sidebar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
             <nav class="wb-nav">
                 @foreach (var item in menuItems.Where(CanSee).OrderBy(x => x.Order))
                 {
-                    <a class="wb-nav-link @(currentPath.StartsWith(item.Url ?? "~~~") ? "active" : "")" href="@(item.Url ?? "#")">
-                        <span>@item.Icon</span>
-                        <span>@item.Label</span>
-                    </a>
+                    var children = VisibleChildren(item);
+                    var hasChildren = children.Count > 0;
+                    var isOpen = IsCurrent(item);
+                    var itemId = $"menu-{item.Id:N}";
+
+                    if (hasChildren)
+                    {
+                        <div class="wb-nav-group @(isOpen ? "open" : "")">
+                            <button class="wb-nav-link wb-nav-parent @(isOpen ? "active" : "")" type="button" data-menu-toggle aria-expanded="@isOpen.ToString().ToLowerInvariant()" aria-controls="@itemId">
+                                <span class="wb-nav-icon">@item.Icon</span>
+                                <span class="wb-nav-text">@item.Label</span>
+                                <span class="wb-nav-arrow"></span>
+                            </button>
+                            <div class="wb-nav-children" id="@itemId">
+                                @foreach (var child in children)
+                                {
+                                    <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
+                                        <span class="wb-nav-dot"></span>
+                                        <span class="wb-nav-text">@child.Label</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="wb-nav-link @(IsCurrent(item) ? "active" : "")" href="@(item.Url ?? "#")" target="@(item.OpenInNewTab ? "_blank" : null)">
+                            <span class="wb-nav-icon">@item.Icon</span>
+                            <span class="wb-nav-text">@item.Label</span>
+                        </a>
+                    }
                 }
             </nav>
             <div class="wb-sidebar-bottom">
-                <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
-                <a class="wb-nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">
+                    <span class="wb-nav-icon">P</span>
+                    <span class="wb-nav-text">Profile</span>
+                </a>
+                <a class="wb-nav-link" asp-controller="Account" asp-action="Logout">
+                    <span class="wb-nav-icon">L</span>
+                    <span class="wb-nav-text">Logout</span>
+                </a>
             </div>
         </aside>
     }
@@ -66,7 +118,14 @@
         @if (isAuthenticated)
         {
             <header class="wb-topbar">
-                <div class="fw-semibold">@ViewData["Title"]</div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="wb-mobile-menu" type="button" data-sidebar-toggle aria-label="Open menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="fw-semibold">@ViewData["Title"]</div>
+                </div>
                 <div class="d-flex align-items-center gap-2">
                     <span class="badge text-bg-primary">@roleName</span>
                     <span class="wb-avatar" title="@userName">@initial</span>
@@ -77,7 +136,12 @@
         <section class="wb-content">
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                <div class="wb-toast-stack">
+                    <div class="alert alert-success wb-toast-message">
+                        <span class="wb-toast-icon">✓</span>
+                        <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                </div>
             }
             @RenderBody()
         </section>

@@ -1,3 +1,6 @@
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\solution\Water.Bill.Core.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\solution\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\solution\Water.Bill.Core.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.deps.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.pdb
@@ -10,3 +13,6 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\refint\Water.Bill.Core.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\ref\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\ui-theme\Water.Bill.Core.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\ui-theme\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\ui-theme\Water.Bill.Core.pdb

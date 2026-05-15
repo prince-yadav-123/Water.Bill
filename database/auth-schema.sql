@@ -135,6 +135,31 @@ CREATE TABLE IF NOT EXISTS AuditLogs (
 CREATE INDEX IX_AuditLogs_Timestamp ON AuditLogs (Timestamp);
 CREATE INDEX IX_AuditLogs_UserId ON AuditLogs (UserId);
 
+CREATE TABLE IF NOT EXISTS securitysettings (
+    Id CHAR(36) NOT NULL,
+    TenantId CHAR(36) NOT NULL,
+    SessionTimeoutMinutes INT NOT NULL DEFAULT 480,
+    IdleTimeoutMinutes INT NOT NULL DEFAULT 30,
+    PasswordMinLength INT NOT NULL DEFAULT 8,
+    PasswordRequireUppercase TINYINT(1) NOT NULL DEFAULT 1,
+    PasswordRequireLowercase TINYINT(1) NOT NULL DEFAULT 1,
+    PasswordRequireDigit TINYINT(1) NOT NULL DEFAULT 1,
+    PasswordRequireSpecialChar TINYINT(1) NOT NULL DEFAULT 1,
+    PasswordExpiryDays INT NOT NULL DEFAULT 90,
+    PasswordHistoryCount INT NOT NULL DEFAULT 5,
+    MaxFailedLoginAttempts INT NOT NULL DEFAULT 5,
+    LockoutDurationMinutes INT NOT NULL DEFAULT 15,
+    EnableCaptchaAfterFailures TINYINT(1) NOT NULL DEFAULT 0,
+    CaptchaAfterAttempts INT NOT NULL DEFAULT 3,
+    AllowMultipleSessions TINYINT(1) NOT NULL DEFAULT 1,
+    BlockNewLoginOnConflict TINYINT(1) NOT NULL DEFAULT 0,
+    CreatedAt DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    UpdatedAt DATETIME(6) NULL,
+    IsDeleted TINYINT(1) NOT NULL DEFAULT 0,
+    CONSTRAINT PK_securitysettings PRIMARY KEY (Id),
+    CONSTRAINT UX_SecuritySettings_TenantId UNIQUE (TenantId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 SET @TenantId = '50000000-0000-0000-0000-000000000001';
 SET @AdminRoleId = '50000000-0000-0000-0000-000000000101';
 SET @AdminUserId = '50000000-0000-0000-0000-000000000201';
@@ -180,3 +205,19 @@ ON DUPLICATE KEY UPDATE
     CanForward = VALUES(CanForward),
     CanPrint = VALUES(CanPrint),
     IsDeleted = 0;
+
+INSERT INTO securitysettings
+(Id, TenantId, SessionTimeoutMinutes, IdleTimeoutMinutes, PasswordMinLength, PasswordRequireUppercase,
+ PasswordRequireLowercase, PasswordRequireDigit, PasswordRequireSpecialChar, PasswordExpiryDays,
+ PasswordHistoryCount, MaxFailedLoginAttempts, LockoutDurationMinutes, EnableCaptchaAfterFailures,
+ CaptchaAfterAttempts, AllowMultipleSessions, BlockNewLoginOnConflict, CreatedAt, IsDeleted)
+VALUES
+('50000000-0000-0000-0000-000000000401', @TenantId, 480, 30, 8, 1, 1, 1, 1, 90, 5, 5, 15, 0, 3, 1, 0, UTC_TIMESTAMP(6), 0)
+ON DUPLICATE KEY UPDATE
+    SessionTimeoutMinutes = VALUES(SessionTimeoutMinutes),
+    IdleTimeoutMinutes = VALUES(IdleTimeoutMinutes),
+    PasswordMinLength = VALUES(PasswordMinLength),
+    MaxFailedLoginAttempts = VALUES(MaxFailedLoginAttempts),
+    LockoutDurationMinutes = VALUES(LockoutDurationMinutes),
+    IsDeleted = 0,
+    UpdatedAt = UTC_TIMESTAMP(6);

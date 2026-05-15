@@ -1,0 +1,24 @@
+@{
+    ViewBag.Title = "Receipt";
+    ViewBag.Route = "pay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="receipt-wrap">
+    <div class="receipt-card">
+        <div class="receipt-tick"><i class="fa fa-check"></i></div>
+        <h2>Payment successful</h2>
+        <p>Your bill for <strong>March 2026</strong> has been paid.</p>
+        <div class="receipt-amt"><span class="rupee">&#8377;</span>1,847<span class="dec">.00</span></div>
+        <table class="kv">
+            <tr><th>Transaction ID</th><td class="mono">@(ViewBag.TxnId ?? "TXN9276120384")</td></tr>
+            <tr><th>Bill number</th><td class="mono">NJB-202603-84721</td></tr>
+            <tr><th>Method</th><td>UPI &middot; aarav@@oksbi</td></tr>
+            <tr><th>Paid on</th><td>@DateTime.Now.ToString("dd MMM yyyy, HH:mm")</td></tr>
+        </table>
+        <div class="receipt-actions">
+            <button class="btn"><i class="fa fa-file-arrow-down"></i> Download receipt</button>
+            <button class="btn"><i class="fa fa-share-nodes"></i> Share</button>
+            <a class="btn btn-primary" href="@Url.Action("Index","Home")">Back to dashboard</a>
+        </div>
+    </div>
+</div>

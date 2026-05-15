@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "7C1DG5nvujk=",
+  "dgSpecHash": "hReJXCzWvWA=",
   "success": true,
   "projectFilePath": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj",
   "expectedPackageFiles": [
@@ -30,5 +30,18 @@
     "C:\\Users\\Lekesh\\.nuget\\packages\\pomelo.entityframeworkcore.mysql\\8.0.2\\pomelo.entityframeworkcore.mysql.8.0.2.nupkg.sha512",
     "C:\\Users\\Lekesh\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.5.2\\system.identitymodel.tokens.jwt.7.5.2.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'AutoMapper' 12.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x",
+      "projectPath": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj",
+      "libraryId": "AutoMapper",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

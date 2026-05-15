@@ -1,37 +1,136 @@
-@model LoginRequestDto
+@model ConsumerLoginViewModel
 
-<div class="wb-login-shell">
-    <div class="wb-login-panel">
-        <div class="mb-4">
-            <div class="wb-login-mark">WB</div>
-            <h1 class="h4 mb-1">Water Billing Login</h1>
-            <p class="text-muted mb-0">Sign in to manage billing, payments, and consumer services.</p>
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<div class="wb-auth-page">
+    <section class="wb-auth-hero" aria-label="Water billing portal">
+        <div class="wb-auth-brand">
+            <img class="wb-auth-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" />
+            <div>
+                <div class="wb-auth-brand-name">Noida Jal</div>
+                <div class="wb-auth-brand-sub">Consumer Portal</div>
+            </div>
         </div>
 
-        <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="wb-auth-hero-content">
+            <h1>Pay your water bill in under 30 seconds.</h1>
+            <p>Track usage across your connections, manage bills, raise complaints, and keep payments moving from anywhere.</p>
 
-            <div class="mb-3">
-                <label asp-for="Username" class="form-label"></label>
-                <input asp-for="Username" class="form-control" autocomplete="username" autofocus />
-                <span asp-validation-for="Username" class="text-danger"></span>
+            <div class="wb-auth-feature-grid" aria-label="Portal benefits">
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">I</span>
+                    <strong>Instant</strong>
+                    <small>Real-time bill view</small>
+                </div>
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">S</span>
+                    <strong>Secure</strong>
+                    <small>Protected access</small>
+                </div>
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">P</span>
+                    <strong>Paperless</strong>
+                    <small>All bills as PDF</small>
+                </div>
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">24</span>
+                    <strong>24x7 support</strong>
+                    <small>Hindi + English</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="wb-auth-initiative">A Government of Uttar Pradesh initiative</div>
+    </section>
+
+    <section class="wb-auth-form-side">
+        <div class="wb-auth-card">
+            <div class="wb-auth-card-head">
+                @* <img class="wb-auth-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" /> *@
+                <div>
+                    <h2>Sign in</h2>
+                    <p>Welcome back to Noida Jal</p>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" autocomplete="current-password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
+            <form class="wb-auth-form" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" novalidate data-consumer-login-form>
+                @Html.AntiForgeryToken()
+                <input asp-for="LoginMethod" type="hidden" data-login-method />
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-            <div class="form-check mb-4">
-                <input asp-for="RememberMe" class="form-check-input" />
-                <label asp-for="RememberMe" class="form-check-label">Keep me signed in</label>
-            </div>
+                <div class="wb-auth-tabs" role="tablist" aria-label="Login options">
+                    <button class="wb-auth-tab" type="button" role="tab" data-login-tab="mobile-otp" aria-controls="mobile-login">Mobile + OTP</button>
+                    <button class="wb-auth-tab" type="button" role="tab" data-login-tab="consumer-id" aria-controls="consumer-login">Consumer ID</button>
+                    <button class="wb-auth-tab" type="button" role="tab" data-login-tab="username-email" aria-controls="credential-login">Username/Email</button>
+                </div>
 
-            <button type="submit" class="btn btn-primary w-100">Sign In</button>
-        </form>
-    </div>
+                <div class="wb-auth-pane" id="mobile-login" role="tabpanel" data-login-pane="mobile-otp">
+                    <div class="wb-field">
+                        <label asp-for="MobileNumber"></label>
+                        <div class="wb-input-shell">
+                            @* <span class="wb-input-icon">M</span> *@
+                            <input asp-for="MobileNumber" class="wb-input" inputmode="numeric" autocomplete="tel" placeholder="98765 43210" data-login-input data-login-rule="mobile" />
+                        </div>
+                        <span asp-validation-for="MobileNumber" class="text-danger small"></span>
+                        <span class="text-danger small wb-client-error" data-login-error-for="MobileNumber"></span>
+                    </div>
+                    <button class="wb-auth-submit" type="submit">Send OTP <span aria-hidden="true">-></span></button>
+                </div>
+
+                <div class="wb-auth-pane" id="consumer-login" role="tabpanel" data-login-pane="consumer-id">
+                    <div class="wb-field">
+                        <label asp-for="ConsumerId"></label>
+                        <div class="wb-input-shell">
+                            @* <span class="wb-input-icon">ID</span> *@
+                            <input asp-for="ConsumerId" class="wb-input" autocomplete="off" placeholder="WB-XX-XXXXXX" data-login-input data-login-rule="consumer" />
+                        </div>
+                        <small class="wb-field-help">Find this on your latest water bill.</small>
+                        <span asp-validation-for="ConsumerId" class="text-danger small"></span>
+                        <span class="text-danger small wb-client-error" data-login-error-for="ConsumerId"></span>
+                    </div>
+                    <button class="wb-auth-submit" type="submit">Send OTP <span aria-hidden="true">-></span></button>
+                </div>
+
+                <div class="wb-auth-pane" id="credential-login" role="tabpanel" data-login-pane="username-email">
+                    <div class="wb-field">
+                        <label asp-for="UsernameOrEmail"></label>
+                        <div class="wb-input-shell">
+                            @* <span class="wb-input-icon">U</span> *@
+                            <input asp-for="UsernameOrEmail" class="wb-input" autocomplete="username" placeholder="username or email@example.com" data-login-input data-login-rule="username" />
+                        </div>
+                        <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
+                        <span class="text-danger small wb-client-error" data-login-error-for="UsernameOrEmail"></span>
+                    </div>
+
+                    <div class="wb-field">
+                        <label asp-for="Password"></label>
+                        <div class="wb-input-shell">
+                            @* <span class="wb-input-icon">P</span> *@
+                            <input asp-for="Password" class="wb-input" autocomplete="current-password" placeholder="Enter password" data-login-input data-login-rule="password" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <span class="text-danger small wb-client-error" data-login-error-for="Password"></span>
+                    </div>
+
+                    <div class="form-check wb-auth-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label">Keep me signed in</label>
+                    </div>
+
+                    <button class="wb-auth-submit" type="submit">Sign in <span aria-hidden="true">-></span></button>
+                </div>
+
+                <p class="wb-auth-terms">By continuing you agree to Noida Jal's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+
+                <div class="wb-auth-register">
+                    <span>New to Noida Jal?</span>
+                    <a href="#">Register your connection</a>
+                </div>
+            </form>
+        </div>
+    </section>
 </div>
 
 @section Scripts {

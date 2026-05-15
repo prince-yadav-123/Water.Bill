@@ -1,0 +1,115 @@
+@{
+    var route = (ViewBag.Route as string) ?? "dashboard";
+    var pageTitle = ViewBag.Title as string ?? "Dashboard";
+    var nav = new[] {
+        new { K = "dashboard", T = "Dashboard", I = "th-large", Action = "Index", Controller = "Home", Badge = "" },
+        new { K = "pay",       T = "Pay Bill",  I = "bolt",     Action = "PayBill", Controller = "Home", Badge = "Due" },
+        new { K = "history",   T = "Bill History", I = "file-invoice", Action = "BillHistory", Controller = "Home", Badge = "" },
+        new { K = "analytics", T = "Usage Analytics", I = "chart-line", Action = "Analytics", Controller = "Home", Badge = "" },
+        new { K = "newConnection", T = "New Connection", I = "plus-circle", Action = "NewConnection", Controller = "Home", Badge = "" },
+        new { K = "complaint", T = "Complaints", I = "exclamation-triangle", Action = "Complaint", Controller = "Home", Badge = "" }
+    };
+    var nav2 = new[] {
+        new { K = "profile",       T = "Profile & Connections", I = "user-circle", Action = "Profile", Controller = "Home", Badge = "" },
+        new { K = "notifications", T = "Notifications",          I = "bell",         Action = "Notifications", Controller = "Home", Badge = "3" },
+        new { K = "help",          T = "Help & Support",         I = "life-ring",    Action = "Help", Controller = "Home", Badge = "" }
+    };
+}
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-palette="aqua">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@pageTitle &middot; NoidaJal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="~/Content/site.css" rel="stylesheet" />
+    <link href="~/Content/razor-views.css" rel="stylesheet" />
+</head>
+<body>
+<div class="app" data-nav="desktop">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <a href="@Url.Action("Index","Home")" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;">
+                <img src="~/Content/img/noidajal-logo.png" alt="NoidaJal" class="brand-logo" />
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Main</div>
+            @foreach (var n in nav)
+            {
+                <a class="nav-item @(route == n.K ? "active" : "")" href="@Url.Action(n.Action, n.Controller)">
+                    <i class="fa fa-@n.I"></i>
+                    <span>@n.T</span>
+                    @if (!string.IsNullOrEmpty(n.Badge)) { <span class="badge-dot" style="background:var(--orange)">@n.Badge</span> }
+                </a>
+            }
+        </div>
+
+        <div class="nav-section" style="border-top:1px solid var(--border)">
+            <div class="nav-section-label">Account</div>
+            @foreach (var n in nav2)
+            {
+                <a class="nav-item @(route == n.K ? "active" : "")" href="@Url.Action(n.Action, n.Controller)">
+                    <i class="fa fa-@n.I"></i>
+                    <span>@n.T</span>
+                    @if (!string.IsNullOrEmpty(n.Badge)) { <span class="badge-dot">@n.Badge</span> }
+                </a>
+            }
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-card">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <i class="fa fa-headset" style="color:var(--brand)"></i>
+                    <div class="sidebar-card-title">24&times;7 helpline</div>
+                </div>
+                <div class="sidebar-card-sub">
+                    <span class="mono" style="color:var(--ink2);font-weight:600">1800 200 3344</span><br />
+                    Toll-free &middot; Hindi + English
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">@pageTitle</div>
+            <div class="topbar-search">
+                <i class="fa fa-search"></i>
+                <input placeholder="Search bills, connections, help..." />
+                <kbd>&#8984;K</kbd>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" title="Switch to Hindi"><span style="font-size:13px;font-weight:700">हिं</span></button>
+                <a class="icon-btn" href="@Url.Action("Notifications","Home")" title="Notifications">
+                    <i class="fa fa-bell"></i><span class="dot"></span>
+                </a>
+                <button class="icon-btn" title="Toggle theme" onclick="njToggleTheme()"><i class="fa fa-moon"></i></button>
+                <a class="avatar" href="@Url.Action("Profile","Home")">
+                    <div class="avatar-img">AS</div>
+                    <div class="avatar-info">
+                        <div class="avatar-name">Aarav Sharma</div>
+                        <div class="avatar-sub">NJL-20A-184721</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @RenderBody()
+    </div>
+
+    <div class="bottom-nav">
+        <a class="bnav-item @(route == "dashboard" ? "active" : "")" href="@Url.Action("Index","Home")"><i class="fa fa-th-large"></i>Home</a>
+        <a class="bnav-item @(route == "history" ? "active" : "")"   href="@Url.Action("BillHistory","Home")"><i class="fa fa-file-invoice"></i>Bills</a>
+        <a class="bnav-item center" href="@Url.Action("PayBill","Home")"><div class="pay-fab"><i class="fa fa-bolt"></i></div><span style="margin-top:2px">Pay</span></a>
+        <a class="bnav-item @(route == "analytics" ? "active" : "")" href="@Url.Action("Analytics","Home")"><i class="fa fa-chart-line"></i>Usage</a>
+        <a class="bnav-item @(route == "profile" ? "active" : "")"   href="@Url.Action("Profile","Home")"><i class="fa fa-user"></i>You</a>
+    </div>
+</div>
+
+<script src="~/Content/app.js"></script>
+@RenderSection("scripts", required: false)
+</body>
+</html>

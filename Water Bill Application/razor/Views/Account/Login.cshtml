@@ -1,0 +1,105 @@
+@{
+    ViewBag.Title = "Sign in";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-palette="aqua">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in &middot; NoidaJal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="~/Content/site.css" rel="stylesheet" />
+    <link href="~/Content/razor-views.css" rel="stylesheet" />
+</head>
+<body>
+<div class="login-shell">
+    <div class="login-bg-left">
+        <div class="login-bg-blob a"></div>
+        <div class="login-bg-blob b"></div>
+        <div class="login-bg-content">
+            <img src="~/Content/img/noidajal-logo.png" alt="NoidaJal" style="height:96px;background:#fff;padding:14px 22px;border-radius:18px;box-shadow:var(--shadow-md);margin-bottom:36px" />
+            <h1 class="login-hero-h">A simpler way to manage your water bill.</h1>
+            <p class="login-hero-sub">Pay bills, track usage, raise complaints and request new connections — all in one place, in Hindi or English.</p>
+            <ul class="login-perks">
+                <li><i class="fa fa-bolt"></i>Instant UPI payment with receipt</li>
+                <li><i class="fa fa-chart-line"></i>Daily usage + leak detection</li>
+                <li><i class="fa fa-headset"></i>24&times;7 helpline &middot; 1800 200 3344</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="login-right">
+        <div class="login-card">
+            <div class="login-card-head">
+                <div class="login-mark"><img src="~/Content/img/noidajal-logo.png" alt="" /></div>
+                <h2>Sign in to NoidaJal</h2>
+                <p>Welcome back. Sign in to view your bills and consumption.</p>
+            </div>
+
+            <div class="seg" role="tablist">
+                <button class="seg-btn active" data-tabgroup="auth" data-tabkey="mobile" onclick="njSwitchTab('auth','mobile')"><i class="fa fa-mobile-screen"></i>Mobile + OTP</button>
+                <button class="seg-btn" data-tabgroup="auth" data-tabkey="cid" onclick="njSwitchTab('auth','cid')"><i class="fa fa-id-card"></i>Consumer ID</button>
+                <button class="seg-btn" data-tabgroup="auth" data-tabkey="email" onclick="njSwitchTab('auth','email')"><i class="fa fa-envelope"></i>Email</button>
+            </div>
+
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "login-form", autocomplete = "off" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div data-tabpanel="auth" data-tabkey="mobile">
+                    <label class="lbl">Mobile number</label>
+                    <div class="field with-prefix">
+                        <span class="prefix">+91</span>
+                        <input type="tel" name="Mobile" maxlength="10" placeholder="98XXX XXXXX" />
+                    </div>
+                    <label class="lbl mt">OTP</label>
+                    <div class="otp-row">
+                        <input maxlength="1" /><input maxlength="1" /><input maxlength="1" />
+                        <input maxlength="1" /><input maxlength="1" /><input maxlength="1" />
+                    </div>
+                    <div class="otp-meta">
+                        <span>Didn't get it? <a href="#">Resend in 0:42</a></span>
+                        <a href="#">Use voice OTP</a>
+                    </div>
+                </div>
+
+                <div data-tabpanel="auth" data-tabkey="cid" style="display:none">
+                    <label class="lbl">Consumer ID</label>
+                    <div class="field"><i class="fa fa-id-card"></i><input name="ConsumerId" placeholder="NJL-20A-184721" /></div>
+                    <label class="lbl mt">Password</label>
+                    <div class="field"><i class="fa fa-lock"></i><input type="password" name="Password" placeholder="••••••••" /></div>
+                </div>
+
+                <div data-tabpanel="auth" data-tabkey="email" style="display:none">
+                    <label class="lbl">Email address</label>
+                    <div class="field"><i class="fa fa-envelope"></i><input type="email" name="Email" placeholder="you@@example.com" /></div>
+                    <label class="lbl mt">Password</label>
+                    <div class="field"><i class="fa fa-lock"></i><input type="password" name="Password" placeholder="••••••••" /></div>
+                </div>
+
+                <label class="check"><input type="checkbox" name="Remember" /> <span>Keep me signed in on this device</span></label>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <i class="fa fa-arrow-right-to-bracket"></i> Sign in securely
+                </button>
+
+                <div class="login-divider"><span>or</span></div>
+
+                <div class="login-alts">
+                    <a href="#" class="alt-btn"><i class="fa fa-fingerprint"></i> Use biometric</a>
+                    <a href="#" class="alt-btn"><i class="fa fa-qrcode"></i> Scan from app</a>
+                </div>
+
+                <div class="login-foot">
+                    New here? @Html.ActionLink("Register your connection", "Register", "Account") &middot;
+                    @Html.ActionLink("Forgot password?", "ForgotPassword", "Account")
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/app.js"></script>
+</body>
+</html>
