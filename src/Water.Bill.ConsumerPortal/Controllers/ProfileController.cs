@@ -6,7 +6,7 @@ using Water.Bill.Core.Enums;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
-[Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
+[Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
 public class ProfileController : Controller
 {
     private readonly IAuditLogService _auditLogService;

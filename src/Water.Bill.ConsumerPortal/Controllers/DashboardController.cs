@@ -4,7 +4,7 @@ using Water.Bill.Core.Common;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
-[Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
+[Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
 public class DashboardController : Controller
 {
     public IActionResult Index()

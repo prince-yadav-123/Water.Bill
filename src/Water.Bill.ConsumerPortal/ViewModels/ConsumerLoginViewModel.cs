@@ -4,12 +4,12 @@ namespace Water.Bill.ConsumerPortal.ViewModels;
 
 public class ConsumerLoginViewModel : IValidatableObject
 {
-    public string LoginMethod { get; set; } = ConsumerLoginMethods.MobileOtp;
+    public string LoginMethod { get; set; } = ConsumerLoginMethods.ConsumerId;
 
     [Display(Name = "Mobile Number")]
     public string? MobileNumber { get; set; }
 
-    [Display(Name = "Consumer ID")]
+    [Display(Name = "Consumer Number")]
     public string? ConsumerId { get; set; }
 
     [Display(Name = "Username/Email")]
@@ -32,7 +32,7 @@ public class ConsumerLoginViewModel : IValidatableObject
         else if (LoginMethod == ConsumerLoginMethods.ConsumerId)
         {
             if (string.IsNullOrWhiteSpace(ConsumerId))
-                yield return new ValidationResult("Enter your consumer ID.", [nameof(ConsumerId)]);
+                yield return new ValidationResult("Enter your consumer number.", [nameof(ConsumerId)]);
         }
         else if (LoginMethod == ConsumerLoginMethods.UsernameEmail)
         {
@@ -48,6 +48,35 @@ public class ConsumerLoginViewModel : IValidatableObject
     {
         var digits = new string(value.Where(char.IsDigit).ToArray());
         return digits.Length == 10;
+    }
+}
+
+public class ConsumerOtpViewModel : IValidatableObject
+{
+    [Display(Name = "Consumer Number")]
+    public string ConsumerNo { get; set; } = string.Empty;
+
+    public string? MaskedMobileNo { get; set; }
+
+    public DateTime? ExpiresAt { get; set; }
+
+    public int ResendAvailableInSeconds { get; set; }
+
+    public string? DevelopmentOtp { get; set; }
+
+    [Display(Name = "OTP")]
+    public string? Otp { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (string.IsNullOrWhiteSpace(ConsumerNo))
+            yield return new ValidationResult("Consumer number is required.", [nameof(ConsumerNo)]);
+
+        var digits = new string((Otp ?? string.Empty).Where(char.IsDigit).ToArray());
+        if (string.IsNullOrWhiteSpace(Otp))
+            yield return new ValidationResult("Enter the OTP sent to your registered mobile number.", [nameof(Otp)]);
+        else if (digits.Length != 6)
+            yield return new ValidationResult("Enter the valid 6 digit OTP.", [nameof(Otp)]);
     }
 }
 

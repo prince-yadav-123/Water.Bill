@@ -9,26 +9,49 @@
     var tenantId = AppConstants.DefaultTenantId;
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
     var userName = User.Identity?.Name ?? "";
+    var fullName = User.FindFirstValue("FullName") ?? userName;
+    var consumerNo = User.FindFirstValue("ConsumerNo") ?? "";
+    var profileImageUrl = User.FindFirstValue("ProfileImageUrl");
     var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
-    var initial = string.IsNullOrWhiteSpace(userName) ? "U" : userName[..1].ToUpperInvariant();
+    var displayName = string.IsNullOrWhiteSpace(fullName) ? userName : fullName;
+
+    string GetInitials(string? name)
+    {
+        var parts = (name ?? string.Empty)
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (parts.Length == 0) return "U";
+        if (parts.Length == 1) return parts[0][..Math.Min(2, parts[0].Length)].ToUpperInvariant();
+        return string.Concat(parts.Take(2).Select(x => x[0])).ToUpperInvariant();
+    }
+
+    var initials = GetInitials(displayName);
 
     IReadOnlyList<MenuItemDto> menuItems = [];
-    HashSet<string> viewableModules = [];
+    HashSet<string> menuVisibleModules = [];
+    HashSet<Guid> menuVisibleModuleIds = [];
     if (isAuthenticated && Guid.TryParse(User.FindFirstValue("RoleId"), out var roleId))
     {
         menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
-        viewableModules = await PermissionService.GetViewableModulesAsync(roleId);
+        menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
+        menuVisibleModules = await PermissionService.GetMenuVisibleModulesAsync(roleId);
     }
 
-    bool CanSee(MenuItemDto item)
+    bool CanSeeSelf(MenuItemDto item)
     {
-        if (!item.IsActive) return false;
-        if (string.IsNullOrWhiteSpace(item.Module)) return true;
-        return viewableModules.Count == 0 || viewableModules.Contains(item.Module);
+        if (!item.IsActive || !item.ShowInSidebar) return false;
+        if (item.ModuleId.HasValue) return menuVisibleModuleIds.Contains(item.ModuleId.Value);
+        if (!string.IsNullOrWhiteSpace(item.Module)) return menuVisibleModules.Contains(item.Module);
+        return false;
     }
 
     IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
-        => item.Children.Where(CanSee).OrderBy(x => x.Order).ToList();
+        => item.Children.Where(CanSeeSelf).OrderBy(x => x.Order).ToList();
+
+    bool CanRender(MenuItemDto item)
+        => item.Children.Count > 0
+            ? VisibleChildren(item).Count > 0
+            : CanSeeSelf(item);
 
     bool IsCurrent(MenuItemDto item)
     {
@@ -66,7 +89,7 @@
                 </button>
             </div>
             <nav class="wb-nav">
-                @foreach (var item in menuItems.Where(CanSee).OrderBy(x => x.Order))
+                @foreach (var item in menuItems.Where(CanRender).OrderBy(x => x.Order))
                 {
                     var children = VisibleChildren(item);
                     var hasChildren = children.Count > 0;
@@ -85,7 +108,7 @@
                                 @foreach (var child in children)
                                 {
                                     <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
-                                        <span class="wb-nav-dot"></span>
+                                        <span class="wb-nav-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
                                         <span class="wb-nav-text">@child.Label</span>
                                     </a>
                                 }
@@ -126,10 +149,22 @@
                     </button>
                     <div class="fw-semibold">@ViewData["Title"]</div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge text-bg-primary">@roleName</span>
-                    <span class="wb-avatar" title="@userName">@initial</span>
-                </div>
+                <a class="wb-profile-chip" asp-controller="Profile" asp-action="Index" title="Open My Profile">
+                    <span class="wb-profile-avatar" aria-hidden="true">
+                        @if (!string.IsNullOrWhiteSpace(profileImageUrl))
+                        {
+                            <img src="@profileImageUrl" alt="" />
+                        }
+                        else
+                        {
+                            @initials
+                        }
+                    </span>
+                    <span class="wb-profile-copy">
+                        <span class="wb-profile-name">@displayName</span>
+                        <span class="wb-profile-meta">@(string.IsNullOrWhiteSpace(consumerNo) ? roleName : consumerNo)</span>
+                    </span>
+                </a>
             </header>
         }
 

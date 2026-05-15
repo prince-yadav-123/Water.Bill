@@ -13,28 +13,30 @@
     var initial = string.IsNullOrWhiteSpace(userName) ? "U" : userName[..1].ToUpperInvariant();
 
     IReadOnlyList<MenuItemDto> menuItems = [];
-    HashSet<string> viewableModules = [];
+    HashSet<string> menuVisibleModules = [];
     HashSet<Guid> menuVisibleModuleIds = [];
     if (isAuthenticated && Guid.TryParse(User.FindFirstValue("RoleId"), out var roleId))
     {
         menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
-        viewableModules = await PermissionService.GetViewableModulesAsync(roleId);
         menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
+        menuVisibleModules = await PermissionService.GetMenuVisibleModulesAsync(roleId);
     }
 
     bool CanSeeSelf(MenuItemDto item)
     {
         if (!item.IsActive || !item.ShowInSidebar) return false;
         if (item.ModuleId.HasValue) return menuVisibleModuleIds.Contains(item.ModuleId.Value);
-        if (!string.IsNullOrWhiteSpace(item.Module)) return viewableModules.Contains(item.Module);
-        return true;
+        if (!string.IsNullOrWhiteSpace(item.Module)) return menuVisibleModules.Contains(item.Module);
+        return false;
     }
 
     IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
         => item.Children.Where(CanSeeSelf).OrderBy(x => x.Order).ToList();
 
     bool CanRender(MenuItemDto item)
-        => CanSeeSelf(item) || VisibleChildren(item).Count > 0;
+        => item.Children.Count > 0
+            ? VisibleChildren(item).Count > 0
+            : CanSeeSelf(item);
 
     bool IsCurrent(MenuItemDto item)
     {
@@ -91,7 +93,7 @@
                                 @foreach (var child in children)
                                 {
                                     <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
-                                        <span class="wb-nav-dot"></span>
+                                        <span class="wb-nav-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
                                         <span class="wb-nav-text">@child.Label</span>
                                     </a>
                                 }

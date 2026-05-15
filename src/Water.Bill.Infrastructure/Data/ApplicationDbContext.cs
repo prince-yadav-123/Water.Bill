@@ -80,6 +80,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ConsumerNodue> ConsumerNodues { get; set; }
 
+    public virtual DbSet<ConsumerOtpVerification> ConsumerOtpVerifications { get; set; }
+
     public virtual DbSet<ConsumerRidMobEmailInfo> ConsumerRidMobEmailInfos { get; set; }
 
     public virtual DbSet<ConsumerTransfer> ConsumerTransfers { get; set; }

@@ -28,6 +28,8 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<ISecuritySettingsService, SecuritySettingsService>();
+        services.AddScoped<IConsumerOtpService, ConsumerOtpService>();
+        services.AddScoped<IConsumerSmsSender, LoggingConsumerSmsSender>();
 
         return services;
     }

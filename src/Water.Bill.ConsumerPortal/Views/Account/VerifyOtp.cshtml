@@ -1,0 +1,110 @@
+@model ConsumerOtpViewModel
+
+@{
+    ViewData["Title"] = "Verify OTP";
+}
+
+<div class="wb-auth-page">
+    <section class="wb-auth-hero" aria-label="Water billing portal">
+        <div class="wb-auth-brand">
+            <img class="wb-auth-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" />
+            <div>
+                <div class="wb-auth-brand-name">Noida Jal</div>
+                <div class="wb-auth-brand-sub">Consumer Portal</div>
+            </div>
+        </div>
+
+        <div class="wb-auth-hero-content">
+            <h1>Secure access to your water bill account.</h1>
+            <p>We verify your registered mobile number before opening your consumer dashboard.</p>
+
+            <div class="wb-auth-feature-grid" aria-label="Portal security">
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">1</span>
+                    <strong>Consumer No.</strong>
+                    <small>Identify account</small>
+                </div>
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">2</span>
+                    <strong>OTP</strong>
+                    <small>Verify mobile</small>
+                </div>
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">3</span>
+                    <strong>Dashboard</strong>
+                    <small>View bills</small>
+                </div>
+                <div class="wb-auth-feature">
+                    <span class="wb-auth-feature-icon">5m</span>
+                    <strong>Expiry</strong>
+                    <small>Short lived OTP</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="wb-auth-initiative">A Government of Uttar Pradesh initiative</div>
+    </section>
+
+    <section class="wb-auth-form-side">
+        <div class="wb-auth-card">
+            <div class="wb-auth-card-head">
+                <div>
+                    <h2>Verify OTP</h2>
+                    <p>
+                        OTP sent to
+                        <strong>@(string.IsNullOrWhiteSpace(Model.MaskedMobileNo) ? "your registered mobile" : Model.MaskedMobileNo)</strong>
+                    </p>
+                </div>
+            </div>
+
+            @if (TempData["OtpError"] != null)
+            {
+                <div class="alert alert-danger small">@TempData["OtpError"]</div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.DevelopmentOtp))
+            {
+                <div class="alert alert-info small">
+                    Development OTP: <strong>@Model.DevelopmentOtp</strong>
+                </div>
+            }
+
+            <form class="wb-auth-form" asp-action="VerifyOtp" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="ConsumerNo" type="hidden" />
+                <input asp-for="MaskedMobileNo" type="hidden" />
+                <input asp-for="ExpiresAt" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="wb-field">
+                    <label asp-for="Otp"></label>
+                    <div class="wb-input-shell">
+                        <input asp-for="Otp" class="wb-input wb-otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+                    </div>
+                    <span asp-validation-for="Otp" class="text-danger small"></span>
+                </div>
+
+                <button class="wb-auth-submit" type="submit">Verify &amp; Sign in <span aria-hidden="true">-></span></button>
+            </form>
+
+            <div class="wb-auth-otp-actions">
+                <form asp-action="ResendOtp" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="consumerNo" value="@Model.ConsumerNo" />
+                    <button class="wb-link-button" type="submit">Resend OTP</button>
+                </form>
+                <a asp-action="Login">Change consumer number</a>
+            </div>
+
+            @if (Model.ExpiresAt.HasValue)
+            {
+                <p class="wb-auth-terms">OTP expires at @Model.ExpiresAt.Value.ToLocalTime().ToString("hh:mm tt").</p>
+            }
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
