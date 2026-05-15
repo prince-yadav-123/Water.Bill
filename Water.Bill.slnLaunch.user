@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "src\\Water.Bill.API\\Water.Bill.API.csproj",
+        "Action": "StartWithoutDebugging"
+      },
+      {
+        "Path": "src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj",
+        "Action": "StartWithoutDebugging"
+      }
+    ]
+  }
+]

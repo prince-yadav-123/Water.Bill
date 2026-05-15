@@ -11,6 +11,10 @@ public partial class Rolepermission
 
     public string Module { get; set; } = null!;
 
+    public Guid? ModuleId { get; set; }
+
+    public bool CanSeeMenu { get; set; }
+
     public bool CanView { get; set; }
 
     public bool CanAdd { get; set; }
@@ -34,6 +38,8 @@ public partial class Rolepermission
     public DateTime? UpdatedAt { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public virtual PermissionModule? PermissionModule { get; set; }
 
     public virtual Approle Role { get; set; } = null!;
 }

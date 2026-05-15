@@ -1,10 +1,12 @@
 @model PermissionMatrixViewModel
 @{
     ViewData["Title"] = "Permission Matrix";
-    var actions = new[] { "View", "Add", "Edit", "Delete", "Download", "Export", "Approve", "Forward", "Print" };
+    var actions = new[] { "SeeMenu", "View", "Add", "Edit", "Delete", "Download", "Export", "Approve", "Forward", "Print" };
     var selectedRole = Model.SelectedRole;
-    var permissionMap = Model.Permissions.ToDictionary(x => x.Module, StringComparer.OrdinalIgnoreCase);
-    string Key(string module, string action) => $"perm_{module.Replace(" ", "_").Replace("&", "and")}_{action}";
+    var permissionMap = Model.Permissions
+        .Where(x => x.ModuleId.HasValue)
+        .ToDictionary(x => x.ModuleId!.Value, x => x);
+    string Key(Guid moduleId, string action) => $"perm_{moduleId:N}_{action}";
 }
 
 <div class="wb-page-head">
@@ -38,7 +40,7 @@
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                     <div>
                         <h2 class="wb-section-title">@selectedRole.Name Permissions</h2>
-                        <div class="text-muted small">View controls menu visibility; other actions protect pages and commands.</div>
+                        <div class="text-muted small">See Menu controls sidebar visibility; View and other actions protect pages and commands.</div>
                     </div>
                     <div class="wb-actions">
                         <button class="btn btn-sm btn-outline-primary" type="button" onclick="setAllPermissions(true)">Grant All</button>
@@ -65,9 +67,10 @@
                             <tbody>
                             @foreach (var module in Model.Modules)
                             {
-                                permissionMap.TryGetValue(module, out var permission);
+                                permissionMap.TryGetValue(module.Id, out var permission);
                                 bool IsChecked(string action) => action switch
                                 {
+                                    "SeeMenu" => permission?.CanSeeMenu ?? false,
                                     "View" => permission?.CanView ?? false,
                                     "Add" => permission?.CanAdd ?? false,
                                     "Edit" => permission?.CanEdit ?? false,
@@ -80,11 +83,11 @@
                                     _ => false
                                 };
                                 <tr>
-                                    <td class="fw-semibold">@module</td>
+                                    <td class="fw-semibold">@module.Name</td>
                                     @foreach (var action in actions)
                                     {
                                         <td class="text-center">
-                                            <input class="form-check-input perm-cb" type="checkbox" name="@Key(module, action)" data-action="@action" checked="@IsChecked(action)" />
+                                            <input class="form-check-input perm-cb" type="checkbox" name="@Key(module.Id, action)" data-action="@action" checked="@IsChecked(action)" />
                                         </td>
                                     }
                                 </tr>

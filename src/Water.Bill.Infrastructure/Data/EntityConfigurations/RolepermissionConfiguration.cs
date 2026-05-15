@@ -15,7 +15,9 @@ public class RolepermissionConfiguration : IEntityTypeConfiguration<Rolepermissi
             .ToTable("rolepermissions")
             .UseCollation("utf8mb4_0900_ai_ci");
         
-        entity.HasIndex(e => new { e.RoleId, e.Module }, "UX_RolePermissions_RoleId_Module").IsUnique();
+        entity.HasIndex(e => new { e.RoleId, e.Module }, "UX_RolePermissions_RoleId_Module");
+        entity.HasIndex(e => e.ModuleId, "IX_RolePermissions_ModuleId");
+        entity.HasIndex(e => new { e.RoleId, e.ModuleId }, "UX_RolePermissions_RoleId_ModuleId").IsUnique();
         
         entity.Property(e => e.CreatedAt)
             .HasMaxLength(6)
@@ -27,6 +29,10 @@ public class RolepermissionConfiguration : IEntityTypeConfiguration<Rolepermissi
             .HasForeignKey(d => d.RoleId)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("FK_RolePermissions_AppRoles_RoleId");
+
+        entity.HasOne(d => d.PermissionModule).WithMany(p => p.Rolepermissions)
+            .HasForeignKey(d => d.ModuleId)
+            .HasConstraintName("FK_RolePermissions_PermissionModules_ModuleId");
         
     }
 }

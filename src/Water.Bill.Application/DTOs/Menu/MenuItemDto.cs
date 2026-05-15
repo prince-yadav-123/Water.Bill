@@ -10,8 +10,11 @@ public class MenuItemDto
     public string? Url { get; set; }
     public string? SectionLabel { get; set; }
     public string? Module { get; set; }
+    public Guid? ModuleId { get; set; }
+    public string? ModuleName { get; set; }
     public int Order { get; set; }
     public bool IsActive { get; set; }
+    public bool ShowInSidebar { get; set; } = true;
     public bool OpenInNewTab { get; set; }
     public IReadOnlyList<MenuItemDto> Children { get; set; } = [];
 }

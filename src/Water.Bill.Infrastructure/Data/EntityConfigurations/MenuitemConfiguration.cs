@@ -18,6 +18,7 @@ public class MenuitemConfiguration : IEntityTypeConfiguration<Menuitem>
         entity.HasIndex(e => e.ParentId, "FK_MenuItems_MenuItems_ParentId");
         
         entity.HasIndex(e => new { e.TenantId, e.ParentId, e.Order }, "IX_MenuItems_TenantId_ParentId_Order");
+        entity.HasIndex(e => e.ModuleId, "IX_MenuItems_ModuleId");
         
         entity.Property(e => e.CreatedAt)
             .HasMaxLength(6)
@@ -29,12 +30,18 @@ public class MenuitemConfiguration : IEntityTypeConfiguration<Menuitem>
         entity.Property(e => e.Label).HasMaxLength(100);
         entity.Property(e => e.Module).HasMaxLength(100);
         entity.Property(e => e.SectionLabel).HasMaxLength(100);
+        entity.Property(e => e.ShowInSidebar)
+            .HasDefaultValueSql("'1'");
         entity.Property(e => e.UpdatedAt).HasMaxLength(6);
         entity.Property(e => e.Url).HasMaxLength(300);
         
         entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
             .HasForeignKey(d => d.ParentId)
             .HasConstraintName("FK_MenuItems_MenuItems_ParentId");
+
+        entity.HasOne(d => d.PermissionModule).WithMany(p => p.Menuitems)
+            .HasForeignKey(d => d.ModuleId)
+            .HasConstraintName("FK_MenuItems_PermissionModules_ModuleId");
         
     }
 }

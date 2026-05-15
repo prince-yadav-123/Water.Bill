@@ -210,6 +210,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<PipeSizeMaster> PipeSizeMasters { get; set; }
 
+    public virtual DbSet<PermissionModule> PermissionModules { get; set; }
+
     public virtual DbSet<ProvisionalDueCertificate> ProvisionalDueCertificates { get; set; }
 
     public virtual DbSet<ReceiptHeadLink> ReceiptHeadLinks { get; set; }

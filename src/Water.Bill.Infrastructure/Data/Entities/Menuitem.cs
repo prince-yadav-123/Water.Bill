@@ -21,9 +21,13 @@ public partial class Menuitem
 
     public string? Module { get; set; }
 
+    public Guid? ModuleId { get; set; }
+
     public int Order { get; set; }
 
     public bool? IsActive { get; set; }
+
+    public bool ShowInSidebar { get; set; } = true;
 
     public bool OpenInNewTab { get; set; }
 
@@ -34,6 +38,8 @@ public partial class Menuitem
     public bool IsDeleted { get; set; }
 
     public virtual ICollection<Menuitem> InverseParent { get; set; } = new List<Menuitem>();
+
+    public virtual PermissionModule? PermissionModule { get; set; }
 
     public virtual Menuitem? Parent { get; set; }
 }

@@ -16,9 +16,9 @@
           "Microsoft.IdentityModel.Tokens": "7.5.2",
           "Pomelo.EntityFrameworkCore.MySql": "8.0.2",
           "System.IdentityModel.Tokens.Jwt": "7.5.2",
-          "Water.Bill.Application": "1.0.0.0",
-          "Water.Bill.Core": "1.0.0.0",
-          "Water.Bill.Infrastructure": "1.0.0.0"
+          "Water.Bill.Application": "1.0.0",
+          "Water.Bill.Core": "1.0.0",
+          "Water.Bill.Infrastructure": "1.0.0"
         },
         "runtime": {
           "Water.Bill.ConsumerPortal.dll": {}
@@ -165,7 +165,14 @@
           }
         }
       },
-      "Water.Bill.Application/1.0.0.0": {
+      "Water.Bill.Application/1.0.0": {
+        "dependencies": {
+          "AutoMapper": "12.0.1",
+          "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
+          "FluentValidation": "11.9.0",
+          "FluentValidation.DependencyInjectionExtensions": "11.9.0",
+          "Water.Bill.Core": "1.0.0"
+        },
         "runtime": {
           "Water.Bill.Application.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -173,7 +180,7 @@
           }
         }
       },
-      "Water.Bill.Core/1.0.0.0": {
+      "Water.Bill.Core/1.0.0": {
         "runtime": {
           "Water.Bill.Core.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -181,7 +188,15 @@
           }
         }
       },
-      "Water.Bill.Infrastructure/1.0.0.0": {
+      "Water.Bill.Infrastructure/1.0.0": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "8.0.2",
+          "Microsoft.IdentityModel.Tokens": "7.5.2",
+          "Pomelo.EntityFrameworkCore.MySql": "8.0.2",
+          "System.IdentityModel.Tokens.Jwt": "7.5.2",
+          "Water.Bill.Application": "1.0.0",
+          "Water.Bill.Core": "1.0.0"
+        },
         "runtime": {
           "Water.Bill.Infrastructure.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -295,18 +310,18 @@
       "path": "system.identitymodel.tokens.jwt/7.5.2",
       "hashPath": "system.identitymodel.tokens.jwt.7.5.2.nupkg.sha512"
     },
-    "Water.Bill.Application/1.0.0.0": {
-      "type": "reference",
+    "Water.Bill.Application/1.0.0": {
+      "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Water.Bill.Core/1.0.0.0": {
-      "type": "reference",
+    "Water.Bill.Core/1.0.0": {
+      "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Water.Bill.Infrastructure/1.0.0.0": {
-      "type": "reference",
+    "Water.Bill.Infrastructure/1.0.0": {
+      "type": "project",
       "serviceable": false,
       "sha512": ""
     }

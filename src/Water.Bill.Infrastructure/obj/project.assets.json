@@ -2740,7 +2740,8 @@
       "Microsoft.IdentityModel.Tokens >= 7.5.2",
       "Pomelo.EntityFrameworkCore.MySql >= 8.0.2",
       "System.IdentityModel.Tokens.Jwt >= 7.5.2",
-      "Water.Bill.Application >= 1.0.0"
+      "Water.Bill.Application >= 1.0.0",
+      "Water.Bill.Core >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2778,6 +2779,9 @@
           "projectReferences": {
             "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.Application\\Water.Bill.Application.csproj": {
               "projectPath": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.Application\\Water.Bill.Application.csproj"
+            },
+            "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.Core\\Water.Bill.Core.csproj": {
+              "projectPath": "C:\\Users\\Lekesh\\Prince Yadav\\Vedang Projects\\Water Bill\\VedangSoft.BPMS\\Water.Bill\\src\\Water.Bill.Core\\Water.Bill.Core.csproj"
             }
           }
         }

@@ -28,8 +28,10 @@ public class PermissionService : IPermissionService
     {
         return await _db.Menuitems
             .AsNoTracking()
-            .Where(x => x.TenantId == tenantId && x.ParentId == null && x.IsActive == true && !x.IsDeleted)
-            .Include(x => x.InverseParent.Where(c => c.IsActive == true && !c.IsDeleted).OrderBy(c => c.Order))
+            .Where(x => x.TenantId == tenantId && x.ParentId == null && x.IsActive == true && x.ShowInSidebar && !x.IsDeleted)
+            .Include(x => x.PermissionModule)
+            .Include(x => x.InverseParent.Where(c => c.IsActive == true && c.ShowInSidebar && !c.IsDeleted).OrderBy(c => c.Order))
+                .ThenInclude(x => x.PermissionModule)
             .OrderBy(x => x.Order)
             .ToListAsync(ct);
     }
@@ -38,18 +40,49 @@ public class PermissionService : IPermissionService
     {
         var modules = await _db.Rolepermissions
             .AsNoTracking()
+            .Include(x => x.PermissionModule)
             .Where(x => x.RoleId == roleId && x.CanView && !x.IsDeleted)
-            .Select(x => x.Module)
+            .Select(x => x.PermissionModule != null && x.PermissionModule.IsActive && !x.PermissionModule.IsDeleted
+                ? x.PermissionModule.Name
+                : x.Module)
             .ToListAsync(ct);
 
-        return [.. modules];
+        return [.. modules.Where(x => !string.IsNullOrWhiteSpace(x))];
+    }
+
+    public async Task<HashSet<Guid>> GetMenuVisibleModuleIdsAsync(Guid roleId, CancellationToken ct = default)
+    {
+        var moduleIds = await _db.Rolepermissions
+            .AsNoTracking()
+            .Include(x => x.PermissionModule)
+            .Where(x => x.RoleId == roleId
+                && x.CanSeeMenu
+                && !x.IsDeleted
+                && x.ModuleId.HasValue
+                && x.PermissionModule != null
+                && x.PermissionModule.IsActive
+                && !x.PermissionModule.IsDeleted)
+            .Select(x => x.ModuleId!.Value)
+            .ToListAsync(ct);
+
+        return [.. moduleIds];
     }
 
     public async Task<bool> HasPermissionAsync(Guid roleId, string module, string action, CancellationToken ct = default)
     {
+        var normalizedModule = module.Trim().ToLower();
         var permission = await _db.Rolepermissions
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.RoleId == roleId && x.Module == module && !x.IsDeleted, ct);
+            .Include(x => x.PermissionModule)
+            .FirstOrDefaultAsync(x => x.RoleId == roleId
+                && !x.IsDeleted
+                && (
+                    (x.PermissionModule != null
+                        && x.PermissionModule.IsActive
+                        && !x.PermissionModule.IsDeleted
+                        && x.PermissionModule.Name.ToLower() == normalizedModule)
+                    || x.Module.ToLower() == normalizedModule),
+                ct);
 
         if (permission is null) return false;
 
@@ -77,14 +110,19 @@ public class PermissionService : IPermissionService
 
         foreach (var item in incoming)
         {
-            var record = existing.FirstOrDefault(x => x.Module == item.Module);
+            var normalizedModule = item.Module.Trim();
+            var record = item.ModuleId.HasValue
+                ? existing.FirstOrDefault(x => x.ModuleId == item.ModuleId.Value)
+                : existing.FirstOrDefault(x => x.Module == normalizedModule);
             if (record is null)
             {
                 _db.Rolepermissions.Add(new Rolepermission
                 {
                     Id = Guid.NewGuid(),
                     RoleId = roleId,
-                    Module = item.Module,
+                    ModuleId = item.ModuleId,
+                    Module = normalizedModule,
+                    CanSeeMenu = item.CanSeeMenu,
                     CanView = item.CanView,
                     CanAdd = item.CanAdd,
                     CanEdit = item.CanEdit,
@@ -100,6 +138,9 @@ public class PermissionService : IPermissionService
                 continue;
             }
 
+            record.ModuleId = item.ModuleId;
+            record.Module = normalizedModule;
+            record.CanSeeMenu = item.CanSeeMenu;
             record.CanView = item.CanView;
             record.CanAdd = item.CanAdd;
             record.CanEdit = item.CanEdit;
@@ -113,8 +154,11 @@ public class PermissionService : IPermissionService
             record.UpdatedAt = DateTime.UtcNow;
         }
 
-        var incomingModules = incoming.Select(x => x.Module).ToHashSet();
-        foreach (var orphan in existing.Where(x => !incomingModules.Contains(x.Module)))
+        var incomingModuleIds = incoming.Where(x => x.ModuleId.HasValue).Select(x => x.ModuleId!.Value).ToHashSet();
+        var incomingModules = incoming.Where(x => !x.ModuleId.HasValue).Select(x => x.Module.Trim()).ToHashSet();
+        foreach (var orphan in existing.Where(x =>
+            (x.ModuleId.HasValue && !incomingModuleIds.Contains(x.ModuleId.Value))
+            || (!x.ModuleId.HasValue && !incomingModules.Contains(x.Module))))
         {
             orphan.IsDeleted = true;
             orphan.UpdatedAt = DateTime.UtcNow;
@@ -133,6 +177,9 @@ public class PermissionService : IPermissionService
         Url = item.Url,
         SectionLabel = item.SectionLabel,
         Module = item.Module,
+        ModuleId = item.ModuleId,
+        ModuleName = item.PermissionModule?.Name,
+        ShowInSidebar = item.ShowInSidebar,
         Order = item.Order,
         IsActive = item.IsActive == true,
         OpenInNewTab = item.OpenInNewTab,

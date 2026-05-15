@@ -14,21 +14,27 @@
 
     IReadOnlyList<MenuItemDto> menuItems = [];
     HashSet<string> viewableModules = [];
+    HashSet<Guid> menuVisibleModuleIds = [];
     if (isAuthenticated && Guid.TryParse(User.FindFirstValue("RoleId"), out var roleId))
     {
         menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
         viewableModules = await PermissionService.GetViewableModulesAsync(roleId);
+        menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
     }
 
-    bool CanSee(MenuItemDto item)
+    bool CanSeeSelf(MenuItemDto item)
     {
-        if (!item.IsActive) return false;
-        if (string.IsNullOrWhiteSpace(item.Module)) return true;
-        return viewableModules.Count == 0 || viewableModules.Contains(item.Module);
+        if (!item.IsActive || !item.ShowInSidebar) return false;
+        if (item.ModuleId.HasValue) return menuVisibleModuleIds.Contains(item.ModuleId.Value);
+        if (!string.IsNullOrWhiteSpace(item.Module)) return viewableModules.Contains(item.Module);
+        return true;
     }
 
     IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
-        => item.Children.Where(CanSee).OrderBy(x => x.Order).ToList();
+        => item.Children.Where(CanSeeSelf).OrderBy(x => x.Order).ToList();
+
+    bool CanRender(MenuItemDto item)
+        => CanSeeSelf(item) || VisibleChildren(item).Count > 0;
 
     bool IsCurrent(MenuItemDto item)
     {
@@ -54,7 +60,7 @@
         <div class="wb-sidebar-backdrop" data-sidebar-dismiss></div>
         <aside class="wb-sidebar" id="adminSidebar">
             <div class="wb-brand">
-                <img class="wb-brand-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" />
+                @* <img class="wb-brand-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" /> *@
                 <div class="wb-brand-copy">
                     <div class="wb-brand-title">Noida Jal</div>
                     <div class="wb-brand-sub">Administration</div>
@@ -66,7 +72,7 @@
                 </button>
             </div>
             <nav class="wb-nav">
-                @foreach (var item in menuItems.Where(CanSee).OrderBy(x => x.Order))
+                @foreach (var item in menuItems.Where(CanRender).OrderBy(x => x.Order))
                 {
                     var children = VisibleChildren(item);
                     var hasChildren = children.Count > 0;
@@ -134,6 +140,15 @@
                     <div class="alert alert-success wb-toast-message">
                         <span class="wb-toast-icon">✓</span>
                         <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-danger wb-toast-message">
+                        <span class="wb-toast-icon">!</span>
+                        <span>@TempData["ErrorMessage"]</span>
                     </div>
                 </div>
             }

@@ -36,6 +36,7 @@ public static class AppConstants
         public const string UserManagement = "UserManagement";
         public const string RolesUsers = "Roles & Users";
         public const string MenuManagement = "Menu Management";
+        public const string PermissionModules = "Permission Modules";
         public const string SecuritySettings = "Security Settings";
         public const string Profile = "Profile";
     }

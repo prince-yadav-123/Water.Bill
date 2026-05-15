@@ -20,3 +20,9 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\ui-theme\Water.Bill.Application.deps.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\ui-theme\Water.Bill.Application.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\ui-theme\Water.Bill.Application.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\api-permission-modules\Water.Bill.Application.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\api-permission-modules\Water.Bill.Application.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\api-permission-modules\Water.Bill.Application.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\consumer-permission-modules\Water.Bill.Application.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\consumer-permission-modules\Water.Bill.Application.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\consumer-permission-modules\Water.Bill.Application.pdb

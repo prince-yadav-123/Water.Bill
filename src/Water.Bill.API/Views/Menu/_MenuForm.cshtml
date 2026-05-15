@@ -1,18 +1,5 @@
 @model MenuFormViewModel
-@using Water.Bill.Core.Common
 @{
-    var modules = new[]
-    {
-        AppConstants.Modules.Dashboard,
-        AppConstants.Modules.Consumers,
-        AppConstants.Modules.Billing,
-        AppConstants.Modules.Payments,
-        AppConstants.Modules.Reports,
-        AppConstants.Modules.RolesUsers,
-        AppConstants.Modules.MenuManagement,
-        AppConstants.Modules.SecuritySettings,
-        AppConstants.Modules.Profile
-    };
     var isEdit = Model.Item.Id != Guid.Empty;
 }
 
@@ -29,14 +16,24 @@
                 <span class="text-danger" asp-validation-for="Item.Label"></span>
             </div>
             <div class="col-md-4">
+                <label class="form-label" asp-for="Item.ModuleId">Permission Module</label>
+                <select class="form-select" asp-for="Item.ModuleId">
+                    <option value="">No permission restriction</option>
+                    @foreach (var module in Model.PermissionModules)
+                    {
+                        <option value="@module.Id">@module.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
                 <label class="form-label" asp-for="Item.Icon">Icon</label>
                 <input class="form-control" asp-for="Item.Icon" placeholder="bi-speedometer2" />
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <label class="form-label" asp-for="Item.Url">URL</label>
                 <input class="form-control" asp-for="Item.Url" placeholder="/Dashboard" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <label class="form-label" asp-for="Item.Order">Order</label>
                 <input class="form-control" asp-for="Item.Order" type="number" min="0" />
             </div>
@@ -51,27 +48,23 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label" asp-for="Item.Module">Permission Module</label>
-                <select class="form-select" asp-for="Item.Module">
-                    <option value="">No permission restriction</option>
-                    @foreach (var module in modules)
-                    {
-                        <option value="@module">@module</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-6">
                 <label class="form-label" asp-for="Item.SectionLabel">Section Label</label>
                 <input class="form-control" asp-for="Item.SectionLabel" placeholder="Administration" />
             </div>
-            <div class="col-md-3 d-flex align-items-end">
+            <div class="col-md-4 d-flex align-items-end">
                 <label class="form-check mb-2">
                     <input class="form-check-input" type="checkbox" name="Item.IsActive" value="true" checked="@(Model.Item.IsActive != false)" />
                     <span class="form-check-label">Active</span>
                 </label>
                 <input type="hidden" name="Item.IsActive" value="false" />
             </div>
-            <div class="col-md-3 d-flex align-items-end">
+            <div class="col-md-4 d-flex align-items-end">
+                <label class="form-check mb-2">
+                    <input class="form-check-input" asp-for="Item.ShowInSidebar" />
+                    <span class="form-check-label">Show in sidebar</span>
+                </label>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
                 <label class="form-check mb-2">
                     <input class="form-check-input" asp-for="Item.OpenInNewTab" />
                     <span class="form-check-label">New tab</span>

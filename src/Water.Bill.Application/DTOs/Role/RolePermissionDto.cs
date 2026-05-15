@@ -4,6 +4,8 @@ public class RolePermissionDto
 {
     public Guid RoleId { get; set; }
     public string Module { get; set; } = string.Empty;
+    public Guid? ModuleId { get; set; }
+    public bool CanSeeMenu { get; set; }
     public bool CanView { get; set; }
     public bool CanAdd { get; set; }
     public bool CanEdit { get; set; }

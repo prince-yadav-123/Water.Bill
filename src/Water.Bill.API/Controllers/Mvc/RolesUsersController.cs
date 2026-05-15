@@ -16,19 +16,6 @@ namespace Water.Bill.API.Controllers.Mvc;
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
 public class RolesUsersController : Controller
 {
-    private static readonly string[] AllModules =
-    [
-        AppConstants.Modules.Dashboard,
-        AppConstants.Modules.Consumers,
-        AppConstants.Modules.Billing,
-        AppConstants.Modules.Payments,
-        AppConstants.Modules.Reports,
-        AppConstants.Modules.RolesUsers,
-        AppConstants.Modules.MenuManagement,
-        AppConstants.Modules.SecuritySettings,
-        AppConstants.Modules.Profile
-    ];
-
     private readonly ApplicationDbContext _db;
     private readonly IPermissionService _permissionService;
     private readonly IAuditLogService _auditLogService;
@@ -209,29 +196,43 @@ public class RolesUsersController : Controller
         ViewData["Title"] = "Permission Matrix";
         var roles = await _db.Approles.Where(x => !x.IsDeleted).OrderBy(x => x.Name).ToListAsync(ct);
         var selectedRole = roleId.HasValue ? roles.FirstOrDefault(x => x.Id == roleId.Value) : roles.FirstOrDefault();
+        var modules = await _db.PermissionModules
+            .Where(x => x.IsActive && !x.IsDeleted)
+            .OrderBy(x => x.Name)
+            .ToListAsync(ct);
         var permissions = selectedRole is null
             ? []
-            : await _db.Rolepermissions.Where(x => x.RoleId == selectedRole.Id && !x.IsDeleted).ToListAsync(ct);
+            : await _db.Rolepermissions
+                .Include(x => x.PermissionModule)
+                .Where(x => x.RoleId == selectedRole.Id && !x.IsDeleted)
+                .ToListAsync(ct);
         return View(new PermissionMatrixViewModel
         {
             Roles = roles,
             SelectedRole = selectedRole,
             Permissions = permissions,
-            Modules = AllModules
+            Modules = modules
         });
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Roles & Users.edit")]
     public async Task<IActionResult> SavePermissions(Guid roleId, CancellationToken ct)
     {
-        var incoming = AllModules.Select(module =>
+        var modules = await _db.PermissionModules
+            .Where(x => x.IsActive && !x.IsDeleted)
+            .OrderBy(x => x.Name)
+            .ToListAsync(ct);
+
+        var incoming = modules.Select(module =>
         {
-            var key = module.Replace(" ", "_").Replace("&", "and");
+            var key = module.Id.ToString("N");
             bool Has(string action) => Request.Form.ContainsKey($"perm_{key}_{action}");
             return new RolePermissionDto
             {
                 RoleId = roleId,
-                Module = module,
+                ModuleId = module.Id,
+                Module = module.Name,
+                CanSeeMenu = Has("SeeMenu"),
                 CanView = Has("View"),
                 CanAdd = Has("Add"),
                 CanEdit = Has("Edit"),

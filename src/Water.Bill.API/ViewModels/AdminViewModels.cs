@@ -28,7 +28,7 @@ public class PermissionMatrixViewModel
     public IReadOnlyList<Approle> Roles { get; set; } = [];
     public Approle? SelectedRole { get; set; }
     public IReadOnlyList<Rolepermission> Permissions { get; set; } = [];
-    public IReadOnlyList<string> Modules { get; set; } = [];
+    public IReadOnlyList<PermissionModule> Modules { get; set; } = [];
 }
 
 public class MenuIndexViewModel
@@ -40,6 +40,7 @@ public class MenuFormViewModel
 {
     public Menuitem Item { get; set; } = new();
     public IReadOnlyList<Menuitem> ParentItems { get; set; } = [];
+    public IReadOnlyList<PermissionModule> PermissionModules { get; set; } = [];
 }
 
 public class MenuReorderViewModel

@@ -30,15 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Water.Bill.Infrastructure">
-      <HintPath>..\Water.Bill.Infrastructure\bin\$(Configuration)\net8.0\Water.Bill.Infrastructure.dll</HintPath>
-    </Reference>
-    <Reference Include="Water.Bill.Application">
-      <HintPath>..\Water.Bill.Application\bin\$(Configuration)\net8.0\Water.Bill.Application.dll</HintPath>
-    </Reference>
-    <Reference Include="Water.Bill.Core">
-      <HintPath>..\Water.Bill.Core\bin\$(Configuration)\net8.0\Water.Bill.Core.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Water.Bill.Application\Water.Bill.Application.csproj" />
+    <ProjectReference Include="..\Water.Bill.Core\Water.Bill.Core.csproj" />
+    <ProjectReference Include="..\Water.Bill.Infrastructure\Water.Bill.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

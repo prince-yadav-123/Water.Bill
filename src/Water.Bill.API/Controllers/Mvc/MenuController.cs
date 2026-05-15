@@ -36,6 +36,7 @@ public class MenuController : Controller
         ViewData["Title"] = "Menu Management";
         var items = await _db.Menuitems
             .Include(x => x.Parent)
+            .Include(x => x.PermissionModule)
             .Where(x => !x.IsDeleted)
             .OrderBy(x => x.ParentId)
             .ThenBy(x => x.Order)
@@ -51,8 +52,9 @@ public class MenuController : Controller
         ViewData["Title"] = "Create Menu Item";
         return View(new MenuFormViewModel
         {
-            Item = new Menuitem { TenantId = DefaultTenantId, IsActive = true },
-            ParentItems = await GetParentItemsAsync(ct)
+            Item = new Menuitem { TenantId = DefaultTenantId, IsActive = true, ShowInSidebar = true },
+            ParentItems = await GetParentItemsAsync(ct),
+            PermissionModules = await GetPermissionModulesAsync(ct)
         });
     }
 
@@ -63,9 +65,11 @@ public class MenuController : Controller
         if (!ModelState.IsValid)
         {
             model.ParentItems = await GetParentItemsAsync(ct);
+            model.PermissionModules = await GetPermissionModulesAsync(ct);
             return View(model);
         }
 
+        await ApplyModuleNameAsync(model.Item, ct);
         model.Item.Id = Guid.NewGuid();
         model.Item.TenantId = model.Item.TenantId == Guid.Empty ? DefaultTenantId : model.Item.TenantId;
         model.Item.CreatedAt = DateTime.UtcNow;
@@ -88,7 +92,8 @@ public class MenuController : Controller
         return View(new MenuFormViewModel
         {
             Item = item,
-            ParentItems = await GetParentItemsAsync(ct, id)
+            ParentItems = await GetParentItemsAsync(ct, id),
+            PermissionModules = await GetPermissionModulesAsync(ct)
         });
     }
 
@@ -99,19 +104,23 @@ public class MenuController : Controller
         if (!ModelState.IsValid)
         {
             model.ParentItems = await GetParentItemsAsync(ct, id);
+            model.PermissionModules = await GetPermissionModulesAsync(ct);
             return View(model);
         }
 
         var item = await _db.Menuitems.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (item is null) return NotFound();
 
+        await ApplyModuleNameAsync(model.Item, ct);
         item.ParentId = model.Item.ParentId == Guid.Empty ? null : model.Item.ParentId;
         item.Label = model.Item.Label;
         item.Icon = model.Item.Icon;
         item.Url = model.Item.Url;
         item.SectionLabel = model.Item.SectionLabel;
+        item.ModuleId = model.Item.ModuleId;
         item.Module = model.Item.Module;
         item.Order = model.Item.Order;
+        item.ShowInSidebar = model.Item.ShowInSidebar;
         item.IsActive = model.Item.IsActive ?? true;
         item.OpenInNewTab = model.Item.OpenInNewTab;
         item.UpdatedAt = DateTime.UtcNow;
@@ -170,6 +179,26 @@ public class MenuController : Controller
             .OrderBy(x => x.Order)
             .ThenBy(x => x.Label)
             .ToListAsync(ct);
+
+    private async Task<IReadOnlyList<PermissionModule>> GetPermissionModulesAsync(CancellationToken ct)
+        => await _db.PermissionModules
+            .Where(x => x.IsActive && !x.IsDeleted)
+            .OrderBy(x => x.Name)
+            .ToListAsync(ct);
+
+    private async Task ApplyModuleNameAsync(Menuitem item, CancellationToken ct)
+    {
+        if (!item.ModuleId.HasValue)
+        {
+            item.Module = null;
+            return;
+        }
+
+        item.Module = await _db.PermissionModules
+            .Where(x => x.Id == item.ModuleId.Value && x.IsActive && !x.IsDeleted)
+            .Select(x => x.Name)
+            .FirstOrDefaultAsync(ct);
+    }
 
     private void ValidateMenuItem(Menuitem item)
     {
