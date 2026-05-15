@@ -1,0 +1,18 @@
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="wb-page-card">
+    <h1 class="h4 mb-3">My Profile</h1>
+    <dl class="row mb-0">
+        <dt class="col-sm-3">Username</dt>
+        <dd class="col-sm-9">@User.Identity?.Name</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@User.FindFirstValue(ClaimTypes.Email)</dd>
+
+        <dt class="col-sm-3">Role</dt>
+        <dd class="col-sm-9">@User.FindFirstValue(ClaimTypes.Role)</dd>
+    </dl>
+</div>

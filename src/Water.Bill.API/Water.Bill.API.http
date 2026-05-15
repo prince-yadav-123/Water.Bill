@@ -1,0 +1,6 @@
+@Water.Bill.API_HostAddress = http://localhost:5264
+
+GET {{Water.Bill.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

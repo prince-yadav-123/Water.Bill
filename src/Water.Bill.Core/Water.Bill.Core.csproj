@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Water.Bill.Core</RootNamespace>
+    <AssemblyName>Water.Bill.Core</AssemblyName>
+    <Description>Water Billing core domain models, enums, constants, and shared primitives.</Description>
+  </PropertyGroup>
+
+</Project>

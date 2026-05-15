@@ -1,0 +1,91 @@
+@using System.Security.Claims
+@using Water.Bill.Application.Interfaces
+@using Water.Bill.Application.DTOs.Menu
+@inject IPermissionService PermissionService
+
+@{
+    var currentPath = Context.Request.Path.Value ?? "";
+    var tenantId = new Guid("50000000-0000-0000-0000-000000000001");
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var userName = User.Identity?.Name ?? "";
+    var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
+    var initial = string.IsNullOrWhiteSpace(userName) ? "U" : userName[..1].ToUpperInvariant();
+
+    IReadOnlyList<MenuItemDto> menuItems = [];
+    HashSet<string> viewableModules = [];
+    if (isAuthenticated && Guid.TryParse(User.FindFirstValue("RoleId"), out var roleId))
+    {
+        menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
+        viewableModules = await PermissionService.GetViewableModulesAsync(roleId);
+    }
+
+    bool CanSee(MenuItemDto item)
+    {
+        if (!item.IsActive) return false;
+        if (string.IsNullOrWhiteSpace(item.Module)) return true;
+        return viewableModules.Count == 0 || viewableModules.Contains(item.Module);
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Water Billing</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="wb-body">
+    @if (isAuthenticated)
+    {
+        <aside class="wb-sidebar">
+            <div class="wb-brand">
+                <div class="wb-brand-icon">WB</div>
+                <div>
+                    <div class="wb-brand-title">Water Billing</div>
+                    <div class="wb-brand-sub">Consumer Services</div>
+                </div>
+            </div>
+            <nav class="wb-nav">
+                @foreach (var item in menuItems.Where(CanSee).OrderBy(x => x.Order))
+                {
+                    <a class="wb-nav-link @(currentPath.StartsWith(item.Url ?? "~~~") ? "active" : "")" href="@(item.Url ?? "#")">
+                        <span>@item.Icon</span>
+                        <span>@item.Label</span>
+                    </a>
+                }
+            </nav>
+            <div class="wb-sidebar-bottom">
+                <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+                <a class="wb-nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+            </div>
+        </aside>
+    }
+
+    <main class="@(isAuthenticated ? "wb-main" : "wb-main-full")">
+        @if (isAuthenticated)
+        {
+            <header class="wb-topbar">
+                <div class="fw-semibold">@ViewData["Title"]</div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge text-bg-primary">@roleName</span>
+                    <span class="wb-avatar" title="@userName">@initial</span>
+                </div>
+            </header>
+        }
+
+        <section class="wb-content">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+            @RenderBody()
+        </section>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
