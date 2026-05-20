@@ -86,6 +86,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ConsumerTransfer> ConsumerTransfers { get; set; }
 
+    public virtual DbSet<ConsumerUser> ConsumerUsers { get; set; }
+
     public virtual DbSet<ConsumerXmlDetail> ConsumerXmlDetails { get; set; }
 
     public virtual DbSet<Dec2024> Dec2024s { get; set; }

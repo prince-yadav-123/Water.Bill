@@ -72,6 +72,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body class="wb-body" data-sidebar-storage-key="water-bill-consumer-sidebar-collapsed">
+    @await Html.PartialAsync("_WaterLoader")
+
     @if (isAuthenticated)
     {
         <div class="wb-sidebar-backdrop" data-sidebar-dismiss></div>
@@ -128,6 +130,10 @@
                 <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">
                     <span class="wb-nav-icon">P</span>
                     <span class="wb-nav-text">Profile</span>
+                </a>
+                <a class="wb-nav-link" asp-controller="Profile" asp-action="UpdateContact">
+                    <span class="wb-nav-icon">U</span>
+                    <span class="wb-nav-text">Update Mobile/Email</span>
                 </a>
                 <a class="wb-nav-link" asp-controller="Account" asp-action="Logout">
                     <span class="wb-nav-icon">L</span>

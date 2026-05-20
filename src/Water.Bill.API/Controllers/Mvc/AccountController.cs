@@ -28,7 +28,7 @@ public class AccountController : Controller
         if (User.Identity?.IsAuthenticated == true)
             return RedirectToAction("Index", "Dashboard");
 
-        ViewData["Title"] = "Admin Login";
+        ViewData["Title"] = "Authority Login";
         ViewData["ReturnUrl"] = returnUrl;
         return View(new LoginRequestDto());
     }
@@ -36,7 +36,7 @@ public class AccountController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginRequestDto model, string? returnUrl = null)
     {
-        ViewData["Title"] = "Admin Login";
+        ViewData["Title"] = "Authority Login";
         ViewData["ReturnUrl"] = returnUrl;
 
         if (!ModelState.IsValid) return View(model);
@@ -44,6 +44,12 @@ public class AccountController : Controller
         try
         {
             var result = await _authService.LoginAsync(model);
+            if (string.Equals(result.User.RoleName, AppConstants.Roles.Consumer, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(string.Empty, "Consumers are not allowed to access Authority Login.");
+                return View(model);
+            }
+
             var sessionToken = await _sessionService.CreateSessionAsync(
                 result.User.Id,
                 HttpContext.Connection.RemoteIpAddress?.ToString(),

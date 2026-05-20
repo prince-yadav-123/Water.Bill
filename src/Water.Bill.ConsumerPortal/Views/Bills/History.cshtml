@@ -1,0 +1,111 @@
+@model ConsumerBillHistoryViewModel
+@{
+    ViewData["Title"] = "Bill History";
+
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string TabClass(string status) => Model.ActiveStatus.Equals(status, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">Consumer Billing</p>
+        <h1>Bill History</h1>
+        <p>Download, share, or pay past bills.</p>
+    </div>
+    <div class="wb-page-actions">
+        <button class="btn btn-outline-primary" type="button" onclick="window.print()">Print</button>
+        <button class="btn btn-outline-primary" type="button" data-export-table="#billHistoryTable" data-export-name="bill-history.csv">Export CSV</button>
+    </div>
+</div>
+
+<form method="get" asp-controller="Bills" asp-action="History" class="wb-history-toolbar">
+    <div class="wb-tabs">
+        <a class="@TabClass("All")" asp-controller="Bills" asp-action="History" asp-route-status="All" asp-route-search="@Model.Search" asp-route-consumerNo="@Model.SelectedConsumerNo">All bills</a>
+        <a class="@TabClass("Due")" asp-controller="Bills" asp-action="History" asp-route-status="Due" asp-route-search="@Model.Search" asp-route-consumerNo="@Model.SelectedConsumerNo">Due</a>
+        <a class="@TabClass("Paid")" asp-controller="Bills" asp-action="History" asp-route-status="Paid" asp-route-search="@Model.Search" asp-route-consumerNo="@Model.SelectedConsumerNo">Paid</a>
+    </div>
+    <input type="hidden" name="status" value="@Model.ActiveStatus" />
+    <div class="wb-history-filters">
+        <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Search by bill ID, period, amount..." />
+        <select class="form-select" name="consumerNo">
+            <option value="">All connections</option>
+            @foreach (var connection in Model.Connections)
+            {
+                <option value="@connection.ConsumerNo" selected="@(Model.SelectedConsumerNo == connection.ConsumerNo)">
+                    @connection.Title (@connection.ConsumerNo)
+                </option>
+            }
+        </select>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+<section class="wb-page-card wb-table-card">
+    @if (Model.Bills.Count == 0)
+    {
+        <div class="wb-empty-state">
+            <strong>No bills found.</strong>
+            <span>Your generated bills will appear here once available.</span>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table wb-history-table mb-0" id="billHistoryTable">
+                <thead>
+                    <tr>
+                        <th>Bill No</th>
+                        <th>Period</th>
+                        <th>Units / Consumption</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Paid On / Due</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bill in Model.Bills)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@bill.BillNo</strong>
+                                <small>@bill.ConsumerNo</small>
+                            </td>
+                            <td>@TextOrDash(bill.BillPeriod)</td>
+                            <td>@TextOrDash(bill.Consumption)</td>
+                            <td><strong>@FormatAmount(bill.Amount)</strong></td>
+                            <td>
+                                <span class="wb-status-pill @(bill.IsPaid ? "paid" : "due")">@(bill.IsPaid ? "Paid" : "Due")</span>
+                            </td>
+                            <td>
+                                @if (bill.IsPaid)
+                                {
+                                    <span>@FormatDate(bill.PaidOn)</span>
+                                }
+                                else
+                                {
+                                    <span>By @FormatDate(bill.DueDate)</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                @if (bill.IsPaid)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" asp-controller="Bills" asp-action="Print" asp-route-billNo="@bill.BillNo" target="_blank">Download</a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-sm btn-primary" asp-controller="Bills" asp-action="Pay">Pay Now</a>
+                                    <a class="btn btn-sm btn-outline-primary" asp-controller="Bills" asp-action="Print" asp-route-billNo="@bill.BillNo" target="_blank">Print</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<p class="wb-list-footnote">Showing @Model.Bills.Count bill@(Model.Bills.Count == 1 ? "" : "s")</p>

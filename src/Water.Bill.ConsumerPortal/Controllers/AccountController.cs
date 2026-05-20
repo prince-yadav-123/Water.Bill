@@ -12,27 +12,28 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 
 public class AccountController : Controller
 {
-    private readonly IAuthService _authService;
     private readonly ISessionService _sessionService;
     private readonly IAuditLogService _auditLogService;
     private readonly IConsumerOtpService _consumerOtpService;
+    private readonly IConsumerAccountService _consumerAccountService;
     private readonly IHostEnvironment _environment;
 
     public AccountController(
-        IAuthService authService,
         ISessionService sessionService,
         IAuditLogService auditLogService,
         IConsumerOtpService consumerOtpService,
+        IConsumerAccountService consumerAccountService,
         IHostEnvironment environment)
     {
-        _authService = authService;
         _sessionService = sessionService;
         _auditLogService = auditLogService;
         _consumerOtpService = consumerOtpService;
+        _consumerAccountService = consumerAccountService;
         _environment = environment;
     }
 
-    [HttpGet]
+    [HttpGet("/Account/Login")]
+    [HttpGet("/Consumer/Login")]
     public async Task<IActionResult> Login(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -42,11 +43,11 @@ public class AccountController : Controller
                 await HttpContext.SignOutAsync(AppConstants.CookieScheme);
                 ViewData["Title"] = "Login";
                 ViewData["ReturnUrl"] = returnUrl;
-                ModelState.AddModelError(string.Empty, "You are not allowed to access the Consumer Portal.");
+                ModelState.AddModelError(string.Empty, "You are not allowed to access Consumer Login.");
                 return View(new ConsumerLoginViewModel());
             }
 
-            return RedirectToAction("Index", "Dashboard");
+            return LocalRedirect("/Consumer/Dashboard");
         }
 
         ViewData["Title"] = "Login";
@@ -54,7 +55,8 @@ public class AccountController : Controller
         return View(new ConsumerLoginViewModel());
     }
 
-    [HttpPost]
+    [HttpPost("/Account/Login")]
+    [HttpPost("/Consumer/Login")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(ConsumerLoginViewModel model, string? returnUrl = null)
     {
@@ -96,46 +98,36 @@ public class AccountController : Controller
 
         try
         {
-            var request = new LoginRequestDto
-            {
-                Username = model.UsernameOrEmail?.Trim() ?? string.Empty,
-                Password = model.Password ?? string.Empty,
-                RememberMe = model.RememberMe
-            };
-
-            var result = await _authService.LoginAsync(request);
-            if (!string.Equals(result.User.RoleName, AppConstants.Roles.Consumer, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(string.Empty, "You are not allowed to access the Consumer Portal.");
-                return View(model);
-            }
-
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            var userAgent = Request.Headers.UserAgent.ToString();
-            var sessionToken = await _sessionService.CreateSessionAsync(result.User.Id, ip, userAgent);
+            var result = await _consumerAccountService.LoginAsync(
+                model.UsernameOrEmail?.Trim() ?? string.Empty,
+                model.Password ?? string.Empty);
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, result.User.Id.ToString()),
-                new(ClaimTypes.Name, result.User.Username),
-                new(ClaimTypes.Email, result.User.Email),
-                new(ClaimTypes.Role, result.User.RoleName),
-                new("FullName", result.User.FullName),
-                new("RoleId", result.User.RoleId.ToString()),
-                new("JwtToken", result.AccessToken),
-                new("SessionToken", sessionToken)
+                new(ClaimTypes.NameIdentifier, result.Id.ToString()),
+                new(ClaimTypes.Name, result.Username ?? result.ConsumerName),
+                new(ClaimTypes.Role, AppConstants.Roles.Consumer),
+                new("FullName", result.ConsumerName),
+                new("ConsumerNo", result.ConsumerNo),
+                new("RoleId", (result.ConsumerRoleId ?? Guid.Empty).ToString())
             };
+
+            if (!string.IsNullOrWhiteSpace(result.Email))
+                claims.Add(new Claim(ClaimTypes.Email, result.Email));
+
+            if (!string.IsNullOrWhiteSpace(result.MobileNo))
+                claims.Add(new Claim("MobileNo", result.MobileNo));
 
             var identity = new ClaimsIdentity(claims, AppConstants.CookieScheme);
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(AppConstants.CookieScheme, principal, new AuthenticationProperties
             {
-                IsPersistent = request.RememberMe,
+                IsPersistent = model.RememberMe,
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
             });
 
-            return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl! : "/Dashboard");
+            return LocalRedirect(ResolvePostLoginRedirect(returnUrl));
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -144,7 +136,8 @@ public class AccountController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpGet("/Account/VerifyOtp")]
+    [HttpGet("/Consumer/VerifyOtp")]
     public IActionResult VerifyOtp(string consumerNo, string? returnUrl = null)
     {
         ViewData["Title"] = "Verify OTP";
@@ -163,7 +156,8 @@ public class AccountController : Controller
         });
     }
 
-    [HttpPost]
+    [HttpPost("/Account/VerifyOtp")]
+    [HttpPost("/Consumer/VerifyOtp")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> VerifyOtp(ConsumerOtpViewModel model, string? returnUrl = null)
     {
@@ -199,7 +193,7 @@ public class AccountController : Controller
                 ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
             });
 
-            return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl! : "/Dashboard");
+            return LocalRedirect(ResolvePostLoginRedirect(returnUrl));
         }
         catch (InvalidOperationException ex)
         {
@@ -260,4 +254,25 @@ public class AccountController : Controller
 
     private int TryGetTempInt(string key)
         => int.TryParse(TempData[key] as string, out var value) ? value : 0;
+
+    private string ResolvePostLoginRedirect(string? returnUrl)
+    {
+        if (!Url.IsLocalUrl(returnUrl))
+            return "/Consumer/Dashboard";
+
+        var path = returnUrl!
+            .Split('?', '#')[0]
+            .TrimEnd('/');
+
+        if (string.IsNullOrWhiteSpace(path) ||
+            path.Equals("/Account/Login", StringComparison.OrdinalIgnoreCase) ||
+            path.Equals("/Consumer/Login", StringComparison.OrdinalIgnoreCase) ||
+            path.Equals("/Account/VerifyOtp", StringComparison.OrdinalIgnoreCase) ||
+            path.Equals("/Consumer/VerifyOtp", StringComparison.OrdinalIgnoreCase))
+        {
+            return "/Consumer/Dashboard";
+        }
+
+        return returnUrl!;
+    }
 }

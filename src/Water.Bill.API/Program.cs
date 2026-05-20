@@ -30,6 +30,7 @@ try
             options.AccessDeniedPath = "/Account/AccessDenied";
             options.ExpireTimeSpan = TimeSpan.FromHours(8);
             options.SlidingExpiration = true;
+            options.Cookie.Name = "WaterBill.Authority.Auth";
             options.Cookie.HttpOnly = true;
             options.Cookie.SameSite = SameSiteMode.Lax;
         });
@@ -48,12 +49,8 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllerRoute(
-        name: "root",
-        pattern: "",
-        defaults: new { controller = "Account", action = "Login" });
-    app.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+        pattern: "{controller=Landing}/{action=Index}/{id?}");
     app.MapControllers();
     app.MapHealthChecks("/health");
 

@@ -1,0 +1,222 @@
+@model ConsumerBillPaymentViewModel
+@{
+    ViewData["Title"] = "Pay Bill";
+
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string StepClass(int step) => Model.Step == step ? "active" : Model.Step > step ? "complete" : "";
+    string MethodLabel(string method) => method switch
+    {
+        "CARD" => "Debit / Credit Card",
+        "NETBANKING" => "Net Banking",
+        "WALLET" => "Wallets",
+        _ => "UPI"
+    };
+}
+
+<div class="wb-pay-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">Consumer Services</p>
+            <h1>Pay water bill</h1>
+            <p>
+                Bill @TextOrDash(Model.Bill?.BillNo)
+                @if (!string.IsNullOrWhiteSpace(Model.Consumer?.PropertyNo))
+                {
+                    <text> - @Model.Consumer.PropertyNo</text>
+                }
+            </p>
+        </div>
+        <a class="btn btn-outline-primary" asp-controller="Bills" asp-action="Current">Cancel</a>
+    </div>
+
+    @if (Model.Bill is null)
+    {
+        <section class="wb-page-card">
+            <div class="wb-empty-state">
+                <strong>@(Model.Message ?? "No payable bill found.")</strong>
+                <span>A current bill is required before the payment flow can start.</span>
+            </div>
+        </section>
+    }
+    else
+    {
+        <div class="wb-pay-stepper">
+            <div class="wb-pay-step @StepClass(1)"><span>1</span><strong>Review amount</strong></div>
+            <div class="wb-pay-step @StepClass(2)"><span>2</span><strong>Choose method</strong></div>
+            <div class="wb-pay-step @StepClass(3)"><span>3</span><strong>Confirm & pay</strong></div>
+        </div>
+
+        <div class="wb-pay-layout">
+            <section class="wb-page-card wb-pay-main-card">
+                @if (Model.Step == 1)
+                {
+                    <div class="wb-card-title-row">
+                        <div>
+                            <p class="wb-kicker">Review Amount</p>
+                            <h2>Bill summary</h2>
+                            <p class="text-muted mb-0">Review your bill details before choosing a payment method.</p>
+                        </div>
+                    </div>
+
+                    <div class="wb-pay-context">
+                        <div><span>Consumer No</span><strong>@TextOrDash(Model.Consumer?.ConsumerNo)</strong></div>
+                        <div><span>Bill No</span><strong>@Model.Bill.BillNo</strong></div>
+                        <div><span>Bill Period</span><strong>@TextOrDash(Model.Bill.BillPeriod)</strong></div>
+                        <div><span>Property</span><strong>@TextOrDash(Model.Consumer?.PropertyNo)</strong></div>
+                    </div>
+
+                    <div class="wb-pay-breakup">
+                        <div><span>Water consumption / charges</span><strong>@FormatAmount(Model.Bill.EstimatedWaterCharges)</strong></div>
+                        <div><span>Consumption reading</span><strong>@TextOrDash(Model.Consumer?.WaterConsumption)</strong></div>
+                        <div><span>Sewerage charges</span><strong>@FormatAmount(Model.Bill.SewerageCharges)</strong></div>
+                        <div><span>Meter rent</span><strong>@FormatAmount(Model.Bill.MeterRent)</strong></div>
+                        <div><span>Service tax / GST / cess</span><strong>@FormatAmount(Model.Bill.CessAmount)</strong></div>
+                        <div><span>Arrear / late fee</span><strong>@FormatAmount(Model.Bill.ArrearAmount + Model.Bill.ArrearInterest)</strong></div>
+                        <div class="wb-pay-total-row"><span>Total payable</span><strong>@FormatAmount(Model.Bill.TotalPayableAmount)</strong></div>
+                    </div>
+
+                    <form method="get" asp-controller="Bills" asp-action="Pay" class="wb-pay-form">
+                        <input type="hidden" name="step" value="2" />
+                        <h3>How much would you like to pay?</h3>
+                        <div class="wb-pay-option-grid">
+                            <label class="wb-pay-option">
+                                <input type="radio" name="amountOption" value="Full" checked="@(Model.AmountOption != "Partial")" />
+                                <span>
+                                    <strong>Full amount</strong>
+                                    <b>@FormatAmount(Model.Bill.TotalPayableAmount)</b>
+                                    <small>Settles the current bill in full.</small>
+                                </span>
+                            </label>
+                            <label class="wb-pay-option">
+                                <input type="radio" name="amountOption" value="Partial" checked="@(Model.AmountOption == "Partial")" />
+                                <span>
+                                    <strong>Partial amount</strong>
+                                    <input class="form-control" type="number" min="1" max="@Model.Bill.TotalPayableAmount" step="0.01" name="partialAmount" value="@(Model.PartialAmount?.ToString("0.##"))" />
+                                    <small>UI ready only. Backend partial payment rules need final gateway validation.</small>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="wb-pay-actions">
+                            <a class="btn btn-outline-primary" asp-controller="Bills" asp-action="Current">Back</a>
+                            <button class="btn btn-primary" type="submit">Continue</button>
+                        </div>
+                    </form>
+                }
+                else if (Model.Step == 2)
+                {
+                    <div class="wb-card-title-row">
+                        <div>
+                            <p class="wb-kicker">Choose Method</p>
+                            <h2>Select payment method</h2>
+                            <p class="text-muted mb-0">Payment gateway posting is intentionally kept disabled in this phase.</p>
+                        </div>
+                    </div>
+
+                    <form method="get" asp-controller="Bills" asp-action="Confirm" class="wb-pay-form">
+                        <input type="hidden" name="amountOption" value="@Model.AmountOption" />
+                        <input type="hidden" name="partialAmount" value="@Model.PartialAmount" />
+
+                        <div class="wb-method-list">
+                            <label class="wb-method-card @(Model.PaymentMethod == "UPI" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="UPI" checked="@(Model.PaymentMethod == "UPI")" />
+                                <span class="wb-method-icon">UPI</span>
+                                <span><strong>UPI</strong><small>GPay, PhonePe, BHIM, or any UPI app</small></span>
+                            </label>
+                            <label class="wb-method-card @(Model.PaymentMethod == "CARD" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="CARD" checked="@(Model.PaymentMethod == "CARD")" />
+                                <span class="wb-method-icon">CC</span>
+                                <span><strong>Debit / Credit Card</strong><small>Visa, Mastercard, RuPay accepted</small></span>
+                            </label>
+                            <label class="wb-method-card @(Model.PaymentMethod == "NETBANKING" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="NETBANKING" checked="@(Model.PaymentMethod == "NETBANKING")" />
+                                <span class="wb-method-icon">NB</span>
+                                <span><strong>Net Banking</strong><small>Bank selection will be connected with gateway later</small></span>
+                            </label>
+                            <label class="wb-method-card @(Model.PaymentMethod == "WALLET" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="WALLET" checked="@(Model.PaymentMethod == "WALLET")" />
+                                <span class="wb-method-icon">WL</span>
+                                <span><strong>Wallets</strong><small>Paytm, Amazon Pay, Mobikwik</small></span>
+                            </label>
+                        </div>
+
+                        <div class="wb-method-input">
+                            <label class="form-label">Payment identifier</label>
+                            <input class="form-control" name="paymentIdentifier" value="@Model.PaymentIdentifier" placeholder="Example: name@bank or masked card reference" />
+                            <small>This is only captured for UI testing in this phase.</small>
+                        </div>
+
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" name="saveMethod" value="true" checked="@Model.SaveMethod" />
+                            <input type="hidden" name="saveMethod" value="false" />
+                            <span>Save this method for faster checkout next time</span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" name="setupAutoPay" value="true" checked="@Model.SetupAutoPay" />
+                            <input type="hidden" name="setupAutoPay" value="false" />
+                            <span>Set up auto-pay when gateway support is enabled</span>
+                        </label>
+
+                        <div class="wb-pay-actions">
+                            <a class="btn btn-outline-primary" asp-controller="Bills" asp-action="Pay" asp-route-step="1" asp-route-amountOption="@Model.AmountOption" asp-route-partialAmount="@Model.PartialAmount">Back</a>
+                            <button class="btn btn-primary" type="submit">Continue</button>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <div class="wb-card-title-row">
+                        <div>
+                            <p class="wb-kicker">Confirm & Pay</p>
+                            <h2>Confirm payment</h2>
+                            <p class="text-muted mb-0">Review the final summary before moving to payment gateway integration.</p>
+                        </div>
+                    </div>
+
+                    @if (TempData["SuccessMessage"] is not null)
+                    {
+                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    }
+
+                    <div class="wb-confirm-panel">
+                        <div><span>Paying for</span><strong>@TextOrDash(Model.Consumer?.PropertyNo)</strong></div>
+                        <div><span>Bill number</span><strong>@Model.Bill.BillNo</strong></div>
+                        <div><span>Bill period</span><strong>@TextOrDash(Model.Bill.BillPeriod)</strong></div>
+                        <div><span>Payment method</span><strong>@MethodLabel(Model.PaymentMethod) @(!string.IsNullOrWhiteSpace(Model.PaymentIdentifier) ? $"- {Model.PaymentIdentifier}" : "")</strong></div>
+                    </div>
+
+                    <div class="wb-confirm-amount">
+                        <span>Amount</span>
+                        <strong>@FormatAmount(Model.SelectedAmount)</strong>
+                        <small>Convenience fee: @FormatAmount(Model.ConvenienceFee)</small>
+                    </div>
+
+                    <p class="wb-secure-note">Secured payment posting, gateway order creation, callbacks, and paid-status updates are reserved for the next integration phase.</p>
+
+                    <form method="post" asp-controller="Bills" asp-action="ConfirmPayment" class="wb-pay-actions">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="amountOption" value="@Model.AmountOption" />
+                        <input type="hidden" name="partialAmount" value="@Model.PartialAmount" />
+                        <input type="hidden" name="paymentMethod" value="@Model.PaymentMethod" />
+                        <input type="hidden" name="paymentIdentifier" value="@Model.PaymentIdentifier" />
+                        <input type="hidden" name="saveMethod" value="@Model.SaveMethod.ToString().ToLowerInvariant()" />
+                        <input type="hidden" name="setupAutoPay" value="@Model.SetupAutoPay.ToString().ToLowerInvariant()" />
+                        <a class="btn btn-outline-primary" asp-controller="Bills" asp-action="Pay" asp-route-step="2" asp-route-amountOption="@Model.AmountOption" asp-route-partialAmount="@Model.PartialAmount" asp-route-paymentMethod="@Model.PaymentMethod" asp-route-paymentIdentifier="@Model.PaymentIdentifier">Back</a>
+                        <button class="btn btn-primary" type="submit">Pay @FormatAmount(Model.FinalPayableAmount)</button>
+                    </form>
+                }
+            </section>
+
+            <aside class="wb-page-card wb-order-summary">
+                <h2>Order summary</h2>
+                <div class="wb-order-lines">
+                    <div><span>Bill amount</span><strong>@FormatAmount(Model.SelectedAmount)</strong></div>
+                    <div><span>Discount</span><strong>@FormatAmount(0)</strong></div>
+                    <div><span>Convenience fee</span><strong>@FormatAmount(Model.ConvenienceFee)</strong></div>
+                    <div class="total"><span>You pay</span><strong>@FormatAmount(Model.FinalPayableAmount)</strong></div>
+                </div>
+                <div class="wb-green-note">Online payment helps reduce paper usage and keeps receipts easy to track.</div>
+            </aside>
+        </div>
+    }
+</div>

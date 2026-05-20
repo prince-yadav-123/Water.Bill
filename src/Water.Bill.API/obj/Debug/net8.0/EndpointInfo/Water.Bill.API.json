@@ -35,6 +35,30 @@
           }
         }
       }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Landing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Landing": {
+      "get": {
+        "tags": [
+          "Landing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
     }
   },
   "components": {

@@ -1,35 +1,252 @@
+@model Water.Bill.ConsumerPortal.ViewModels.ConsumerDashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
+
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string FormatAmount(double value) => $"INR {value:N0}";
+    var consumerName = Model.Consumer?.Name ?? User.Identity?.Name ?? "Consumer";
 }
 
-<div class="row g-3">
-    <div class="col-md-3">
-        <div class="wb-stat">
-            <span class="text-muted">Consumers</span>
-            <strong>0</strong>
+<div class="wb-dashboard-shell">
+    <div class="wb-dashboard-intro">
+        <div>
+            <p class="wb-kicker">Consumer Dashboard</p>
+            <h1>Good day, @consumerName</h1>
+            <p>Here is a quick look at your water connection, bill, and payment activity.</p>
         </div>
+        <a class="btn btn-outline-primary" asp-controller="Profile" asp-action="Index">View Full Profile</a>
     </div>
-    <div class="col-md-3">
-        <div class="wb-stat">
-            <span class="text-muted">Bills Generated</span>
-            <strong>0</strong>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="wb-stat">
-            <span class="text-muted">Payments</span>
-            <strong>0</strong>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="wb-stat">
-            <span class="text-muted">Pending Dues</span>
-            <strong>0</strong>
-        </div>
-    </div>
-</div>
 
-<div class="wb-page-card mt-4">
-    <h2 class="h5">Noida Jal workspace is ready</h2>
-    <p class="text-muted mb-0">The login, session, role, menu, and permission foundation is configured. Billing modules can now be added cleanly on top.</p>
+    <section class="wb-bill-hero">
+        <div class="wb-bill-hero-main">
+            <span class="wb-hero-pill">@TextOrDash(Model.CurrentBill?.BillNo)</span>
+            <span class="wb-hero-label">Amount payable</span>
+            <strong>@FormatAmount(Model.CurrentBill?.TotalPayableAmount ?? 0)</strong>
+            <span class="wb-hero-meta">
+                Due by @FormatDate(Model.CurrentBill?.DueDate)
+                @if (!string.IsNullOrWhiteSpace(Model.CurrentBill?.BillPeriod))
+                {
+                    <text> · @Model.CurrentBill.BillPeriod</text>
+                }
+            </span>
+            <div class="wb-hero-actions">
+                @if (Model.CurrentBill is not null)
+                {
+                    <a class="btn btn-light" asp-controller="Bills" asp-action="Pay">Pay Now</a>
+                }
+                else
+                {
+                    <button class="btn btn-light" disabled>Pay Now</button>
+                }
+                @if (Model.CurrentBill is not null)
+                {
+                    <a class="btn btn-outline-light" asp-controller="Bills" asp-action="Print" asp-route-billNo="@Model.CurrentBill.BillNo" target="_blank">Download Bill</a>
+                }
+                else
+                {
+                    <a class="btn btn-outline-light disabled" aria-disabled="true" href="#">Download Bill</a>
+                }
+            </div>
+        </div>
+        <div class="wb-bill-hero-side">
+            <span>Connection</span>
+            <strong>@TextOrDash(Model.Consumer?.ConsumerNo ?? Model.ConsumerNo)</strong>
+            <small>@TextOrDash(Model.Consumer?.PropertySummary)</small>
+            <div class="wb-hero-status">
+                <span>@TextOrDash(Model.Consumer?.ConnectionType)</span>
+                <span>@Model.Metrics.ServiceStatus</span>
+            </div>
+        </div>
+    </section>
+
+    @if (Model.Alerts.Count > 0)
+    {
+        <div class="wb-alert-grid">
+            @foreach (var alert in Model.Alerts)
+            {
+                <div class="wb-dashboard-alert wb-alert-@alert.Type">
+                    <strong>@alert.Title</strong>
+                    <span>@alert.Message</span>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="wb-metric-grid">
+        <div class="wb-metric-card">
+            <span>Total Due</span>
+            <strong>@FormatAmount(Model.Metrics.TotalDue)</strong>
+            <small>Current payable balance</small>
+        </div>
+        <div class="wb-metric-card">
+            <span>Last Payment</span>
+            <strong>@FormatAmount(Model.Metrics.LastPaymentAmount)</strong>
+            <small>@FormatDate(Model.Metrics.LastPaymentDate)</small>
+        </div>
+        <div class="wb-metric-card">
+            <span>Service Status</span>
+            <strong>@Model.Metrics.ServiceStatus</strong>
+            <small>@TextOrDash(Model.Consumer?.Category)</small>
+        </div>
+        <div class="wb-metric-card">
+            <span>Recent Bills</span>
+            <strong>@Model.Metrics.RecentBillCount</strong>
+            <small>Latest records available</small>
+        </div>
+    </div>
+
+    <div class="wb-dashboard-panels">
+        <section class="wb-page-card">
+            <div class="wb-card-title-row">
+                <div>
+                    <p class="wb-kicker">Consumer Summary</p>
+                    <h2>@consumerName</h2>
+                </div>
+                <span class="wb-dashboard-avatar">@consumerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Aggregate("", (a, p) => a + p[0]).ToUpperInvariant()</span>
+            </div>
+
+            <dl class="wb-info-grid">
+                <div><dt>Consumer No</dt><dd>@TextOrDash(Model.Consumer?.ConsumerNo ?? Model.ConsumerNo)</dd></div>
+                <div><dt>Mobile</dt><dd>@TextOrDash(Model.Consumer?.MobileNo)</dd></div>
+                <div><dt>Email</dt><dd>@TextOrDash(Model.Consumer?.Email)</dd></div>
+                <div><dt>Sector</dt><dd>@TextOrDash(Model.Consumer?.Sector)</dd></div>
+                <div><dt>Block / Flat</dt><dd>@($"{TextOrDash(Model.Consumer?.Block)} / {TextOrDash(Model.Consumer?.FlatNo)}")</dd></div>
+                <div><dt>Connection Type</dt><dd>@TextOrDash(Model.Consumer?.ConnectionType)</dd></div>
+            </dl>
+        </section>
+
+        <section class="wb-page-card">
+            <div class="wb-card-title-row">
+                <div>
+                    <p class="wb-kicker">Current Bill</p>
+                    <h2>@TextOrDash(Model.CurrentBill?.BillNo)</h2>
+                </div>
+                <span class="badge @(Model.CurrentBill?.PaymentStatus == "Paid" ? "text-bg-success" : "text-bg-primary")">
+                    @(Model.CurrentBill?.PaymentStatus ?? "Not available")
+                </span>
+            </div>
+
+            @if (Model.CurrentBill is null)
+            {
+                <div class="wb-empty-state">
+                    <strong>No current bill found.</strong>
+                    <span>Bill details will appear here once available.</span>
+                </div>
+            }
+            else
+            {
+                <dl class="wb-info-grid">
+                    <div><dt>Bill Period</dt><dd>@TextOrDash(Model.CurrentBill.BillPeriod)</dd></div>
+                    <div><dt>Due Date</dt><dd>@FormatDate(Model.CurrentBill.DueDate)</dd></div>
+                    <div><dt>Current Amount</dt><dd>@FormatAmount(Model.CurrentBill.CurrentAmount)</dd></div>
+                    <div><dt>Arrear</dt><dd>@FormatAmount(Model.CurrentBill.ArrearAmount)</dd></div>
+                    <div><dt>Total Payable</dt><dd>@FormatAmount(Model.CurrentBill.TotalPayableAmount)</dd></div>
+                    <div><dt>Last Paid</dt><dd>@FormatAmount(Model.CurrentBill.LastPaidAmount)</dd></div>
+                </dl>
+            }
+        </section>
+    </div>
+
+    <div class="wb-dashboard-panels wb-dashboard-panels-wide">
+        <section class="wb-page-card">
+            <div class="wb-card-title-row">
+                <div>
+                    <p class="wb-kicker">Recent Bills</p>
+                    <h2>Latest bill records</h2>
+                </div>
+            </div>
+
+            @if (Model.RecentBills.Count == 0)
+            {
+                <div class="wb-empty-state">
+                    <strong>No recent bills found.</strong>
+                    <span>Your bill records will appear here after generation.</span>
+                </div>
+            }
+            else
+            {
+                <div class="wb-mini-list">
+                    @foreach (var bill in Model.RecentBills)
+                    {
+                        <div class="wb-mini-row">
+                            <span class="wb-mini-icon">B</span>
+                            <div>
+                                <strong>@bill.BillNo</strong>
+                                <small>@TextOrDash(bill.BillPeriod)</small>
+                            </div>
+                            <div class="text-end">
+                                <strong>@FormatAmount(bill.Amount)</strong>
+                                <small>Due @FormatDate(bill.DueDate)</small>
+                            </div>
+                            <span class="badge text-bg-secondary">@bill.Status</span>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="wb-page-card">
+            <div class="wb-card-title-row">
+                <div>
+                    <p class="wb-kicker">Recent Payments</p>
+                    <h2>Latest payment activity</h2>
+                </div>
+            </div>
+
+            @if (Model.RecentPayments.Count == 0)
+            {
+                <div class="wb-empty-state">
+                    <strong>No recent payments found.</strong>
+                    <span>Your latest online or offline payments will appear here.</span>
+                </div>
+            }
+            else
+            {
+                <div class="wb-mini-list">
+                    @foreach (var payment in Model.RecentPayments)
+                    {
+                        <div class="wb-mini-row">
+                            <span class="wb-mini-icon">P</span>
+                            <div>
+                                <strong>@payment.ReferenceNo</strong>
+                                <small>@payment.Source @(!string.IsNullOrWhiteSpace(payment.BankName) ? $"via {payment.BankName}" : "")</small>
+                            </div>
+                            <div class="text-end">
+                                <strong>@FormatAmount(payment.Amount)</strong>
+                                <small>@FormatDate(payment.PaymentDate)</small>
+                            </div>
+                            <span class="badge text-bg-secondary">@payment.Status</span>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+
+    <section class="wb-page-card">
+        <div class="wb-card-title-row">
+            <div>
+                <p class="wb-kicker">Quick Actions</p>
+                <h2>Common tasks</h2>
+            </div>
+        </div>
+
+        <div class="wb-action-grid">
+            <a class="wb-action-card" asp-controller="Bills" asp-action="Current"><span class="wb-action-icon">B</span><strong>Current Bill</strong><small>View bill details</small></a>
+            <a class="wb-action-card" asp-controller="Bills" asp-action="History"><span class="wb-action-icon">H</span><strong>Bill History</strong><small>Recent and past bills</small></a>
+            <a class="wb-action-card" asp-controller="Profile" asp-action="Index"><span class="wb-action-icon">P</span><strong>My Profile</strong><small>Account and connection details</small></a>
+            @if (Model.CurrentBill is not null)
+            {
+                <a class="wb-action-card" asp-controller="Bills" asp-action="Print" asp-route-billNo="@Model.CurrentBill.BillNo" target="_blank"><span class="wb-action-icon">D</span><strong>Download Bill</strong><small>Print or save latest bill</small></a>
+            }
+            else
+            {
+                <a class="wb-action-card is-disabled" href="#" aria-disabled="true"><span class="wb-action-icon">D</span><strong>Download Bill</strong><small>Print or save latest bill</small></a>
+            }
+            <a class="wb-action-card is-disabled" href="#" aria-disabled="true"><span class="wb-action-icon">U</span><strong>Update Mobile/Email</strong><small>Coming soon</small></a>
+            <a class="wb-action-card is-disabled" href="#" aria-disabled="true"><span class="wb-action-icon">N</span><strong>NDC / No Dues</strong><small>Coming soon</small></a>
+            <a class="wb-action-card is-disabled" href="#" aria-disabled="true"><span class="wb-action-icon">A</span><strong>Application Status</strong><small>Coming soon</small></a>
+        </div>
+    </section>
 </div>

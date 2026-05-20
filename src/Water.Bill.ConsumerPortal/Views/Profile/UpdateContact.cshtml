@@ -1,0 +1,125 @@
+@model UpdateContactViewModel
+@{
+    ViewData["Title"] = "Update Mobile/Email";
+
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+}
+
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">Account Security</p>
+        <h1>Update Mobile/Email</h1>
+        <p>Verify through OTP sent to your currently registered mobile number before saving changes.</p>
+    </div>
+    <div class="wb-page-actions">
+        <a class="btn btn-outline-primary" asp-controller="Profile" asp-action="Index">Back to Profile</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-contact-update-card">
+    <div class="wb-contact-current">
+        <div>
+            <span>Consumer</span>
+            <strong>@Model.ConsumerName</strong>
+            <small>@Model.ConsumerNo</small>
+        </div>
+        <div>
+            <span>Current mobile</span>
+            <strong>@TextOrDash(Model.CurrentMobileNo)</strong>
+            <small>OTP will be sent here</small>
+        </div>
+        <div>
+            <span>Current email</span>
+            <strong>@TextOrDash(Model.CurrentEmail)</strong>
+            <small>Stored on consumer profile</small>
+        </div>
+    </div>
+
+    @if (!Model.CanSendOtp)
+    {
+        <div class="alert alert-danger mb-0">
+            <span>Mobile number is not registered for this consumer. Please contact support.</span>
+        </div>
+    }
+    else
+    {
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-success">
+                <span>@TempData["InfoMessage"]</span>
+            </div>
+        }
+
+        <form asp-action="SendContactUpdateOtp" method="post" class="wb-contact-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="wb-form-grid">
+                <div>
+                    <label asp-for="NewMobileNo" class="form-label"></label>
+                    <input asp-for="NewMobileNo" class="form-control" inputmode="numeric" maxlength="10" placeholder="Enter new mobile number" readonly="@Model.IsOtpSent" />
+                    <span asp-validation-for="NewMobileNo" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="NewEmail" class="form-label"></label>
+                    <input asp-for="NewEmail" class="form-control" maxlength="50" placeholder="Enter new email address" readonly="@Model.IsOtpSent" />
+                    <span asp-validation-for="NewEmail" class="text-danger"></span>
+                </div>
+            </div>
+
+            @if (!Model.IsOtpSent)
+            {
+                <div class="wb-contact-actions">
+                    <button class="btn btn-primary" type="submit">Send OTP</button>
+                    <a class="btn btn-outline-primary" asp-controller="Profile" asp-action="Index">Cancel</a>
+                </div>
+            }
+        </form>
+
+        @if (Model.IsOtpSent)
+        {
+            <form asp-action="VerifyContactUpdate" method="post" class="wb-contact-form wb-otp-panel">
+                @Html.AntiForgeryToken()
+                <input asp-for="NewMobileNo" type="hidden" />
+                <input asp-for="NewEmail" type="hidden" />
+                <input asp-for="IsOtpSent" type="hidden" />
+
+                <div class="wb-otp-banner">
+                    <div>
+                        <span>OTP sent to</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.MaskedMobileNo) ? "registered mobile" : Model.MaskedMobileNo)</strong>
+                    </div>
+                    @if (Model.ExpiresAt.HasValue)
+                    {
+                        <small>Expires at @Model.ExpiresAt.Value.ToLocalTime().ToString("hh:mm tt")</small>
+                    }
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.DevelopmentOtp))
+                {
+                    <div class="alert alert-info">
+                        <span>Development OTP: <strong>@Model.DevelopmentOtp</strong></span>
+                    </div>
+                }
+
+                <div class="wb-form-grid single">
+                    <div>
+                        <label asp-for="Otp" class="form-label required"></label>
+                        <input asp-for="Otp" class="form-control wb-otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+                        <span asp-validation-for="Otp" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="wb-contact-actions">
+                    <button class="btn btn-primary" type="submit">Verify & Update</button>
+                    <button class="btn btn-outline-primary" type="submit" formaction="@Url.Action("SendContactUpdateOtp", "Profile")">Resend OTP</button>
+                    <a class="btn btn-outline-primary" asp-controller="Profile" asp-action="UpdateContact">Change details</a>
+                </div>
+            </form>
+        }
+    }
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

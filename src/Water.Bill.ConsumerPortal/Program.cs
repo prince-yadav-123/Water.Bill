@@ -16,6 +16,7 @@ builder.Services.AddAuthentication(AppConstants.CookieScheme)
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
+        options.Cookie.Name = "WaterBill.ConsumerPortal.Auth";
         options.Cookie.HttpOnly = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
     });
@@ -34,6 +35,15 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/", (HttpContext context) =>
+{
+    var target = context.User.Identity?.IsAuthenticated == true
+        ? "/Consumer/Dashboard"
+        : "/Account/Login";
+
+    return Results.Redirect(target);
+});
 
 app.MapControllerRoute(
     name: "default",

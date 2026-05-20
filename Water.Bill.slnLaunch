@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Water Bill - API and Consumer Login",
+    "Projects": [
+      {
+        "Path": "src\\Water.Bill.API\\Water.Bill.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\Water.Bill.ConsumerPortal\\Water.Bill.ConsumerPortal.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

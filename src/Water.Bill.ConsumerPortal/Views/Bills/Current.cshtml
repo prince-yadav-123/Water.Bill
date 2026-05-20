@@ -1,0 +1,116 @@
+@model ConsumerBillViewModel
+@{
+    ViewData["Title"] = "Current Bill";
+
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string FormatAmount(double value) => $"INR {value:N2}";
+}
+
+<div class="wb-dashboard-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">Consumer Services</p>
+            <h1>Current Bill</h1>
+            <p>View the latest generated bill for your linked consumer account.</p>
+        </div>
+        <div class="wb-actions">
+            <a class="btn btn-outline-primary" asp-controller="Dashboard" asp-action="Index">Back to Dashboard</a>
+            @if (Model.Bill is not null)
+            {
+                <a class="btn btn-primary" asp-controller="Bills" asp-action="Pay">Pay Bill</a>
+                <a class="btn btn-primary" asp-controller="Bills" asp-action="Print" asp-route-billNo="@Model.Bill.BillNo" target="_blank">Print / Download</a>
+            }
+        </div>
+    </div>
+
+    @if (Model.Bill is null)
+    {
+        <section class="wb-page-card">
+            <div class="wb-empty-state">
+                <strong>@(Model.Message ?? "No current bill found.")</strong>
+                <span>Your current bill details will appear here once a bill is generated for your consumer number.</span>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="wb-bill-detail-hero">
+            <div>
+                <span class="wb-hero-pill">@Model.Bill.BillNo</span>
+                <span class="wb-hero-label">Total payable</span>
+                <strong>@FormatAmount(Model.Bill.TotalPayableAmount)</strong>
+                <span class="wb-hero-meta">Due by @FormatDate(Model.Bill.DueDate) · @TextOrDash(Model.Bill.BillPeriod)</span>
+            </div>
+            <div class="wb-bill-status-panel">
+                <span>Status</span>
+                <strong>@Model.Bill.PaymentStatus</strong>
+                <small>Challan: @TextOrDash(Model.Bill.ChallanNo)</small>
+            </div>
+        </section>
+
+        <div class="wb-dashboard-panels">
+            <section class="wb-page-card">
+                <div class="wb-card-title-row">
+                    <div>
+                        <p class="wb-kicker">Consumer Details</p>
+                        <h2>@TextOrDash(Model.Consumer?.Name)</h2>
+                    </div>
+                    <span class="badge text-bg-secondary">@TextOrDash(Model.Consumer?.ConsumerNo)</span>
+                </div>
+
+                <dl class="wb-info-grid">
+                    <div><dt>Consumer No</dt><dd>@TextOrDash(Model.Consumer?.ConsumerNo)</dd></div>
+                    <div><dt>Connection Type</dt><dd>@TextOrDash(Model.Consumer?.ConnectionType)</dd></div>
+                    <div><dt>Category</dt><dd>@TextOrDash(Model.Consumer?.Category)</dd></div>
+                    <div><dt>Pipe Size</dt><dd>@(Model.Consumer?.PipeSize?.ToString() ?? "-")</dd></div>
+                    <div><dt>Mobile</dt><dd>@TextOrDash(Model.Consumer?.MobileNo)</dd></div>
+                    <div><dt>Email</dt><dd>@TextOrDash(Model.Consumer?.Email)</dd></div>
+                    <div><dt>Property</dt><dd>@TextOrDash(Model.Consumer?.PropertyNo)</dd></div>
+                    <div><dt>Address</dt><dd>@TextOrDash(Model.Consumer?.Address)</dd></div>
+                </dl>
+            </section>
+
+            <section class="wb-page-card">
+                <div class="wb-card-title-row">
+                    <div>
+                        <p class="wb-kicker">Bill Information</p>
+                        <h2>@Model.Bill.BillNo</h2>
+                    </div>
+                    <span class="badge @(Model.Bill.IsPaid ? "text-bg-success" : "text-bg-primary")">@Model.Bill.PaymentStatus</span>
+                </div>
+
+                <dl class="wb-info-grid">
+                    <div><dt>Bill Date</dt><dd>@FormatDate(Model.Bill.BillDate)</dd></div>
+                    <div><dt>Due Date</dt><dd>@FormatDate(Model.Bill.DueDate)</dd></div>
+                    <div><dt>Bill Period</dt><dd>@TextOrDash(Model.Bill.BillPeriod)</dd></div>
+                    <div><dt>Division</dt><dd>@TextOrDash(Model.Bill.Division)</dd></div>
+                    <div><dt>Last Paid</dt><dd>@FormatAmount(Model.Bill.LastPaidAmount)</dd></div>
+                    <div><dt>Paid Date</dt><dd>@FormatDate(Model.Bill.PaidDate)</dd></div>
+                </dl>
+            </section>
+        </div>
+
+        <section class="wb-page-card">
+            <div class="wb-card-title-row">
+                <div>
+                    <p class="wb-kicker">Amount Breakup</p>
+                    <h2>Bill charges and dues</h2>
+                </div>
+            </div>
+
+            <div class="wb-bill-breakup">
+                <div><span>Minimum / Current Charges</span><strong>@FormatAmount(Model.Bill.CurrentAmount)</strong></div>
+                <div><span>Minimum Rate</span><strong>@FormatAmount(Model.Bill.MinimumRate)</strong></div>
+                <div><span>Cess / Surcharge</span><strong>@FormatAmount(Model.Bill.CessAmount)</strong></div>
+                <div><span>Arrear</span><strong>@FormatAmount(Model.Bill.ArrearAmount)</strong></div>
+                <div><span>Arrear Interest</span><strong>@FormatAmount(Model.Bill.ArrearInterest)</strong></div>
+                <div><span>Last Bill Extra</span><strong>@FormatAmount(Model.Bill.LastBillExtra)</strong></div>
+                <div><span>Rebate</span><strong>@FormatAmount(Model.Bill.RebateAmount)</strong></div>
+                <div><span>Advance</span><strong>@FormatAmount(Model.Bill.AdvanceAmount)</strong></div>
+                <div class="wb-bill-breakup-total"><span>Total Payable</span><strong>@FormatAmount(Model.Bill.TotalPayableAmount)</strong></div>
+                <div class="wb-bill-breakup-total"><span>After Due Date</span><strong>@FormatAmount(Model.Bill.AfterDueDateAmount)</strong></div>
+            </div>
+        </section>
+    }
+</div>

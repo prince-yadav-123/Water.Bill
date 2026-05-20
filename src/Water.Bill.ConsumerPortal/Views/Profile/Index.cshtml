@@ -1,18 +1,123 @@
-@using System.Security.Claims
+@model ConsumerProfileViewModel
 @{
-    ViewData["Title"] = "My Profile";
+    ViewData["Title"] = "Profile & Connections";
+
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
 }
 
-<div class="wb-page-card">
-    <h1 class="h4 mb-3">My Profile</h1>
-    <dl class="row mb-0">
-        <dt class="col-sm-3">Username</dt>
-        <dd class="col-sm-9">@User.Identity?.Name</dd>
-
-        <dt class="col-sm-3">Email</dt>
-        <dd class="col-sm-9">@User.FindFirstValue(ClaimTypes.Email)</dd>
-
-        <dt class="col-sm-3">Role</dt>
-        <dd class="col-sm-9">@User.FindFirstValue(ClaimTypes.Role)</dd>
-    </dl>
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">Account</p>
+        <h1>Profile & Connections</h1>
+        <p>Manage your account, properties, and preferences.</p>
+    </div>
 </div>
+
+<section class="wb-page-card wb-profile-summary-card">
+    <div class="wb-profile-large-avatar">@Model.Initials</div>
+    <div class="wb-profile-summary-main">
+        <h2>@Model.Name</h2>
+        <p>@TextOrDash(Model.MobileNo) - @TextOrDash(Model.Email)</p>
+        <div class="wb-profile-badges">
+            @if (Model.IsMobileVerified)
+            {
+                <span>Mobile verified</span>
+            }
+            @if (Model.IsEmailVerified)
+            {
+                <span>Email verified</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.CustomerDuration))
+            {
+                <span>@Model.CustomerDuration</span>
+            }
+        </div>
+    </div>
+    <a class="btn btn-outline-primary" asp-controller="Profile" asp-action="UpdateContact">Update Mobile/Email</a>
+</section>
+
+<div class="wb-profile-tabs" role="tablist" aria-label="Profile sections">
+    <button class="active" type="button">My connections</button>
+    <button type="button" disabled>Payment methods</button>
+    <button type="button" disabled>Preferences</button>
+    <button type="button" disabled>Security</button>
+</div>
+
+<section class="wb-connection-grid">
+    @if (Model.Connections.Count == 0)
+    {
+        <div class="wb-page-card">
+            <div class="wb-empty-state">
+                <strong>No connection found.</strong>
+                <span>We could not find a linked consumer connection for this login.</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var connection in Model.Connections)
+        {
+            <article class="wb-page-card wb-connection-card">
+                <div class="wb-connection-head">
+                    <div class="wb-connection-icon">H</div>
+                    <div>
+                        <h2>@connection.Title</h2>
+                        <p>@connection.ConsumerNo</p>
+                    </div>
+                    @if (connection.IsPrimary)
+                    {
+                        <span class="wb-status-pill primary">Primary</span>
+                    }
+                </div>
+
+                <p class="wb-connection-address">@TextOrDash(connection.Address)</p>
+
+                <dl class="wb-connection-meta">
+                    <div>
+                        <dt>Type</dt>
+                        <dd>@TextOrDash(connection.ConnectionType)</dd>
+                    </div>
+                    <div>
+                        <dt>Since</dt>
+                        <dd>@FormatDate(connection.SinceDate)</dd>
+                    </div>
+                    <div>
+                        <dt>Status</dt>
+                        <dd><span class="wb-status-pill @(connection.Status == "Active" ? "paid" : "due")">@connection.Status</span></dd>
+                    </div>
+                </dl>
+
+                <div class="wb-connection-latest">
+                    <span>Latest: @FormatAmount(connection.LatestBillAmount)</span>
+                    <span>@connection.LatestBillStatus</span>
+                    <span>Due @FormatDate(connection.LatestBillDueDate)</span>
+                </div>
+
+                <div class="wb-connection-actions">
+                    <a class="btn btn-outline-primary" asp-controller="Bills" asp-action="History" asp-route-consumerNo="@connection.ConsumerNo">View bills</a>
+                    <button class="btn btn-outline-primary" type="button" disabled>Settings</button>
+                </div>
+            </article>
+        }
+    }
+</section>
+
+<section class="wb-profile-placeholder-grid">
+    <article class="wb-page-card">
+        <p class="wb-kicker">Payment Methods</p>
+        <h2>Coming soon</h2>
+        <p class="text-muted mb-0">Saved cards, UPI IDs, and wallets will be connected after payment gateway integration.</p>
+    </article>
+    <article class="wb-page-card">
+        <p class="wb-kicker">Preferences</p>
+        <h2>Coming soon</h2>
+        <p class="text-muted mb-0">Bill alerts, notification preferences, and reminders will be added in a later phase.</p>
+    </article>
+    <article class="wb-page-card">
+        <p class="wb-kicker">Security</p>
+        <h2>Coming soon</h2>
+        <p class="text-muted mb-0">Password and consumer account security settings will be enabled safely after account flows mature.</p>
+    </article>
+</section>

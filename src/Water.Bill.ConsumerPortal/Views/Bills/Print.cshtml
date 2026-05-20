@@ -1,0 +1,120 @@
+@model ConsumerBillViewModel
+@{
+    Layout = null;
+    var title = Model.Bill is null ? "Bill Not Found" : $"Bill {Model.Bill.BillNo}";
+
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string FormatAmount(double value) => $"INR {value:N2}";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@title - Noida Jal</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="wb-print-body">
+    <main class="wb-print-page">
+        <div class="wb-print-actions">
+            <a class="btn btn-outline-primary" asp-controller="Bills" asp-action="Current">Back</a>
+            @if (Model.Bill is not null)
+            {
+                <button class="btn btn-primary" type="button" onclick="window.print()">Print / Save PDF</button>
+            }
+        </div>
+
+        @if (Model.Bill is null)
+        {
+            <section class="wb-page-card">
+                <div class="wb-empty-state">
+                    <strong>@(Model.Message ?? "Bill was not found.")</strong>
+                    <span>Please return to Current Bill and try again.</span>
+                </div>
+            </section>
+        }
+        else
+        {
+            <section class="wb-print-sheet">
+                <header class="wb-print-header">
+                    <div>
+                        <p class="wb-kicker">Noida Jal</p>
+                        <h1>Water Bill</h1>
+                        <span>Noida Water Bill System</span>
+                    </div>
+                    <div class="wb-print-bill-no">
+                        <span>Bill No</span>
+                        <strong>@Model.Bill.BillNo</strong>
+                    </div>
+                </header>
+
+                <div class="wb-print-summary">
+                    <div>
+                        <span>Total Payable</span>
+                        <strong>@FormatAmount(Model.Bill.TotalPayableAmount)</strong>
+                    </div>
+                    <div>
+                        <span>Due Date</span>
+                        <strong>@FormatDate(Model.Bill.DueDate)</strong>
+                    </div>
+                    <div>
+                        <span>Status</span>
+                        <strong>@Model.Bill.PaymentStatus</strong>
+                    </div>
+                </div>
+
+                <div class="wb-print-grid">
+                    <section>
+                        <h2>Consumer Details</h2>
+                        <dl>
+                            <div><dt>Consumer No</dt><dd>@TextOrDash(Model.Consumer?.ConsumerNo)</dd></div>
+                            <div><dt>Name</dt><dd>@TextOrDash(Model.Consumer?.Name)</dd></div>
+                            <div><dt>Mobile</dt><dd>@TextOrDash(Model.Consumer?.MobileNo)</dd></div>
+                            <div><dt>Email</dt><dd>@TextOrDash(Model.Consumer?.Email)</dd></div>
+                            <div><dt>Property</dt><dd>@TextOrDash(Model.Consumer?.PropertyNo)</dd></div>
+                            <div><dt>Address</dt><dd>@TextOrDash(Model.Consumer?.Address)</dd></div>
+                        </dl>
+                    </section>
+
+                    <section>
+                        <h2>Bill Details</h2>
+                        <dl>
+                            <div><dt>Challan No</dt><dd>@TextOrDash(Model.Bill.ChallanNo)</dd></div>
+                            <div><dt>Bill Date</dt><dd>@FormatDate(Model.Bill.BillDate)</dd></div>
+                            <div><dt>Bill Period</dt><dd>@TextOrDash(Model.Bill.BillPeriod)</dd></div>
+                            <div><dt>Connection Type</dt><dd>@TextOrDash(Model.Consumer?.ConnectionType)</dd></div>
+                            <div><dt>Category</dt><dd>@TextOrDash(Model.Consumer?.Category)</dd></div>
+                            <div><dt>Division</dt><dd>@TextOrDash(Model.Bill.Division)</dd></div>
+                        </dl>
+                    </section>
+                </div>
+
+                <section class="wb-print-charges">
+                    <h2>Amount Breakup</h2>
+                    <table>
+                        <tbody>
+                            <tr><th>Current Charges</th><td>@FormatAmount(Model.Bill.CurrentAmount)</td></tr>
+                            <tr><th>Minimum Rate</th><td>@FormatAmount(Model.Bill.MinimumRate)</td></tr>
+                            <tr><th>Cess / Surcharge</th><td>@FormatAmount(Model.Bill.CessAmount)</td></tr>
+                            <tr><th>Arrear</th><td>@FormatAmount(Model.Bill.ArrearAmount)</td></tr>
+                            <tr><th>Arrear Interest</th><td>@FormatAmount(Model.Bill.ArrearInterest)</td></tr>
+                            <tr><th>Last Bill Extra</th><td>@FormatAmount(Model.Bill.LastBillExtra)</td></tr>
+                            <tr><th>Rebate</th><td>@FormatAmount(Model.Bill.RebateAmount)</td></tr>
+                            <tr><th>Advance</th><td>@FormatAmount(Model.Bill.AdvanceAmount)</td></tr>
+                            <tr class="total"><th>Total Payable</th><td>@FormatAmount(Model.Bill.TotalPayableAmount)</td></tr>
+                            <tr class="total"><th>After Due Date Amount</th><td>@FormatAmount(Model.Bill.AfterDueDateAmount)</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <footer class="wb-print-footer">
+                    <span>This is a system generated bill for viewing/printing purpose.</span>
+                    <span>Generated on @DateTime.Now.ToString("dd MMM yyyy hh:mm tt")</span>
+                </footer>
+            </section>
+        }
+    </main>
+</body>
+</html>
