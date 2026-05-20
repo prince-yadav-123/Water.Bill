@@ -2,6 +2,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.Application.DTOs.Payments;
+using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -14,8 +16,13 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 public class BillsController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IConsumerPaymentService _paymentService;
 
-    public BillsController(ApplicationDbContext db) => _db = db;
+    public BillsController(ApplicationDbContext db, IConsumerPaymentService paymentService)
+    {
+        _db = db;
+        _paymentService = paymentService;
+    }
 
     [HttpGet("History")]
     public async Task<IActionResult> History(
@@ -156,25 +163,90 @@ public class BillsController : Controller
 
     [HttpPost("Pay/Confirm")]
     [ValidateAntiForgeryToken]
-    public IActionResult ConfirmPayment(
+    public async Task<IActionResult> ConfirmPayment(
         string? amountOption,
         double? partialAmount,
         string? paymentMethod,
         string? paymentIdentifier,
         bool saveMethod = true,
-        bool setupAutoPay = false)
+        bool setupAutoPay = false,
+        CancellationToken ct = default)
     {
-        TempData["SuccessMessage"] = "Payment gateway integration is not enabled yet. This screen is ready for the next payment integration phase.";
-
-        return RedirectToAction(nameof(Confirm), new
-        {
+        var model = await BuildPaymentModelAsync(
+            3,
             amountOption,
             partialAmount,
             paymentMethod,
             paymentIdentifier,
             saveMethod,
-            setupAutoPay
-        });
+            setupAutoPay,
+            ct);
+
+        if (model.Consumer is null || model.Bill is null)
+        {
+            TempData["ErrorMessage"] = "No payable bill was found for this consumer account.";
+            return RedirectToAction(nameof(Current));
+        }
+
+        if (model.Bill.IsPaid)
+        {
+            TempData["ErrorMessage"] = "This bill is already marked as paid.";
+            return RedirectToAction(nameof(Current));
+        }
+
+        var result = await _paymentService.InitiateBillPaymentAsync(new PaymentInitiationRequestDto
+        {
+            ConsumerNo = model.Consumer.ConsumerNo,
+            ConsumerName = model.Consumer.Name,
+            ConsumerProperty = model.Consumer.PropertyNo,
+            MobileNo = model.Consumer.MobileNo,
+            Email = model.Consumer.Email,
+            BillNo = model.Bill.BillNo,
+            ChallanNo = model.Bill.ChallanNo,
+            BillDateFrom = model.Bill.BillDateFrom,
+            BillDateTo = model.Bill.BillDateTo,
+            DueDate = model.Bill.DueDate,
+            Amount = model.FinalPayableAmount,
+            GatewayCode = model.PaymentMethod,
+            BillOrNdc = "Bill",
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = Request.Headers.UserAgent.ToString()
+        }, ct);
+
+        if (!result.Success || string.IsNullOrWhiteSpace(result.JalReferenceId))
+        {
+            TempData["ErrorMessage"] = result.Message ?? "Payment reference could not be created.";
+            return RedirectToAction(nameof(Confirm), new
+            {
+                amountOption,
+                partialAmount,
+                paymentMethod,
+                paymentIdentifier,
+                saveMethod,
+                setupAutoPay
+            });
+        }
+
+        return RedirectToAction(nameof(PaymentStarted), new { referenceId = result.JalReferenceId });
+    }
+
+    [HttpGet("PaymentStarted/{referenceId}")]
+    public async Task<IActionResult> PaymentStarted(string referenceId, CancellationToken ct)
+    {
+        ViewData["Title"] = "Payment Initiated";
+
+        var consumerNo = ResolveConsumerNo();
+        if (string.IsNullOrWhiteSpace(consumerNo))
+            return RedirectToAction("Login", "Account");
+
+        var result = await _paymentService.GetInitiatedPaymentAsync(referenceId, consumerNo, ct);
+        if (result is null)
+        {
+            TempData["ErrorMessage"] = "Payment reference was not found for this consumer account.";
+            return RedirectToAction(nameof(Current));
+        }
+
+        return View(result);
     }
 
     [HttpGet("Print/{billNo}")]
@@ -459,9 +531,14 @@ public class BillsController : Controller
 
     private static string NormalizePaymentMethod(string? value) => value?.Trim().ToUpperInvariant() switch
     {
+        "AX" or "AXIS" or "BILLDESK" => "AX",
+        "IC" or "ICICI" => "IC",
+        "HD" or "HDFC" => "HD",
+        "PT" or "PAYTM" => "PT",
         "CARD" => "CARD",
         "NETBANKING" => "NETBANKING",
         "WALLET" => "WALLET",
-        _ => "UPI"
+        "UPI" => "UPI",
+        _ => "AX"
     };
 }

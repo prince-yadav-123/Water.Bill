@@ -7,6 +7,10 @@
     string StepClass(int step) => Model.Step == step ? "active" : Model.Step > step ? "complete" : "";
     string MethodLabel(string method) => method switch
     {
+        "AX" => "Axis Bank / BillDesk",
+        "IC" => "ICICI Bank",
+        "HD" => "HDFC Bank",
+        "PT" => "Paytm",
         "CARD" => "Debit / Credit Card",
         "NETBANKING" => "Net Banking",
         "WALLET" => "Wallets",
@@ -109,7 +113,7 @@
                         <div>
                             <p class="wb-kicker">Choose Method</p>
                             <h2>Select payment method</h2>
-                            <p class="text-muted mb-0">Payment gateway posting is intentionally kept disabled in this phase.</p>
+                            <p class="text-muted mb-0">Choose the bank gateway. The payment reference will be created before gateway redirection.</p>
                         </div>
                     </div>
 
@@ -118,32 +122,32 @@
                         <input type="hidden" name="partialAmount" value="@Model.PartialAmount" />
 
                         <div class="wb-method-list">
-                            <label class="wb-method-card @(Model.PaymentMethod == "UPI" ? "active" : "")">
-                                <input type="radio" name="paymentMethod" value="UPI" checked="@(Model.PaymentMethod == "UPI")" />
-                                <span class="wb-method-icon">UPI</span>
-                                <span><strong>UPI</strong><small>GPay, PhonePe, BHIM, or any UPI app</small></span>
+                            <label class="wb-method-card @(Model.PaymentMethod == "AX" || Model.PaymentMethod == "CARD" || Model.PaymentMethod == "NETBANKING" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="AX" checked="@(Model.PaymentMethod == "AX" || Model.PaymentMethod == "CARD" || Model.PaymentMethod == "NETBANKING")" />
+                                <span class="wb-method-icon">AX</span>
+                                <span><strong>Axis Bank / BillDesk</strong><small>Old portal compatible gateway reference generation</small></span>
                             </label>
-                            <label class="wb-method-card @(Model.PaymentMethod == "CARD" ? "active" : "")">
-                                <input type="radio" name="paymentMethod" value="CARD" checked="@(Model.PaymentMethod == "CARD")" />
-                                <span class="wb-method-icon">CC</span>
-                                <span><strong>Debit / Credit Card</strong><small>Visa, Mastercard, RuPay accepted</small></span>
+                            <label class="wb-method-card @(Model.PaymentMethod == "IC" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="IC" checked="@(Model.PaymentMethod == "IC")" />
+                                <span class="wb-method-icon">IC</span>
+                                <span><strong>ICICI Bank</strong><small>Supported by the old payment reference flow</small></span>
                             </label>
-                            <label class="wb-method-card @(Model.PaymentMethod == "NETBANKING" ? "active" : "")">
-                                <input type="radio" name="paymentMethod" value="NETBANKING" checked="@(Model.PaymentMethod == "NETBANKING")" />
-                                <span class="wb-method-icon">NB</span>
-                                <span><strong>Net Banking</strong><small>Bank selection will be connected with gateway later</small></span>
+                            <label class="wb-method-card @(Model.PaymentMethod == "HD" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="HD" checked="@(Model.PaymentMethod == "HD")" />
+                                <span class="wb-method-icon">HD</span>
+                                <span><strong>HDFC Bank</strong><small>Available when live gateway credentials are configured</small></span>
                             </label>
-                            <label class="wb-method-card @(Model.PaymentMethod == "WALLET" ? "active" : "")">
-                                <input type="radio" name="paymentMethod" value="WALLET" checked="@(Model.PaymentMethod == "WALLET")" />
-                                <span class="wb-method-icon">WL</span>
-                                <span><strong>Wallets</strong><small>Paytm, Amazon Pay, Mobikwik</small></span>
+                            <label class="wb-method-card @(Model.PaymentMethod == "PT" || Model.PaymentMethod == "UPI" || Model.PaymentMethod == "WALLET" ? "active" : "")">
+                                <input type="radio" name="paymentMethod" value="PT" checked="@(Model.PaymentMethod == "PT" || Model.PaymentMethod == "UPI" || Model.PaymentMethod == "WALLET")" />
+                                <span class="wb-method-icon">PT</span>
+                                <span><strong>Paytm</strong><small>UPI, wallet, and online payment collection route</small></span>
                             </label>
                         </div>
 
                         <div class="wb-method-input">
-                            <label class="form-label">Payment identifier</label>
-                            <input class="form-control" name="paymentIdentifier" value="@Model.PaymentIdentifier" placeholder="Example: name@bank or masked card reference" />
-                            <small>This is only captured for UI testing in this phase.</small>
+                            <label class="form-label">Payment note / identifier</label>
+                            <input class="form-control" name="paymentIdentifier" value="@Model.PaymentIdentifier" placeholder="Optional reference for your records" />
+                            <small>The official bank transaction number is received only after gateway callback.</small>
                         </div>
 
                         <label class="form-check">
@@ -169,10 +173,14 @@
                         <div>
                             <p class="wb-kicker">Confirm & Pay</p>
                             <h2>Confirm payment</h2>
-                            <p class="text-muted mb-0">Review the final summary before moving to payment gateway integration.</p>
+                            <p class="text-muted mb-0">A pending bank payment reference will be created before redirecting to the configured gateway.</p>
                         </div>
                     </div>
 
+                    @if (TempData["ErrorMessage"] is not null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
                     @if (TempData["SuccessMessage"] is not null)
                     {
                         <div class="alert alert-success">@TempData["SuccessMessage"]</div>
@@ -191,7 +199,7 @@
                         <small>Convenience fee: @FormatAmount(Model.ConvenienceFee)</small>
                     </div>
 
-                    <p class="wb-secure-note">Secured payment posting, gateway order creation, callbacks, and paid-status updates are reserved for the next integration phase.</p>
+                    <p class="wb-secure-note">The bill will be marked paid only after a verified gateway response is received.</p>
 
                     <form method="post" asp-controller="Bills" asp-action="ConfirmPayment" class="wb-pay-actions">
                         @Html.AntiForgeryToken()
@@ -220,3 +228,27 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.wb-method-list').forEach((list) => {
+            const syncSelectedMethod = () => {
+                list.querySelectorAll('.wb-method-card').forEach((card) => {
+                    const radio = card.querySelector('input[type="radio"]');
+                    card.classList.toggle('active', Boolean(radio?.checked));
+                });
+            };
+
+            list.addEventListener('change', syncSelectedMethod);
+            list.addEventListener('click', (event) => {
+                const card = event.target.closest('.wb-method-card');
+                const radio = card?.querySelector('input[type="radio"]');
+                if (radio && !radio.checked) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+            syncSelectedMethod();
+        });
+    </script>
+}

@@ -1,0 +1,55 @@
+@model IReadOnlyList<Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationSummaryDto>
+@{
+    ViewData["Title"] = "My Applications";
+}
+
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">New Connection</p>
+        <h1>My Applications</h1>
+        <p>Track the new connection requests submitted from your consumer account.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Apply">Apply for New Connection</a>
+</div>
+
+<section class="wb-page-card">
+    @if (Model.Count == 0)
+    {
+        <div class="wb-empty-state">
+            <strong>No applications found.</strong>
+            <span>Your new connection requests will appear here after submission.</span>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table wb-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Application No</th>
+                        <th>Applicant</th>
+                        <th>Property</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.ApplicationNo</strong></td>
+                            <td>@item.ApplicantName</td>
+                            <td>@item.Sector / @item.Block / @item.FlatNo</td>
+                            <td><span class="badge text-bg-primary">@item.ApplicationStatus</span></td>
+                            <td>@(item.SubmittedOn?.ToString("dd MMM yyyy") ?? "-")</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

@@ -186,6 +186,12 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<NewConsumerApplication> NewConsumerApplications { get; set; }
 
+    public virtual DbSet<NewConnectionApplication> NewConnectionApplications { get; set; }
+
+    public virtual DbSet<NewConnectionApplicationDocument> NewConnectionApplicationDocuments { get; set; }
+
+    public virtual DbSet<NewConnectionApprovalHistory> NewConnectionApprovalHistories { get; set; }
+
     public virtual DbSet<NoDueAmountMst> NoDueAmountMsts { get; set; }
 
     public virtual DbSet<Oct2024> Oct2024s { get; set; }

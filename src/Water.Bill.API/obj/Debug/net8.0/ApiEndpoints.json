@@ -34,5 +34,345 @@
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.NewConnectionController",
+    "Method": "Apply",
+    "RelativePath": "NewConnection/Apply",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.NewConnectionController",
+    "Method": "Apply",
+    "RelativePath": "NewConnection/Apply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ApplicantName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FatherName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MobileNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "EmailId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Address",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Sector",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Block",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FlatNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlotSize",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PipeSize",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "KhasraNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "VillageName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "VillageId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ConnectionCategory",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ConnectionType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FlatType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PurposeOfConnection",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PreviousConnectionYesNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OtherConnection",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Rid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DevType",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeclarationAccepted",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Remarks",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.NewConnectionController",
+    "Method": "Blocks",
+    "RelativePath": "NewConnection/Lookups/Blocks",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sectorId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.NewConnectionController",
+    "Method": "ConnectionSubTypes",
+    "RelativePath": "NewConnection/Lookups/ConnectionSubTypes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "connectionCategoryId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.NewConnectionController",
+    "Method": "Track",
+    "RelativePath": "NewConnection/Track",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "mobileNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.NewConnectionController",
+    "Method": "Track",
+    "RelativePath": "NewConnection/Track",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ApplicationNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MobileNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.FatherName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.EmailId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.Address",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.PlotSize",
+        "Type": "System.Decimal",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.PipeSize",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.KhasraNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.VillageName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.ConnectionCategory",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.ConnectionType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.FlatType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.PurposeOfConnection",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.PreviousConnectionYesNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.OtherConnection",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.SubmittedByConsumerNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.Documents",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionDocumentDto, Water.Bill.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.Timeline",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionApprovalHistoryDto, Water.Bill.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.Id",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.ApplicationNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.ApplicationStatus",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.ApplicantName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.MobileNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.Sector",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.Block",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.FlatNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.SubmittedOn",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.IsPublicApplication",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

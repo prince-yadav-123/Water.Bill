@@ -50,7 +50,7 @@ public class ConsumerOtpService : IConsumerOtpService
         if (string.IsNullOrWhiteSpace(normalizedMobileNo))
             throw new InvalidOperationException("Enter a valid 10 digit mobile number.");
 
-        var consumers = await _db.ConsumerDetailsMasters
+        var consumer = await _db.ConsumerDetailsMasters
             .Where(x => x.MobNo != null
                 && x.MobNo.Replace("+", "")
                     .Replace("-", "")
@@ -58,17 +58,15 @@ public class ConsumerOtpService : IConsumerOtpService
                     .Replace("(", "")
                     .Replace(")", "")
                     .EndsWith(normalizedMobileNo))
-            .OrderByDescending(x => x.EntryDate)
-            .Take(2)
-            .ToListAsync(ct);
+            .OrderByDescending(x => x.Status == 1)
+            .ThenByDescending(x => x.EntryDate)
+            .ThenBy(x => x.ConsNo)
+            .FirstOrDefaultAsync(ct);
 
-        if (consumers.Count == 0)
+        if (consumer is null)
             throw new InvalidOperationException("Mobile number is not registered for any consumer. Please contact support.");
 
-        if (consumers.Count > 1)
-            throw new InvalidOperationException("This mobile number is linked with multiple consumers. Please login using Consumer Number.");
-
-        return await RequestOtpForConsumerAsync(consumers[0], ct);
+        return await RequestOtpForConsumerAsync(consumer, ct);
     }
 
     private async Task<ConsumerOtpRequestResult> RequestOtpForConsumerAsync(ConsumerDetailsMaster consumer, CancellationToken ct)

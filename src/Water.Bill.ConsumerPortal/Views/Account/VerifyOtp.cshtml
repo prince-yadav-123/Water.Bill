@@ -10,52 +10,56 @@
             <img class="wb-auth-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" />
             <div>
                 <div class="wb-auth-brand-name">Noida Jal</div>
-                <div class="wb-auth-brand-sub">Consumer Login</div>
+                <div class="wb-auth-brand-sub">Water Bill System</div>
             </div>
         </div>
 
         <div class="wb-auth-hero-content">
-            <h1>Secure access to your water bill account.</h1>
-            <p>We verify your registered mobile number before opening your consumer dashboard.</p>
+            <h1>Pay your water bill in under 30 seconds.</h1>
+            <p>Track usage across all your connections, set up auto-pay, raise complaints, and download bills - anytime, from anywhere.</p>
 
-            <div class="wb-auth-feature-grid" aria-label="Portal security">
+            <div class="wb-auth-feature-grid" aria-label="Portal benefits">
                 <div class="wb-auth-feature">
-                    <span class="wb-auth-feature-icon">1</span>
-                    <strong>Consumer No.</strong>
-                    <small>Identify account</small>
+                    <span class="wb-auth-feature-icon">I</span>
+                    <strong>Instant</strong>
+                    <small>Real-time bill view</small>
                 </div>
                 <div class="wb-auth-feature">
-                    <span class="wb-auth-feature-icon">2</span>
-                    <strong>OTP</strong>
-                    <small>Verify mobile</small>
+                    <span class="wb-auth-feature-icon">S</span>
+                    <strong>Secure</strong>
+                    <small>Protected access</small>
                 </div>
                 <div class="wb-auth-feature">
-                    <span class="wb-auth-feature-icon">3</span>
-                    <strong>Dashboard</strong>
-                    <small>View bills</small>
+                    <span class="wb-auth-feature-icon">P</span>
+                    <strong>Paperless</strong>
+                    <small>All bills as PDF</small>
                 </div>
                 <div class="wb-auth-feature">
-                    <span class="wb-auth-feature-icon">5m</span>
-                    <strong>Expiry</strong>
-                    <small>Short lived OTP</small>
+                    <span class="wb-auth-feature-icon">24</span>
+                    <strong>24x7 support</strong>
+                    <small>Hindi + English</small>
                 </div>
             </div>
         </div>
 
-        <div class="wb-auth-initiative">A Government of Uttar Pradesh initiative</div>
+        <div class="wb-auth-initiative">A Government of Uttar Pradesh initiative - Noida Authority</div>
     </section>
 
     <section class="wb-auth-form-side">
-        <div class="wb-auth-card">
+        <div class="wb-auth-card wb-otp-card">
             <div class="wb-auth-card-head">
+                <img class="wb-auth-card-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="" />
                 <div>
-                    <h2>Verify OTP</h2>
-                    <p>
-                        OTP sent to
-                        <strong>@(string.IsNullOrWhiteSpace(Model.MaskedMobileNo) ? "your registered mobile" : Model.MaskedMobileNo)</strong>
-                    </p>
+                    <h2>Sign in</h2>
+                    <p>Welcome back to Noida Jal</p>
                 </div>
             </div>
+
+            <p class="wb-otp-instruction">
+                Enter the 6-digit code sent to
+                <strong>@(string.IsNullOrWhiteSpace(Model.MaskedMobileNo) ? "your registered mobile" : Model.MaskedMobileNo)</strong>
+            </p>
+            <a class="wb-otp-edit-link" asp-action="Login">Edit</a>
 
             @if (TempData["OtpError"] != null)
             {
@@ -74,37 +78,87 @@
                 <input asp-for="ConsumerNo" type="hidden" />
                 <input asp-for="MaskedMobileNo" type="hidden" />
                 <input asp-for="ExpiresAt" type="hidden" />
+                <input asp-for="Otp" type="hidden" data-otp-value />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-                <div class="wb-field">
-                    <label asp-for="Otp"></label>
-                    <div class="wb-input-shell">
-                        <input asp-for="Otp" class="wb-input wb-otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+                <div class="wb-field wb-otp-box-field">
+                    <label class="visually-hidden" asp-for="Otp"></label>
+                    <div class="wb-otp-boxes" role="group" aria-label="Enter 6 digit OTP">
+                        @for (var i = 0; i < 6; i++)
+                        {
+                            <input class="wb-otp-box" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="OTP digit @(i + 1)" data-otp-box />
+                        }
                     </div>
                     <span asp-validation-for="Otp" class="text-danger small"></span>
+                </div>
+
+                <div class="wb-auth-otp-actions wb-otp-resend-row">
+                    <span>Didn't receive the code?</span>
+                    <button class="wb-link-button" type="submit" formaction="@Url.Action("ResendOtp", "Account")" formmethod="post">
+                        @(Model.ResendAvailableInSeconds > 0 ? $"Resend in 0:{Model.ResendAvailableInSeconds:00}" : "Resend OTP")
+                    </button>
                 </div>
 
                 <button class="wb-auth-submit" type="submit">Verify &amp; Sign in <span aria-hidden="true">-></span></button>
             </form>
 
-            <div class="wb-auth-otp-actions">
-                <form asp-action="ResendOtp" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="consumerNo" value="@Model.ConsumerNo" />
-                    <button class="wb-link-button" type="submit">Resend OTP</button>
-                </form>
-                <a asp-action="Login">Change consumer number</a>
-            </div>
-
             @if (Model.ExpiresAt.HasValue)
             {
                 <p class="wb-auth-terms">OTP expires at @Model.ExpiresAt.Value.ToLocalTime().ToString("hh:mm tt").</p>
             }
+
+            <div class="wb-auth-register">
+                <span>New to Noida Jal?</span>
+                <a asp-controller="NewConnection" asp-action="Apply">Register your connection</a>
+            </div>
         </div>
     </section>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const hiddenInput = document.querySelector('[data-otp-value]');
+            const boxes = Array.from(document.querySelectorAll('[data-otp-box]'));
+            if (!hiddenInput || boxes.length === 0) return;
+
+            const syncOtp = () => {
+                hiddenInput.value = boxes.map((box) => box.value).join('');
+            };
+
+            const fillFromValue = (value) => {
+                const digits = (value || '').replace(/\D/g, '').slice(0, boxes.length);
+                boxes.forEach((box, index) => {
+                    box.value = digits[index] || '';
+                });
+                syncOtp();
+                const next = boxes[Math.min(digits.length, boxes.length - 1)];
+                next?.focus();
+            };
+
+            boxes.forEach((box, index) => {
+                box.addEventListener('input', () => {
+                    const digit = box.value.replace(/\D/g, '').slice(-1);
+                    box.value = digit;
+                    syncOtp();
+                    if (digit && index < boxes.length - 1) boxes[index + 1].focus();
+                });
+
+                box.addEventListener('keydown', (event) => {
+                    if (event.key === 'Backspace' && !box.value && index > 0) {
+                        boxes[index - 1].focus();
+                    }
+                });
+
+                box.addEventListener('paste', (event) => {
+                    event.preventDefault();
+                    fillFromValue(event.clipboardData?.getData('text'));
+                });
+            });
+
+            fillFromValue(hiddenInput.value);
+        })();
+    </script>
 }

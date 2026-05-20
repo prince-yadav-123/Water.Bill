@@ -1,0 +1,52 @@
+@using Water.Bill.Application.DTOs.Payments
+@model PaymentInitiationResultDto
+@{
+    ViewData["Title"] = "Payment Initiated";
+    string FormatAmount(double value) => $"INR {value:N2}";
+}
+
+<div class="wb-dashboard-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">Consumer Services</p>
+            <h1>Payment initiated</h1>
+            <p>Your payment reference has been created in the old-compatible bank payment table.</p>
+        </div>
+        <div class="wb-actions">
+            <a class="btn btn-outline-primary" asp-controller="Bills" asp-action="Current">Current Bill</a>
+            <a class="btn btn-primary" asp-controller="Bills" asp-action="History">Bill History</a>
+        </div>
+    </div>
+
+    <section class="wb-page-card">
+        <div class="wb-card-title-row">
+            <div>
+                <p class="wb-kicker">Bank Reference</p>
+                <h2>@Model.JalReferenceId</h2>
+                <p class="text-muted mb-0">@Model.Message</p>
+            </div>
+            <span class="badge text-bg-primary">@Model.GatewayName</span>
+        </div>
+
+        <dl class="wb-info-grid">
+            <div><dt>JAL Reference ID</dt><dd>@Model.JalReferenceId</dd></div>
+            <div><dt>Gateway</dt><dd>@Model.GatewayName (@Model.GatewayCode)</dd></div>
+            <div><dt>Amount</dt><dd>@FormatAmount(Model.Amount)</dd></div>
+            <div><dt>Status</dt><dd>Pending gateway confirmation</dd></div>
+        </dl>
+
+        @if (Model.IsLiveGatewayEnabled && !string.IsNullOrWhiteSpace(Model.GatewayUrl) && !string.IsNullOrWhiteSpace(Model.GatewayPayload))
+        {
+            <form method="post" action="@Model.GatewayUrl" class="wb-pay-actions">
+                <input type="hidden" name="msg" value="@Model.GatewayPayload" />
+                <button class="btn btn-primary" type="submit">Continue to @Model.GatewayName</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-warning mt-3">
+                Live gateway redirection is not enabled yet. Configure gateway URL, merchant ID, security ID, checksum key, and return URL in appsettings before enabling live payment posting.
+            </div>
+        }
+    </section>
+</div>

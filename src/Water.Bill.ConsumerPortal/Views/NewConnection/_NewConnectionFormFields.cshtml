@@ -1,0 +1,483 @@
+@model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationFormDto
+@using Water.Bill.Application.DTOs.NewConnection
+@{
+    var documentTypes = ViewData["DocumentTypes"] as string[] ?? [];
+    var lookupData = ViewData["LookupData"] as NewConnectionLookupDataDto ?? new NewConnectionLookupDataDto();
+    string ChoiceIcon(string text)
+    {
+        var normalized = (text ?? string.Empty).ToLowerInvariant();
+        if (normalized.Contains("commercial") || normalized.Contains("shop")) return "Shop";
+        if (normalized.Contains("industrial") || normalized.Contains("factory")) return "Unit";
+        if (normalized.Contains("institution") || normalized.Contains("school")) return "Inst.";
+        return "Home";
+    }
+}
+
+<div class="wb-newconn-wizard" data-newconn-wizard data-blocks-url="@Url.Action("Blocks", "NewConnection")" data-subtypes-url="@Url.Action("ConnectionSubTypes", "NewConnection")">
+    <div class="wb-newconn-stepper" aria-label="New connection application steps">
+        <button class="wb-step-pill is-active" type="button" data-step-target="1"><span>1</span> Connection Type</button>
+        <button class="wb-step-pill" type="button" data-step-target="2"><span>2</span> Property Details</button>
+        <button class="wb-step-pill" type="button" data-step-target="3"><span>3</span> Applicant Details</button>
+        <button class="wb-step-pill" type="button" data-step-target="4"><span>4</span> Documents</button>
+        <button class="wb-step-pill" type="button" data-step-target="5"><span>5</span> Review & Submit</button>
+    </div>
+
+    <div class="wb-newconn-layout">
+        <div class="wb-newconn-main">
+            <div class="wb-step-alert" data-step-alert hidden></div>
+
+            <section class="wb-form-section wb-wizard-step is-active" data-step="1">
+                <div>
+                    <h2>What type of connection?</h2>
+                    <p>Choose the category and basic connection details. Tariff and document requirements may vary by category.</p>
+                </div>
+                <div class="wb-choice-grid">
+                    @foreach (var category in lookupData.ConnectionCategories)
+                    {
+                        <label class="wb-choice-card">
+                            <input asp-for="ConnectionCategory" type="radio" value="@category.Value" data-review-label="Connection category" />
+                            <span class="wb-choice-icon">@ChoiceIcon(category.Text)</span>
+                            <strong>@category.Text</strong>
+                            <small>Configured connection category</small>
+                        </label>
+                    }
+                </div>
+                <span asp-validation-for="ConnectionCategory" class="text-danger"></span>
+
+                <div class="wb-form-grid">
+                    <div class="wb-field">
+                        <label asp-for="ConnectionType" class="form-label required">Connection Type</label>
+                        <select asp-for="ConnectionType" class="form-select" data-review-label="Connection type">
+                            <option value="">Select</option>
+                            @foreach (var connectionType in lookupData.ConnectionTypes)
+                            {
+                                <option value="@connectionType.Value">@connectionType.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="ConnectionType" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="FlatType" class="form-label required">Flat Type</label>
+                        <select asp-for="FlatType" class="form-select" data-review-label="Flat type" data-subtype-select>
+                            <option value="">Select</option>
+                            @foreach (var subType in lookupData.ConnectionSubTypes)
+                            {
+                                <option value="@subType.Value" data-parent-value="@subType.ParentValue">@subType.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="FlatType" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="PipeSize" class="form-label required">Pipe Size</label>
+                        <select asp-for="PipeSize" class="form-select" data-review-label="Pipe size">
+                            <option value="">Select</option>
+                            @foreach (var pipeSize in lookupData.PipeSizes)
+                            {
+                                <option value="@pipeSize.Value">@pipeSize.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="PipeSize" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="PreviousConnectionYesNo" class="form-label">Previous Connection?</label>
+                        <select asp-for="PreviousConnectionYesNo" class="form-select" data-review-label="Previous connection">
+                            <option value="N">No</option>
+                            <option value="Y">Yes</option>
+                        </select>
+                    </div>
+                    <div class="wb-field wb-field-wide">
+                        <label asp-for="PurposeOfConnection" class="form-label">Purpose of Connection</label>
+                        <textarea asp-for="PurposeOfConnection" class="form-control" rows="2" data-review-label="Purpose"></textarea>
+                    </div>
+                    <div class="wb-field wb-field-wide">
+                        <label asp-for="OtherConnection" class="form-label">Previous/Other Connection Details</label>
+                        <input asp-for="OtherConnection" class="form-control" data-review-label="Other connection details" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="wb-form-section wb-wizard-step" data-step="2">
+                <div>
+                    <h2>Property Details</h2>
+                    <p>Tell us where the new water connection should be installed.</p>
+                </div>
+                <div class="wb-form-grid">
+                    <div class="wb-field">
+                        <label asp-for="Sector" class="form-label required">Sector</label>
+                        <select asp-for="Sector" class="form-select" data-review-label="Sector" data-sector-select>
+                            <option value="">Select</option>
+                            @foreach (var sector in lookupData.Sectors)
+                            {
+                                <option value="@sector.Value">@sector.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Sector" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="Block" class="form-label required">Block</label>
+                        <select asp-for="Block" class="form-select" data-review-label="Block" data-block-select>
+                            <option value="">Select sector first</option>
+                            @if (!string.IsNullOrWhiteSpace(Model.Block))
+                            {
+                                <option value="@Model.Block" selected>@Model.Block</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Block" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="FlatNo" class="form-label required">Flat/Plot No</label>
+                        <input asp-for="FlatNo" class="form-control" data-review-label="Flat/Plot No" />
+                        <span asp-validation-for="FlatNo" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="PlotSize" class="form-label required">Plot Size</label>
+                        <input asp-for="PlotSize" class="form-control" type="number" step="0.01" data-review-label="Plot size" />
+                        <span asp-validation-for="PlotSize" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field wb-field-wide">
+                        <label asp-for="Address" class="form-label required">Property Address</label>
+                        <textarea asp-for="Address" class="form-control" rows="3" data-review-label="Property address"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="KhasraNo" class="form-label">Khasra No</label>
+                        <input asp-for="KhasraNo" class="form-control" data-review-label="Khasra no" />
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="VillageName" class="form-label">Village Name</label>
+                        <select asp-for="VillageId" class="form-select" data-review-label="Village" data-village-select>
+                            <option value="">Select village if applicable</option>
+                            @foreach (var village in lookupData.Villages)
+                            {
+                                <option value="@village.Value">@village.Text</option>
+                            }
+                        </select>
+                        <input asp-for="VillageName" type="hidden" data-village-name />
+                    </div>
+                </div>
+            </section>
+
+            <section class="wb-form-section wb-wizard-step" data-step="3">
+                <div>
+                    <h2>Applicant Details</h2>
+                    <p>These details will be used for verification and application tracking.</p>
+                </div>
+                <div class="wb-form-grid">
+                    <div class="wb-field">
+                        <label asp-for="ApplicantName" class="form-label required">Applicant Name</label>
+                        <input asp-for="ApplicantName" class="form-control" data-review-label="Applicant name" />
+                        <span asp-validation-for="ApplicantName" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="FatherName" class="form-label">Father Name</label>
+                        <input asp-for="FatherName" class="form-control" data-review-label="Father name" />
+                        <span asp-validation-for="FatherName" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="MobileNumber" class="form-label required">Mobile Number</label>
+                        <input asp-for="MobileNumber" class="form-control" maxlength="10" data-review-label="Mobile number" />
+                        <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label asp-for="EmailId" class="form-label">Email</label>
+                        <input asp-for="EmailId" class="form-control" data-review-label="Email" />
+                        <span asp-validation-for="EmailId" class="text-danger"></span>
+                    </div>
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="wb-inline-note wb-field-wide">This application will be linked with your logged-in consumer account.</div>
+                    }
+                </div>
+            </section>
+
+            <section class="wb-form-section wb-wizard-step" data-step="4">
+                <div>
+                    <h2>Upload Documents</h2>
+                    <p>Upload clear PDF or image files. Maximum size is 5 MB per document.</p>
+                </div>
+                <div class="wb-document-list">
+                    @foreach (var documentType in documentTypes)
+                    {
+                        var inputName = $"Documents_{documentType.Replace(" ", "_").Replace("/", "_")}";
+                        var isRequired = documentType is "ID Proof" or "Address Proof" or "Property Document";
+                        <label class="wb-document-row @(isRequired ? "is-required" : string.Empty)">
+                            <span class="wb-document-icon">File</span>
+                            <span>
+                                <strong>@documentType @(isRequired ? "*" : string.Empty)</strong>
+                                <small>@(isRequired ? "Required for verification" : "Upload if applicable")</small>
+                            </span>
+                            <input type="file" name="@inputName" accept=".pdf,.jpg,.jpeg,.png" data-document-type="@documentType" data-required-document="@isRequired.ToString().ToLowerInvariant()" />
+                            <em data-file-status>Browse</em>
+                        </label>
+                    }
+                </div>
+            </section>
+
+            <section class="wb-form-section wb-wizard-step" data-step="5">
+                <div>
+                    <h2>Review & Submit</h2>
+                    <p>Please review the application before submission. Your final consumer number will be created only after authority approval.</p>
+                </div>
+                <div class="wb-review-panel" data-review-panel></div>
+                <div class="wb-inline-note">After submission, the application will move to document verification and site inspection.</div>
+                <div class="form-check">
+                    <input asp-for="DeclarationAccepted" class="form-check-input" data-review-label="Declaration" data-required-declaration="true" />
+                    <label asp-for="DeclarationAccepted" class="form-check-label required">I confirm that the submitted details are correct.</label>
+                </div>
+                <span asp-validation-for="DeclarationAccepted" class="text-danger"></span>
+            </section>
+
+            <div class="wb-wizard-actions">
+                <button class="btn btn-outline-primary" type="button" data-step-back>Back</button>
+                <button class="btn btn-primary" type="button" data-step-next>Continue</button>
+                <button class="btn btn-primary" type="submit" data-step-submit hidden>Submit Application</button>
+            </div>
+        </div>
+
+        <aside class="wb-newconn-side">
+            <section class="wb-side-card">
+                <h3>Estimated Charges</h3>
+                <div class="wb-side-row"><span>Application fee</span><strong>Configurable</strong></div>
+                <div class="wb-side-row"><span>Security deposit</span><strong>As assessed</strong></div>
+                <div class="wb-side-row"><span>Meter installation</span><strong>As applicable</strong></div>
+                <div class="wb-side-row is-total"><span>Total estimate</span><strong>Final after review</strong></div>
+            </section>
+            <section class="wb-side-card">
+                <h3>Timeline</h3>
+                <ol class="wb-side-timeline">
+                    <li class="is-done">Submit application <small>Today</small></li>
+                    <li>Document verification <small>Within 24 hours</small></li>
+                    <li>Site inspection <small>Day 2-3</small></li>
+                    <li>Approval & meter install <small>Day 7-10</small></li>
+                    <li>First bill generated <small>After billing cycle</small></li>
+                </ol>
+            </section>
+        </aside>
+    </div>
+</div>
+
+<script>
+(() => {
+    const wizard = document.querySelector("[data-newconn-wizard]");
+    if (!wizard) return;
+
+    let currentStep = 1;
+    const maxStep = 5;
+    const steps = [...wizard.querySelectorAll("[data-step]")];
+    const pills = [...wizard.querySelectorAll("[data-step-target]")];
+    const alertBox = wizard.querySelector("[data-step-alert]");
+    const backBtn = wizard.querySelector("[data-step-back]");
+    const nextBtn = wizard.querySelector("[data-step-next]");
+    const submitBtn = wizard.querySelector("[data-step-submit]");
+    const reviewPanel = wizard.querySelector("[data-review-panel]");
+    const sectorSelect = wizard.querySelector("[data-sector-select]");
+    const blockSelect = wizard.querySelector("[data-block-select]");
+    const subTypeSelect = wizard.querySelector("[data-subtype-select]");
+    const villageSelect = wizard.querySelector("[data-village-select]");
+    const villageNameInput = wizard.querySelector("[data-village-name]");
+
+    function showAlert(message) {
+        alertBox.textContent = message;
+        alertBox.hidden = false;
+    }
+
+    function clearAlert() {
+        alertBox.hidden = true;
+        alertBox.textContent = "";
+    }
+
+    function fieldValue(input) {
+        if (input.type === "radio") {
+            const checked = wizard.querySelector(`input[name="${input.name}"]:checked`);
+            return checked ? checked.closest("label")?.querySelector("strong")?.textContent?.trim() || checked.value : "";
+        }
+        if (input.tagName === "SELECT") {
+            return input.selectedOptions[0]?.textContent?.trim() || "";
+        }
+        if (input.type === "checkbox") {
+            return input.checked ? "Accepted" : "";
+        }
+        return input.value?.trim() || "";
+    }
+
+    function validateStep(stepNumber) {
+        clearAlert();
+        const step = wizard.querySelector(`[data-step="${stepNumber}"]`);
+        const fields = [...step.querySelectorAll("input, select, textarea")];
+        for (const field of fields) {
+            if (field.type === "radio") {
+                if (field.hasAttribute("data-val-required") && !wizard.querySelector(`input[name="${field.name}"]:checked`)) {
+                    showAlert("Please select a connection category.");
+                    return false;
+                }
+                continue;
+            }
+            if (field.type === "file" && field.dataset.requiredDocument === "true" && !field.files.length) {
+                showAlert(`Please upload ${field.dataset.documentType}.`);
+                return false;
+            }
+            if (field.type === "checkbox" && field.dataset.requiredDeclaration === "true" && !field.checked) {
+                showAlert("Please accept the declaration.");
+                field.focus();
+                return false;
+            }
+            if ((field.hasAttribute("data-val-required") || field.hasAttribute("data-val-range")) && !field.value?.trim()) {
+                showAlert("Please complete the required fields before continuing.");
+                field.focus();
+                return false;
+            }
+            if (field.value && field.dataset.valRegexPattern) {
+                const regex = new RegExp(field.dataset.valRegexPattern);
+                if (!regex.test(field.value)) {
+                    showAlert(field.dataset.valRegex || "Please enter a valid value.");
+                    field.focus();
+                    return false;
+                }
+            }
+            if (field.value && field.dataset.valRangeMin && field.dataset.valRangeMax) {
+                const value = Number(field.value);
+                const min = Number(field.dataset.valRangeMin);
+                const max = Number(field.dataset.valRangeMax);
+                if (Number.isNaN(value) || value < min || value > max) {
+                    showAlert(field.dataset.valRange || "Please enter a value within the allowed range.");
+                    field.focus();
+                    return false;
+                }
+            }
+            if (field.type !== "file" && field.value && !field.checkValidity()) {
+                showAlert("Please correct the highlighted field before continuing.");
+                field.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function buildReview() {
+        const rows = [...wizard.querySelectorAll("[data-review-label]")]
+            .filter(input => input.type !== "radio" || input.checked)
+            .map(input => ({ label: input.dataset.reviewLabel, value: fieldValue(input) || "Not provided" }))
+            .filter(row => row.label !== "Declaration");
+        const files = [...wizard.querySelectorAll("input[type=file]")]
+            .filter(input => input.files.length)
+            .map(input => input.dataset.documentType);
+
+        reviewPanel.innerHTML = `
+            <dl>${rows.map(row => `<div><dt>${row.label}</dt><dd>${row.value}</dd></div>`).join("")}</dl>
+            <div class="wb-review-docs"><strong>Documents uploaded</strong><span>${files.length ? files.join(", ") : "No documents selected"}</span></div>
+        `;
+    }
+
+    function setSelectOptions(select, items, placeholder, selectedValue) {
+        if (!select) return;
+        select.innerHTML = `<option value="">${placeholder}</option>`;
+        for (const item of items) {
+            const option = document.createElement("option");
+            option.value = item.value;
+            option.textContent = item.text;
+            if (selectedValue && selectedValue === item.value) option.selected = true;
+            select.appendChild(option);
+        }
+    }
+
+    async function loadBlocks(selectedValue) {
+        if (!sectorSelect || !blockSelect) return;
+        const sectorId = sectorSelect.value;
+        if (!sectorId) {
+            setSelectOptions(blockSelect, [], "Select sector first", "");
+            return;
+        }
+
+        const url = new URL(wizard.dataset.blocksUrl, window.location.origin);
+        url.searchParams.set("sectorId", sectorId);
+        const response = await fetch(url, { headers: { "Accept": "application/json" } });
+        const blocks = response.ok ? await response.json() : [];
+        setSelectOptions(blockSelect, blocks, blocks.length ? "Select" : "No blocks found", selectedValue || blockSelect.value);
+    }
+
+    async function loadSubTypes(selectedValue) {
+        if (!subTypeSelect) return;
+        const category = wizard.querySelector('input[name="ConnectionCategory"]:checked')?.value;
+        if (!category) {
+            setSelectOptions(subTypeSelect, [], "Select category first", "");
+            return;
+        }
+
+        const url = new URL(wizard.dataset.subtypesUrl, window.location.origin);
+        url.searchParams.set("connectionCategoryId", category);
+        const response = await fetch(url, { headers: { "Accept": "application/json" } });
+        const subTypes = response.ok ? await response.json() : [];
+        setSelectOptions(subTypeSelect, subTypes, subTypes.length ? "Select" : "No sub-types found", selectedValue || subTypeSelect.value);
+    }
+
+    function syncVillageName() {
+        if (!villageSelect || !villageNameInput) return;
+        villageNameInput.value = villageSelect.value ? villageSelect.selectedOptions[0]?.textContent?.trim() || "" : "";
+    }
+
+    function setStep(stepNumber) {
+        currentStep = Math.max(1, Math.min(maxStep, stepNumber));
+        steps.forEach(step => step.classList.toggle("is-active", Number(step.dataset.step) === currentStep));
+        pills.forEach(pill => {
+            const target = Number(pill.dataset.stepTarget);
+            pill.classList.toggle("is-active", target === currentStep);
+            pill.classList.toggle("is-complete", target < currentStep);
+        });
+        backBtn.hidden = currentStep === 1;
+        nextBtn.hidden = currentStep === maxStep;
+        submitBtn.hidden = currentStep !== maxStep;
+        if (currentStep === maxStep) buildReview();
+        clearAlert();
+    }
+
+    wizard.addEventListener("change", event => {
+        const input = event.target;
+        if (input.matches("input[type=file]")) {
+            const row = input.closest(".wb-document-row");
+            const status = row?.querySelector("[data-file-status]");
+            if (status) status.textContent = input.files.length ? "Selected" : "Browse";
+            row?.classList.toggle("is-uploaded", input.files.length > 0);
+        }
+        if (input === sectorSelect) {
+            loadBlocks("");
+        }
+        if (input.name === "ConnectionCategory") {
+            loadSubTypes("");
+        }
+        if (input === villageSelect) {
+            syncVillageName();
+        }
+    });
+
+    nextBtn.addEventListener("click", () => {
+        if (validateStep(currentStep)) setStep(currentStep + 1);
+    });
+    backBtn.addEventListener("click", () => setStep(currentStep - 1));
+    pills.forEach(pill => pill.addEventListener("click", () => {
+        const target = Number(pill.dataset.stepTarget);
+        if (target <= currentStep) {
+            setStep(target);
+            return;
+        }
+        if (target === currentStep + 1 && validateStep(currentStep)) {
+            setStep(target);
+            return;
+        }
+        showAlert("Please complete each step in order.");
+    }));
+    wizard.closest("form")?.addEventListener("submit", event => {
+        for (let step = 1; step <= maxStep; step += 1) {
+            if (!validateStep(step)) {
+                setStep(step);
+                event.preventDefault();
+                return;
+            }
+        }
+    });
+
+    loadBlocks(blockSelect?.value || "");
+    loadSubTypes(subTypeSelect?.value || "");
+    syncVillageName();
+    setStep(1);
+})();
+</script>
