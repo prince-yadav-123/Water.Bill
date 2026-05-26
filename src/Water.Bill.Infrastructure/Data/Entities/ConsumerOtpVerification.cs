@@ -2,7 +2,7 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class ConsumerOtpVerification
 {
-    public Guid Id { get; set; }
+    public long Id { get; set; }
 
     public string ConsumerNo { get; set; } = null!;
 

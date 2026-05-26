@@ -9,9 +9,9 @@ public class ApplicationStatusConfiguration : IEntityTypeConfiguration<Applicati
 {
     public void Configure(EntityTypeBuilder<ApplicationStatus> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("application_status");
+        entity.HasKey(e => e.AutoId).HasName("PRIMARY");
+
+        entity.ToTable("application_status");
         
         entity.HasIndex(e => e.AutoId, "IX_APPLICATION_STATUS_AUTO_ID_AUTO");
         

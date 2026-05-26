@@ -9,8 +9,9 @@ public class SecuritysettingConfiguration : IEntityTypeConfiguration<Securityset
     public void Configure(EntityTypeBuilder<Securitysetting> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        entity.ToTable("securitysettings");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
+        
+entity.ToTable("securitysettings");
 
         entity.HasIndex(e => e.TenantId, "UX_SecuritySettings_TenantId").IsUnique();
 

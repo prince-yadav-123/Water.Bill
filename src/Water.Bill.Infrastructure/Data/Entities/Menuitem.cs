@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Menuitem
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
-    public Guid TenantId { get; set; }
+    public int TenantId { get; set; }
 
-    public Guid? ParentId { get; set; }
+    public int? ParentId { get; set; }
 
     public string Label { get; set; } = null!;
 
@@ -21,7 +21,7 @@ public partial class Menuitem
 
     public string? Module { get; set; }
 
-    public Guid? ModuleId { get; set; }
+    public int? ModuleId { get; set; }
 
     public int Order { get; set; }
 
@@ -43,3 +43,4 @@ public partial class Menuitem
 
     public virtual Menuitem? Parent { get; set; }
 }
+

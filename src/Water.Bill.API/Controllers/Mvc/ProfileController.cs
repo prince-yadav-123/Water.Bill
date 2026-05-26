@@ -24,6 +24,7 @@ public class ProfileController : Controller
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "My Profile";
+        ViewData["ActiveMenu"] = "Profile";
         var userId = GetUserId();
         var user = await _db.Appusers.Include(x => x.Role)
             .AsNoTracking()
@@ -46,6 +47,6 @@ public class ProfileController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private Guid GetUserId()
-        => Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : Guid.Empty;
+    private int GetUserId()
+        => int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : 0;
 }

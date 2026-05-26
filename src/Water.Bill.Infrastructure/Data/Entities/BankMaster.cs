@@ -5,6 +5,8 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class BankMaster
 {
+    public int Id { get; set; }
+
     public double? BankId { get; set; }
 
     public string? BankName { get; set; }

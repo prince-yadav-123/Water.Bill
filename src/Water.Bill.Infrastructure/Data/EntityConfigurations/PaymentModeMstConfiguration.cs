@@ -9,11 +9,13 @@ public class PaymentModeMstConfiguration : IEntityTypeConfiguration<PaymentModeM
 {
     public void Configure(EntityTypeBuilder<PaymentModeMst> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("payment_mode_mst");
+        entity.HasKey(e => e.AutoId).HasName("PRIMARY");
+
+        entity.ToTable("payment_mode_mst");
         
-        entity.Property(e => e.AutoId).HasColumnName("AUTO_ID");
+        entity.Property(e => e.AutoId)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("AUTO_ID");
         entity.Property(e => e.CreatedBy).HasColumnName("CREATED_BY");
         entity.Property(e => e.CreatedOn)
             .HasColumnType("datetime")

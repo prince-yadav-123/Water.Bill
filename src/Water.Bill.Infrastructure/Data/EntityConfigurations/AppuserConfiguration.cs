@@ -10,8 +10,9 @@ public class AppuserConfiguration : IEntityTypeConfiguration<Appuser>
     public void Configure(EntityTypeBuilder<Appuser> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
         
-        entity
+entity
             .ToTable("appusers")
             .UseCollation("utf8mb4_0900_ai_ci");
         

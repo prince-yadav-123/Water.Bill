@@ -1,0 +1,174 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.HtmlControls;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Xml.Linq;
+
+public partial class MainPage_Connection_transfer : System.Web.UI.Page
+{
+    string dev_type = "";
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            string[] colParam1 = { "CON_MAIN_ID", "CON_NAME" };
+            string[] condParam1 = { "CON_MAIN_ID is not null", "DEV_TYPE='" + Session["DEV_TYPE"] + "'" };
+            UI.GeneralFunctions.CInst().DropDownFill(ddl_Con_cat, "MASTER_CONNECTION_TYPE_DETAILS", colParam1, condParam1, "CON_ID");
+            string[] colParamBANK = { "BANK_ID", "BANK_NAME+'('+ACCOUNT_NO+')' AS BANK_NAME" };
+            string[] condParamBANK = { "BANK_ID is not null" };
+
+            UI.GeneralFunctions.CInst().DropDownFill(ddl_bank_name, "JAL_BANK_MASTER", colParamBANK, condParamBANK, "BANK_ID");
+
+        }
+        if (Session["cons_no"] != "" && Session["cons_no"] != null)
+        {
+            txt_cons_no.Text = Session["cons_no"].ToString();
+            Session["cons_no"] = "";
+        }
+        else
+        {
+            txt_cons_no.Text = txt_cons_no.Text;
+        }
+    }
+    protected void ddl_Con_cat_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        string[] colParam = { "SUB_CON_NAME", "SUB_CON_NAME as SUB_CON_NAME1" };
+        string[] condParam = { "CON_ID='" + ddl_Con_cat.SelectedValue + "'", "DEV_TYPE='" + Session["DEV_TYPE"] + "'" };
+
+        UI.GeneralFunctions.CInst().DropDownFill(ddl_flat_type, "MASTER_CONNECTION_TYPE_DETAILS_TRANS", colParam, condParam, "CON_ID");
+    }
+    protected void btnSearch_Click(object sender, ImageClickEventArgs e)
+    {
+        try
+        {
+            if (Session["DEV_TYPE"].ToString().Equals("4"))
+            {
+                dev_type = "";
+            }
+            else
+            {
+                dev_type = "";
+                //dev_type = " and DEV_TYPE=" + Session["DEV_TYPE"].ToString() + "";
+            }
+
+            string[] colParam2 = new string[] { "*" };
+            string[] condParam2 = new string[] { "CONS_NO='" + txt_cons_no.Text + "'" + dev_type + "" };
+            DataSet ds_Update = BAL.BAL.CInst().SelectTable("VIEW_CONSUMER_DETAILS_MASTER", colParam2, condParam2, "CONSUMER_DETAILS_MASTER");
+            //DataSet ds_Update1 = BAL.BAL.CInst().SelectTable("CONSUMER_DETAILS_TRANS", colParam2, condParam2, "CONSUMER_DETAILS_TRANS");
+            if (ds_Update != null)
+            {
+                if (ds_Update.Tables.Count > 0)
+                {
+                    if (ds_Update.Tables["CONSUMER_DETAILS_MASTER"].Rows.Count > 0)
+                    {
+                        txt_cons_nm.Text = ds_Update.Tables["CONSUMER_DETAILS_MASTER"].Rows[0]["CONS_NM1"].ToString();
+                        txt_cons_fnm.Text = ds_Update.Tables["CONSUMER_DETAILS_MASTER"].Rows[0]["CONS_NM2"].ToString();
+                        try
+                        {
+                            ddl_Con_cat.SelectedValue = ds_Update.Tables["CONSUMER_DETAILS_MASTER"].Rows[0]["CON_TP"].ToString();
+                        }
+                        catch (Exception ex)
+                        {
+                            ddl_Con_cat.SelectedValue = "0";
+
+                        }
+                        string[] colParam3 = { "SUB_CON_NAME", "SUB_CON_NAME as SUB_CON_NAME1" };
+                        string[] condParam3 = { "CON_ID='" + ds_Update.Tables["CONSUMER_DETAILS_MASTER"].Rows[0]["CON_TP"].ToString() + "'", "DEV_TYPE='" + Session["DEV_TYPE"] + "'" };
+                        UI.GeneralFunctions.CInst().DropDownFill(ddl_flat_type, "MASTER_CONNECTION_TYPE_DETAILS_TRANS", colParam3, condParam3, "CON_ID");
+                        try
+                        {
+                            ddl_flat_type.SelectedValue = ds_Update.Tables["CONSUMER_DETAILS_MASTER"].Rows[0]["flat_type"].ToString();
+                        }
+                        catch (Exception ex)
+                        {
+                            ddl_flat_type.SelectedValue = "0";
+
+                        }
+                        try
+                        {
+                            ddl_con_type.SelectedValue = ds_Update.Tables["CONSUMER_DETAILS_MASTER"].Rows[0]["CONS_CTG"].ToString();
+                        }
+                        catch (Exception ex)
+                        {
+                            ddl_con_type.SelectedValue = "0";
+
+                        }
+
+
+                        pnl_New.Enabled = true;
+                        pnl_old.Enabled = true;
+                        btnclose.Visible = true;
+                        btnReset.Visible = true;
+                        btnSave.Visible = true;
+                        txt_trans_date.Focus();
+                    }
+                    else
+                    {
+                    }
+                }
+            }
+        }
+        catch (Exception EX)
+        {
+        }
+    }
+    protected void btnSave_Click(object sender, ImageClickEventArgs e)
+    {
+        Literal lt = new Literal();
+        string[] valparam = {   "@P_CONS_NO,"+txt_cons_no.Text,			                    
+		                        "@P_NODUE_DT,"+ txt_trans_date.Text,
+		                        "@P_NODUE_AMT,"+ txt_trans_amt.Text,
+                                "@P_CHALLAN_NO,"+ txt_challan_no.Text,
+                                "@P_CHALLAN_BANK,"+ ddl_bank_name.SelectedValue,
+                                "@P_CHALLAN_DT,"+ txt_challan_date.Text,
+                                "@P_SECU,"+txt_seuc.Text,
+                                "@P_NDC_upto,"+txt_ndcUpto.Text,
+		                        "@P_USERID ,"+ Session["USERID"].ToString(),
+                                "@P_DEV_TYPE ,"+Session["DEV_TYPE"],
+			                    "@P_OPERATION_TYPE ,1" 
+                            
+                            };
+        string returnval = BAL.BAL.CInst().ProcedureCallSingleNew_string("PRCO_CONSUMER_NODUE", valparam);
+        if (returnval.ToString() == "0")
+        {
+            lt.Text = "<script>alert('" + UI.ErrorMessage.CInst().CheckError(Int32.Parse(returnval)) + "')</script>";
+            this.Controls.Add(lt);
+            reset();
+        }
+        else
+        {
+            lt.Text = "<script>alert('" + UI.ErrorMessage.CInst().CheckError(Int32.Parse(returnval)) + "')</script>";
+            this.Controls.Add(lt);
+        }
+    }
+    protected void btnReset_Click(object sender, ImageClickEventArgs e)
+    {
+        Response.Redirect("~/MainPage/Connection_transfer.aspx");
+    }
+    protected void btnclose_Click(object sender, ImageClickEventArgs e)
+    {
+        Response.Redirect("~/MainPage/Welcome.aspx");
+    }
+    public void reset()
+    {
+        txt_cons_no.Text = "";
+        txt_cons_nm.Text = "";
+        txt_cons_fnm.Text = "";
+        ddl_Con_cat.SelectedValue = "0";
+        ddl_flat_type.SelectedValue = "0";
+
+        txt_trans_date.Text = "";
+        txt_trans_amt.Text = "";
+        txt_challan_no.Text = "";
+        ddl_bank_name.SelectedValue = "0";
+        txt_challan_date.Text = "";
+        txt_seuc.Text = "";
+    }
+}

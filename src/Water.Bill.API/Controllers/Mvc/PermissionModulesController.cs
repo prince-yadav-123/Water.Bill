@@ -26,6 +26,7 @@ public class PermissionModulesController : Controller
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Permission Modules";
+        ViewData["ActiveMenu"] = "Permission Modules";
         var modules = await _db.PermissionModules
             .Where(x => !x.IsDeleted)
             .OrderBy(x => x.Name)
@@ -35,9 +36,10 @@ public class PermissionModulesController : Controller
     }
 
     [RequirePermission("Permission Modules.view")]
-    public async Task<IActionResult> Details(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Details(int id, CancellationToken ct)
     {
         ViewData["Title"] = "View Permission Module";
+        ViewData["ActiveMenu"] = "Permission Modules";
         var module = await _db.PermissionModules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         return module is null ? NotFound() : View(module);
     }
@@ -46,16 +48,17 @@ public class PermissionModulesController : Controller
     public IActionResult Create()
     {
         ViewData["Title"] = "Create Permission Module";
+        ViewData["ActiveMenu"] = "Permission Modules";
         return View(new PermissionModule());
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Permission Modules.add")]
     public async Task<IActionResult> Create(PermissionModule model, CancellationToken ct)
     {
+        ViewData["ActiveMenu"] = "Permission Modules";
         await ValidateModuleAsync(model, ct: ct);
         if (!ModelState.IsValid) return View(model);
 
-        model.Id = Guid.NewGuid();
         model.Name = model.Name.Trim();
         model.IsDeleted = false;
         _db.PermissionModules.Add(model);
@@ -67,16 +70,18 @@ public class PermissionModulesController : Controller
     }
 
     [HttpGet, RequirePermission("Permission Modules.edit")]
-    public async Task<IActionResult> Edit(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Edit(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Edit Permission Module";
+        ViewData["ActiveMenu"] = "Permission Modules";
         var module = await _db.PermissionModules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         return module is null ? NotFound() : View(module);
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Permission Modules.edit")]
-    public async Task<IActionResult> Edit(Guid id, PermissionModule model, CancellationToken ct)
+    public async Task<IActionResult> Edit(int id, PermissionModule model, CancellationToken ct)
     {
+        ViewData["ActiveMenu"] = "Permission Modules";
         var module = await _db.PermissionModules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (module is null) return NotFound();
 
@@ -98,7 +103,7 @@ public class PermissionModulesController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Permission Modules.delete")]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var module = await _db.PermissionModules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (module is null) return RedirectToAction(nameof(Index));
@@ -118,7 +123,7 @@ public class PermissionModulesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task ValidateModuleAsync(PermissionModule model, Guid? currentId = null, CancellationToken ct = default)
+    private async Task ValidateModuleAsync(PermissionModule model, int? currentId = null, CancellationToken ct = default)
     {
         var name = model.Name?.Trim();
         if (string.IsNullOrWhiteSpace(name))
@@ -140,7 +145,7 @@ public class PermissionModulesController : Controller
         }
     }
 
-    private async Task<bool> IsModuleInUseAsync(Guid moduleId, CancellationToken ct)
+    private async Task<bool> IsModuleInUseAsync(int moduleId, CancellationToken ct)
     {
         var usedByMenu = await _db.Menuitems.AnyAsync(x => x.ModuleId == moduleId && x.IsActive == true && !x.IsDeleted, ct);
         if (usedByMenu) return true;

@@ -12,19 +12,19 @@ public class PermissionService : IPermissionService
 
     public PermissionService(ApplicationDbContext db) => _db = db;
 
-    public async Task<IReadOnlyList<MenuItemDto>> GetMenuTreeAsync(Guid tenantId, CancellationToken ct = default)
+    public async Task<IReadOnlyList<MenuItemDto>> GetMenuTreeAsync(int tenantId, CancellationToken ct = default)
     {
         var items = await LoadMenuTreeAsync(tenantId, ct);
 
-        if (items.Count == 0 && tenantId != Guid.Empty)
+        if (items.Count == 0 && tenantId != 0)
         {
-            items = await LoadMenuTreeAsync(Guid.Empty, ct);
+            items = await LoadMenuTreeAsync(0, ct);
         }
 
         return items.Select(MapMenuItem).ToList();
     }
 
-    private async Task<List<Menuitem>> LoadMenuTreeAsync(Guid tenantId, CancellationToken ct)
+    private async Task<List<Menuitem>> LoadMenuTreeAsync(int tenantId, CancellationToken ct)
     {
         return await _db.Menuitems
             .AsNoTracking()
@@ -36,7 +36,7 @@ public class PermissionService : IPermissionService
             .ToListAsync(ct);
     }
 
-    public async Task<HashSet<string>> GetViewableModulesAsync(Guid roleId, CancellationToken ct = default)
+    public async Task<HashSet<string>> GetViewableModulesAsync(int roleId, CancellationToken ct = default)
     {
         var modules = await _db.Rolepermissions
             .AsNoTracking()
@@ -50,7 +50,7 @@ public class PermissionService : IPermissionService
         return [.. modules.Where(x => !string.IsNullOrWhiteSpace(x))];
     }
 
-    public async Task<HashSet<Guid>> GetMenuVisibleModuleIdsAsync(Guid roleId, CancellationToken ct = default)
+    public async Task<HashSet<int>> GetMenuVisibleModuleIdsAsync(int roleId, CancellationToken ct = default)
     {
         var moduleIds = await _db.Rolepermissions
             .AsNoTracking()
@@ -68,7 +68,7 @@ public class PermissionService : IPermissionService
         return [.. moduleIds];
     }
 
-    public async Task<HashSet<string>> GetMenuVisibleModulesAsync(Guid roleId, CancellationToken ct = default)
+    public async Task<HashSet<string>> GetMenuVisibleModulesAsync(int roleId, CancellationToken ct = default)
     {
         var modules = await _db.Rolepermissions
             .AsNoTracking()
@@ -84,7 +84,7 @@ public class PermissionService : IPermissionService
         return [.. modules.Where(x => !string.IsNullOrWhiteSpace(x))];
     }
 
-    public async Task<bool> HasPermissionAsync(Guid roleId, string module, string action, CancellationToken ct = default)
+    public async Task<bool> HasPermissionAsync(int roleId, string module, string action, CancellationToken ct = default)
     {
         var normalizedModule = module.Trim().ToLower();
         var permission = await _db.Rolepermissions
@@ -117,7 +117,7 @@ public class PermissionService : IPermissionService
         };
     }
 
-    public async Task SavePermissionsAsync(Guid roleId, IEnumerable<RolePermissionDto> permissions, CancellationToken ct = default)
+    public async Task SavePermissionsAsync(int roleId, IEnumerable<RolePermissionDto> permissions, CancellationToken ct = default)
     {
         var incoming = permissions.ToList();
         var existing = await _db.Rolepermissions
@@ -134,7 +134,6 @@ public class PermissionService : IPermissionService
             {
                 _db.Rolepermissions.Add(new Rolepermission
                 {
-                    Id = Guid.NewGuid(),
                     RoleId = roleId,
                     ModuleId = item.ModuleId,
                     Module = normalizedModule,

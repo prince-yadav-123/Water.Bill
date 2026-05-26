@@ -91,7 +91,7 @@ public class AuthService : IAuthService
 
     private static bool VerifyPassword(string password, string hash) => HashPassword(password) == hash;
 
-    private async Task RecordFailedAttemptAsync(string username, Guid? userId, string reason, CancellationToken ct)
+    private async Task RecordFailedAttemptAsync(string username, int? userId, string reason, CancellationToken ct)
     {
         _db.Loginattempts.Add(new Loginattempt
         {

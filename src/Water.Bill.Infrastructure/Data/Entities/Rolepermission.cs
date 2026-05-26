@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Rolepermission
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
-    public Guid RoleId { get; set; }
+    public int RoleId { get; set; }
 
     public string Module { get; set; } = null!;
 
-    public Guid? ModuleId { get; set; }
+    public int? ModuleId { get; set; }
 
     public bool CanSeeMenu { get; set; }
 
@@ -43,3 +43,4 @@ public partial class Rolepermission
 
     public virtual Approle Role { get; set; } = null!;
 }
+

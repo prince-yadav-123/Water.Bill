@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Approle
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string Name { get; set; } = null!;
 

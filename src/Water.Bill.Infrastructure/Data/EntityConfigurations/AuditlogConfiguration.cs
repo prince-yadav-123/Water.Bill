@@ -10,8 +10,9 @@ public class AuditlogConfiguration : IEntityTypeConfiguration<Auditlog>
     public void Configure(EntityTypeBuilder<Auditlog> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
         
-        entity
+entity
             .ToTable("auditlogs")
             .UseCollation("utf8mb4_0900_ai_ci");
         

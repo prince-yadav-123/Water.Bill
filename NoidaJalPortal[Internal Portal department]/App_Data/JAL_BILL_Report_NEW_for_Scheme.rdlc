@@ -1,0 +1,1607 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSources>
+    <DataSource Name="ConStringSQL">
+      <rd:DataSourceID>9d81a5d5-4d99-4e2e-bb3b-f2fb06bb7c24</rd:DataSourceID>
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString />
+      </ConnectionProperties>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+  <RightMargin>0.1in</RightMargin>
+  <LeftMargin>0.1in</LeftMargin>
+  <BottomMargin>0.25in</BottomMargin>
+  <rd:ReportID>dc5bf3c6-cd47-4e91-b2f2-4c454e4ef2c8</rd:ReportID>
+  <EmbeddedImages>
+    <EmbeddedImage Name="noida">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <PageWidth>9in</PageWidth>
+  <DataSets>
+    <DataSet Name="JALONLINEDataSet_VIEW_JAL_BILL_MASTER">
+      <Fields>
+        <Field Name="CONS_NO">
+          <DataField>CONS_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BILL_NO">
+          <DataField>BILL_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CONS_NM1">
+          <DataField>CONS_NM1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CON_TP">
+          <DataField>CON_TP</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CONS_CTG">
+          <DataField>CONS_CTG</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="FLAT_TYPE">
+          <DataField>FLAT_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="FLAT_NO">
+          <DataField>FLAT_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BLK_NO">
+          <DataField>BLK_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SECTOR">
+          <DataField>SECTOR</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PLOT_SIZE">
+          <DataField>PLOT_SIZE</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="PIPE_SIZE">
+          <DataField>PIPE_SIZE</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="CONN_DT">
+          <DataField>CONN_DT</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DATE">
+          <DataField>BILL_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DUE_DATE">
+          <DataField>BILL_DUE_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DATE_FROM">
+          <DataField>BILL_DATE_FROM</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DATE_TO">
+          <DataField>BILL_DATE_TO</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="MIN_RATE">
+          <DataField>MIN_RATE</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="BILL_REBATE">
+          <DataField>BILL_REBATE</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="CESS_AMT">
+          <DataField>CESS_AMT</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="AREAR">
+          <DataField>AREAR</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="AREAR_TEXT">
+          <DataField>AREAR_TEXT</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="AREAR_INT">
+          <DataField>AREAR_INT</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="AREAR_INT_TEXT">
+          <DataField>AREAR_INT_TEXT</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LAST_BILL_EXTRA">
+          <DataField>LAST_BILL_EXTRA</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="STATUS">
+          <DataField>STATUS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CONS_NM2">
+          <DataField>CONS_NM2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="property_no">
+          <DataField>property_no</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="REG_NO">
+          <DataField>REG_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ESTI_NO">
+          <DataField>ESTI_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ESTI_AMT">
+          <DataField>ESTI_AMT</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="SECU">
+          <DataField>SECU</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ESTI_DT">
+          <DataField>ESTI_DT</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="ESTI1_AMT">
+          <DataField>ESTI1_AMT</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="DEV_TYPE">
+          <DataField>DEV_TYPE</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="OLD_NEW_EN">
+          <DataField>OLD_NEW_EN</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="OLD_NEW_UP">
+          <DataField>OLD_NEW_UP</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="MOB_NO">
+          <DataField>MOB_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="EMAIL_ID">
+          <DataField>EMAIL_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CONS_ADDRESS">
+          <DataField>CONS_ADDRESS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="MIN_TOTAL_AMT">
+          <DataField>MIN_TOTAL_AMT</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="BILL_REBATE_PER">
+          <DataField>BILL_REBATE_PER</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="BILL_REBATE_AMT">
+          <DataField>BILL_REBATE_AMT</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="TOTAL_BILL_AMT">
+          <DataField>TOTAL_BILL_AMT</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="BEFORE_DATE">
+          <DataField>BEFORE_DATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="AFTER_DATE">
+          <DataField>AFTER_DATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="AFTER_DATE_AMT">
+          <DataField>AFTER_DATE_AMT</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="Div_type">
+          <DataField>Div_type</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DATE1">
+          <DataField>BILL_DATE1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DUE_DATE1">
+          <DataField>BILL_DUE_DATE1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DATE_FROM1">
+          <DataField>BILL_DATE_FROM1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BILL_DATE_TO1">
+          <DataField>BILL_DATE_TO1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="bill_after_sep_amt">
+          <DataField>bill_after_sep_amt</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="Adv_amt">
+          <DataField>Adv_amt</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="PRINT_STATUS">
+          <DataField>PRINT_STATUS</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="B_MAY">
+          <DataField>B_MAY</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="B_APR">
+          <DataField>B_APR</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="B_SEP">
+          <DataField>B_SEP</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="OLD_RATE">
+          <DataField>OLD_RATE</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="LAST_PAID_AMT">
+          <DataField>LAST_PAID_AMT</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="BILL_TYPE">
+          <DataField>BILL_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BILL_COUNT">
+          <DataField>BILL_COUNT</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="KHASRA_NO">
+          <DataField>KHASRA_NO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="VILLGAE_NAME">
+          <DataField>VILLGAE_NAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SCHEME_ID">
+          <DataField>SCHEME_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BILL_PERCENTAGE">
+          <DataField>BILL_PERCENTAGE</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>ConStringSQL</DataSourceName>
+        <CommandText>SELECT    *
+FROM         VIEW_JAL_BILL_MASTER</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <rd:DataSetInfo>
+        <rd:DataSetName>JALONLINEDataSet</rd:DataSetName>
+        <rd:TableName>VIEW_JAL_BILL_MASTER</rd:TableName>
+        <rd:TableAdapterName>VIEW_JAL_BILL_MASTERTableAdapter</rd:TableAdapterName>
+        <rd:TableAdapterFillMethod>Fill</rd:TableAdapterFillMethod>
+        <rd:TableAdapterGetDataMethod>GetData</rd:TableAdapterGetDataMethod>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <Code />
+  <Width>8.375in</Width>
+  <Body>
+    <ReportItems>
+      <Table Name="table1">
+        <DataSetName>JALONLINEDataSet_VIEW_JAL_BILL_MASTER</DataSetName>
+        <KeepTogether>true</KeepTogether>
+        <Top>0.125in</Top>
+        <TableGroups>
+          <TableGroup>
+            <Grouping Name="table1_Group1">
+              <GroupExpressions>
+                <GroupExpression>=Fields!CONS_NO.Value</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtEnd>true</PageBreakAtEnd>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox2">
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                              <Bottom>Black</Bottom>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                              <Right>Solid</Right>
+                              <Bottom>Solid</Bottom>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>1pt</Right>
+                              <Bottom>1pt</Bottom>
+                            </BorderWidth>
+                            <FontFamily>Courier New</FontFamily>
+                            <FontSize>13pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                          <ZIndex>33</ZIndex>
+                          <CanGrow>true</CanGrow>
+                          <Value>="Consumer No.: "+Fields!CONS_NO.Value</Value>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox11">
+                          <Style>
+                            <BorderColor>
+                              <Bottom>Black</Bottom>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                              <Bottom>Solid</Bottom>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Bottom>1pt</Bottom>
+                            </BorderWidth>
+                            <FontFamily>Courier New</FontFamily>
+                            <FontSize>13pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <TextAlign>Right</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                          <ZIndex>32</ZIndex>
+                          <CanGrow>true</CanGrow>
+                          <Value>="Challan No. :"+Fields!BILL_NO.Value</Value>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Height>0.25in</Height>
+                </TableRow>
+              </TableRows>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+            </Header>
+          </TableGroup>
+        </TableGroups>
+        <Width>8.125in</Width>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox15">
+                      <Style>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                          <Bottom>Solid</Bottom>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>1pt</Bottom>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>3pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>3pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>31</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Name"&amp; Space(6) &amp;":"&amp; Space(1) &amp;Fields!CONS_NM1.Value+system.Environment.NewLine+"Sector"&amp; Space(4) &amp;":"&amp; Space(1) &amp;Fields!SECTOR.Value +"(NOIDA)"+system.Environment.NewLine+"Block"&amp; Space(5) &amp;":"&amp; Space(1) &amp;Fields!BLK_NO.Value+system.Environment.NewLine+"Flat No."&amp; Space(2) &amp;":"&amp; Space(1) &amp;Fields!FLAT_NO.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox9">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                          <Right>Black</Right>
+                          <Top>Black</Top>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                          <Right>Solid</Right>
+                          <Top>Solid</Top>
+                          <Bottom>Solid</Bottom>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                          <Right>1pt</Right>
+                          <Top>1pt</Top>
+                          <Bottom>1pt</Bottom>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>3pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>3pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>30</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Due Date"&amp; Space(5) &amp;":"&amp; Space(1) &amp;Fields!BILL_DUE_DATE.Value+system.Environment.NewLine+"Conn. Type"&amp; Space(3) &amp;":"&amp; Space(1) &amp;Fields!CON_TP.Value+system.Environment.NewLine+"Flat Type"&amp; Space(4) &amp;":"&amp; Space(1) &amp; Fields!FLAT_TYPE.Value+" ["+Fields!PIPE_SIZE.Value.ToString()+"mm]"+system.Environment.NewLine+"Category"&amp; Space(5) &amp;":"&amp; Space(1) &amp; Fields!CONS_CTG.Value+system.Environment.NewLine+"Bill Period"&amp; Space(2) &amp;":"&amp; Space(1) &amp; Fields!BILL_DATE_FROM.Value+" To "+Fields!BILL_DATE_TO.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>1in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox36">
+                      <rd:DefaultName>textbox36</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>29</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Min. Charges per Month(Rs.) "+Space(2)+Fields!MIN_RATE.Value.ToString()</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox41">
+                      <rd:DefaultName>textbox41</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>28</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!MIN_RATE.Value*12</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox7">
+                      <rd:DefaultName>textbox7</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>27</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Last Paid Amount in year 2014-2015"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox28">
+                      <rd:DefaultName>textbox28</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>26</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!LAST_PAID_AMT.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox35">
+                      <rd:DefaultName>textbox35</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>25</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Revised Rate Difference"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox42">
+                      <rd:DefaultName>textbox42</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>24</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!MIN_TOTAL_AMT.Value-Fields!LAST_PAID_AMT.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox34">
+                      <rd:DefaultName>textbox34</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>23</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Rebate ("+Str(Fields!BILL_REBATE_PER.Value)+"%)"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox38">
+                      <rd:DefaultName>textbox38</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>22</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!BILL_REBATE_AMT.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox51">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>21</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>Cess </Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox54">
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>20</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!CESS_AMT.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox3">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>19</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Arrear"+Space(2)+Fields!AREAR_TEXT.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox50">
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>18</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!AREAR.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox10">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>17</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Interest on Arrear"+Space(2)+Fields!AREAR_INT_TEXT.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox8">
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>16</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Fields!AREAR_INT.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox17">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                          <Bottom>Solid</Bottom>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>1pt</Left>
+                          <Bottom>1pt</Bottom>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>15</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Other Credit (Rs.)"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Adv_amt">
+                      <rd:DefaultName>Adv_amt</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                          <Bottom>Solid</Bottom>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>1pt</Right>
+                          <Bottom>1pt</Bottom>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>14</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="(-)"+Fields!Adv_amt.Value.ToString()</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox27">
+                      <Style>
+                        <BorderColor>
+                          <Top>Black</Top>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Top>Solid</Top>
+                          <Bottom>Solid</Bottom>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Top>1pt</Top>
+                          <Bottom>1pt</Bottom>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>13</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Total Amount to be paid before "+Fields!BILL_DUE_DATE.Value.ToString()+"(Discount on interest "+Fields!BILL_PERCENTAGE.Value.ToString()+"% = Rs. "+round((Fields!AREAR_INT.Value*Fields!BILL_PERCENTAGE.Value)/100,0).ToString()+" )"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox33">
+                      <rd:DefaultName>textbox33</rd:DefaultName>
+                      <Style>
+                        <BorderColor>
+                          <Top>Black</Top>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Top>Solid</Top>
+                          <Bottom>Solid</Bottom>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Top>1pt</Top>
+                          <Bottom>1pt</Bottom>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>12</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Rs. "+(Fields!TOTAL_BILL_AMT.Value-round((Fields!AREAR_INT.Value*Fields!BILL_PERCENTAGE.Value)/100,0)).ToString()</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Rectangle Name="rectangle1">
+                      <ZIndex>11</ZIndex>
+                      <ReportItems>
+                        <Textbox Name="textbox13">
+                          <Top>1.25in</Top>
+                          <Style>
+                            <FontFamily>Courier New</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                          <ZIndex>5</ZIndex>
+                          <CanGrow>true</CanGrow>
+                          <Left>4in</Left>
+                          <Value>="Amount in Words:........................"+System.Environment.NewLine+
+"........................................."</Value>
+                        </Textbox>
+                        <Line Name="line5">
+                          <Top>1.25in</Top>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                          </Style>
+                          <ZIndex>4</ZIndex>
+                          <Height>0in</Height>
+                        </Line>
+                        <Textbox Name="textbox18">
+                          <Top>1.25in</Top>
+                          <Width>3.875in</Width>
+                          <Style>
+                            <FontFamily>Courier New</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                          <ZIndex>3</ZIndex>
+                          <CanGrow>true</CanGrow>
+                          <Left>0.125in</Left>
+                          <Value>=" "+System.Environment.NewLine+"Amount in Figure Rs.:............."</Value>
+                        </Textbox>
+                        <Line Name="line4">
+                          <Width>0in</Width>
+                          <Style>
+                            <BorderStyle>
+                              <Default>Solid</Default>
+                            </BorderStyle>
+                          </Style>
+                          <ZIndex>2</ZIndex>
+                          <Left>4in</Left>
+                          <Height>1.25in</Height>
+                        </Line>
+                        <Textbox Name="textbox24">
+                          <Top>0.0625in</Top>
+                          <Width>3.875in</Width>
+                          <Style>
+                            <FontFamily>Courier New</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                          <ZIndex>1</ZIndex>
+                          <CanGrow>true</CanGrow>
+                          <Left>4.125in</Left>
+                          <Height>1.1875in</Height>
+                          <Value>="Cash Denomination"+System.Environment.NewLine+"1000 X ___=________" +System.Environment.NewLine+
+"500 X ____=________"+System.Environment.NewLine+
+"100 X ____=________"+System.Environment.NewLine+
+"50 X _____=________"+System.Environment.NewLine+
+"10 X _____=________"</Value>
+                        </Textbox>
+                        <Textbox Name="textbox25">
+                          <Width>3.875in</Width>
+                          <Style>
+                            <FontFamily>Courier New</FontFamily>
+                            <FontSize>11pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <TextAlign>Left</TextAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                          <CanGrow>true</CanGrow>
+                          <Left>0.125in</Left>
+                          <Height>1.25in</Height>
+                          <Value>="Cheque "+space(4)+"[ ]"+space(4)+"Demand Draft "+space(4)+"[ ]"+System.Environment.NewLine+System.Environment.NewLine+"Cheque/DD No."+space(2)+":___________________" +System.Environment.NewLine+
+"Bank Name"+space(6)+":___________________"+System.Environment.NewLine+
+"Cheque/DD Date"+space(1)+":___________________"+System.Environment.NewLine+
+"Deposit Date "+space(2)+":___________________"</Value>
+                        </Textbox>
+                      </ReportItems>
+                      <Style>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                      </Style>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>1.625in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox65">
+                      <Style>
+                        <BorderColor>
+                          <Top>Black</Top>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Top>Solid</Top>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Top>1pt</Top>
+                        </BorderWidth>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextDecoration>Underline</TextDecoration>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>10</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>Please Read the Instructions Given Below-</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox19">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>9</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="1.  Payment shall be made by Cash or DD in favour of ‘NOIDA’ directly in HDFC &amp; ICICI Bank any branches of Noida or Online-Payment can be via official website of Noida Jal i.e. www.noidajalonline.com ."+ System.Environment.NewLine + System.Environment.NewLine +"2.  If amount has already been deposited then,The demand is treated as withdrawn."+ System.Environment.NewLine + System.Environment.NewLine +"3.  The water connection shall be disconnected if payment is not made upto due date without any further notice."+ System.Environment.NewLine + System.Environment.NewLine +"4.  For any Clarification / error please contact to the office of the Project Engineer water work's compound "+Fields!Div_type.Value+" between 11.00 a.m. to 2.00 p.m. on all working days"+ System.Environment.NewLine + System.Environment.NewLine +"5.  This is  a computer generated demand which requires no signature."+ System.Environment.NewLine + System.Environment.NewLine +"6. For any other information visit the WebSite http://noidaauthorityonline.com ."+ System.Environment.NewLine + System.Environment.NewLine +"7. E &amp; O E."</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox32">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>8</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>Mobile No.-</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox22">
+                      <rd:DefaultName>textbox22</rd:DefaultName>
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>7</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox23">
+                      <rd:DefaultName>textbox23</rd:DefaultName>
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>6</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox20">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>5</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>Address -</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox21">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>4</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>Name &amp; Signature of Depositor</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox26">
+                      <rd:DefaultName>textbox26</rd:DefaultName>
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>3</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox12">
+                      <rd:DefaultName>textbox12</rd:DefaultName>
+                      <Style>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>2</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox29">
+                      <rd:DefaultName>textbox29</rd:DefaultName>
+                      <Style>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>1</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox31">
+                      <rd:DefaultName>textbox31</rd:DefaultName>
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>11pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <CanGrow>true</CanGrow>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.125in</Height>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Header>
+          <TableRows>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Image Name="image2">
+                      <Sizing>Fit</Sizing>
+                      <MIMEType>image/png</MIMEType>
+                      <Source>Embedded</Source>
+                      <Style />
+                      <ZIndex>41</ZIndex>
+                      <Value>noida</Value>
+                    </Image>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox16">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>16pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Center</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <ZIndex>40</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="New Okhla Industrial Development Authority"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox1">
+                      <Style>
+                        <Color>Green</Color>
+                        <FontSize>18pt</FontSize>
+                        <FontWeight>800</FontWeight>
+                        <TextAlign>Center</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>39</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>=Left(Fields!Div_type.Value,7)</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.375in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox5">
+                      <rd:DefaultName>textbox5</rd:DefaultName>
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <TextAlign>Center</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <ZIndex>38</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Office of The Project Engineer "+system.Environment.NewLine+"Noida, Gautam Budh Nagar, U.P."</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox40">
+                      <rd:DefaultName>textbox40</rd:DefaultName>
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>13pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextDecoration>Underline</TextDecoration>
+                        <TextAlign>Center</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <ZIndex>37</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="Bill Cum Challan for Water Charges"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox14">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>13pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextDecoration>Underline</TextDecoration>
+                        <TextAlign>Center</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <ZIndex>36</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="(Notice for Arrear Under Amnesty Scheme)"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+            <TableRow>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox6">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>13pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Left</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>35</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="HDFC Bank [ ]"+System.Environment.NewLine+"Client Code-NOKLIDVAUT"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox4">
+                      <Style>
+                        <FontFamily>Courier New</FontFamily>
+                        <FontSize>13pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <TextAlign>Right</TextAlign>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                      <ZIndex>34</ZIndex>
+                      <CanGrow>true</CanGrow>
+                      <Value>="ICICI BANK [ ]"+System.Environment.NewLine+"A/c No.:- 003101220769"</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Height>0.25in</Height>
+            </TableRow>
+          </TableRows>
+          <RepeatOnNewPage>true</RepeatOnNewPage>
+        </Header>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.25in</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>3in</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.875in</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1in</Width>
+          </TableColumn>
+        </TableColumns>
+        <Height>7.625in</Height>
+        <Left>0.125in</Left>
+      </Table>
+    </ReportItems>
+    <Height>8in</Height>
+  </Body>
+  <Language>en-US</Language>
+  <TopMargin>0.25in</TopMargin>
+  <PageHeight>12in</PageHeight>
+</Report>

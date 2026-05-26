@@ -9,9 +9,9 @@ public class MasterConnectionTypeDetailsTranConfiguration : IEntityTypeConfigura
 {
     public void Configure(EntityTypeBuilder<MasterConnectionTypeDetailsTran> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("master_connection_type_details_trans");
+        entity.HasKey(e => e.SubConId).HasName("PRIMARY");
+        
+        entity.ToTable("master_connection_type_details_trans");
         
         entity.Property(e => e.ConId)
             .HasMaxLength(4)
@@ -20,7 +20,9 @@ public class MasterConnectionTypeDetailsTranConfiguration : IEntityTypeConfigura
         entity.Property(e => e.Status)
             .HasMaxLength(1)
             .HasColumnName("STATUS");
-        entity.Property(e => e.SubConId).HasColumnName("SUB_CON_ID");
+        entity.Property(e => e.SubConId)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("SUB_CON_ID");
         entity.Property(e => e.SubConName)
             .HasMaxLength(50)
             .HasColumnName("SUB_CON_NAME");

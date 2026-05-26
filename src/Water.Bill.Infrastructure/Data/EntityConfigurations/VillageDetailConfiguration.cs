@@ -9,9 +9,9 @@ public class VillageDetailConfiguration : IEntityTypeConfiguration<VillageDetail
 {
     public void Configure(EntityTypeBuilder<VillageDetail> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("village_detail");
+        entity.HasKey(e => e.VillageNo).HasName("PRIMARY");
+        
+        entity.ToTable("village_detail");
         
         entity.HasIndex(e => e.VillageNo, "IX_Village_Detail_Village_no_AUTO");
         

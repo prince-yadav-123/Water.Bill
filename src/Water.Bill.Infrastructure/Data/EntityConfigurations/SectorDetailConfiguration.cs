@@ -9,9 +9,9 @@ public class SectorDetailConfiguration : IEntityTypeConfiguration<SectorDetail>
 {
     public void Configure(EntityTypeBuilder<SectorDetail> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("sector_detail");
+        entity.HasKey(e => e.SNo).HasName("PRIMARY");
+        
+        entity.ToTable("sector_detail");
         
         entity.HasIndex(e => e.SNo, "IX_Sector_Detail_S_no_AUTO");
         

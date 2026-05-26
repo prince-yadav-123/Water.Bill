@@ -5,7 +5,7 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class PipeSizeMaster
 {
-    public int? PipeSizeId { get; set; }
+    public int PipeSizeId { get; set; }
 
     public int? PipeSize { get; set; }
 

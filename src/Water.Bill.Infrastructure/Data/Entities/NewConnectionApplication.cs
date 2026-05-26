@@ -84,23 +84,23 @@ public partial class NewConnectionApplication
 
     public string? SubmittedByConsumerNo { get; set; }
 
-    public Guid? SubmittedByConsumerUserId { get; set; }
+    public int? SubmittedByConsumerUserId { get; set; }
 
     public DateTime? SubmittedOn { get; set; }
 
-    public Guid? CreatedBy { get; set; }
+    public int? CreatedBy { get; set; }
 
     public DateTime CreatedOn { get; set; }
 
-    public Guid? UpdatedBy { get; set; }
+    public int? UpdatedBy { get; set; }
 
     public DateTime? UpdatedOn { get; set; }
 
-    public Guid? ApprovedBy { get; set; }
+    public int? ApprovedBy { get; set; }
 
     public DateTime? ApprovedOn { get; set; }
 
-    public Guid? RejectedBy { get; set; }
+    public int? RejectedBy { get; set; }
 
     public DateTime? RejectedOn { get; set; }
 
@@ -118,3 +118,4 @@ public partial class NewConnectionApplication
 
     public virtual ICollection<NewConnectionApprovalHistory> ApprovalHistory { get; set; } = new List<NewConnectionApprovalHistory>();
 }
+

@@ -9,9 +9,9 @@ public class PaymentTypeMstConfiguration : IEntityTypeConfiguration<PaymentTypeM
 {
     public void Configure(EntityTypeBuilder<PaymentTypeMst> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("payment_type_mst");
+        entity.HasKey(e => e.AutoId).HasName("PRIMARY");
+
+        entity.ToTable("payment_type_mst");
         
         entity.HasIndex(e => e.AutoId, "IX_PAYMENT_TYPE_MST_AUTO_ID_AUTO");
         

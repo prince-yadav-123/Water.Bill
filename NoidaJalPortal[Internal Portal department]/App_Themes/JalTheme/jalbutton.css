@@ -1,0 +1,387 @@
+﻿body
+{
+	margin: 0 0 0 0;
+	font-family: Verdana;
+	font-size: 10pt;
+}
+fieldset
+{
+	border: Solid 1px Grey;
+}
+.button
+{
+	width: 80px;
+	font-size: 14px;
+	font-family: Georgia, serif;
+	text-decoration: none;
+	vertical-align: middle;
+}
+.gridRows
+{
+	font-size: 9px;
+	font-family: Verdana;
+	font-weight: 500;
+	text-align: left;
+	color: #504A4B;
+	padding-left: 10px;
+	border: 1px Solid #504A4B;
+}
+
+.gridHeader
+{
+	font-size: 10px;
+	font-family: Verdana;
+	background-color: #9d9e9e; /*747170 #6D7B8D #747170 */
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	padding-right: 10px;
+}
+.gridFooter
+{
+	font-size: 12px;
+	font-family: Verdana;
+	background-color: #9d9e9e; /*747170 #6D7B8D #747170 */
+	font-weight: bold;
+	text-align: left;
+	color: white;
+	padding-right: 10px;
+}
+.readonlytxt
+{
+	border: 1px Solid #9d9e9e;
+	background-color: #EEE; /*#EEE dcddde  504A4B*/
+	color: #000000;
+	font-family: Verdana;
+	width: 150px;
+}
+.IDtxt
+{
+	border: 1px Solid #9d9e9e;
+	background-color: #EEE; /*#EEE dcddde  504A4B*/
+	color: #FF0000;
+	font-weight: bold;
+	font-family: Verdana;
+}
+.pageLabel
+{
+	font-size: 8pt;
+	color: #8b0000;
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	font-family: Verdana;
+}
+.pageControl
+{
+	text-align: left;
+	vertical-align: top;
+	padding-left: 5px;
+	font-family: Verdana;
+}
+
+.tr_label
+{
+	font-family: Verdana;
+	font-size: 11px;
+	text-align: left;
+	font-weight: bold;
+	vertical-align: top;
+	color: #0B3861;
+}
+.td_right
+{
+	font-family: Verdana;
+	font-size: 11px;
+	text-align: right;
+	vertical-align: top;
+	font-weight: bold;
+	padding-right: 5px;
+	color: #0B3861;
+}
+.td_right1
+{
+	font-family: Verdana;
+	font-size: 11px;
+	text-align: right;
+	vertical-align: top;
+	padding-right: 5px;
+}
+
+.td_left
+{
+	font-family: Arial;
+	font-size: 11px;
+	text-align: left;
+	vertical-align: top;
+	font-weight: bold;
+	padding-left: 2px;
+}
+.td_center
+{
+	font-family: Arial;
+	font-size: 11px;
+	text-align: center;
+	vertical-align: top;
+	font-weight: bold;
+	padding-left: 10px;
+}
+
+.td_text
+{
+	font-size: 8pt;
+	font-weight: normal;
+	font-family: Verdana;
+	vertical-align: top;
+	text-align: left;
+	width: 150px;
+}
+.td_text_ddl
+{
+	font-size: 8pt;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: left;
+	width: 100px;
+}
+.td_text_search
+{
+	font-size: 8pt;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: left;
+	width: 80px;
+}
+.td_textfield
+{
+	font-size: 8pt;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: left;
+	width: 288px;
+}
+.tbl
+{
+	font-size: 8pt;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.tr_pagecontrol
+{
+	font-size: 8pt;
+	color: Black;
+	font-weight: bold;
+	text-align: left;
+	margin-right: 20px;
+	padding-right: 20px;
+	vertical-align: middle;
+}
+.tblmain
+{
+	font-size: 8pt;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+	text-align: left;
+	width: 100%;
+	border-bottom: solid 1px black;
+	border-top: solid 1px black;
+	border-left: solid 1px black;
+	border-right: solid 1px black;
+}
+.tblmainpro
+{
+	font-size: 8pt;
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+	text-align: left;
+	width: 100%;
+	border-bottom: solid 1px black;
+	border-top: solid 1px black;
+	border-left: solid 1px black;
+	border-right: solid 1px black;
+}
+.tdhome
+{
+	height: 23px;
+	width: 27px;
+	background: url(../../images/Jal_all_01.jpg) no-repeat center top;
+}
+.tdhomeleft
+{
+	height: 23px;
+	width: 773px;
+	text-align: right;
+	padding-right: 10px;
+	background: url(../../images/Jal_all_02.jpg) repeat-x center top;
+}
+
+.tdhomeLOGIN
+{
+	height: 23px;
+	width: 27px;
+	background-color: #273855; /*background: url(../../images/Jal_all_01.jpg) no-repeat center top;*/
+}
+.tdhomeleftLOGIN
+{
+	height: 23px;
+	width: 773px;
+	text-align: right;
+	background-color: #273855;
+	padding-right: 10px; /*background: url(../../images/Jal_all_02.jpg) repeat-x center top;*/
+}
+
+.tdlogleftREPEATLEFT
+{
+	height: 32px;
+	text-align: left;
+	padding-left: 20px;
+	background: url(../../images/Jal_all_04A.jpg) repeat-x center top;
+}
+.tdlogleftREPEAT
+{
+	height: 32px;
+	padding-right: 20px;
+	text-align: right;
+	background: url(../../images/Jal_all_04A.jpg) repeat-x center top;
+}
+.tdmenu
+{
+	height: 21px;
+	width: 100%;
+	background: url(../../images/Jal_all_05.jpg) repeat-x center top;
+}
+.tdcenter
+{
+	height: 100%;
+	width: 100%;
+	background-color: White;
+	text-align: center;
+}
+.tdcenter_login
+{
+	height: 100%;
+	width: 100%;
+	background-color: White;
+	text-align: center;
+	vertical-align: middle;
+}
+.tdfooter
+{
+	height: 21px;
+	background: url(../../images/Jal_all_07.jpg) repeat-x center top;
+}
+.tdfootercenter
+{
+	height: 21px;
+	background: url(../../images/Jal_all_09.jpg) repeat-x center top;
+}
+.tdfooterleft
+{
+	text-align: right;
+	color: White;
+	height: 21px;
+	vertical-align: middle;
+	background: url(../../images/Jal_all_09.jpg) repeat-x center top;
+}
+.td_center_reoprt
+{
+	font-family: Arial;
+	font-size: 9px;
+	text-align: center;
+	vertical-align: top;
+	font-weight: bold;
+	padding-left: 5px;
+	width: 600px;
+	margin-top: 20px;
+}
+.td_row
+{
+	border-bottom: solid 1px black;
+	border-top: solid 1px black;
+}
+.td_row1
+{
+	border-bottom: solid 1px black;
+	border-top: solid 1px black;
+	border-left: solid 1px black;
+	border-right: solid 1px black;
+	font-family: Arial;
+	font-size: 12px;
+	font-weight: bold;
+}
+.td_row2
+{
+	border-bottom: solid 1px black;
+	border-top: solid 1px black;
+	border-left: solid 1px black;
+	font-family: Arial;
+	font-size: 12px;
+	font-weight: bold;
+}
+.td_row3
+{
+	border-bottom: solid 1px black;
+	border-top: solid 1px black;
+	border-left: solid 1px black;
+	
+	font-family: Arial;
+	font-size: 12px;
+	font-weight: bold;
+}
+.td_row_left
+{
+	border-bottom: solid 1px black;
+	border-left: solid 1px black;
+	text-align: left;
+	font-family: Arial;
+	font-size: 9px;
+}
+.td_row_right
+{
+	border-bottom: solid 1px black;
+	border-right: solid 1px black;
+	border-left: solid 1px black;
+	text-align: left;
+	font-family: Arial;
+	font-size: 9px;
+}
+.td_row_center
+{
+	border-bottom: solid 1px black;
+	border-left: solid 1px black;
+	text-align: center;
+	font-family: Arial;
+	font-size: 9px;
+}
+.tbl_summery
+{
+	text-align: center;
+	font-family: Arial;
+	font-size: 14px;
+}
+.tbl_sum
+{
+	border-right: solid 1px black;
+	border-bottom: solid 1px black;
+	text-align: center;
+	font-family: Arial;
+	font-size: 10px;
+}
+.tbl_sum1
+{
+	border-right: solid 1px black;
+	
+	text-align: center;
+	font-family: Arial;
+	font-size: 10px;
+}
+.td_text1
+{
+	text-align: center;
+	font-family: Arial;
+	font-size: 12px;
+}

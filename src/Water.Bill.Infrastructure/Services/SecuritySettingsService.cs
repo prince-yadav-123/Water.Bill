@@ -12,7 +12,7 @@ public class SecuritySettingsService : ISecuritySettingsService
 
     public SecuritySettingsService(ApplicationDbContext db) => _db = db;
 
-    public async Task<SecuritySettingsDto> GetByTenantAsync(Guid tenantId, CancellationToken ct = default)
+    public async Task<SecuritySettingsDto> GetByTenantAsync(int tenantId, CancellationToken ct = default)
     {
         var entity = await _db.Securitysettings
             .AsNoTracking()
@@ -28,7 +28,7 @@ public class SecuritySettingsService : ISecuritySettingsService
 
         if (entity is null)
         {
-            entity = new Securitysetting { Id = Guid.NewGuid(), TenantId = settings.TenantId, CreatedAt = DateTime.UtcNow };
+            entity = new Securitysetting { TenantId = settings.TenantId, CreatedAt = DateTime.UtcNow };
             _db.Securitysettings.Add(entity);
         }
 

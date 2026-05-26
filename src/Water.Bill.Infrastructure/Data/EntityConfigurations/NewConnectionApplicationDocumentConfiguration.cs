@@ -9,8 +9,9 @@ public class NewConnectionApplicationDocumentConfiguration : IEntityTypeConfigur
     public void Configure(EntityTypeBuilder<NewConnectionApplicationDocument> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        entity.ToTable("new_connection_application_documents");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
+        
+entity.ToTable("new_connection_application_documents");
 
         entity.HasIndex(e => e.ApplicationId, "IX_NewConnectionApplicationDocuments_ApplicationId");
         entity.HasIndex(e => e.DocumentType, "IX_NewConnectionApplicationDocuments_DocumentType");

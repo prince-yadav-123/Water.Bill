@@ -109,7 +109,6 @@ public class ConsumerOtpService : IConsumerOtpService
 
         _db.Set<ConsumerOtpVerification>().Add(new ConsumerOtpVerification
         {
-            Id = Guid.NewGuid(),
             ConsumerNo = normalizedConsumerNo,
             MobileNo = mobileNo,
             OtpHash = HashOtp(otp, salt),

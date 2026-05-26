@@ -4,8 +4,8 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Securitysetting
 {
-    public Guid Id { get; set; }
-    public Guid TenantId { get; set; }
+    public int Id { get; set; }
+    public int TenantId { get; set; }
     public int SessionTimeoutMinutes { get; set; } = 480;
     public int IdleTimeoutMinutes { get; set; } = 30;
     public int PasswordMinLength { get; set; } = 8;
@@ -25,3 +25,4 @@ public partial class Securitysetting
     public DateTime? UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }
 }
+

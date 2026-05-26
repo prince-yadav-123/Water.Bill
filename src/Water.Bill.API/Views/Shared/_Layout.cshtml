@@ -6,6 +6,7 @@
 
 @{
     var currentPath = Context.Request.Path.Value ?? "";
+    var activeMenu = ViewData["ActiveMenu"]?.ToString();
     var tenantId = AppConstants.DefaultTenantId;
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
     var userName = User.Identity?.Name ?? "";
@@ -14,8 +15,8 @@
 
     IReadOnlyList<MenuItemDto> menuItems = [];
     HashSet<string> menuVisibleModules = [];
-    HashSet<Guid> menuVisibleModuleIds = [];
-    if (isAuthenticated && Guid.TryParse(User.FindFirstValue("RoleId"), out var roleId))
+    HashSet<int> menuVisibleModuleIds = [];
+    if (isAuthenticated && int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
     {
         menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
         menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
@@ -40,6 +41,14 @@
 
     bool IsCurrent(MenuItemDto item)
     {
+        if (!string.IsNullOrWhiteSpace(activeMenu))
+        {
+            if (string.Equals(item.Label, activeMenu, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return item.Children.Any(IsCurrent);
+        }
+
         if (!string.IsNullOrWhiteSpace(item.Url) &&
             currentPath.StartsWith(item.Url, StringComparison.OrdinalIgnoreCase))
             return true;
@@ -81,7 +90,7 @@
                     var children = VisibleChildren(item);
                     var hasChildren = children.Count > 0;
                     var isOpen = IsCurrent(item);
-                    var itemId = $"menu-{item.Id:N}";
+                    var itemId = $"menu-{item.Id}";
 
                     if (hasChildren)
                     {
@@ -137,7 +146,7 @@
             </header>
         }
 
-        <section class="wb-content">
+        <section class="wb-content @(isAuthenticated ? "admin-page-container" : "")">
             @if (TempData["SuccessMessage"] != null)
             {
                 <div class="wb-toast-stack">
@@ -153,6 +162,15 @@
                     <div class="alert alert-danger wb-toast-message">
                         <span class="wb-toast-icon">!</span>
                         <span>@TempData["ErrorMessage"]</span>
+                    </div>
+                </div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-info wb-toast-message">
+                        <span class="wb-toast-icon">i</span>
+                        <span>@TempData["InfoMessage"]</span>
                     </div>
                 </div>
             }

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Appuser
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string FullName { get; set; } = null!;
 
@@ -17,7 +17,7 @@ public partial class Appuser
 
     public bool? IsActive { get; set; }
 
-    public Guid RoleId { get; set; }
+    public int RoleId { get; set; }
 
     public string? PhoneNumber { get; set; }
 
@@ -43,3 +43,4 @@ public partial class Appuser
 
     public virtual ICollection<Usersession> Usersessions { get; set; } = new List<Usersession>();
 }
+

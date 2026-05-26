@@ -9,10 +9,13 @@ public class BankMasterConfiguration : IEntityTypeConfiguration<BankMaster>
 {
     public void Configure(EntityTypeBuilder<BankMaster> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("bank_master");
+        entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+        entity.ToTable("bank_master");
         
+        entity.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("Id");
         entity.Property(e => e.AccountNumber).HasColumnName("accountNumber");
         entity.Property(e => e.BankBranchCode)
             .HasMaxLength(255)

@@ -23,7 +23,7 @@ public class PermissionTagHelper : TagHelper
     {
         var user = _httpContextAccessor.HttpContext?.User;
         if (user?.Identity?.IsAuthenticated != true ||
-            !Guid.TryParse(user.FindFirstValue("RoleId"), out var roleId))
+            !int.TryParse(user.FindFirstValue("RoleId"), out var roleId))
         {
             output.SuppressOutput();
             return;

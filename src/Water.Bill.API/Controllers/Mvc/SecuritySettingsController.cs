@@ -12,7 +12,7 @@ namespace Water.Bill.API.Controllers.Mvc;
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
 public class SecuritySettingsController : Controller
 {
-    private static readonly Guid DefaultTenantId = AppConstants.DefaultTenantId;
+    private const int DefaultTenantId = AppConstants.DefaultTenantId;
 
     private readonly ISecuritySettingsService _securitySettingsService;
     private readonly IAuditLogService _auditLogService;
@@ -29,6 +29,7 @@ public class SecuritySettingsController : Controller
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Security Settings";
+        ViewData["ActiveMenu"] = "Security Settings";
         var settings = await _securitySettingsService.GetByTenantAsync(DefaultTenantId, ct);
         return View(new SecuritySettingsViewModel { Settings = settings });
     }
@@ -37,7 +38,8 @@ public class SecuritySettingsController : Controller
     public async Task<IActionResult> Index(SecuritySettingsDto settings, CancellationToken ct)
     {
         ViewData["Title"] = "Security Settings";
-        settings.TenantId = settings.TenantId == Guid.Empty ? DefaultTenantId : settings.TenantId;
+        ViewData["ActiveMenu"] = "Security Settings";
+        settings.TenantId = settings.TenantId == 0 ? DefaultTenantId : settings.TenantId;
 
         if (!ModelState.IsValid)
             return View(new SecuritySettingsViewModel { Settings = settings });

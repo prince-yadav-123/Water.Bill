@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Auditlog
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public DateTime Timestamp { get; set; }
 
-    public Guid? UserId { get; set; }
+    public int? UserId { get; set; }
 
     public string? Username { get; set; }
 
@@ -27,3 +27,4 @@ public partial class Auditlog
 
     public bool? Success { get; set; }
 }
+

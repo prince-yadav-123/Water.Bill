@@ -18,7 +18,7 @@ public class NewConnectionApplicationConfiguration : IEntityTypeConfiguration<Ne
         entity.HasIndex(e => e.SubmittedByConsumerNo, "IX_NewConnectionApplications_SubmittedByConsumerNo");
         entity.HasIndex(e => e.SubmittedByConsumerUserId, "IX_NewConnectionApplications_SubmittedByConsumerUserId");
 
-        entity.Property(e => e.Id).HasColumnName("Id");
+        entity.Property(e => e.Id).HasColumnName("Id").ValueGeneratedOnAdd();
         entity.Property(e => e.ApplicationNo).HasMaxLength(30).HasColumnName("ApplicationNo");
         entity.Property(e => e.ApplicationStatus).HasMaxLength(30).HasDefaultValue("Draft").HasColumnName("ApplicationStatus");
         entity.Property(e => e.FinalConsumerNo).HasMaxLength(10).HasColumnName("FinalConsumerNo");

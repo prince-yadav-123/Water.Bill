@@ -20,7 +20,7 @@ public partial class NewConnectionApplicationDocument
 
     public long? FileSize { get; set; }
 
-    public Guid? UploadedBy { get; set; }
+    public int? UploadedBy { get; set; }
 
     public DateTime UploadedOn { get; set; }
 

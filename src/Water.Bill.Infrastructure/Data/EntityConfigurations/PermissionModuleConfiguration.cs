@@ -9,8 +9,9 @@ public class PermissionModuleConfiguration : IEntityTypeConfiguration<Permission
     public void Configure(EntityTypeBuilder<PermissionModule> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        entity.ToTable("PermissionModules");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
+        
+entity.ToTable("PermissionModules");
 
         entity.HasIndex(e => new { e.Name, e.IsDeleted }, "UX_PermissionModules_Name_IsDeleted").IsUnique();
 

@@ -22,7 +22,7 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
         }
 
         var roleIdClaim = user.FindFirstValue("RoleId");
-        if (!Guid.TryParse(roleIdClaim, out var roleId))
+        if (!int.TryParse(roleIdClaim, out var roleId))
         {
             context.Result = new ForbidResult();
             return;

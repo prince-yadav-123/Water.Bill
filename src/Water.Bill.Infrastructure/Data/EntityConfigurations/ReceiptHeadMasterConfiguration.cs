@@ -9,9 +9,9 @@ public class ReceiptHeadMasterConfiguration : IEntityTypeConfiguration<ReceiptHe
 {
     public void Configure(EntityTypeBuilder<ReceiptHeadMaster> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("receipt_head_master");
+        entity.HasKey(e => e.HeadId).HasName("PRIMARY");
+
+        entity.ToTable("receipt_head_master");
         
         entity.Property(e => e.EntryDate)
             .HasColumnType("datetime")

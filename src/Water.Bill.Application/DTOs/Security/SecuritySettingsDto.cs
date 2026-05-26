@@ -2,8 +2,8 @@ namespace Water.Bill.Application.DTOs.Security;
 
 public class SecuritySettingsDto
 {
-    public Guid Id { get; set; }
-    public Guid TenantId { get; set; }
+    public int Id { get; set; }
+    public int TenantId { get; set; }
     public int SessionTimeoutMinutes { get; set; } = 480;
     public int IdleTimeoutMinutes { get; set; } = 30;
     public int PasswordMinLength { get; set; } = 8;
@@ -20,3 +20,4 @@ public class SecuritySettingsDto
     public bool AllowMultipleSessions { get; set; } = true;
     public bool BlockNewLoginOnConflict { get; set; }
 }
+

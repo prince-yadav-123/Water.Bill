@@ -9,8 +9,9 @@ public class NewConnectionApprovalHistoryConfiguration : IEntityTypeConfiguratio
     public void Configure(EntityTypeBuilder<NewConnectionApprovalHistory> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        entity.ToTable("NewConnectionApprovalHistory");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
+        
+entity.ToTable("NewConnectionApprovalHistory");
 
         entity.HasIndex(e => e.ApplicationId, "IX_NewConnectionApprovalHistory_ApplicationId");
         entity.HasIndex(e => e.ApplicationNo, "IX_NewConnectionApprovalHistory_ApplicationNo");

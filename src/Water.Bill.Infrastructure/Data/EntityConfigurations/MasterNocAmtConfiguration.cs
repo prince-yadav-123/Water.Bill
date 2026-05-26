@@ -9,9 +9,9 @@ public class MasterNocAmtConfiguration : IEntityTypeConfiguration<MasterNocAmt>
 {
     public void Configure(EntityTypeBuilder<MasterNocAmt> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("master_noc_amt");
+        entity.HasKey(e => e.ConId).HasName("PRIMARY");
+
+        entity.ToTable("master_noc_amt");
         
         entity.Property(e => e.Amount)
             .HasMaxLength(6)

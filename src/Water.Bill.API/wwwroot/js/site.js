@@ -78,6 +78,29 @@
 })();
 
 (function () {
+    const stacks = Array.from(document.querySelectorAll(".wb-toast-stack"));
+    if (!stacks.length) return;
+
+    const primaryStack = stacks[0];
+    stacks.slice(1).forEach((stack) => {
+        stack.querySelectorAll(".wb-toast-message").forEach((toast) => primaryStack.appendChild(toast));
+        stack.remove();
+    });
+
+    primaryStack.querySelectorAll(".wb-toast-message").forEach((toast) => {
+        window.setTimeout(() => {
+            toast.classList.add("hide");
+            window.setTimeout(() => {
+                toast.remove();
+                if (!primaryStack.querySelector(".wb-toast-message")) {
+                    primaryStack.remove();
+                }
+            }, 260);
+        }, 4200);
+    });
+})();
+
+(function () {
     const body = document.body;
     const collapseKey = body.dataset.sidebarStorageKey || "water-bill-admin-sidebar-collapsed";
     const mobileQuery = window.matchMedia("(max-width: 991.98px)");

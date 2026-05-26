@@ -5,6 +5,8 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class ReceiptHeadLink
 {
+    public int Id { get; set; }
+
     public int ReceiptSubheadId { get; set; }
 
     public int? DepId { get; set; }

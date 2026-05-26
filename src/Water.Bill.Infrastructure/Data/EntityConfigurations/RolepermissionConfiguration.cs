@@ -10,8 +10,9 @@ public class RolepermissionConfiguration : IEntityTypeConfiguration<Rolepermissi
     public void Configure(EntityTypeBuilder<Rolepermission> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
         
-        entity
+entity
             .ToTable("rolepermissions")
             .UseCollation("utf8mb4_0900_ai_ci");
         

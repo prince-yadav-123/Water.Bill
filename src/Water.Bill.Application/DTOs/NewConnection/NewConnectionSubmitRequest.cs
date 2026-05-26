@@ -12,9 +12,9 @@ public class NewConnectionSubmitRequest
 
     public string? SubmittedByConsumerNo { get; set; }
 
-    public Guid? SubmittedByConsumerUserId { get; set; }
+    public int? SubmittedByConsumerUserId { get; set; }
 
-    public Guid? ActionBy { get; set; }
+    public int? ActionBy { get; set; }
 
     public string? ActionByName { get; set; }
 
@@ -24,3 +24,4 @@ public class NewConnectionSubmitRequest
 
     public string? UserAgent { get; set; }
 }
+

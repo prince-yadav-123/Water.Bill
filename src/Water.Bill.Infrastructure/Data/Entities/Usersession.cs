@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Usersession
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
-    public Guid UserId { get; set; }
+    public int UserId { get; set; }
 
     public string SessionToken { get; set; } = null!;
 
@@ -35,3 +35,4 @@ public partial class Usersession
 
     public virtual Appuser User { get; set; } = null!;
 }
+

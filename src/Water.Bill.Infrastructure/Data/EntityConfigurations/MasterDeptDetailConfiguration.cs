@@ -9,10 +9,13 @@ public class MasterDeptDetailConfiguration : IEntityTypeConfiguration<MasterDept
 {
     public void Configure(EntityTypeBuilder<MasterDeptDetail> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("master_dept_details");
+        entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+        entity.ToTable("master_dept_details");
         
+        entity.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("Id");
         entity.Property(e => e.DeptId).HasColumnName("DEPT_ID");
         entity.Property(e => e.DeptName)
             .HasMaxLength(50)

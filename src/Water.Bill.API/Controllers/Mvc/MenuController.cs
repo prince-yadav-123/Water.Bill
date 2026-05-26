@@ -14,7 +14,7 @@ namespace Water.Bill.API.Controllers.Mvc;
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
 public class MenuController : Controller
 {
-    private static readonly Guid DefaultTenantId = AppConstants.DefaultTenantId;
+    private const int DefaultTenantId = AppConstants.DefaultTenantId;
 
     private readonly ApplicationDbContext _db;
     private readonly IPermissionService _permissionService;
@@ -34,6 +34,7 @@ public class MenuController : Controller
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Menu Management";
+        ViewData["ActiveMenu"] = "Menu Management";
         var items = await _db.Menuitems
             .Include(x => x.Parent)
             .Include(x => x.PermissionModule)
@@ -50,6 +51,7 @@ public class MenuController : Controller
     public async Task<IActionResult> Create(CancellationToken ct)
     {
         ViewData["Title"] = "Create Menu Item";
+        ViewData["ActiveMenu"] = "Menu Management";
         return View(new MenuFormViewModel
         {
             Item = new Menuitem { TenantId = DefaultTenantId, IsActive = true, ShowInSidebar = true },
@@ -61,6 +63,7 @@ public class MenuController : Controller
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Menu Management.add")]
     public async Task<IActionResult> Create(MenuFormViewModel model, CancellationToken ct)
     {
+        ViewData["ActiveMenu"] = "Menu Management";
         ValidateMenuItem(model.Item);
         if (!ModelState.IsValid)
         {
@@ -70,8 +73,7 @@ public class MenuController : Controller
         }
 
         await ApplyModuleNameAsync(model.Item, ct);
-        model.Item.Id = Guid.NewGuid();
-        model.Item.TenantId = model.Item.TenantId == Guid.Empty ? DefaultTenantId : model.Item.TenantId;
+        model.Item.TenantId = model.Item.TenantId == 0 ? DefaultTenantId : model.Item.TenantId;
         model.Item.CreatedAt = DateTime.UtcNow;
         model.Item.IsDeleted = false;
         _db.Menuitems.Add(model.Item);
@@ -83,9 +85,10 @@ public class MenuController : Controller
     }
 
     [HttpGet, RequirePermission("Menu Management.edit")]
-    public async Task<IActionResult> Edit(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Edit(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Edit Menu Item";
+        ViewData["ActiveMenu"] = "Menu Management";
         var item = await _db.Menuitems.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (item is null) return NotFound();
 
@@ -98,8 +101,9 @@ public class MenuController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Menu Management.edit")]
-    public async Task<IActionResult> Edit(Guid id, MenuFormViewModel model, CancellationToken ct)
+    public async Task<IActionResult> Edit(int id, MenuFormViewModel model, CancellationToken ct)
     {
+        ViewData["ActiveMenu"] = "Menu Management";
         ValidateMenuItem(model.Item);
         if (!ModelState.IsValid)
         {
@@ -112,7 +116,7 @@ public class MenuController : Controller
         if (item is null) return NotFound();
 
         await ApplyModuleNameAsync(model.Item, ct);
-        item.ParentId = model.Item.ParentId == Guid.Empty ? null : model.Item.ParentId;
+        item.ParentId = model.Item.ParentId == 0 ? null : model.Item.ParentId;
         item.Label = model.Item.Label;
         item.Icon = model.Item.Icon;
         item.Url = model.Item.Url;
@@ -132,7 +136,7 @@ public class MenuController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Menu Management.delete")]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var item = await _db.Menuitems.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (item is not null)
@@ -161,7 +165,7 @@ public class MenuController : Controller
             if (record is null) continue;
 
             record.Order = item.Order;
-            record.ParentId = item.ParentId == Guid.Empty || item.ParentId == record.Id ? null : item.ParentId;
+            record.ParentId = item.ParentId == 0 || item.ParentId == record.Id ? null : item.ParentId;
             record.UpdatedAt = DateTime.UtcNow;
         }
 
@@ -173,7 +177,7 @@ public class MenuController : Controller
     public async Task<IActionResult> Tree(CancellationToken ct)
         => Json(await _permissionService.GetMenuTreeAsync(DefaultTenantId, ct));
 
-    private async Task<IReadOnlyList<Menuitem>> GetParentItemsAsync(CancellationToken ct, Guid? excludeId = null)
+    private async Task<IReadOnlyList<Menuitem>> GetParentItemsAsync(CancellationToken ct, int? excludeId = null)
         => await _db.Menuitems
             .Where(x => !x.IsDeleted && (!excludeId.HasValue || x.Id != excludeId.Value))
             .OrderBy(x => x.Order)
@@ -204,7 +208,7 @@ public class MenuController : Controller
     {
         if (string.IsNullOrWhiteSpace(item.Label))
             ModelState.AddModelError("Item.Label", "Menu label is required.");
-        if (item.ParentId == item.Id && item.Id != Guid.Empty)
+        if (item.ParentId == item.Id && item.Id != 0)
             ModelState.AddModelError("Item.ParentId", "A menu item cannot be its own parent.");
     }
 }

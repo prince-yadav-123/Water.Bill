@@ -109,7 +109,7 @@ public class AccountController : Controller
                 new(ClaimTypes.Role, AppConstants.Roles.Consumer),
                 new("FullName", result.ConsumerName),
                 new("ConsumerNo", result.ConsumerNo),
-                new("RoleId", (result.ConsumerRoleId ?? Guid.Empty).ToString())
+                new("RoleId", (result.ConsumerRoleId ?? 0).ToString())
             };
 
             if (!string.IsNullOrWhiteSpace(result.Email))
@@ -178,7 +178,7 @@ public class AccountController : Controller
                 new(ClaimTypes.Role, AppConstants.Roles.Consumer),
                 new("FullName", result.ConsumerName),
                 new("ConsumerNo", result.ConsumerNo),
-                new("RoleId", (result.ConsumerRoleId ?? Guid.Empty).ToString())
+                new("RoleId", (result.ConsumerRoleId ?? 0).ToString())
             };
 
             if (!string.IsNullOrWhiteSpace(result.Email))

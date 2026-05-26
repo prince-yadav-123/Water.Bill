@@ -10,6 +10,7 @@ public class DashboardController : Controller
     public IActionResult Index()
     {
         ViewData["Title"] = "Dashboard";
+        ViewData["ActiveMenu"] = "Dashboard";
         return View();
     }
 }

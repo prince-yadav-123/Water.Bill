@@ -9,10 +9,13 @@ public class MasterPhoneDetailConfiguration : IEntityTypeConfiguration<MasterPho
 {
     public void Configure(EntityTypeBuilder<MasterPhoneDetail> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("master_phone_details");
+        entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+        entity.ToTable("master_phone_details");
         
+        entity.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("Id");
         entity.Property(e => e.DevType).HasColumnName("DEV_TYPE");
         entity.Property(e => e.EntryDate)
             .HasMaxLength(255)

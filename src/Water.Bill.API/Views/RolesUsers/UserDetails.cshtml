@@ -1,0 +1,52 @@
+@model Appuser
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>User Details</h1>
+        <p>Review authority user profile, role, and current account state.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-primary" asp-action="Users">Back</a>
+        <a class="btn btn-primary" asp-action="EditUser" asp-route-id="@Model.Id">Edit User</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-form-card wb-form-card-wide">
+    <dl class="wb-detail-grid">
+        <div>
+            <dt>Full Name</dt>
+            <dd>@Model.FullName</dd>
+        </div>
+        <div>
+            <dt>Status</dt>
+            <dd><span class="badge @(Model.IsActive == true ? "text-bg-success" : "text-bg-secondary")">@(Model.IsActive == true ? "Active" : "Inactive")</span></dd>
+        </div>
+        <div>
+            <dt>Username</dt>
+            <dd>@Model.Username</dd>
+        </div>
+        <div>
+            <dt>Email</dt>
+            <dd>@Model.Email</dd>
+        </div>
+        <div>
+            <dt>Mobile Number</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "-" : Model.PhoneNumber)</dd>
+        </div>
+        <div>
+            <dt>Role</dt>
+            <dd>@(Model.Role?.Name ?? "Unassigned")</dd>
+        </div>
+        <div>
+            <dt>Created</dt>
+            <dd>@Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</dd>
+        </div>
+        <div>
+            <dt>Last Updated</dt>
+            <dd>@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") : "-")</dd>
+        </div>
+    </dl>
+</section>

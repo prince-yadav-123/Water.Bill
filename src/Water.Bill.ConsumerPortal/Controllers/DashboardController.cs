@@ -21,6 +21,7 @@ public class DashboardController : Controller
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Dashboard";
+        ViewData["ActiveMenu"] = "Dashboard";
 
         var consumerNo = await ResolveConsumerNoAsync(ct);
         if (string.IsNullOrWhiteSpace(consumerNo))
@@ -77,7 +78,7 @@ public class DashboardController : Controller
             return claimConsumerNo.ToUpperInvariant();
 
         var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim();
-        if (!string.IsNullOrWhiteSpace(nameIdentifier) && !Guid.TryParse(nameIdentifier, out _))
+        if (!string.IsNullOrWhiteSpace(nameIdentifier) && !int.TryParse(nameIdentifier, out _))
             return nameIdentifier.ToUpperInvariant();
 
         var email = User.FindFirstValue(ClaimTypes.Email)?.Trim();

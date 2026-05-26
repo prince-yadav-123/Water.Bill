@@ -13,7 +13,7 @@ public class SessionService : ISessionService
 
     public SessionService(ApplicationDbContext db) => _db = db;
 
-    public async Task<string> CreateSessionAsync(Guid userId, string? ipAddress, string? userAgent, CancellationToken ct = default)
+    public async Task<string> CreateSessionAsync(int userId, string? ipAddress, string? userAgent, CancellationToken ct = default)
     {
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(48));
         _db.Usersessions.Add(new Usersession
@@ -31,7 +31,7 @@ public class SessionService : ISessionService
         return token;
     }
 
-    public async Task<IReadOnlyList<UserSessionDto>> GetActiveSessionsAsync(Guid userId, CancellationToken ct = default)
+    public async Task<IReadOnlyList<UserSessionDto>> GetActiveSessionsAsync(int userId, CancellationToken ct = default)
     {
         var sessions = await _db.Usersessions
             .AsNoTracking()
@@ -65,7 +65,7 @@ public class SessionService : ISessionService
         await _db.SaveChangesAsync(ct);
     }
 
-    public async Task RevokeAllSessionsAsync(Guid userId, string reason, CancellationToken ct = default)
+    public async Task RevokeAllSessionsAsync(int userId, string reason, CancellationToken ct = default)
     {
         var sessions = await _db.Usersessions.Where(x => x.UserId == userId && x.IsActive == true).ToListAsync(ct);
         foreach (var session in sessions)

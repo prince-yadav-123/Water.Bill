@@ -9,8 +9,9 @@ public class ConsumerUserConfiguration : IEntityTypeConfiguration<ConsumerUser>
     public void Configure(EntityTypeBuilder<ConsumerUser> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        entity.ToTable("ConsumerUsers");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
+        
+entity.ToTable("ConsumerUsers");
 
         entity.HasIndex(e => e.ConsumerNo, "IX_ConsumerUsers_ConsumerNo");
         entity.HasIndex(e => e.Username, "UX_ConsumerUsers_Username").IsUnique();

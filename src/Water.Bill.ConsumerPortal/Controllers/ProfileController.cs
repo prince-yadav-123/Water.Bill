@@ -47,6 +47,7 @@ public class ProfileController : Controller
     public async Task<IActionResult> Index()
     {
         ViewData["Title"] = "Profile & Connections";
+        ViewData["ActiveMenu"] = "Profile & Connections";
         await _auditLogService.LogAsync(AuditAction.ProfileViewed);
 
         var consumerNo = ResolveConsumerNo();
@@ -78,6 +79,7 @@ public class ProfileController : Controller
     public async Task<IActionResult> UpdateContact()
     {
         ViewData["Title"] = "Update Mobile/Email";
+        ViewData["ActiveMenu"] = "Update Mobile/Email";
 
         var consumer = await GetLoggedInConsumerForUpdateAsync();
         if (consumer is null)
@@ -91,6 +93,7 @@ public class ProfileController : Controller
     public async Task<IActionResult> SendContactUpdateOtp(UpdateContactViewModel model, CancellationToken ct)
     {
         ViewData["Title"] = "Update Mobile/Email";
+        ViewData["ActiveMenu"] = "Update Mobile/Email";
 
         var consumer = await GetLoggedInConsumerForUpdateAsync(ct);
         if (consumer is null)
@@ -125,6 +128,7 @@ public class ProfileController : Controller
     public async Task<IActionResult> VerifyContactUpdate(UpdateContactViewModel model, CancellationToken ct)
     {
         ViewData["Title"] = "Update Mobile/Email";
+        ViewData["ActiveMenu"] = "Update Mobile/Email";
 
         var consumer = await GetLoggedInConsumerForUpdateAsync(ct);
         if (consumer is null)
@@ -204,7 +208,7 @@ public class ProfileController : Controller
             return claimConsumerNo.ToUpperInvariant();
 
         var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim();
-        return !string.IsNullOrWhiteSpace(nameIdentifier) && !Guid.TryParse(nameIdentifier, out _)
+        return !string.IsNullOrWhiteSpace(nameIdentifier) && !int.TryParse(nameIdentifier, out _)
             ? nameIdentifier.ToUpperInvariant()
             : null;
     }
@@ -438,7 +442,6 @@ public class ProfileController : Controller
 
         _db.ConsumerOtpVerifications.Add(new ConsumerOtpVerification
         {
-            Id = Guid.NewGuid(),
             ConsumerNo = normalizedConsumerNo,
             MobileNo = mobileNo,
             OtpHash = HashOtp(otp, salt),

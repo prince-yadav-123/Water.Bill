@@ -8,6 +8,7 @@ namespace Water.Bill.Infrastructure.Services;
 
 public class ConsumerAccountService : IConsumerAccountService
 {
+    private const string ConsumerNoCollation = "utf8mb4_0900_ai_ci";
     private readonly ApplicationDbContext _db;
 
     public ConsumerAccountService(ApplicationDbContext db) => _db = db;
@@ -20,7 +21,6 @@ public class ConsumerAccountService : IConsumerAccountService
 
         var normalizedLogin = login.ToLowerInvariant();
         var user = await _db.ConsumerUsers
-            .Include(x => x.Consumer)
             .FirstOrDefaultAsync(x =>
                 !x.IsDeleted &&
                 (x.Username.ToLower() == normalizedLogin ||
@@ -42,7 +42,14 @@ public class ConsumerAccountService : IConsumerAccountService
             throw new UnauthorizedAccessException("Invalid username/email or password.");
         }
 
-        if (user.Consumer.Status.HasValue && user.Consumer.Status != 1)
+        var consumer = await _db.ConsumerDetailsMasters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => EF.Functions.Collate(x.ConsNo, ConsumerNoCollation) == user.ConsumerNo, ct);
+
+        if (consumer is null)
+            throw new UnauthorizedAccessException("Linked consumer number was not found. Please contact support.");
+
+        if (consumer.Status.HasValue && consumer.Status != 1)
             throw new UnauthorizedAccessException("This consumer account is not active. Please contact support.");
 
         user.FailedLoginCount = 0;
@@ -50,7 +57,7 @@ public class ConsumerAccountService : IConsumerAccountService
         user.LastLoginAt = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
 
-        var name = string.Join(" ", new[] { user.Consumer.ConsNm1, user.Consumer.ConsNm2 }
+        var name = string.Join(" ", new[] { consumer.ConsNm1, consumer.ConsNm2 }
             .Where(x => !string.IsNullOrWhiteSpace(x))).Trim();
 
         var consumerRole = await _db.Approles
@@ -62,8 +69,8 @@ public class ConsumerAccountService : IConsumerAccountService
             Id = user.Id,
             ConsumerNo = user.ConsumerNo,
             ConsumerName = string.IsNullOrWhiteSpace(name) ? user.Username : name,
-            Email = user.Email ?? user.Consumer.EmailId,
-            MobileNo = user.Consumer.MobNo,
+            Email = user.Email ?? consumer.EmailId,
+            MobileNo = consumer.MobNo,
             Username = user.Username,
             ConsumerRoleId = consumerRole?.Id
         };

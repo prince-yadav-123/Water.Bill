@@ -35,6 +35,7 @@ public class NewConnectionController : Controller
     public async Task<IActionResult> Apply(CancellationToken ct)
     {
         ViewData["Title"] = "New Connection";
+        ViewData["ActiveMenu"] = "New Connection";
         await LoadLookupDataAsync(ct);
         return View(new NewConnectionApplicationFormDto
         {
@@ -48,6 +49,7 @@ public class NewConnectionController : Controller
     public async Task<IActionResult> Apply(NewConnectionApplicationFormDto model, CancellationToken ct)
     {
         ViewData["Title"] = "New Connection";
+        ViewData["ActiveMenu"] = "New Connection";
         await LoadLookupDataAsync(ct);
 
         NormalizeDeclarationFromRequest(model);
@@ -104,6 +106,7 @@ public class NewConnectionController : Controller
     public async Task<IActionResult> MyApplications(CancellationToken ct)
     {
         ViewData["Title"] = "My Applications";
+        ViewData["ActiveMenu"] = "My Applications";
         var applications = await _service.GetConsumerApplicationsAsync(ResolveConsumerNo(), ResolveConsumerUserId(), ct);
         return View(applications);
     }
@@ -112,6 +115,7 @@ public class NewConnectionController : Controller
     public async Task<IActionResult> Details(long id, CancellationToken ct)
     {
         ViewData["Title"] = "Application Details";
+        ViewData["ActiveMenu"] = "My Applications";
         var details = await _service.GetConsumerApplicationDetailsAsync(id, ResolveConsumerNo(), ResolveConsumerUserId(), ct);
         if (details is null)
             return NotFound();
@@ -122,8 +126,8 @@ public class NewConnectionController : Controller
     private string ResolveConsumerNo()
         => (User.FindFirstValue("ConsumerNo") ?? string.Empty).Trim().ToUpperInvariant();
 
-    private Guid? ResolveConsumerUserId()
-        => Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
+    private int? ResolveConsumerUserId()
+        => int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
 
     private async Task<IReadOnlyList<NewConnectionDocumentInputDto>> SaveDocumentsAsync(IFormFileCollection files, string applicationNo, CancellationToken ct)
     {

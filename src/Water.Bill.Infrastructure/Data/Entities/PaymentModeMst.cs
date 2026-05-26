@@ -17,5 +17,5 @@ public partial class PaymentModeMst
 
     public DateTime? LastUpdateOn { get; set; }
 
-    public int? AutoId { get; set; }
+    public int AutoId { get; set; }
 }

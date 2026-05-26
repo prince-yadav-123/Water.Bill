@@ -9,8 +9,9 @@ public class ConsumerOtpVerificationConfiguration : IEntityTypeConfiguration<Con
     public void Configure(EntityTypeBuilder<ConsumerOtpVerification> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        entity.ToTable("ConsumerOtpVerifications");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
+        
+entity.ToTable("ConsumerOtpVerifications");
 
         entity.HasIndex(e => new { e.ConsumerNo, e.Purpose, e.CreatedAt }, "IX_ConsumerOtpVerifications_Consumer_Purpose_CreatedAt");
         entity.HasIndex(e => new { e.ConsumerNo, e.Purpose, e.IsActive, e.IsVerified }, "IX_ConsumerOtpVerifications_ActiveLookup");

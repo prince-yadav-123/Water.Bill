@@ -10,7 +10,7 @@ public class NewConnectionStatusChangeRequest
 
     public string? Remarks { get; set; }
 
-    public Guid? ActionBy { get; set; }
+    public int? ActionBy { get; set; }
 
     public string? ActionByName { get; set; }
 

@@ -8,9 +8,9 @@ public interface INewConnectionApplicationService
 
     Task<NewConnectionApplicationDetailsDto?> TrackAsync(string applicationNo, string mobileNumber, CancellationToken ct = default);
 
-    Task<IReadOnlyList<NewConnectionApplicationSummaryDto>> GetConsumerApplicationsAsync(string consumerNo, Guid? consumerUserId, CancellationToken ct = default);
+    Task<IReadOnlyList<NewConnectionApplicationSummaryDto>> GetConsumerApplicationsAsync(string consumerNo, int? consumerUserId, CancellationToken ct = default);
 
-    Task<NewConnectionApplicationDetailsDto?> GetConsumerApplicationDetailsAsync(long id, string consumerNo, Guid? consumerUserId, CancellationToken ct = default);
+    Task<NewConnectionApplicationDetailsDto?> GetConsumerApplicationDetailsAsync(long id, string consumerNo, int? consumerUserId, CancellationToken ct = default);
 
     Task UpdateApplicationStatusAsync(NewConnectionStatusChangeRequest request, CancellationToken ct = default);
 }

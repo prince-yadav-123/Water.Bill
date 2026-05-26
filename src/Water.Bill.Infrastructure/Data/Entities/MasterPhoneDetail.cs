@@ -5,6 +5,8 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class MasterPhoneDetail
 {
+    public int Id { get; set; }
+
     public double? TelId { get; set; }
 
     public string? TelNo { get; set; }

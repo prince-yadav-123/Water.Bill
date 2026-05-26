@@ -1,0 +1,76 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="noidajallogin.master.cs"
+    Inherits="noidajal" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Untitled Page</title>
+    <link href="App_Themes/JalTheme/jalbutton.css" rel="stylesheet" type="text/css" />
+    <link href="js/csshorizontalmenu.css" rel="stylesheet" type="text/css" />
+    <link href="SpryAssets/SpryMenuBarHorizontal.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="js/csshorizontalmenu.js"></script>
+
+    <script language="javascript" type="text/javascript" src="SpryAssets/SpryMenuBar.js"></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body style="background-color: #273855;">
+    <form id="form1" runat="server">
+    <div>
+        <center>
+            <table style="vertical-align: middle; width: 100%; text-align: center; height: 600px;">
+                <tr>
+                    <td>
+                        <center>
+                            <table width="80%" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td class="tdhomeLOGIN">
+                                        &nbsp;
+                                    </td>
+                                    <td class="tdhomeleftLOGIN">
+                                    </td>
+                                    <td class="tdhomeleftLOGIN">
+                                        &nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="tdlogleftREPEATLEFT">
+                                        <img src="images/text.png" alt="Noida Jal" style="margin-top: 5px;" />
+                                    </td>
+                                    <td class="tdlogleftREPEAT">
+                                        <img src="images/logo.png" alt="Noida Jal" height="29px" style="margin-right: 5px;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="tdcenter">
+                                        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                                        </asp:ContentPlaceHolder>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdfooter">
+                                    </td>
+                                    <td class="tdfooterleft" colspan="2">
+                                        <pre style="margin-top: 3px; font-size: 12px;">Save Water For Nation       Copyright © 2002 New Okhla Industrial Development Authority. All Rights Reserved. </pre>
+                                    </td>
+                                </tr>
+                            </table>
+                        </center>
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </div>
+
+    <script type="text/javascript">
+
+var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgDown:"../SpryAssets/SpryMenuBarDownHover.gif", imgRight:"../SpryAssets/SpryMenuBarRightHover.gif"});
+
+
+    </script>
+
+    </form>
+</body>
+</html>

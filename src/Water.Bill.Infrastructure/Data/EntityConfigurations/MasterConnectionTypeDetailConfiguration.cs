@@ -9,9 +9,9 @@ public class MasterConnectionTypeDetailConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<MasterConnectionTypeDetail> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("master_connection_type_details");
+        entity.HasKey(e => e.ConId).HasName("PRIMARY");
+        
+        entity.ToTable("master_connection_type_details");
         
         entity.Property(e => e.ConId)
             .HasMaxLength(2)

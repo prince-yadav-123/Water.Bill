@@ -5,6 +5,8 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class MasterDeptDetail
 {
+    public int Id { get; set; }
+
     public int DeptId { get; set; }
 
     public string? DeptName { get; set; }

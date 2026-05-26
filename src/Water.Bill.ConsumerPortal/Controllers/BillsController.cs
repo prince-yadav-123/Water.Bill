@@ -32,6 +32,7 @@ public class BillsController : Controller
         CancellationToken ct = default)
     {
         ViewData["Title"] = "Bill History";
+        ViewData["ActiveMenu"] = "Bill History";
 
         var primaryConsumerNo = ResolveConsumerNo();
         if (string.IsNullOrWhiteSpace(primaryConsumerNo))
@@ -105,6 +106,7 @@ public class BillsController : Controller
     public async Task<IActionResult> Current(CancellationToken ct)
     {
         ViewData["Title"] = "Current Bill";
+        ViewData["ActiveMenu"] = "Current Bill";
 
         var model = await BuildCurrentBillModelAsync(ct);
         return View(model);
@@ -122,6 +124,7 @@ public class BillsController : Controller
         CancellationToken ct = default)
     {
         ViewData["Title"] = "Pay Bill";
+        ViewData["ActiveMenu"] = "Pay Bill";
 
         var model = await BuildPaymentModelAsync(
             step,
@@ -147,6 +150,7 @@ public class BillsController : Controller
         CancellationToken ct = default)
     {
         ViewData["Title"] = "Confirm Payment";
+        ViewData["ActiveMenu"] = "Pay Bill";
 
         var model = await BuildPaymentModelAsync(
             3,
@@ -234,6 +238,7 @@ public class BillsController : Controller
     public async Task<IActionResult> PaymentStarted(string referenceId, CancellationToken ct)
     {
         ViewData["Title"] = "Payment Initiated";
+        ViewData["ActiveMenu"] = "Pay Bill";
 
         var consumerNo = ResolveConsumerNo();
         if (string.IsNullOrWhiteSpace(consumerNo))
@@ -253,6 +258,7 @@ public class BillsController : Controller
     public async Task<IActionResult> Print(string billNo, CancellationToken ct)
     {
         ViewData["Title"] = "Print Bill";
+        ViewData["ActiveMenu"] = "Current Bill";
 
         var consumerNo = ResolveConsumerNo();
         if (string.IsNullOrWhiteSpace(consumerNo))
@@ -384,7 +390,7 @@ public class BillsController : Controller
             return claimConsumerNo.ToUpperInvariant();
 
         var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim();
-        return !string.IsNullOrWhiteSpace(nameIdentifier) && !Guid.TryParse(nameIdentifier, out _)
+        return !string.IsNullOrWhiteSpace(nameIdentifier) && !int.TryParse(nameIdentifier, out _)
             ? nameIdentifier.ToUpperInvariant()
             : null;
     }

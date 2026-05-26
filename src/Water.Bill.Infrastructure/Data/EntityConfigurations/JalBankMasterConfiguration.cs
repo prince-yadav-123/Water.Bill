@@ -9,10 +9,13 @@ public class JalBankMasterConfiguration : IEntityTypeConfiguration<JalBankMaster
 {
     public void Configure(EntityTypeBuilder<JalBankMaster> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("jal_bank_master");
+        entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+        entity.ToTable("jal_bank_master");
         
+        entity.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("Id");
         entity.Property(e => e.AccountNo)
             .HasMaxLength(16)
             .HasColumnName("ACCOUNT_NO");

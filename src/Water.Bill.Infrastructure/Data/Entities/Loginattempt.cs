@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class Loginattempt
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string? Username { get; set; }
 
@@ -17,7 +17,7 @@ public partial class Loginattempt
 
     public string? UserAgent { get; set; }
 
-    public Guid? UserId { get; set; }
+    public int? UserId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
@@ -27,3 +27,4 @@ public partial class Loginattempt
 
     public virtual Appuser? User { get; set; }
 }
+

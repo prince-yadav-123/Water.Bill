@@ -1,0 +1,16 @@
+@model ConsumerLoginUserFormViewModel
+@{
+    ViewData["Title"] = "Create Consumer Login";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Create Consumer Login</h1>
+        <p>Create username and password access for an existing consumer number.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<partial name="_ConsumerLoginForm" model="Model" />
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

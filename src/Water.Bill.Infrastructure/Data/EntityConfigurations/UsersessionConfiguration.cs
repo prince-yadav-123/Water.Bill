@@ -10,8 +10,9 @@ public class UsersessionConfiguration : IEntityTypeConfiguration<Usersession>
     public void Configure(EntityTypeBuilder<Usersession> entity)
     {
         entity.HasKey(e => e.Id).HasName("PRIMARY");
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
         
-        entity
+entity
             .ToTable("usersessions")
             .UseCollation("utf8mb4_0900_ai_ci");
         

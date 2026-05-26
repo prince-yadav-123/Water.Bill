@@ -2,7 +2,7 @@ namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class ConsumerUser
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string ConsumerNo { get; set; } = null!;
 

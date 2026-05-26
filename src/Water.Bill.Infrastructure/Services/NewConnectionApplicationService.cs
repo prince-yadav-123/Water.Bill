@@ -114,7 +114,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             .FirstOrDefaultAsync(x => x.ApplicationNo == appNo && x.MobileNumber == mobile, ct);
     }
 
-    public async Task<IReadOnlyList<NewConnectionApplicationSummaryDto>> GetConsumerApplicationsAsync(string consumerNo, Guid? consumerUserId, CancellationToken ct = default)
+    public async Task<IReadOnlyList<NewConnectionApplicationSummaryDto>> GetConsumerApplicationsAsync(string consumerNo, int? consumerUserId, CancellationToken ct = default)
     {
         var normalizedConsumerNo = NormalizeRequired(consumerNo).ToUpperInvariant();
 
@@ -140,7 +140,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             .ToListAsync(ct);
     }
 
-    public async Task<NewConnectionApplicationDetailsDto?> GetConsumerApplicationDetailsAsync(long id, string consumerNo, Guid? consumerUserId, CancellationToken ct = default)
+    public async Task<NewConnectionApplicationDetailsDto?> GetConsumerApplicationDetailsAsync(long id, string consumerNo, int? consumerUserId, CancellationToken ct = default)
     {
         var normalizedConsumerNo = NormalizeRequired(consumerNo).ToUpperInvariant();
 
@@ -188,7 +188,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
         string toStatus,
         string action,
         string? remarks,
-        Guid? actionBy,
+        int? actionBy,
         string? actionByName,
         string? actionByRole,
         string? ipAddress,

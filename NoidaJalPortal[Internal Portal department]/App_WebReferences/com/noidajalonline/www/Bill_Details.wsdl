@@ -1,0 +1,1114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="NOIDAAUTHORITY" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="NOIDAAUTHORITY" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="NOIDAAUTHORITY">
+      <s:element name="BillDetails">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="consNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BillDetailsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BillDetailsResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BillDetailsXML">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="consNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BillDetailsXMLResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BillDetailsXMLResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BillDetailsJSON">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="consNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BillDetailsJSONResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BillDetailsJSONResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="postBillDetails">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Transfor" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="challanNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="consNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="mobile" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="date" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="bank" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="amount" type="s:decimal" />
+            <s:element minOccurs="0" maxOccurs="1" name="Paymentmode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="postBillDetailsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="postBillDetailsResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="postBillDetailsNew">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Transfor" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="challanNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="consNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="mobile" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="date" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="bank" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="amount" type="s:decimal" />
+            <s:element minOccurs="0" maxOccurs="1" name="Paymentmode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="bank_transaction_no" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="realisation_date" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="info1" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="info2" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="postBillDetailsNewResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="postBillDetailsNewResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateWaterBill">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CON_TP" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_CTG" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_DATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_DUE_DATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_DATE_FROM" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_DATE_TO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="MIN_RATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CESS_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AREAR" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AREAR_TEXT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AREAR_INT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AREAR_INT_TEXT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="LAST_BILL_EXTRA" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_NM1" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_NM2" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FLAT_TYPE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FLAT_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BLK_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SECTOR" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="property_no" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PLOT_SIZE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PIPE_SIZE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="REG_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONN_DT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ESTI_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ESTI_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SECU" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ESTI_DT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ESTI1_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="DEV_TYPE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="OLD_NEW_EN" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="OLD_NEW_UP" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="MOB_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="EMAIL_ID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_ADDRESS" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="STATUS" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="MIN_TOTAL_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_REBATE_PER" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_REBATE_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TOTAL_BILL_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BEFORE_DATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AFTER_DATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AFTER_DATE_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Div_type" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="bill_after_sep_amt" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="adv_amt" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PRINT_STATUS" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="B_MAY" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="B_APR" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="B_SEP" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="OLD_RATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="LAST_PAID_AMT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_COUNT" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="KHASRA_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="VILLGAE_NAME" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SCHEME_ID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BILL_PERCENTAGE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TEL_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="WEBCODE" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateWaterBillResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UpdateWaterBillResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateConsumerName">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="consno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cname" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateConsumerNameResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UpdateConsumerNameResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferConsumerName">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="consno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cnamenew" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cfnamenew" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cname" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cfname" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="tdate" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="tamt" type="s:float" />
+            <s:element minOccurs="0" maxOccurs="1" name="challanNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="bankname" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="challanDate" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="phoneNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="seuc" type="s:float" />
+            <s:element minOccurs="0" maxOccurs="1" name="userid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferConsumerNameResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TransferConsumerNameResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NewConsumerConnection">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_NM1" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_NM2" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CON_TP" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CONS_CTG" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FLAT_TYPE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FLAT_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BLK_NO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SECTOR" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="PLOT_SIZE" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="PIPE_SIZE" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="REG_NO" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CONN_DT" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="ESTI_NO" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="ESTI_AMT" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="SECU" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="ESTI_DT" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="ESTI1_AMT" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="CAL_DATE" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="DEV_TYPE" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="UserId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NewConsumerConnectionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="NewConsumerConnectionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+      <s:element name="DataTable" nillable="true">
+        <s:complexType>
+          <s:sequence>
+            <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+            <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="BillDetailsSoapIn">
+    <wsdl:part name="parameters" element="tns:BillDetails" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsSoapOut">
+    <wsdl:part name="parameters" element="tns:BillDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsXMLSoapIn">
+    <wsdl:part name="parameters" element="tns:BillDetailsXML" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsXMLSoapOut">
+    <wsdl:part name="parameters" element="tns:BillDetailsXMLResponse" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsJSONSoapIn">
+    <wsdl:part name="parameters" element="tns:BillDetailsJSON" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsJSONSoapOut">
+    <wsdl:part name="parameters" element="tns:BillDetailsJSONResponse" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsSoapIn">
+    <wsdl:part name="parameters" element="tns:postBillDetails" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsSoapOut">
+    <wsdl:part name="parameters" element="tns:postBillDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsNewSoapIn">
+    <wsdl:part name="parameters" element="tns:postBillDetailsNew" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsNewSoapOut">
+    <wsdl:part name="parameters" element="tns:postBillDetailsNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateWaterBillSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateWaterBill" />
+  </wsdl:message>
+  <wsdl:message name="UpdateWaterBillSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateWaterBillResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateConsumerNameSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateConsumerName" />
+  </wsdl:message>
+  <wsdl:message name="UpdateConsumerNameSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateConsumerNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="TransferConsumerNameSoapIn">
+    <wsdl:part name="parameters" element="tns:TransferConsumerName" />
+  </wsdl:message>
+  <wsdl:message name="TransferConsumerNameSoapOut">
+    <wsdl:part name="parameters" element="tns:TransferConsumerNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="NewConsumerConnectionSoapIn">
+    <wsdl:part name="parameters" element="tns:NewConsumerConnection" />
+  </wsdl:message>
+  <wsdl:message name="NewConsumerConnectionSoapOut">
+    <wsdl:part name="parameters" element="tns:NewConsumerConnectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsHttpGetIn">
+    <wsdl:part name="consNo" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsXMLHttpGetIn">
+    <wsdl:part name="consNo" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsXMLHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataTable" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsJSONHttpGetIn">
+    <wsdl:part name="consNo" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsJSONHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsHttpGetIn">
+    <wsdl:part name="Transfor" type="s:string" />
+    <wsdl:part name="challanNo" type="s:string" />
+    <wsdl:part name="consNo" type="s:string" />
+    <wsdl:part name="mobile" type="s:string" />
+    <wsdl:part name="date" type="s:string" />
+    <wsdl:part name="bank" type="s:string" />
+    <wsdl:part name="amount" type="s:string" />
+    <wsdl:part name="Paymentmode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsNewHttpGetIn">
+    <wsdl:part name="Transfor" type="s:string" />
+    <wsdl:part name="challanNo" type="s:string" />
+    <wsdl:part name="consNo" type="s:string" />
+    <wsdl:part name="mobile" type="s:string" />
+    <wsdl:part name="date" type="s:string" />
+    <wsdl:part name="bank" type="s:string" />
+    <wsdl:part name="amount" type="s:string" />
+    <wsdl:part name="Paymentmode" type="s:string" />
+    <wsdl:part name="bank_transaction_no" type="s:string" />
+    <wsdl:part name="realisation_date" type="s:string" />
+    <wsdl:part name="info1" type="s:string" />
+    <wsdl:part name="info2" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsNewHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateWaterBillHttpGetIn">
+    <wsdl:part name="BILL_NO" type="s:string" />
+    <wsdl:part name="CON_TP" type="s:string" />
+    <wsdl:part name="CONS_CTG" type="s:string" />
+    <wsdl:part name="BILL_DATE" type="s:string" />
+    <wsdl:part name="BILL_DUE_DATE" type="s:string" />
+    <wsdl:part name="BILL_DATE_FROM" type="s:string" />
+    <wsdl:part name="BILL_DATE_TO" type="s:string" />
+    <wsdl:part name="MIN_RATE" type="s:string" />
+    <wsdl:part name="CESS_AMT" type="s:string" />
+    <wsdl:part name="AREAR" type="s:string" />
+    <wsdl:part name="AREAR_TEXT" type="s:string" />
+    <wsdl:part name="AREAR_INT" type="s:string" />
+    <wsdl:part name="AREAR_INT_TEXT" type="s:string" />
+    <wsdl:part name="LAST_BILL_EXTRA" type="s:string" />
+    <wsdl:part name="CONS_NO" type="s:string" />
+    <wsdl:part name="CONS_NM1" type="s:string" />
+    <wsdl:part name="CONS_NM2" type="s:string" />
+    <wsdl:part name="FLAT_TYPE" type="s:string" />
+    <wsdl:part name="FLAT_NO" type="s:string" />
+    <wsdl:part name="BLK_NO" type="s:string" />
+    <wsdl:part name="SECTOR" type="s:string" />
+    <wsdl:part name="property_no" type="s:string" />
+    <wsdl:part name="PLOT_SIZE" type="s:string" />
+    <wsdl:part name="PIPE_SIZE" type="s:string" />
+    <wsdl:part name="REG_NO" type="s:string" />
+    <wsdl:part name="CONN_DT" type="s:string" />
+    <wsdl:part name="ESTI_NO" type="s:string" />
+    <wsdl:part name="ESTI_AMT" type="s:string" />
+    <wsdl:part name="SECU" type="s:string" />
+    <wsdl:part name="ESTI_DT" type="s:string" />
+    <wsdl:part name="ESTI1_AMT" type="s:string" />
+    <wsdl:part name="DEV_TYPE" type="s:string" />
+    <wsdl:part name="OLD_NEW_EN" type="s:string" />
+    <wsdl:part name="OLD_NEW_UP" type="s:string" />
+    <wsdl:part name="MOB_NO" type="s:string" />
+    <wsdl:part name="EMAIL_ID" type="s:string" />
+    <wsdl:part name="CONS_ADDRESS" type="s:string" />
+    <wsdl:part name="STATUS" type="s:string" />
+    <wsdl:part name="MIN_TOTAL_AMT" type="s:string" />
+    <wsdl:part name="BILL_REBATE_PER" type="s:string" />
+    <wsdl:part name="BILL_REBATE_AMT" type="s:string" />
+    <wsdl:part name="TOTAL_BILL_AMT" type="s:string" />
+    <wsdl:part name="BEFORE_DATE" type="s:string" />
+    <wsdl:part name="AFTER_DATE" type="s:string" />
+    <wsdl:part name="AFTER_DATE_AMT" type="s:string" />
+    <wsdl:part name="Div_type" type="s:string" />
+    <wsdl:part name="bill_after_sep_amt" type="s:string" />
+    <wsdl:part name="adv_amt" type="s:string" />
+    <wsdl:part name="PRINT_STATUS" type="s:string" />
+    <wsdl:part name="B_MAY" type="s:string" />
+    <wsdl:part name="B_APR" type="s:string" />
+    <wsdl:part name="B_SEP" type="s:string" />
+    <wsdl:part name="OLD_RATE" type="s:string" />
+    <wsdl:part name="LAST_PAID_AMT" type="s:string" />
+    <wsdl:part name="BILL_COUNT" type="s:string" />
+    <wsdl:part name="KHASRA_NO" type="s:string" />
+    <wsdl:part name="VILLGAE_NAME" type="s:string" />
+    <wsdl:part name="SCHEME_ID" type="s:string" />
+    <wsdl:part name="BILL_PERCENTAGE" type="s:string" />
+    <wsdl:part name="TEL_NO" type="s:string" />
+    <wsdl:part name="WEBCODE" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateWaterBillHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateConsumerNameHttpGetIn">
+    <wsdl:part name="consno" type="s:string" />
+    <wsdl:part name="cname" type="s:string" />
+    <wsdl:part name="userid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateConsumerNameHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="TransferConsumerNameHttpGetIn">
+    <wsdl:part name="consno" type="s:string" />
+    <wsdl:part name="cnamenew" type="s:string" />
+    <wsdl:part name="cfnamenew" type="s:string" />
+    <wsdl:part name="cname" type="s:string" />
+    <wsdl:part name="cfname" type="s:string" />
+    <wsdl:part name="tdate" type="s:string" />
+    <wsdl:part name="tamt" type="s:string" />
+    <wsdl:part name="challanNo" type="s:string" />
+    <wsdl:part name="bankname" type="s:string" />
+    <wsdl:part name="challanDate" type="s:string" />
+    <wsdl:part name="phoneNo" type="s:string" />
+    <wsdl:part name="email" type="s:string" />
+    <wsdl:part name="seuc" type="s:string" />
+    <wsdl:part name="userid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="TransferConsumerNameHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="NewConsumerConnectionHttpGetIn">
+    <wsdl:part name="CONS_NO" type="s:string" />
+    <wsdl:part name="CONS_NM1" type="s:string" />
+    <wsdl:part name="CONS_NM2" type="s:string" />
+    <wsdl:part name="CON_TP" type="s:string" />
+    <wsdl:part name="CONS_CTG" type="s:string" />
+    <wsdl:part name="FLAT_TYPE" type="s:string" />
+    <wsdl:part name="FLAT_NO" type="s:string" />
+    <wsdl:part name="BLK_NO" type="s:string" />
+    <wsdl:part name="SECTOR" type="s:string" />
+    <wsdl:part name="PLOT_SIZE" type="s:string" />
+    <wsdl:part name="PIPE_SIZE" type="s:string" />
+    <wsdl:part name="REG_NO" type="s:string" />
+    <wsdl:part name="CONN_DT" type="s:string" />
+    <wsdl:part name="ESTI_NO" type="s:string" />
+    <wsdl:part name="ESTI_AMT" type="s:string" />
+    <wsdl:part name="SECU" type="s:string" />
+    <wsdl:part name="ESTI_DT" type="s:string" />
+    <wsdl:part name="ESTI1_AMT" type="s:string" />
+    <wsdl:part name="CAL_DATE" type="s:string" />
+    <wsdl:part name="DEV_TYPE" type="s:string" />
+    <wsdl:part name="UserId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="NewConsumerConnectionHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsHttpPostIn">
+    <wsdl:part name="consNo" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsXMLHttpPostIn">
+    <wsdl:part name="consNo" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsXMLHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataTable" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsJSONHttpPostIn">
+    <wsdl:part name="consNo" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="BillDetailsJSONHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsHttpPostIn">
+    <wsdl:part name="Transfor" type="s:string" />
+    <wsdl:part name="challanNo" type="s:string" />
+    <wsdl:part name="consNo" type="s:string" />
+    <wsdl:part name="mobile" type="s:string" />
+    <wsdl:part name="date" type="s:string" />
+    <wsdl:part name="bank" type="s:string" />
+    <wsdl:part name="amount" type="s:string" />
+    <wsdl:part name="Paymentmode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsNewHttpPostIn">
+    <wsdl:part name="Transfor" type="s:string" />
+    <wsdl:part name="challanNo" type="s:string" />
+    <wsdl:part name="consNo" type="s:string" />
+    <wsdl:part name="mobile" type="s:string" />
+    <wsdl:part name="date" type="s:string" />
+    <wsdl:part name="bank" type="s:string" />
+    <wsdl:part name="amount" type="s:string" />
+    <wsdl:part name="Paymentmode" type="s:string" />
+    <wsdl:part name="bank_transaction_no" type="s:string" />
+    <wsdl:part name="realisation_date" type="s:string" />
+    <wsdl:part name="info1" type="s:string" />
+    <wsdl:part name="info2" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="postBillDetailsNewHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateWaterBillHttpPostIn">
+    <wsdl:part name="BILL_NO" type="s:string" />
+    <wsdl:part name="CON_TP" type="s:string" />
+    <wsdl:part name="CONS_CTG" type="s:string" />
+    <wsdl:part name="BILL_DATE" type="s:string" />
+    <wsdl:part name="BILL_DUE_DATE" type="s:string" />
+    <wsdl:part name="BILL_DATE_FROM" type="s:string" />
+    <wsdl:part name="BILL_DATE_TO" type="s:string" />
+    <wsdl:part name="MIN_RATE" type="s:string" />
+    <wsdl:part name="CESS_AMT" type="s:string" />
+    <wsdl:part name="AREAR" type="s:string" />
+    <wsdl:part name="AREAR_TEXT" type="s:string" />
+    <wsdl:part name="AREAR_INT" type="s:string" />
+    <wsdl:part name="AREAR_INT_TEXT" type="s:string" />
+    <wsdl:part name="LAST_BILL_EXTRA" type="s:string" />
+    <wsdl:part name="CONS_NO" type="s:string" />
+    <wsdl:part name="CONS_NM1" type="s:string" />
+    <wsdl:part name="CONS_NM2" type="s:string" />
+    <wsdl:part name="FLAT_TYPE" type="s:string" />
+    <wsdl:part name="FLAT_NO" type="s:string" />
+    <wsdl:part name="BLK_NO" type="s:string" />
+    <wsdl:part name="SECTOR" type="s:string" />
+    <wsdl:part name="property_no" type="s:string" />
+    <wsdl:part name="PLOT_SIZE" type="s:string" />
+    <wsdl:part name="PIPE_SIZE" type="s:string" />
+    <wsdl:part name="REG_NO" type="s:string" />
+    <wsdl:part name="CONN_DT" type="s:string" />
+    <wsdl:part name="ESTI_NO" type="s:string" />
+    <wsdl:part name="ESTI_AMT" type="s:string" />
+    <wsdl:part name="SECU" type="s:string" />
+    <wsdl:part name="ESTI_DT" type="s:string" />
+    <wsdl:part name="ESTI1_AMT" type="s:string" />
+    <wsdl:part name="DEV_TYPE" type="s:string" />
+    <wsdl:part name="OLD_NEW_EN" type="s:string" />
+    <wsdl:part name="OLD_NEW_UP" type="s:string" />
+    <wsdl:part name="MOB_NO" type="s:string" />
+    <wsdl:part name="EMAIL_ID" type="s:string" />
+    <wsdl:part name="CONS_ADDRESS" type="s:string" />
+    <wsdl:part name="STATUS" type="s:string" />
+    <wsdl:part name="MIN_TOTAL_AMT" type="s:string" />
+    <wsdl:part name="BILL_REBATE_PER" type="s:string" />
+    <wsdl:part name="BILL_REBATE_AMT" type="s:string" />
+    <wsdl:part name="TOTAL_BILL_AMT" type="s:string" />
+    <wsdl:part name="BEFORE_DATE" type="s:string" />
+    <wsdl:part name="AFTER_DATE" type="s:string" />
+    <wsdl:part name="AFTER_DATE_AMT" type="s:string" />
+    <wsdl:part name="Div_type" type="s:string" />
+    <wsdl:part name="bill_after_sep_amt" type="s:string" />
+    <wsdl:part name="adv_amt" type="s:string" />
+    <wsdl:part name="PRINT_STATUS" type="s:string" />
+    <wsdl:part name="B_MAY" type="s:string" />
+    <wsdl:part name="B_APR" type="s:string" />
+    <wsdl:part name="B_SEP" type="s:string" />
+    <wsdl:part name="OLD_RATE" type="s:string" />
+    <wsdl:part name="LAST_PAID_AMT" type="s:string" />
+    <wsdl:part name="BILL_COUNT" type="s:string" />
+    <wsdl:part name="KHASRA_NO" type="s:string" />
+    <wsdl:part name="VILLGAE_NAME" type="s:string" />
+    <wsdl:part name="SCHEME_ID" type="s:string" />
+    <wsdl:part name="BILL_PERCENTAGE" type="s:string" />
+    <wsdl:part name="TEL_NO" type="s:string" />
+    <wsdl:part name="WEBCODE" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateWaterBillHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateConsumerNameHttpPostIn">
+    <wsdl:part name="consno" type="s:string" />
+    <wsdl:part name="cname" type="s:string" />
+    <wsdl:part name="userid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateConsumerNameHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="TransferConsumerNameHttpPostIn">
+    <wsdl:part name="consno" type="s:string" />
+    <wsdl:part name="cnamenew" type="s:string" />
+    <wsdl:part name="cfnamenew" type="s:string" />
+    <wsdl:part name="cname" type="s:string" />
+    <wsdl:part name="cfname" type="s:string" />
+    <wsdl:part name="tdate" type="s:string" />
+    <wsdl:part name="tamt" type="s:string" />
+    <wsdl:part name="challanNo" type="s:string" />
+    <wsdl:part name="bankname" type="s:string" />
+    <wsdl:part name="challanDate" type="s:string" />
+    <wsdl:part name="phoneNo" type="s:string" />
+    <wsdl:part name="email" type="s:string" />
+    <wsdl:part name="seuc" type="s:string" />
+    <wsdl:part name="userid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="TransferConsumerNameHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="NewConsumerConnectionHttpPostIn">
+    <wsdl:part name="CONS_NO" type="s:string" />
+    <wsdl:part name="CONS_NM1" type="s:string" />
+    <wsdl:part name="CONS_NM2" type="s:string" />
+    <wsdl:part name="CON_TP" type="s:string" />
+    <wsdl:part name="CONS_CTG" type="s:string" />
+    <wsdl:part name="FLAT_TYPE" type="s:string" />
+    <wsdl:part name="FLAT_NO" type="s:string" />
+    <wsdl:part name="BLK_NO" type="s:string" />
+    <wsdl:part name="SECTOR" type="s:string" />
+    <wsdl:part name="PLOT_SIZE" type="s:string" />
+    <wsdl:part name="PIPE_SIZE" type="s:string" />
+    <wsdl:part name="REG_NO" type="s:string" />
+    <wsdl:part name="CONN_DT" type="s:string" />
+    <wsdl:part name="ESTI_NO" type="s:string" />
+    <wsdl:part name="ESTI_AMT" type="s:string" />
+    <wsdl:part name="SECU" type="s:string" />
+    <wsdl:part name="ESTI_DT" type="s:string" />
+    <wsdl:part name="ESTI1_AMT" type="s:string" />
+    <wsdl:part name="CAL_DATE" type="s:string" />
+    <wsdl:part name="DEV_TYPE" type="s:string" />
+    <wsdl:part name="UserId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="NewConsumerConnectionHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:portType name="Bill_DetailsSoap">
+    <wsdl:operation name="BillDetails">
+      <wsdl:input message="tns:BillDetailsSoapIn" />
+      <wsdl:output message="tns:BillDetailsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsXML">
+      <wsdl:input message="tns:BillDetailsXMLSoapIn" />
+      <wsdl:output message="tns:BillDetailsXMLSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsJSON">
+      <wsdl:input message="tns:BillDetailsJSONSoapIn" />
+      <wsdl:output message="tns:BillDetailsJSONSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetails">
+      <wsdl:input message="tns:postBillDetailsSoapIn" />
+      <wsdl:output message="tns:postBillDetailsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetailsNew">
+      <wsdl:input message="tns:postBillDetailsNewSoapIn" />
+      <wsdl:output message="tns:postBillDetailsNewSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateWaterBill">
+      <wsdl:input message="tns:UpdateWaterBillSoapIn" />
+      <wsdl:output message="tns:UpdateWaterBillSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateConsumerName">
+      <wsdl:input message="tns:UpdateConsumerNameSoapIn" />
+      <wsdl:output message="tns:UpdateConsumerNameSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferConsumerName">
+      <wsdl:input message="tns:TransferConsumerNameSoapIn" />
+      <wsdl:output message="tns:TransferConsumerNameSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NewConsumerConnection">
+      <wsdl:input message="tns:NewConsumerConnectionSoapIn" />
+      <wsdl:output message="tns:NewConsumerConnectionSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="Bill_DetailsHttpGet">
+    <wsdl:operation name="BillDetails">
+      <wsdl:input message="tns:BillDetailsHttpGetIn" />
+      <wsdl:output message="tns:BillDetailsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsXML">
+      <wsdl:input message="tns:BillDetailsXMLHttpGetIn" />
+      <wsdl:output message="tns:BillDetailsXMLHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsJSON">
+      <wsdl:input message="tns:BillDetailsJSONHttpGetIn" />
+      <wsdl:output message="tns:BillDetailsJSONHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetails">
+      <wsdl:input message="tns:postBillDetailsHttpGetIn" />
+      <wsdl:output message="tns:postBillDetailsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetailsNew">
+      <wsdl:input message="tns:postBillDetailsNewHttpGetIn" />
+      <wsdl:output message="tns:postBillDetailsNewHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateWaterBill">
+      <wsdl:input message="tns:UpdateWaterBillHttpGetIn" />
+      <wsdl:output message="tns:UpdateWaterBillHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateConsumerName">
+      <wsdl:input message="tns:UpdateConsumerNameHttpGetIn" />
+      <wsdl:output message="tns:UpdateConsumerNameHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferConsumerName">
+      <wsdl:input message="tns:TransferConsumerNameHttpGetIn" />
+      <wsdl:output message="tns:TransferConsumerNameHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NewConsumerConnection">
+      <wsdl:input message="tns:NewConsumerConnectionHttpGetIn" />
+      <wsdl:output message="tns:NewConsumerConnectionHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="Bill_DetailsHttpPost">
+    <wsdl:operation name="BillDetails">
+      <wsdl:input message="tns:BillDetailsHttpPostIn" />
+      <wsdl:output message="tns:BillDetailsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsXML">
+      <wsdl:input message="tns:BillDetailsXMLHttpPostIn" />
+      <wsdl:output message="tns:BillDetailsXMLHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsJSON">
+      <wsdl:input message="tns:BillDetailsJSONHttpPostIn" />
+      <wsdl:output message="tns:BillDetailsJSONHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetails">
+      <wsdl:input message="tns:postBillDetailsHttpPostIn" />
+      <wsdl:output message="tns:postBillDetailsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetailsNew">
+      <wsdl:input message="tns:postBillDetailsNewHttpPostIn" />
+      <wsdl:output message="tns:postBillDetailsNewHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateWaterBill">
+      <wsdl:input message="tns:UpdateWaterBillHttpPostIn" />
+      <wsdl:output message="tns:UpdateWaterBillHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateConsumerName">
+      <wsdl:input message="tns:UpdateConsumerNameHttpPostIn" />
+      <wsdl:output message="tns:UpdateConsumerNameHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferConsumerName">
+      <wsdl:input message="tns:TransferConsumerNameHttpPostIn" />
+      <wsdl:output message="tns:TransferConsumerNameHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NewConsumerConnection">
+      <wsdl:input message="tns:NewConsumerConnectionHttpPostIn" />
+      <wsdl:output message="tns:NewConsumerConnectionHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Bill_DetailsSoap" type="tns:Bill_DetailsSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="BillDetails">
+      <soap:operation soapAction="NOIDAAUTHORITY/BillDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsXML">
+      <soap:operation soapAction="NOIDAAUTHORITY/BillDetailsXML" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsJSON">
+      <soap:operation soapAction="NOIDAAUTHORITY/BillDetailsJSON" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetails">
+      <soap:operation soapAction="NOIDAAUTHORITY/postBillDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetailsNew">
+      <soap:operation soapAction="NOIDAAUTHORITY/postBillDetailsNew" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateWaterBill">
+      <soap:operation soapAction="NOIDAAUTHORITY/UpdateWaterBill" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateConsumerName">
+      <soap:operation soapAction="NOIDAAUTHORITY/UpdateConsumerName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferConsumerName">
+      <soap:operation soapAction="NOIDAAUTHORITY/TransferConsumerName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewConsumerConnection">
+      <soap:operation soapAction="NOIDAAUTHORITY/NewConsumerConnection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Bill_DetailsSoap12" type="tns:Bill_DetailsSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="BillDetails">
+      <soap12:operation soapAction="NOIDAAUTHORITY/BillDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsXML">
+      <soap12:operation soapAction="NOIDAAUTHORITY/BillDetailsXML" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsJSON">
+      <soap12:operation soapAction="NOIDAAUTHORITY/BillDetailsJSON" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetails">
+      <soap12:operation soapAction="NOIDAAUTHORITY/postBillDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetailsNew">
+      <soap12:operation soapAction="NOIDAAUTHORITY/postBillDetailsNew" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateWaterBill">
+      <soap12:operation soapAction="NOIDAAUTHORITY/UpdateWaterBill" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateConsumerName">
+      <soap12:operation soapAction="NOIDAAUTHORITY/UpdateConsumerName" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferConsumerName">
+      <soap12:operation soapAction="NOIDAAUTHORITY/TransferConsumerName" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewConsumerConnection">
+      <soap12:operation soapAction="NOIDAAUTHORITY/NewConsumerConnection" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Bill_DetailsHttpGet" type="tns:Bill_DetailsHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="BillDetails">
+      <http:operation location="/BillDetails" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsXML">
+      <http:operation location="/BillDetailsXML" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsJSON">
+      <http:operation location="/BillDetailsJSON" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetails">
+      <http:operation location="/postBillDetails" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetailsNew">
+      <http:operation location="/postBillDetailsNew" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateWaterBill">
+      <http:operation location="/UpdateWaterBill" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateConsumerName">
+      <http:operation location="/UpdateConsumerName" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferConsumerName">
+      <http:operation location="/TransferConsumerName" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewConsumerConnection">
+      <http:operation location="/NewConsumerConnection" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Bill_DetailsHttpPost" type="tns:Bill_DetailsHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="BillDetails">
+      <http:operation location="/BillDetails" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsXML">
+      <http:operation location="/BillDetailsXML" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BillDetailsJSON">
+      <http:operation location="/BillDetailsJSON" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetails">
+      <http:operation location="/postBillDetails" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="postBillDetailsNew">
+      <http:operation location="/postBillDetailsNew" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateWaterBill">
+      <http:operation location="/UpdateWaterBill" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateConsumerName">
+      <http:operation location="/UpdateConsumerName" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferConsumerName">
+      <http:operation location="/TransferConsumerName" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NewConsumerConnection">
+      <http:operation location="/NewConsumerConnection" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Bill_Details">
+    <wsdl:port name="Bill_DetailsSoap" binding="tns:Bill_DetailsSoap">
+      <soap:address location="http://108.60.209.117:91/Bill_Details.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Bill_DetailsSoap12" binding="tns:Bill_DetailsSoap12">
+      <soap12:address location="http://108.60.209.117:91/Bill_Details.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Bill_DetailsHttpGet" binding="tns:Bill_DetailsHttpGet">
+      <http:address location="http://108.60.209.117:91/Bill_Details.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Bill_DetailsHttpPost" binding="tns:Bill_DetailsHttpPost">
+      <http:address location="http://108.60.209.117:91/Bill_Details.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,528 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="JALONLINEDataSet" targetNamespace="http://tempuri.org/JALONLINEDataSet.xsd" xmlns:mstns="http://tempuri.org/JALONLINEDataSet.xsd" xmlns="http://tempuri.org/JALONLINEDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="2" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Web.config" AppSettingsPropertyName="ConStringSQL" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="ConStringSQL (Web.config)" ParameterPrefix="@" PropertyReference="AppConfig.System.Configuration.ConfigurationManager.0.ConnectionStrings.ConStringSQL.ConnectionString" Provider="System.Data.SqlClient" />
+          <Connection AppSettingsObjectName="Web.config" AppSettingsPropertyName="JALONLINEConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="JALONLINEConnectionString (Web.config)" ParameterPrefix="@" PropertyReference="AppConfig.System.Configuration.ConfigurationManager.0.ConnectionStrings.JALONLINEConnectionString.ConnectionString" Provider="System.Data.SqlClient" />
+          <Connection AppSettingsObjectName="Web.config" AppSettingsPropertyName="JALONLINEConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="JALONLINEConnectionString (Web.config)" ParameterPrefix="@" PropertyReference="AppConfig.System.Configuration.ConfigurationManager.0.ConnectionStrings.JALONLINEConnectionString.ConnectionString" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="View_CONSUMER_DETAILS_MASTER_TEMPTableAdapter" GeneratorDataComponentClassName="View_CONSUMER_DETAILS_MASTER_TEMPTableAdapter" Name="View_CONSUMER_DETAILS_MASTER_TEMP" UserDataComponentName="View_CONSUMER_DETAILS_MASTER_TEMPTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="ConStringSQL (Web.config)" DbObjectName="JALONLINE.dbo.View_CONSUMER_DETAILS_MASTER_TEMP" DbObjectType="View" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="false" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT CONS_NO, CONS_NAME, SECTOR, BLK_NO, FLAT_NO, DUE_DT, PAID_AMT, DEV_TYPE, DISCOUNT, PAID_AMT_ACTUAL, USERID, STATUS, ENTRY_DATE, NEW_OLD FROM dbo.View_CONSUMER_DETAILS_MASTER_TEMP</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="CONS_NO" DataSetColumn="CONS_NO" />
+              <Mapping SourceColumn="CONS_NAME" DataSetColumn="CONS_NAME" />
+              <Mapping SourceColumn="SECTOR" DataSetColumn="SECTOR" />
+              <Mapping SourceColumn="BLK_NO" DataSetColumn="BLK_NO" />
+              <Mapping SourceColumn="FLAT_NO" DataSetColumn="FLAT_NO" />
+              <Mapping SourceColumn="DUE_DT" DataSetColumn="DUE_DT" />
+              <Mapping SourceColumn="PAID_AMT" DataSetColumn="PAID_AMT" />
+              <Mapping SourceColumn="DEV_TYPE" DataSetColumn="DEV_TYPE" />
+              <Mapping SourceColumn="DISCOUNT" DataSetColumn="DISCOUNT" />
+              <Mapping SourceColumn="PAID_AMT_ACTUAL" DataSetColumn="PAID_AMT_ACTUAL" />
+              <Mapping SourceColumn="USERID" DataSetColumn="USERID" />
+              <Mapping SourceColumn="STATUS" DataSetColumn="STATUS" />
+              <Mapping SourceColumn="ENTRY_DATE" DataSetColumn="ENTRY_DATE" />
+              <Mapping SourceColumn="NEW_OLD" DataSetColumn="NEW_OLD" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="default_lacs_mainTableAdapter" GeneratorDataComponentClassName="default_lacs_mainTableAdapter" Name="default_lacs_main" UserDataComponentName="default_lacs_mainTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="JALONLINEConnectionString (Web.config)" DbObjectName="JALONLINE.dbo.default_lacs_main" DbObjectType="View" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="false" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT CONS_NO, property_no, CONS_NM1, TOTAL_BILL_AMT, CONN_TYPE FROM dbo.default_lacs_main</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="CONS_NO" DataSetColumn="CONS_NO" />
+              <Mapping SourceColumn="property_no" DataSetColumn="property_no" />
+              <Mapping SourceColumn="CONS_NM1" DataSetColumn="CONS_NM1" />
+              <Mapping SourceColumn="TOTAL_BILL_AMT" DataSetColumn="TOTAL_BILL_AMT" />
+              <Mapping SourceColumn="CONN_TYPE" DataSetColumn="CONN_TYPE" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="VIEW_JAL_BILL_MASTERTableAdapter" GeneratorDataComponentClassName="VIEW_JAL_BILL_MASTERTableAdapter" Name="VIEW_JAL_BILL_MASTER" UserDataComponentName="VIEW_JAL_BILL_MASTERTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="JALONLINEConnectionString (Web.config)" DbObjectName="JALONLINE.dbo.VIEW_JAL_BILL_MASTER" DbObjectType="View" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="false" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT BILL_NO, CON_TP, CONS_CTG, BILL_DATE, BILL_DUE_DATE, BILL_DATE_FROM, BILL_DATE_TO, MIN_RATE, CESS_AMT, AREAR, AREAR_TEXT, AREAR_INT, AREAR_INT_TEXT, LAST_BILL_EXTRA, CONS_NO, CONS_NM1, CONS_NM2, FLAT_TYPE, FLAT_NO, BLK_NO, SECTOR, property_no, PLOT_SIZE, PIPE_SIZE, REG_NO, CONN_DT, ESTI_NO, ESTI_AMT, SECU, ESTI_DT, ESTI1_AMT, DEV_TYPE, OLD_NEW_EN, OLD_NEW_UP, MOB_NO, EMAIL_ID, CONS_ADDRESS, STATUS, MIN_TOTAL_AMT, BILL_REBATE_PER, BILL_REBATE_AMT, TOTAL_BILL_AMT, BEFORE_DATE, AFTER_DATE, AFTER_DATE_AMT, Div_type, bill_after_sep_amt, adv_amt, PRINT_STATUS, B_MAY, B_APR, B_SEP, OLD_RATE, LAST_PAID_AMT, BILL_TYPE, BILL_COUNT, KHASRA_NO, VILLGAE_NAME, SCHEME_ID, BILL_PERCENTAGE, TEL_NO FROM dbo.VIEW_JAL_BILL_MASTER</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="BILL_NO" DataSetColumn="BILL_NO" />
+              <Mapping SourceColumn="CON_TP" DataSetColumn="CON_TP" />
+              <Mapping SourceColumn="CONS_CTG" DataSetColumn="CONS_CTG" />
+              <Mapping SourceColumn="BILL_DATE" DataSetColumn="BILL_DATE" />
+              <Mapping SourceColumn="BILL_DUE_DATE" DataSetColumn="BILL_DUE_DATE" />
+              <Mapping SourceColumn="BILL_DATE_FROM" DataSetColumn="BILL_DATE_FROM" />
+              <Mapping SourceColumn="BILL_DATE_TO" DataSetColumn="BILL_DATE_TO" />
+              <Mapping SourceColumn="MIN_RATE" DataSetColumn="MIN_RATE" />
+              <Mapping SourceColumn="CESS_AMT" DataSetColumn="CESS_AMT" />
+              <Mapping SourceColumn="AREAR" DataSetColumn="AREAR" />
+              <Mapping SourceColumn="AREAR_TEXT" DataSetColumn="AREAR_TEXT" />
+              <Mapping SourceColumn="AREAR_INT" DataSetColumn="AREAR_INT" />
+              <Mapping SourceColumn="AREAR_INT_TEXT" DataSetColumn="AREAR_INT_TEXT" />
+              <Mapping SourceColumn="LAST_BILL_EXTRA" DataSetColumn="LAST_BILL_EXTRA" />
+              <Mapping SourceColumn="CONS_NO" DataSetColumn="CONS_NO" />
+              <Mapping SourceColumn="CONS_NM1" DataSetColumn="CONS_NM1" />
+              <Mapping SourceColumn="CONS_NM2" DataSetColumn="CONS_NM2" />
+              <Mapping SourceColumn="FLAT_TYPE" DataSetColumn="FLAT_TYPE" />
+              <Mapping SourceColumn="FLAT_NO" DataSetColumn="FLAT_NO" />
+              <Mapping SourceColumn="BLK_NO" DataSetColumn="BLK_NO" />
+              <Mapping SourceColumn="SECTOR" DataSetColumn="SECTOR" />
+              <Mapping SourceColumn="property_no" DataSetColumn="property_no" />
+              <Mapping SourceColumn="PLOT_SIZE" DataSetColumn="PLOT_SIZE" />
+              <Mapping SourceColumn="PIPE_SIZE" DataSetColumn="PIPE_SIZE" />
+              <Mapping SourceColumn="REG_NO" DataSetColumn="REG_NO" />
+              <Mapping SourceColumn="CONN_DT" DataSetColumn="CONN_DT" />
+              <Mapping SourceColumn="ESTI_NO" DataSetColumn="ESTI_NO" />
+              <Mapping SourceColumn="ESTI_AMT" DataSetColumn="ESTI_AMT" />
+              <Mapping SourceColumn="SECU" DataSetColumn="SECU" />
+              <Mapping SourceColumn="ESTI_DT" DataSetColumn="ESTI_DT" />
+              <Mapping SourceColumn="ESTI1_AMT" DataSetColumn="ESTI1_AMT" />
+              <Mapping SourceColumn="DEV_TYPE" DataSetColumn="DEV_TYPE" />
+              <Mapping SourceColumn="OLD_NEW_EN" DataSetColumn="OLD_NEW_EN" />
+              <Mapping SourceColumn="OLD_NEW_UP" DataSetColumn="OLD_NEW_UP" />
+              <Mapping SourceColumn="MOB_NO" DataSetColumn="MOB_NO" />
+              <Mapping SourceColumn="EMAIL_ID" DataSetColumn="EMAIL_ID" />
+              <Mapping SourceColumn="CONS_ADDRESS" DataSetColumn="CONS_ADDRESS" />
+              <Mapping SourceColumn="STATUS" DataSetColumn="STATUS" />
+              <Mapping SourceColumn="MIN_TOTAL_AMT" DataSetColumn="MIN_TOTAL_AMT" />
+              <Mapping SourceColumn="BILL_REBATE_PER" DataSetColumn="BILL_REBATE_PER" />
+              <Mapping SourceColumn="BILL_REBATE_AMT" DataSetColumn="BILL_REBATE_AMT" />
+              <Mapping SourceColumn="TOTAL_BILL_AMT" DataSetColumn="TOTAL_BILL_AMT" />
+              <Mapping SourceColumn="BEFORE_DATE" DataSetColumn="BEFORE_DATE" />
+              <Mapping SourceColumn="AFTER_DATE" DataSetColumn="AFTER_DATE" />
+              <Mapping SourceColumn="AFTER_DATE_AMT" DataSetColumn="AFTER_DATE_AMT" />
+              <Mapping SourceColumn="Div_type" DataSetColumn="Div_type" />
+              <Mapping SourceColumn="bill_after_sep_amt" DataSetColumn="bill_after_sep_amt" />
+              <Mapping SourceColumn="adv_amt" DataSetColumn="adv_amt" />
+              <Mapping SourceColumn="PRINT_STATUS" DataSetColumn="PRINT_STATUS" />
+              <Mapping SourceColumn="B_MAY" DataSetColumn="B_MAY" />
+              <Mapping SourceColumn="B_APR" DataSetColumn="B_APR" />
+              <Mapping SourceColumn="B_SEP" DataSetColumn="B_SEP" />
+              <Mapping SourceColumn="OLD_RATE" DataSetColumn="OLD_RATE" />
+              <Mapping SourceColumn="LAST_PAID_AMT" DataSetColumn="LAST_PAID_AMT" />
+              <Mapping SourceColumn="BILL_TYPE" DataSetColumn="BILL_TYPE" />
+              <Mapping SourceColumn="BILL_COUNT" DataSetColumn="BILL_COUNT" />
+              <Mapping SourceColumn="KHASRA_NO" DataSetColumn="KHASRA_NO" />
+              <Mapping SourceColumn="VILLGAE_NAME" DataSetColumn="VILLGAE_NAME" />
+              <Mapping SourceColumn="SCHEME_ID" DataSetColumn="SCHEME_ID" />
+              <Mapping SourceColumn="BILL_PERCENTAGE" DataSetColumn="BILL_PERCENTAGE" />
+              <Mapping SourceColumn="TEL_NO" DataSetColumn="TEL_NO" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="JALONLINEDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="JALONLINEDataSet" msprop:Generator_DataSetName="JALONLINEDataSet" msprop:EnableTableAdapterManager="False">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="View_CONSUMER_DETAILS_MASTER_TEMP" msprop:Generator_UserTableName="View_CONSUMER_DETAILS_MASTER_TEMP" msprop:Generator_RowDeletedName="View_CONSUMER_DETAILS_MASTER_TEMPRowDeleted" msprop:Generator_RowChangedName="View_CONSUMER_DETAILS_MASTER_TEMPRowChanged" msprop:Generator_RowClassName="View_CONSUMER_DETAILS_MASTER_TEMPRow" msprop:Generator_RowChangingName="View_CONSUMER_DETAILS_MASTER_TEMPRowChanging" msprop:Generator_RowEvArgName="View_CONSUMER_DETAILS_MASTER_TEMPRowChangeEvent" msprop:Generator_RowEvHandlerName="View_CONSUMER_DETAILS_MASTER_TEMPRowChangeEventHandler" msprop:Generator_TableClassName="View_CONSUMER_DETAILS_MASTER_TEMPDataTable" msprop:Generator_TableVarName="tableView_CONSUMER_DETAILS_MASTER_TEMP" msprop:Generator_RowDeletingName="View_CONSUMER_DETAILS_MASTER_TEMPRowDeleting" msprop:Generator_TablePropName="View_CONSUMER_DETAILS_MASTER_TEMP">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CONS_NO" msprop:Generator_UserColumnName="CONS_NO" msprop:Generator_ColumnPropNameInRow="CONS_NO" msprop:Generator_ColumnVarNameInTable="columnCONS_NO" msprop:Generator_ColumnPropNameInTable="CONS_NOColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="10" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CONS_NAME" msprop:Generator_UserColumnName="CONS_NAME" msprop:Generator_ColumnPropNameInRow="CONS_NAME" msprop:Generator_ColumnVarNameInTable="columnCONS_NAME" msprop:Generator_ColumnPropNameInTable="CONS_NAMEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="150" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="SECTOR" msprop:Generator_UserColumnName="SECTOR" msprop:Generator_ColumnPropNameInRow="SECTOR" msprop:Generator_ColumnVarNameInTable="columnSECTOR" msprop:Generator_ColumnPropNameInTable="SECTORColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="25" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BLK_NO" msprop:Generator_UserColumnName="BLK_NO" msprop:Generator_ColumnPropNameInRow="BLK_NO" msprop:Generator_ColumnVarNameInTable="columnBLK_NO" msprop:Generator_ColumnPropNameInTable="BLK_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="15" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="FLAT_NO" msprop:Generator_UserColumnName="FLAT_NO" msprop:Generator_ColumnPropNameInRow="FLAT_NO" msprop:Generator_ColumnVarNameInTable="columnFLAT_NO" msprop:Generator_ColumnPropNameInTable="FLAT_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="10" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="DUE_DT" msprop:Generator_UserColumnName="DUE_DT" msprop:Generator_ColumnPropNameInRow="DUE_DT" msprop:Generator_ColumnVarNameInTable="columnDUE_DT" msprop:Generator_ColumnPropNameInTable="DUE_DTColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="PAID_AMT" msprop:Generator_UserColumnName="PAID_AMT" msprop:Generator_ColumnPropNameInRow="PAID_AMT" msprop:Generator_ColumnVarNameInTable="columnPAID_AMT" msprop:Generator_ColumnPropNameInTable="PAID_AMTColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="DEV_TYPE" msprop:Generator_UserColumnName="DEV_TYPE" msprop:Generator_ColumnPropNameInRow="DEV_TYPE" msprop:Generator_ColumnVarNameInTable="columnDEV_TYPE" msprop:Generator_ColumnPropNameInTable="DEV_TYPEColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="DISCOUNT" msprop:Generator_UserColumnName="DISCOUNT" msprop:Generator_ColumnPropNameInRow="DISCOUNT" msprop:Generator_ColumnVarNameInTable="columnDISCOUNT" msprop:Generator_ColumnPropNameInTable="DISCOUNTColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="PAID_AMT_ACTUAL" msprop:Generator_UserColumnName="PAID_AMT_ACTUAL" msprop:Generator_ColumnPropNameInRow="PAID_AMT_ACTUAL" msprop:Generator_ColumnVarNameInTable="columnPAID_AMT_ACTUAL" msprop:Generator_ColumnPropNameInTable="PAID_AMT_ACTUALColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="USERID" msprop:Generator_UserColumnName="USERID" msprop:Generator_ColumnPropNameInRow="USERID" msprop:Generator_ColumnVarNameInTable="columnUSERID" msprop:Generator_ColumnPropNameInTable="USERIDColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="10" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="STATUS" msprop:Generator_UserColumnName="STATUS" msprop:Generator_ColumnPropNameInRow="STATUS" msprop:Generator_ColumnVarNameInTable="columnSTATUS" msprop:Generator_ColumnPropNameInTable="STATUSColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="ENTRY_DATE" msprop:Generator_UserColumnName="ENTRY_DATE" msprop:Generator_ColumnPropNameInRow="ENTRY_DATE" msprop:Generator_ColumnVarNameInTable="columnENTRY_DATE" msprop:Generator_ColumnPropNameInTable="ENTRY_DATEColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="NEW_OLD" msprop:Generator_UserColumnName="NEW_OLD" msprop:Generator_ColumnPropNameInRow="NEW_OLD" msprop:Generator_ColumnVarNameInTable="columnNEW_OLD" msprop:Generator_ColumnPropNameInTable="NEW_OLDColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="default_lacs_main" msprop:Generator_UserTableName="default_lacs_main" msprop:Generator_RowDeletedName="default_lacs_mainRowDeleted" msprop:Generator_RowChangedName="default_lacs_mainRowChanged" msprop:Generator_RowClassName="default_lacs_mainRow" msprop:Generator_RowChangingName="default_lacs_mainRowChanging" msprop:Generator_RowEvArgName="default_lacs_mainRowChangeEvent" msprop:Generator_RowEvHandlerName="default_lacs_mainRowChangeEventHandler" msprop:Generator_TableClassName="default_lacs_mainDataTable" msprop:Generator_TableVarName="tabledefault_lacs_main" msprop:Generator_RowDeletingName="default_lacs_mainRowDeleting" msprop:Generator_TablePropName="default_lacs_main">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CONS_NO" msprop:Generator_UserColumnName="CONS_NO" msprop:Generator_ColumnVarNameInTable="columnCONS_NO" msprop:Generator_ColumnPropNameInRow="CONS_NO" msprop:Generator_ColumnPropNameInTable="CONS_NOColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="10" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="property_no" msdata:ReadOnly="true" msprop:Generator_UserColumnName="property_no" msprop:Generator_ColumnVarNameInTable="columnproperty_no" msprop:Generator_ColumnPropNameInRow="property_no" msprop:Generator_ColumnPropNameInTable="property_noColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="52" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CONS_NM1" msprop:Generator_UserColumnName="CONS_NM1" msprop:Generator_ColumnVarNameInTable="columnCONS_NM1" msprop:Generator_ColumnPropNameInRow="CONS_NM1" msprop:Generator_ColumnPropNameInTable="CONS_NM1Column" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="150" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="TOTAL_BILL_AMT" msprop:Generator_UserColumnName="TOTAL_BILL_AMT" msprop:Generator_ColumnVarNameInTable="columnTOTAL_BILL_AMT" msprop:Generator_ColumnPropNameInRow="TOTAL_BILL_AMT" msprop:Generator_ColumnPropNameInTable="TOTAL_BILL_AMTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="CONN_TYPE" msdata:ReadOnly="true" msprop:Generator_UserColumnName="CONN_TYPE" msprop:Generator_ColumnVarNameInTable="columnCONN_TYPE" msprop:Generator_ColumnPropNameInRow="CONN_TYPE" msprop:Generator_ColumnPropNameInTable="CONN_TYPEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="13" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="VIEW_JAL_BILL_MASTER" msprop:Generator_UserTableName="VIEW_JAL_BILL_MASTER" msprop:Generator_RowDeletedName="VIEW_JAL_BILL_MASTERRowDeleted" msprop:Generator_TableClassName="VIEW_JAL_BILL_MASTERDataTable" msprop:Generator_RowChangedName="VIEW_JAL_BILL_MASTERRowChanged" msprop:Generator_RowClassName="VIEW_JAL_BILL_MASTERRow" msprop:Generator_RowChangingName="VIEW_JAL_BILL_MASTERRowChanging" msprop:Generator_RowEvArgName="VIEW_JAL_BILL_MASTERRowChangeEvent" msprop:Generator_RowEvHandlerName="VIEW_JAL_BILL_MASTERRowChangeEventHandler" msprop:Generator_TablePropName="VIEW_JAL_BILL_MASTER" msprop:Generator_TableVarName="tableVIEW_JAL_BILL_MASTER" msprop:Generator_RowDeletingName="VIEW_JAL_BILL_MASTERRowDeleting">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="BILL_NO" msprop:Generator_UserColumnName="BILL_NO" msprop:Generator_ColumnPropNameInRow="BILL_NO" msprop:Generator_ColumnVarNameInTable="columnBILL_NO" msprop:Generator_ColumnPropNameInTable="BILL_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CON_TP" msdata:ReadOnly="true" msprop:Generator_UserColumnName="CON_TP" msprop:Generator_ColumnPropNameInRow="CON_TP" msprop:Generator_ColumnVarNameInTable="columnCON_TP" msprop:Generator_ColumnPropNameInTable="CON_TPColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="13" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CONS_CTG" msdata:ReadOnly="true" msprop:Generator_UserColumnName="CONS_CTG" msprop:Generator_ColumnPropNameInRow="CONS_CTG" msprop:Generator_ColumnVarNameInTable="columnCONS_CTG" msprop:Generator_ColumnPropNameInTable="CONS_CTGColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="9" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BILL_DATE" msdata:ReadOnly="true" msprop:Generator_UserColumnName="BILL_DATE" msprop:Generator_ColumnPropNameInRow="BILL_DATE" msprop:Generator_ColumnVarNameInTable="columnBILL_DATE" msprop:Generator_ColumnPropNameInTable="BILL_DATEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BILL_DUE_DATE" msdata:ReadOnly="true" msprop:Generator_UserColumnName="BILL_DUE_DATE" msprop:Generator_ColumnPropNameInRow="BILL_DUE_DATE" msprop:Generator_ColumnVarNameInTable="columnBILL_DUE_DATE" msprop:Generator_ColumnPropNameInTable="BILL_DUE_DATEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BILL_DATE_FROM" msdata:ReadOnly="true" msprop:Generator_UserColumnName="BILL_DATE_FROM" msprop:Generator_ColumnPropNameInRow="BILL_DATE_FROM" msprop:Generator_ColumnVarNameInTable="columnBILL_DATE_FROM" msprop:Generator_ColumnPropNameInTable="BILL_DATE_FROMColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BILL_DATE_TO" msdata:ReadOnly="true" msprop:Generator_UserColumnName="BILL_DATE_TO" msprop:Generator_ColumnPropNameInRow="BILL_DATE_TO" msprop:Generator_ColumnVarNameInTable="columnBILL_DATE_TO" msprop:Generator_ColumnPropNameInTable="BILL_DATE_TOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8000" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MIN_RATE" msprop:Generator_UserColumnName="MIN_RATE" msprop:Generator_ColumnPropNameInRow="MIN_RATE" msprop:Generator_ColumnVarNameInTable="columnMIN_RATE" msprop:Generator_ColumnPropNameInTable="MIN_RATEColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="CESS_AMT" msprop:Generator_UserColumnName="CESS_AMT" msprop:Generator_ColumnPropNameInRow="CESS_AMT" msprop:Generator_ColumnVarNameInTable="columnCESS_AMT" msprop:Generator_ColumnPropNameInTable="CESS_AMTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="AREAR" msprop:Generator_UserColumnName="AREAR" msprop:Generator_ColumnPropNameInRow="AREAR" msprop:Generator_ColumnVarNameInTable="columnAREAR" msprop:Generator_ColumnPropNameInTable="AREARColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="AREAR_TEXT" msprop:Generator_UserColumnName="AREAR_TEXT" msprop:Generator_ColumnPropNameInRow="AREAR_TEXT" msprop:Generator_ColumnVarNameInTable="columnAREAR_TEXT" msprop:Generator_ColumnPropNameInTable="AREAR_TEXTColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="AREAR_INT" msprop:Generator_UserColumnName="AREAR_INT" msprop:Generator_ColumnPropNameInRow="AREAR_INT" msprop:Generator_ColumnVarNameInTable="columnAREAR_INT" msprop:Generator_ColumnPropNameInTable="AREAR_INTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="AREAR_INT_TEXT" msprop:Generator_UserColumnName="AREAR_INT_TEXT" msprop:Generator_ColumnPropNameInRow="AREAR_INT_TEXT" msprop:Generator_ColumnVarNameInTable="columnAREAR_INT_TEXT" msprop:Generator_ColumnPropNameInTable="AREAR_INT_TEXTColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="LAST_BILL_EXTRA" msprop:Generator_UserColumnName="LAST_BILL_EXTRA" msprop:Generator_ColumnPropNameInRow="LAST_BILL_EXTRA" msprop:Generator_ColumnVarNameInTable="columnLAST_BILL_EXTRA" msprop:Generator_ColumnPropNameInTable="LAST_BILL_EXTRAColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="CONS_NO" msprop:Generator_UserColumnName="CONS_NO" msprop:Generator_ColumnPropNameInRow="CONS_NO" msprop:Generator_ColumnVarNameInTable="columnCONS_NO" msprop:Generator_ColumnPropNameInTable="CONS_NOColumn">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="10" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CONS_NM1" msprop:Generator_UserColumnName="CONS_NM1" msprop:Generator_ColumnPropNameInRow="CONS_NM1" msprop:Generator_ColumnVarNameInTable="columnCONS_NM1" msprop:Generator_ColumnPropNameInTable="CONS_NM1Column" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="150" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CONS_NM2" msdata:ReadOnly="true" msprop:Generator_UserColumnName="CONS_NM2" msprop:Generator_ColumnPropNameInRow="CONS_NM2" msprop:Generator_ColumnVarNameInTable="columnCONS_NM2" msprop:Generator_ColumnPropNameInTable="CONS_NM2Column" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="30" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="FLAT_TYPE" msdata:ReadOnly="true" msprop:Generator_UserColumnName="FLAT_TYPE" msprop:Generator_ColumnPropNameInRow="FLAT_TYPE" msprop:Generator_ColumnVarNameInTable="columnFLAT_TYPE" msprop:Generator_ColumnPropNameInTable="FLAT_TYPEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="6" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="FLAT_NO" msprop:Generator_UserColumnName="FLAT_NO" msprop:Generator_ColumnPropNameInRow="FLAT_NO" msprop:Generator_ColumnVarNameInTable="columnFLAT_NO" msprop:Generator_ColumnPropNameInTable="FLAT_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BLK_NO" msdata:ReadOnly="true" msprop:Generator_UserColumnName="BLK_NO" msprop:Generator_ColumnPropNameInRow="BLK_NO" msprop:Generator_ColumnVarNameInTable="columnBLK_NO" msprop:Generator_ColumnPropNameInTable="BLK_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="15" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="SECTOR" msdata:ReadOnly="true" msprop:Generator_UserColumnName="SECTOR" msprop:Generator_ColumnPropNameInRow="SECTOR" msprop:Generator_ColumnVarNameInTable="columnSECTOR" msprop:Generator_ColumnPropNameInTable="SECTORColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="25" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="property_no" msdata:ReadOnly="true" msprop:Generator_UserColumnName="property_no" msprop:Generator_ColumnPropNameInRow="property_no" msprop:Generator_ColumnVarNameInTable="columnproperty_no" msprop:Generator_ColumnPropNameInTable="property_noColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="62" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="PLOT_SIZE" msdata:ReadOnly="true" msprop:Generator_UserColumnName="PLOT_SIZE" msprop:Generator_ColumnPropNameInRow="PLOT_SIZE" msprop:Generator_ColumnVarNameInTable="columnPLOT_SIZE" msprop:Generator_ColumnPropNameInTable="PLOT_SIZEColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="PIPE_SIZE" msdata:ReadOnly="true" msprop:Generator_UserColumnName="PIPE_SIZE" msprop:Generator_ColumnPropNameInRow="PIPE_SIZE" msprop:Generator_ColumnVarNameInTable="columnPIPE_SIZE" msprop:Generator_ColumnPropNameInTable="PIPE_SIZEColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="REG_NO" msprop:Generator_UserColumnName="REG_NO" msprop:Generator_ColumnPropNameInRow="REG_NO" msprop:Generator_ColumnVarNameInTable="columnREG_NO" msprop:Generator_ColumnPropNameInTable="REG_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CONN_DT" msdata:ReadOnly="true" msprop:Generator_UserColumnName="CONN_DT" msprop:Generator_ColumnPropNameInRow="CONN_DT" msprop:Generator_ColumnVarNameInTable="columnCONN_DT" msprop:Generator_ColumnPropNameInTable="CONN_DTColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="ESTI_NO" msdata:ReadOnly="true" msprop:Generator_UserColumnName="ESTI_NO" msprop:Generator_ColumnPropNameInRow="ESTI_NO" msprop:Generator_ColumnVarNameInTable="columnESTI_NO" msprop:Generator_ColumnPropNameInTable="ESTI_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="ESTI_AMT" msdata:ReadOnly="true" msprop:Generator_UserColumnName="ESTI_AMT" msprop:Generator_ColumnPropNameInRow="ESTI_AMT" msprop:Generator_ColumnVarNameInTable="columnESTI_AMT" msprop:Generator_ColumnPropNameInTable="ESTI_AMTColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="SECU" msdata:ReadOnly="true" msprop:Generator_UserColumnName="SECU" msprop:Generator_ColumnPropNameInRow="SECU" msprop:Generator_ColumnVarNameInTable="columnSECU" msprop:Generator_ColumnPropNameInTable="SECUColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="ESTI_DT" msdata:ReadOnly="true" msprop:Generator_UserColumnName="ESTI_DT" msprop:Generator_ColumnPropNameInRow="ESTI_DT" msprop:Generator_ColumnVarNameInTable="columnESTI_DT" msprop:Generator_ColumnPropNameInTable="ESTI_DTColumn" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="ESTI1_AMT" msprop:Generator_UserColumnName="ESTI1_AMT" msprop:Generator_ColumnPropNameInRow="ESTI1_AMT" msprop:Generator_ColumnVarNameInTable="columnESTI1_AMT" msprop:Generator_ColumnPropNameInTable="ESTI1_AMTColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="DEV_TYPE" msprop:Generator_UserColumnName="DEV_TYPE" msprop:Generator_ColumnPropNameInRow="DEV_TYPE" msprop:Generator_ColumnVarNameInTable="columnDEV_TYPE" msprop:Generator_ColumnPropNameInTable="DEV_TYPEColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="OLD_NEW_EN" msprop:Generator_UserColumnName="OLD_NEW_EN" msprop:Generator_ColumnPropNameInRow="OLD_NEW_EN" msprop:Generator_ColumnVarNameInTable="columnOLD_NEW_EN" msprop:Generator_ColumnPropNameInTable="OLD_NEW_ENColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="OLD_NEW_UP" msprop:Generator_UserColumnName="OLD_NEW_UP" msprop:Generator_ColumnPropNameInRow="OLD_NEW_UP" msprop:Generator_ColumnVarNameInTable="columnOLD_NEW_UP" msprop:Generator_ColumnPropNameInTable="OLD_NEW_UPColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MOB_NO" msprop:Generator_UserColumnName="MOB_NO" msprop:Generator_ColumnPropNameInRow="MOB_NO" msprop:Generator_ColumnVarNameInTable="columnMOB_NO" msprop:Generator_ColumnPropNameInTable="MOB_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="12" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="EMAIL_ID" msprop:Generator_UserColumnName="EMAIL_ID" msprop:Generator_ColumnPropNameInRow="EMAIL_ID" msprop:Generator_ColumnVarNameInTable="columnEMAIL_ID" msprop:Generator_ColumnPropNameInTable="EMAIL_IDColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="CONS_ADDRESS" msprop:Generator_UserColumnName="CONS_ADDRESS" msprop:Generator_ColumnPropNameInRow="CONS_ADDRESS" msprop:Generator_ColumnVarNameInTable="columnCONS_ADDRESS" msprop:Generator_ColumnPropNameInTable="CONS_ADDRESSColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="150" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="STATUS" msprop:Generator_UserColumnName="STATUS" msprop:Generator_ColumnPropNameInRow="STATUS" msprop:Generator_ColumnVarNameInTable="columnSTATUS" msprop:Generator_ColumnPropNameInTable="STATUSColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MIN_TOTAL_AMT" msprop:Generator_UserColumnName="MIN_TOTAL_AMT" msprop:Generator_ColumnPropNameInRow="MIN_TOTAL_AMT" msprop:Generator_ColumnVarNameInTable="columnMIN_TOTAL_AMT" msprop:Generator_ColumnPropNameInTable="MIN_TOTAL_AMTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="BILL_REBATE_PER" msprop:Generator_UserColumnName="BILL_REBATE_PER" msprop:Generator_ColumnPropNameInRow="BILL_REBATE_PER" msprop:Generator_ColumnVarNameInTable="columnBILL_REBATE_PER" msprop:Generator_ColumnPropNameInTable="BILL_REBATE_PERColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="BILL_REBATE_AMT" msprop:Generator_UserColumnName="BILL_REBATE_AMT" msprop:Generator_ColumnPropNameInRow="BILL_REBATE_AMT" msprop:Generator_ColumnVarNameInTable="columnBILL_REBATE_AMT" msprop:Generator_ColumnPropNameInTable="BILL_REBATE_AMTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="TOTAL_BILL_AMT" msprop:Generator_UserColumnName="TOTAL_BILL_AMT" msprop:Generator_ColumnPropNameInRow="TOTAL_BILL_AMT" msprop:Generator_ColumnVarNameInTable="columnTOTAL_BILL_AMT" msprop:Generator_ColumnPropNameInTable="TOTAL_BILL_AMTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="BEFORE_DATE" msprop:Generator_UserColumnName="BEFORE_DATE" msprop:Generator_ColumnPropNameInRow="BEFORE_DATE" msprop:Generator_ColumnVarNameInTable="columnBEFORE_DATE" msprop:Generator_ColumnPropNameInTable="BEFORE_DATEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="AFTER_DATE" msprop:Generator_UserColumnName="AFTER_DATE" msprop:Generator_ColumnPropNameInRow="AFTER_DATE" msprop:Generator_ColumnVarNameInTable="columnAFTER_DATE" msprop:Generator_ColumnPropNameInTable="AFTER_DATEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="AFTER_DATE_AMT" msprop:Generator_UserColumnName="AFTER_DATE_AMT" msprop:Generator_ColumnPropNameInRow="AFTER_DATE_AMT" msprop:Generator_ColumnVarNameInTable="columnAFTER_DATE_AMT" msprop:Generator_ColumnPropNameInTable="AFTER_DATE_AMTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="Div_type" msprop:Generator_UserColumnName="Div_type" msprop:Generator_ColumnPropNameInRow="Div_type" msprop:Generator_ColumnVarNameInTable="columnDiv_type" msprop:Generator_ColumnPropNameInTable="Div_typeColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="bill_after_sep_amt" msprop:Generator_UserColumnName="bill_after_sep_amt" msprop:Generator_ColumnPropNameInRow="bill_after_sep_amt" msprop:Generator_ColumnVarNameInTable="columnbill_after_sep_amt" msprop:Generator_ColumnPropNameInTable="bill_after_sep_amtColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="adv_amt" msprop:Generator_UserColumnName="adv_amt" msprop:Generator_ColumnPropNameInRow="adv_amt" msprop:Generator_ColumnVarNameInTable="columnadv_amt" msprop:Generator_ColumnPropNameInTable="adv_amtColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="PRINT_STATUS" msprop:Generator_UserColumnName="PRINT_STATUS" msprop:Generator_ColumnPropNameInRow="PRINT_STATUS" msprop:Generator_ColumnVarNameInTable="columnPRINT_STATUS" msprop:Generator_ColumnPropNameInTable="PRINT_STATUSColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="B_MAY" msdata:ReadOnly="true" msprop:Generator_UserColumnName="B_MAY" msprop:Generator_ColumnPropNameInRow="B_MAY" msprop:Generator_ColumnVarNameInTable="columnB_MAY" msprop:Generator_ColumnPropNameInTable="B_MAYColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="B_APR" msdata:ReadOnly="true" msprop:Generator_UserColumnName="B_APR" msprop:Generator_ColumnPropNameInRow="B_APR" msprop:Generator_ColumnVarNameInTable="columnB_APR" msprop:Generator_ColumnPropNameInTable="B_APRColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="B_SEP" msdata:ReadOnly="true" msprop:Generator_UserColumnName="B_SEP" msprop:Generator_ColumnPropNameInRow="B_SEP" msprop:Generator_ColumnVarNameInTable="columnB_SEP" msprop:Generator_ColumnPropNameInTable="B_SEPColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="OLD_RATE" msprop:Generator_UserColumnName="OLD_RATE" msprop:Generator_ColumnPropNameInRow="OLD_RATE" msprop:Generator_ColumnVarNameInTable="columnOLD_RATE" msprop:Generator_ColumnPropNameInTable="OLD_RATEColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="LAST_PAID_AMT" msprop:Generator_UserColumnName="LAST_PAID_AMT" msprop:Generator_ColumnPropNameInRow="LAST_PAID_AMT" msprop:Generator_ColumnVarNameInTable="columnLAST_PAID_AMT" msprop:Generator_ColumnPropNameInTable="LAST_PAID_AMTColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="BILL_TYPE" msprop:Generator_UserColumnName="BILL_TYPE" msprop:Generator_ColumnPropNameInRow="BILL_TYPE" msprop:Generator_ColumnVarNameInTable="columnBILL_TYPE" msprop:Generator_ColumnPropNameInTable="BILL_TYPEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="2147483647" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BILL_COUNT" msprop:Generator_UserColumnName="BILL_COUNT" msprop:Generator_ColumnPropNameInRow="BILL_COUNT" msprop:Generator_ColumnVarNameInTable="columnBILL_COUNT" msprop:Generator_ColumnPropNameInTable="BILL_COUNTColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="KHASRA_NO" msprop:Generator_UserColumnName="KHASRA_NO" msprop:Generator_ColumnPropNameInRow="KHASRA_NO" msprop:Generator_ColumnVarNameInTable="columnKHASRA_NO" msprop:Generator_ColumnPropNameInTable="KHASRA_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="VILLGAE_NAME" msprop:Generator_UserColumnName="VILLGAE_NAME" msprop:Generator_ColumnPropNameInRow="VILLGAE_NAME" msprop:Generator_ColumnVarNameInTable="columnVILLGAE_NAME" msprop:Generator_ColumnPropNameInTable="VILLGAE_NAMEColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="SCHEME_ID" msprop:Generator_UserColumnName="SCHEME_ID" msprop:Generator_ColumnPropNameInRow="SCHEME_ID" msprop:Generator_ColumnVarNameInTable="columnSCHEME_ID" msprop:Generator_ColumnPropNameInTable="SCHEME_IDColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BILL_PERCENTAGE" msprop:Generator_UserColumnName="BILL_PERCENTAGE" msprop:Generator_ColumnPropNameInRow="BILL_PERCENTAGE" msprop:Generator_ColumnVarNameInTable="columnBILL_PERCENTAGE" msprop:Generator_ColumnPropNameInTable="BILL_PERCENTAGEColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="TEL_NO" msprop:Generator_UserColumnName="TEL_NO" msprop:Generator_ColumnPropNameInRow="TEL_NO" msprop:Generator_ColumnVarNameInTable="columnTEL_NO" msprop:Generator_ColumnPropNameInTable="TEL_NOColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:View_CONSUMER_DETAILS_MASTER_TEMP" />
+      <xs:field xpath="mstns:CONS_NO" />
+    </xs:unique>
+    <xs:unique name="default_lacs_main_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:default_lacs_main" />
+      <xs:field xpath="mstns:CONS_NO" />
+    </xs:unique>
+    <xs:unique name="VIEW_JAL_BILL_MASTER_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:VIEW_JAL_BILL_MASTER" />
+      <xs:field xpath="mstns:CONS_NO" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,80 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="noidajal.master.cs" Inherits="noidajal" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Untitled Page</title>
+    <link href="App_Themes/JalTheme/jalbutton.css" rel="stylesheet" type="text/css" />
+    <link href="js/csshorizontalmenu.css" rel="stylesheet" type="text/css" />
+    <link href="SpryAssets/SpryMenuBarHorizontal.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="../js/csshorizontalmenu.js"></script>
+
+    <script language="javascript" type="text/javascript" src="../SpryAssets/SpryMenuBar.js"></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body style="background-color: #273855;">
+    <form id="form1" runat="server">
+    <div>
+        <center>
+            <asp:ScriptManager ID="ScriptManager1" runat="server">
+            </asp:ScriptManager>
+            <table width="80%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="tdhome">
+                        <asp:ImageButton ID="linl_home" CausesValidation="false" ImageUrl="~/images/home.png"
+                            runat="server" ToolTip="Home" OnClick="linl_home_Click"></asp:ImageButton>
+                    </td>
+                    <td class="tdhomeleft">
+                    </td>
+                    <td class="tdhomeleft">
+                        <asp:Label ID="lbladmin" runat="server" Font-Bold="True" Font-Size="12px"></asp:Label>
+                        <asp:ImageButton ID="link_logout" CausesValidation="false" ImageUrl="~/images/logout.png"
+                            runat="server" ToolTip="Logout" OnClick="link_logout_Click"></asp:ImageButton>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="tdlogleftREPEATLEFT">
+                        <img src="../images/text.png" alt="Noida Jal" style="margin-top: 5px;" />
+                    </td>
+                    <td class="tdlogleftREPEAT">
+                        <img src="../images/logo.png" alt="Noida Jal" height="29px" style="margin-right: 5px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="tdmenu">
+                        <div id="mnuDiv" runat="server">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="tdcenter">
+                        <center>
+                            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                            </asp:ContentPlaceHolder>
+                        </center>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdfooter">
+                    </td>
+                    <td class="tdfooterleft" colspan="2">
+                        <pre style="margin-top: 3px; font-size: 12px;">Save Water For Nation                    Copyright © 2002 New Okhla Industrial Development Authority. All Rights Reserved. </pre>
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </div>
+
+    <script type="text/javascript">
+
+var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgDown:"../SpryAssets/SpryMenuBarDownHover.gif", imgRight:"../SpryAssets/SpryMenuBarRightHover.gif"});
+
+
+    </script>
+
+    </form>
+</body>
+</html>
