@@ -20,6 +20,12 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ApplicationStatus> ApplicationStatuses { get; set; }
 
+    public virtual DbSet<ApplicationWorkflowHistory> ApplicationWorkflowHistories { get; set; }
+
+    public virtual DbSet<ApplicationWorkflowInstance> ApplicationWorkflowInstances { get; set; }
+
+    public virtual DbSet<ApplicationWorkflowTask> ApplicationWorkflowTasks { get; set; }
+
     public virtual DbSet<Approle> Approles { get; set; }
 
     public virtual DbSet<Appuser> Appusers { get; set; }
@@ -29,6 +35,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Auditlog> Auditlogs { get; set; }
 
     public virtual DbSet<AuthenticationMst> AuthenticationMsts { get; set; }
+
+    public virtual DbSet<AuthorityUserDepartment> AuthorityUserDepartments { get; set; }
 
     public virtual DbSet<BankCounterpayDetail> BankCounterpayDetails { get; set; }
 
@@ -190,9 +198,15 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<NewConnectionApplicationDocument> NewConnectionApplicationDocuments { get; set; }
 
+    public virtual DbSet<NewConnectionApplicationFee> NewConnectionApplicationFees { get; set; }
+
     public virtual DbSet<NewConnectionApprovalHistory> NewConnectionApprovalHistories { get; set; }
 
+    public virtual DbSet<NewConnectionFeeConfiguration> NewConnectionFeeConfigurations { get; set; }
+
     public virtual DbSet<NoDueAmountMst> NoDueAmountMsts { get; set; }
+
+    public virtual DbSet<NotificationLog> NotificationLogs { get; set; }
 
     public virtual DbSet<Oct2024> Oct2024s { get; set; }
 
@@ -224,6 +238,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ProvisionalDueCertificate> ProvisionalDueCertificates { get; set; }
 
+    public virtual DbSet<PublicNewConnectionOtpVerification> PublicNewConnectionOtpVerifications { get; set; }
+
     public virtual DbSet<ReceiptHeadLink> ReceiptHeadLinks { get; set; }
 
     public virtual DbSet<ReceiptHeadMaster> ReceiptHeadMasters { get; set; }
@@ -249,6 +265,12 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Usersession> Usersessions { get; set; }
 
     public virtual DbSet<VillageDetail> VillageDetails { get; set; }
+
+    public virtual DbSet<WorkflowMaster> WorkflowMasters { get; set; }
+
+    public virtual DbSet<WorkflowStage> WorkflowStages { get; set; }
+
+    public virtual DbSet<WorkflowStageNotification> WorkflowStageNotifications { get; set; }
 
     public virtual DbSet<ZeroConsumerjune> ZeroConsumerjunes { get; set; }
 

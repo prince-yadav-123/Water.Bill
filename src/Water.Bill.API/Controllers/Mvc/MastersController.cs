@@ -188,7 +188,7 @@ public class MastersController : Controller
                         ["SectorId"] = x.SectorId,
                         ["SectorNo"] = x.SectorNo,
                         ["OrderBy"] = x.OrderBy.ToString(),
-                        ["DevType"] = x.DevType.ToString(),
+                        ["DevType"] = FormatDivision(x.DevType),
                         ["Status"] = FormatStatus(x.Status)
                     }
                 }).ToList();
@@ -206,7 +206,7 @@ public class MastersController : Controller
                     {
                         ["SectorId"] = x.SectorId,
                         ["Block"] = x.Block,
-                        ["DevType"] = x.DevType.ToString(),
+                        ["DevType"] = FormatDivision(x.DevType),
                         ["Status"] = FormatStatus(x.Status)
                     }
                 }).ToList();
@@ -223,7 +223,7 @@ public class MastersController : Controller
                     Values = new()
                     {
                         ["PipeSize"] = x.PipeSize.ToString(),
-                        ["DevType"] = x.DevType.ToString(),
+                        ["DevType"] = FormatDivision(x.DevType),
                         ["Status"] = FormatStatus(x.Status)
                     }
                 }).ToList();
@@ -242,7 +242,7 @@ public class MastersController : Controller
                         ["ConId"] = x.ConId,
                         ["ConName"] = x.ConName,
                         ["ConMainId"] = x.ConMainId,
-                        ["DevType"] = x.DevType.ToString(),
+                        ["DevType"] = FormatDivision(x.DevType),
                         ["Status"] = FormatStatus(x.Status)
                     }
                 }).ToList();
@@ -260,7 +260,7 @@ public class MastersController : Controller
                     {
                         ["ConId"] = x.ConId,
                         ["SubConName"] = x.SubConName,
-                        ["DevType"] = x.DevType.ToString(),
+                        ["DevType"] = FormatDivision(x.DevType),
                         ["Status"] = FormatStatus(x.Status)
                     }
                 }).ToList();
@@ -296,7 +296,7 @@ public class MastersController : Controller
                         ["VillageId"] = x.VillageId.ToString(),
                         ["VillageName"] = x.VillageName,
                         ["VillageStr"] = x.VillageStr,
-                        ["DevType"] = x.DevType.ToString(),
+                        ["DevType"] = FormatDivision(x.DevType),
                         ["Status"] = FormatStatus(x.Status)
                     }
                 }).ToList();
@@ -408,6 +408,55 @@ public class MastersController : Controller
                         ["AutoId"] = x.AutoId.ToString(),
                         ["StatusName"] = x.StatusName,
                         ["Status"] = FormatStatus(x.IsActive)
+                    }
+                }).ToList();
+            }
+            case "rate-categories":
+            {
+                var rows = await _db.JalRateMasters.AsNoTracking()
+                    .OrderBy(x => x.PropertyType)
+                    .ThenBy(x => x.IdT)
+                    .ToListAsync(ct);
+                return rows.Select(x => new MasterRowViewModel
+                {
+                    Key = EncodeKey(x.Id.ToString()),
+                    IsActive = IsActive(x.Status),
+                    Values = new()
+                    {
+                        ["Id"] = x.Id.ToString(),
+                        ["PropertyType"] = x.PropertyType,
+                        ["IdT"] = x.IdT,
+                        ["DevType"] = FormatDivision(x.DevType),
+                        ["Status"] = FormatStatus(x.Status)
+                    }
+                }).ToList();
+            }
+            case "rates":
+            {
+                var rows = await _db.JalRateTrans.AsNoTracking()
+                    .Include(x => x.IdNavigation)
+                    .OrderBy(x => x.IdNavigation!.PropertyType)
+                    .ThenBy(x => x.PipeSize)
+                    .ThenBy(x => x.AreaStart)
+                    .ThenByDescending(x => x.EffFrom)
+                    .ToListAsync(ct);
+                return rows.Select(x => new MasterRowViewModel
+                {
+                    Key = EncodeKey(x.Sid.ToString()),
+                    IsActive = IsActive(x.Status),
+                    Values = new()
+                    {
+                        ["Category"] = x.IdNavigation?.PropertyType ?? x.Id.ToString(),
+                        ["AreaStart"] = x.AreaStart.ToString(),
+                        ["AreaEnd"] = x.AreaEnd.ToString(),
+                        ["PipeSize"] = x.PipeSize.ToString(),
+                        ["Regular"] = x.Regular.ToString(),
+                        ["Temporary"] = x.Temporary.ToString(),
+                        ["CessRate"] = x.CessRate.ToString(),
+                        ["EffFrom"] = ToDisplayDate(x.EffFrom),
+                        ["EffTo"] = ToDisplayDate(x.EffTo),
+                        ["DevType"] = FormatDivision(x.DevType),
+                        ["Status"] = FormatStatus(x.Status)
                     }
                 }).ToList();
             }
@@ -579,6 +628,32 @@ public class MastersController : Controller
                     ["StatusName"] = applicationStatus.StatusName,
                     ["Status"] = (applicationStatus.IsActive ?? true) ? "1" : "0"
                 };
+            case "rate-categories":
+                var rateCategory = await _db.JalRateMasters.AsNoTracking().FirstOrDefaultAsync(x => x.Id == int.Parse(decoded), ct);
+                return rateCategory is null ? [] : new()
+                {
+                    ["Id"] = rateCategory.Id.ToString(),
+                    ["PropertyType"] = rateCategory.PropertyType,
+                    ["IdT"] = rateCategory.IdT,
+                    ["DevType"] = rateCategory.DevType.ToString(),
+                    ["Status"] = IsActive(rateCategory.Status) ? "1" : "0"
+                };
+            case "rates":
+                var rate = await _db.JalRateTrans.AsNoTracking().FirstOrDefaultAsync(x => x.Sid == int.Parse(decoded), ct);
+                return rate is null ? [] : new()
+                {
+                    ["Id"] = rate.Id.ToString(),
+                    ["AreaStart"] = rate.AreaStart.ToString(),
+                    ["AreaEnd"] = rate.AreaEnd.ToString(),
+                    ["Regular"] = rate.Regular.ToString(),
+                    ["Temporary"] = rate.Temporary.ToString(),
+                    ["PipeSize"] = rate.PipeSize.ToString(),
+                    ["CessRate"] = rate.CessRate.ToString(),
+                    ["EffFrom"] = ToInputDate(rate.EffFrom),
+                    ["EffTo"] = ToInputDate(rate.EffTo),
+                    ["DevType"] = rate.DevType.ToString(),
+                    ["Status"] = IsActive(rate.Status) ? "1" : "0"
+                };
             default:
                 return [];
         }
@@ -586,6 +661,13 @@ public class MastersController : Controller
 
     private async Task<IReadOnlyList<MasterOptionViewModel>> GetFieldOptionsAsync(string key, string fieldName, CancellationToken ct)
     {
+        if (fieldName == "DevType")
+        {
+            return AppConstants.Divisions.Options
+                .Select(x => new MasterOptionViewModel { Value = x.DevType.ToString(), Text = x.DisplayText })
+                .ToList();
+        }
+
         if (key == "blocks" && fieldName == "SectorId")
         {
             return await _db.SectorDetails.AsNoTracking()
@@ -602,6 +684,28 @@ public class MastersController : Controller
                 .Where(x => x.Status == null || x.Status == "1")
                 .OrderBy(x => x.ConName)
                 .Select(x => new MasterOptionViewModel { Value = x.ConId, Text = x.ConName ?? x.ConId })
+                .ToListAsync(ct);
+        }
+
+        if (key == "rates" && fieldName == "Id")
+        {
+            return await _db.JalRateMasters.AsNoTracking()
+                .Where(x => x.Status == null || x.Status == "1")
+                .OrderBy(x => x.PropertyType)
+                .Select(x => new MasterOptionViewModel
+                {
+                    Value = x.Id.ToString(),
+                    Text = string.IsNullOrWhiteSpace(x.IdT) ? x.PropertyType ?? x.Id.ToString() : $"{x.PropertyType} ({x.IdT})"
+                })
+                .ToListAsync(ct);
+        }
+
+        if (key == "rates" && fieldName == "PipeSize")
+        {
+            return await _db.PipeSizeMasters.AsNoTracking()
+                .Where(x => x.Status == null || x.Status == 1)
+                .OrderBy(x => x.PipeSize)
+                .Select(x => new MasterOptionViewModel { Value = x.PipeSize.ToString(), Text = x.PipeSize.ToString() })
                 .ToListAsync(ct);
         }
 
@@ -723,6 +827,45 @@ public class MastersController : Controller
                     x.AutoId != applicationStatusId, ct))
                     ModelState.AddModelError("StatusName", "Duplicate application status is not allowed.");
                 break;
+            case "rate-categories":
+                var rateCategoryId = current is null ? 0 : int.Parse(current);
+                if (await _db.JalRateMasters.AnyAsync(x =>
+                    x.IdT == Get(form, "IdT") &&
+                    x.Id != rateCategoryId, ct))
+                    ModelState.AddModelError("IdT", "Duplicate rate category code is not allowed.");
+                if (await _db.JalRateMasters.AnyAsync(x =>
+                    x.PropertyType == Get(form, "PropertyType") &&
+                    x.Id != rateCategoryId, ct))
+                    ModelState.AddModelError("PropertyType", "Duplicate rate category name is not allowed.");
+                break;
+            case "rates":
+                var sid = current is null ? 0 : int.Parse(current);
+                var selectedCategoryId = ToNullableInt(form, "Id");
+                var selectedPipeSize = ToNullableInt(form, "PipeSize");
+                var selectedDevType = ToNullableInt(form, "DevType");
+                var selectedEffFrom = ToNullableDate(form, "EffFrom");
+                if (selectedCategoryId is null || !await _db.JalRateMasters.AnyAsync(x => x.Id == selectedCategoryId, ct))
+                    ModelState.AddModelError("Id", "Select a valid rate category.");
+                if (!int.TryParse(Get(form, "AreaStart"), out var areaStart) || areaStart < 0)
+                    ModelState.AddModelError("AreaStart", "Area start must be a valid number.");
+                if (!int.TryParse(Get(form, "AreaEnd"), out var areaEnd) || areaEnd < 0)
+                    ModelState.AddModelError("AreaEnd", "Area end must be a valid number.");
+                if (areaStart > areaEnd)
+                    ModelState.AddModelError("AreaEnd", "Area end must be greater than or equal to area start.");
+                if (selectedEffFrom is null)
+                    ModelState.AddModelError("EffFrom", "Effective from date is required.");
+                if (selectedEffFrom is DateTime effFrom && ToNullableDate(form, "EffTo") is DateTime effTo && effFrom > effTo)
+                    ModelState.AddModelError("EffTo", "Effective to date must be after effective from date.");
+                if (ModelState.IsValid && await _db.JalRateTrans.AnyAsync(x =>
+                    x.Id == selectedCategoryId &&
+                    x.PipeSize == selectedPipeSize &&
+                    x.AreaStart == areaStart &&
+                    x.AreaEnd == areaEnd &&
+                    x.EffFrom == selectedEffFrom &&
+                    x.DevType == selectedDevType &&
+                    x.Sid != sid, ct))
+                    ModelState.AddModelError("AreaStart", "Duplicate rate slab for category, pipe size, area range, effective date, and division is not allowed.");
+                break;
         }
     }
 
@@ -768,6 +911,35 @@ public class MastersController : Controller
                 break;
             case "application-statuses":
                 _db.ApplicationStatuses.Add(new ApplicationStatus { StatusName = Get(form, "StatusName"), IsActive = ToStatusBool(form) });
+                break;
+            case "rate-categories":
+                _db.JalRateMasters.Add(new JalRateMaster
+                {
+                    Id = (await _db.JalRateMasters.MaxAsync(x => (int?)x.Id, ct) ?? 0) + 1,
+                    PropertyType = Get(form, "PropertyType"),
+                    IdT = Get(form, "IdT"),
+                    DevType = ToNullableInt(form, "DevType"),
+                    Status = ToStatusString(form)
+                });
+                break;
+            case "rates":
+                _db.JalRateTrans.Add(new JalRateTran
+                {
+                    Id = ToNullableInt(form, "Id"),
+                    AreaStart = ToNullableInt(form, "AreaStart"),
+                    AreaEnd = ToNullableInt(form, "AreaEnd"),
+                    Regular = ToNullableDouble(form, "Regular"),
+                    Temporary = ToNullableDouble(form, "Temporary"),
+                    MainRate = 0,
+                    EstRateReg = 0,
+                    EstRateTemp = 0,
+                    PipeSize = ToNullableInt(form, "PipeSize"),
+                    CessRate = ToNullableDouble(form, "CessRate"),
+                    EffFrom = ToNullableDate(form, "EffFrom"),
+                    EffTo = ToNullableDate(form, "EffTo"),
+                    DevType = ToNullableInt(form, "DevType"),
+                    Status = ToStatusString(form)
+                });
                 break;
         }
 
@@ -883,6 +1055,29 @@ public class MastersController : Controller
                 applicationStatus.StatusName = Get(form, "StatusName");
                 applicationStatus.IsActive = ToStatusBool(form);
                 break;
+            case "rate-categories":
+                var rateCategory = await _db.JalRateMasters.FirstOrDefaultAsync(x => x.Id == int.Parse(decoded), ct);
+                if (rateCategory is null) return false;
+                rateCategory.PropertyType = Get(form, "PropertyType");
+                rateCategory.IdT = Get(form, "IdT");
+                rateCategory.DevType = ToNullableInt(form, "DevType");
+                rateCategory.Status = ToStatusString(form);
+                break;
+            case "rates":
+                var rate = await _db.JalRateTrans.FirstOrDefaultAsync(x => x.Sid == int.Parse(decoded), ct);
+                if (rate is null) return false;
+                rate.Id = ToNullableInt(form, "Id");
+                rate.AreaStart = ToNullableInt(form, "AreaStart");
+                rate.AreaEnd = ToNullableInt(form, "AreaEnd");
+                rate.Regular = ToNullableDouble(form, "Regular");
+                rate.Temporary = ToNullableDouble(form, "Temporary");
+                rate.PipeSize = ToNullableInt(form, "PipeSize");
+                rate.CessRate = ToNullableDouble(form, "CessRate");
+                rate.EffFrom = ToNullableDate(form, "EffFrom");
+                rate.EffTo = ToNullableDate(form, "EffTo");
+                rate.DevType = ToNullableInt(form, "DevType");
+                rate.Status = ToStatusString(form);
+                break;
             default:
                 return false;
         }
@@ -973,6 +1168,16 @@ public class MastersController : Controller
                 if (applicationStatus is null) return false;
                 applicationStatus.IsActive = ToStatusBool(form);
                 break;
+            case "rate-categories":
+                var rateCategory = await _db.JalRateMasters.FirstOrDefaultAsync(x => x.Id == int.Parse(decoded), ct);
+                if (rateCategory is null) return false;
+                rateCategory.Status = ToStatusString(form);
+                break;
+            case "rates":
+                var rate = await _db.JalRateTrans.FirstOrDefaultAsync(x => x.Sid == int.Parse(decoded), ct);
+                if (rate is null) return false;
+                rate.Status = ToStatusString(form);
+                break;
             default:
                 return false;
         }
@@ -994,6 +1199,8 @@ public class MastersController : Controller
     private static string? GetOptional(IFormCollection form, string key) => string.IsNullOrWhiteSpace(Get(form, key)) ? null : Get(form, key);
     private static int ToInt(IFormCollection form, string key) => int.TryParse(Get(form, key), out var value) ? value : 0;
     private static int? ToNullableInt(IFormCollection form, string key) => int.TryParse(Get(form, key), out var value) ? value : null;
+    private static double? ToNullableDouble(IFormCollection form, string key) => double.TryParse(Get(form, key), out var value) ? value : null;
+    private static DateTime? ToNullableDate(IFormCollection form, string key) => DateTime.TryParse(Get(form, key), out var value) ? value : null;
     private static int ToStatusInt(IFormCollection form) => Get(form, "Status") == "0" ? 0 : 1;
     private static string ToStatusString(IFormCollection form) => Get(form, "Status") == "0" ? "0" : "1";
     private static bool ToStatusBool(IFormCollection form) => Get(form, "Status") != "0";
@@ -1009,6 +1216,9 @@ public class MastersController : Controller
     private static string FormatStatus(int? status) => status == 0 ? "Inactive" : "Active";
     private static string FormatStatus(string? status) => IsActive(status) ? "Active" : "Inactive";
     private static string FormatStatus(bool? status) => status == false ? "Inactive" : "Active";
+    private static string FormatDivision(int? devType) => AppConstants.Divisions.FormatDisplay(devType);
+    private static string? ToDisplayDate(DateTime? value) => value?.ToString("dd-MMM-yyyy");
+    private static string? ToInputDate(DateTime? value) => value?.ToString("yyyy-MM-dd");
 
     private static string EncodeKey(string value)
         => Convert.ToBase64String(Encoding.UTF8.GetBytes(value)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
@@ -1026,26 +1236,26 @@ public class MastersController : Controller
     private static readonly IReadOnlyList<MasterDefinition> Definitions =
     [
         new("sectors", "Sector Master", "Sector Master", "Manage Noida sector codes used in new connection and consumer records.",
-            [new("SectorId", "Sector Code"), new("SectorNo", "Display Sector"), new("OrderBy", "Order"), new("DevType", "Development Type"), new("Status", "Status")],
-            [new("SectorId", "Sector Code", true), new("SectorNo", "Display Sector", true), new("OrderBy", "Order", false, "number"), new("DevType", "Development Type", false, "number"), new("Status", "Status", true, "select")]),
+            [new("SectorId", "Sector Code"), new("SectorNo", "Display Sector"), new("OrderBy", "Order"), new("DevType", "Division"), new("Status", "Status")],
+            [new("SectorId", "Sector Code", true), new("SectorNo", "Display Sector", true), new("OrderBy", "Order", false, "number"), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("blocks", "Block Master", "Block Master", "Manage blocks linked with sectors.",
-            [new("SectorId", "Sector"), new("Block", "Block"), new("DevType", "Development Type"), new("Status", "Status")],
-            [new("SectorId", "Sector", true, "select", true), new("Block", "Block", true, "text", true), new("DevType", "Development Type", false, "number"), new("Status", "Status", true, "select")]),
+            [new("SectorId", "Sector"), new("Block", "Block"), new("DevType", "Division"), new("Status", "Status")],
+            [new("SectorId", "Sector", true, "select", true), new("Block", "Block", true, "text", true), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("pipe-sizes", "Pipe Size Master", "Pipe Size Master", "Manage pipe size values used during connection application.",
-            [new("PipeSize", "Pipe Size"), new("DevType", "Development Type"), new("Status", "Status")],
-            [new("PipeSize", "Pipe Size", true, "number"), new("DevType", "Development Type", false, "number"), new("Status", "Status", true, "select")]),
+            [new("PipeSize", "Pipe Size"), new("DevType", "Division"), new("Status", "Status")],
+            [new("PipeSize", "Pipe Size", true, "number"), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("connection-categories", "Connection Category Master", "Connection Category Master", "Manage connection category codes such as residential, commercial, institutional, and related values.",
-            [new("ConId", "Code"), new("ConName", "Name"), new("ConMainId", "Saved Code"), new("DevType", "Development Type"), new("Status", "Status")],
-            [new("ConId", "Code", true, "text", true), new("ConName", "Name", true), new("ConMainId", "Saved Code", false), new("DevType", "Development Type", false, "number"), new("Status", "Status", true, "select")]),
+            [new("ConId", "Code"), new("ConName", "Name"), new("ConMainId", "Saved Code"), new("DevType", "Division"), new("Status", "Status")],
+            [new("ConId", "Code", true, "text", true), new("ConName", "Name", true), new("ConMainId", "Saved Code", false), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("connection-sub-types", "Connection Sub-Type Master", "Connection Sub-Type Master", "Manage flat/property sub-types linked with connection categories.",
-            [new("ConId", "Category"), new("SubConName", "Sub-Type"), new("DevType", "Development Type"), new("Status", "Status")],
-            [new("ConId", "Category", true, "select"), new("SubConName", "Sub-Type", true), new("DevType", "Development Type", false, "number"), new("Status", "Status", true, "select")]),
+            [new("ConId", "Category"), new("SubConName", "Sub-Type"), new("DevType", "Division"), new("Status", "Status")],
+            [new("ConId", "Category", true, "select"), new("SubConName", "Sub-Type", true), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("connection-types", "Connection Type Master", "Connection Type Master", "Manage regular/temporary and other connection type values.",
             [new("ConnectionName", "Name"), new("ConnectionMainId", "Saved Code"), new("Status", "Status")],
             [new("ConnectionName", "Name", true), new("ConnectionMainId", "Saved Code", false), new("Status", "Status", true, "select")]),
         new("villages", "Village Master", "Village Master", "Manage village records used for village connection applications.",
-            [new("VillageId", "Village Id"), new("VillageName", "Village Name"), new("VillageStr", "Prefix"), new("DevType", "Development Type"), new("Status", "Status")],
-            [new("VillageId", "Village Id", false, "number"), new("VillageName", "Village Name", true), new("VillageStr", "Prefix", false), new("DevType", "Development Type", false, "number"), new("Status", "Status", true, "select")]),
+            [new("VillageId", "Village Id"), new("VillageName", "Village Name"), new("VillageStr", "Prefix"), new("DevType", "Division"), new("Status", "Status")],
+            [new("VillageId", "Village Id", false, "number"), new("VillageName", "Village Name", true), new("VillageStr", "Prefix", false), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("document-types", "Document Type Master", "Document Type Master", "Manage document types required for applications.",
             [new("DocumentId", "Document Id"), new("DocumentName", "Document Name"), new("DocFor", "Document For"), new("Status", "Status")],
             [new("DocumentId", "Document Id", true, "number", true), new("DocumentName", "Document Name", true), new("DocFor", "Document For", false), new("Status", "Status", true, "select")]),
@@ -1063,7 +1273,13 @@ public class MastersController : Controller
             [new("ConId", "Code", true, "text", true), new("ConName", "Connection Type", true), new("ConMainId", "Saved Code", false), new("NocAmt", "NOC Amount", false, "number"), new("Amount", "Charge", false), new("Sgst", "SGST", false), new("Cgst", "CGST", false), new("ExpiryTime", "Expiry Time", false), new("Status", "Status", true, "select")]),
         new("application-statuses", "Application Status Master", "Application Status Master", "Manage reusable status labels for application tracking and approvals.",
             [new("AutoId", "Id"), new("StatusName", "Status Name"), new("Status", "Status")],
-            [new("StatusName", "Status Name", true), new("Status", "Status", true, "select")])
+            [new("StatusName", "Status Name", true), new("Status", "Status", true, "select")]),
+        new("rate-categories", "Rate Category Master", "Rate Category Master", "Manage Jal rate categories used to map connection/property types before applying rate slabs.",
+            [new("Id", "Id"), new("PropertyType", "Category Name"), new("IdT", "Connection Code"), new("DevType", "Division"), new("Status", "Status")],
+            [new("PropertyType", "Category Name", true), new("IdT", "Connection Code", true), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
+        new("rates", "Rate Master", "Rate Master", "Manage rate slabs by category, area range, pipe size, regular/temporary rate, cess rate, and effective dates.",
+            [new("Category", "Rate Category"), new("AreaStart", "Area Start"), new("AreaEnd", "Area End"), new("PipeSize", "Pipe Size"), new("Regular", "Regular Rate"), new("Temporary", "Temporary Rate"), new("CessRate", "Cess Rate"), new("EffFrom", "Effective From"), new("EffTo", "Effective To"), new("DevType", "Division"), new("Status", "Status")],
+            [new("Id", "Rate Category", true, "select"), new("AreaStart", "Area Start", true, "number"), new("AreaEnd", "Area End", true, "number"), new("PipeSize", "Pipe Size", true, "select"), new("Regular", "Regular Rate", true, "number"), new("Temporary", "Temporary Rate", true, "number"), new("CessRate", "Cess Rate", false, "number"), new("EffFrom", "Effective From", true, "date"), new("EffTo", "Effective To", false, "date"), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")])
     ];
 
     private sealed record MasterDefinition(

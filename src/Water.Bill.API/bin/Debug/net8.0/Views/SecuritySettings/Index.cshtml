@@ -1,0 +1,96 @@
+@model SecuritySettingsViewModel
+@{
+    ViewData["Title"] = "Security Settings";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Security Settings</h1>
+        <p>Configure login session, password, lockout, and multi-session rules.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-form-card">
+    <form asp-action="Index" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Settings.Id" />
+        <input type="hidden" asp-for="Settings.TenantId" />
+
+        <h2 class="wb-section-title mb-3">Session</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label" asp-for="Settings.SessionTimeoutMinutes">Session Timeout Minutes</label>
+                <input class="form-control" asp-for="Settings.SessionTimeoutMinutes" type="number" min="5" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" asp-for="Settings.IdleTimeoutMinutes">Idle Timeout Minutes</label>
+                <input class="form-control" asp-for="Settings.IdleTimeoutMinutes" type="number" min="1" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-check">
+                    <input class="form-check-input" asp-for="Settings.AllowMultipleSessions" />
+                    <span class="form-check-label">Allow multiple sessions</span>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check">
+                    <input class="form-check-input" asp-for="Settings.BlockNewLoginOnConflict" />
+                    <span class="form-check-label">Block new login on session conflict</span>
+                </label>
+            </div>
+        </div>
+
+        <h2 class="wb-section-title mb-3">Password Policy</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Settings.PasswordMinLength">Minimum Length</label>
+                <input class="form-control" asp-for="Settings.PasswordMinLength" type="number" min="4" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Settings.PasswordExpiryDays">Expiry Days</label>
+                <input class="form-control" asp-for="Settings.PasswordExpiryDays" type="number" min="0" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Settings.PasswordHistoryCount">History Count</label>
+                <input class="form-control" asp-for="Settings.PasswordHistoryCount" type="number" min="0" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-check"><input class="form-check-input" asp-for="Settings.PasswordRequireUppercase" /> <span class="form-check-label">Require uppercase</span></label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check"><input class="form-check-input" asp-for="Settings.PasswordRequireLowercase" /> <span class="form-check-label">Require lowercase</span></label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check"><input class="form-check-input" asp-for="Settings.PasswordRequireDigit" /> <span class="form-check-label">Require digit</span></label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check"><input class="form-check-input" asp-for="Settings.PasswordRequireSpecialChar" /> <span class="form-check-label">Require special character</span></label>
+            </div>
+        </div>
+
+        <h2 class="wb-section-title mb-3">Lockout</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Settings.MaxFailedLoginAttempts">Max Failed Attempts</label>
+                <input class="form-control" asp-for="Settings.MaxFailedLoginAttempts" type="number" min="1" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Settings.LockoutDurationMinutes">Lockout Minutes</label>
+                <input class="form-control" asp-for="Settings.LockoutDurationMinutes" type="number" min="1" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Settings.CaptchaAfterAttempts">Captcha After Attempts</label>
+                <input class="form-control" asp-for="Settings.CaptchaAfterAttempts" type="number" min="1" />
+            </div>
+            <div class="col-12">
+                <label class="form-check"><input class="form-check-input" asp-for="Settings.EnableCaptchaAfterFailures" /> <span class="form-check-label">Enable captcha after failed attempts</span></label>
+            </div>
+        </div>
+
+        <div class="wb-actions mt-4">
+            <button class="btn btn-primary" type="submit">Save Settings</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,81 @@
+@model IReadOnlyList<Appuser>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>User Management</h1>
+        <p>Create authority users, assign roles, and manage account status.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-primary" asp-action="Roles">Role Management</a>
+        <a class="btn btn-primary" asp-action="CreateUser">New User</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-admin-toolbar">
+        <div>
+            <h2 class="wb-section-title">Authority Users</h2>
+            <span>@Model.Count active record@(Model.Count == 1 ? "" : "s")</span>
+        </div>
+        <input id="userSearch" class="form-control wb-search" type="search" placeholder="Search user, email, username, role" oninput="filterUsers()" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle wb-table wb-admin-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Mobile</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model)
+            {
+                var roleName = user.Role?.Name ?? "Unassigned";
+                <tr class="user-row" data-search="@($"{user.FullName} {user.Username} {user.Email} {user.PhoneNumber} {roleName}".ToLowerInvariant())">
+                    <td>
+                        <div class="fw-semibold">@user.FullName</div>
+                        <div class="text-muted small">@user.Email</div>
+                    </td>
+                    <td>@user.Username</td>
+                    <td><span class="badge text-bg-secondary">@roleName</span></td>
+                    <td>@(string.IsNullOrWhiteSpace(user.PhoneNumber) ? "-" : user.PhoneNumber)</td>
+                    <td><span class="badge @(user.IsActive == true ? "text-bg-success" : "text-bg-secondary")">@(user.IsActive == true ? "Active" : "Inactive")</span></td>
+                    <td>
+                        <div class="wb-row-actions justify-content-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="UserDetails" asp-route-id="@user.Id">View</a>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="EditUser" asp-route-id="@user.Id">Edit</a>
+                            <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Delete this user?');">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">No users found.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+function filterUsers() {
+    var q = (document.getElementById('userSearch').value || '').toLowerCase();
+    document.querySelectorAll('.user-row').forEach(function(row) {
+        row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+    });
+}
+</script>
+}

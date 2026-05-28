@@ -109,7 +109,7 @@ a:hover { color: var(--wb-primary-dark); }
 .wb-main-full { min-height: 100vh; }
 .wb-topbar { position: sticky; top: 0; z-index: 1020; height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 24px; background: rgba(255,255,255,.96); backdrop-filter: blur(14px); border-bottom: 1px solid var(--wb-border); box-shadow: 0 4px 14px rgba(15,23,42,.04); }
 .wb-mobile-menu { display: none; color: var(--wb-primary-deep); }
-.wb-content { padding: 24px; }
+/*.wb-content { padding: 24px; }*/
 .wb-avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: var(--wb-primary-dark); background: var(--wb-primary-soft); font-weight: 700; }
 .wb-profile-chip { display: inline-flex; align-items: center; gap: 10px; min-width: 0; max-width: min(290px, 48vw); padding: 6px 12px 6px 6px; border: 1px solid var(--wb-border); border-radius: 999px; color: var(--wb-text); background: var(--wb-surface); box-shadow: var(--wb-shadow-sm); text-decoration: none; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
 .wb-profile-chip:hover { color: var(--wb-text); border-color: var(--wb-border-strong); box-shadow: 0 8px 20px rgba(8,47,73,.1); transform: translateY(-1px); }
@@ -287,6 +287,9 @@ body.wb-sidebar-collapsed .wb-sidebar-bottom { display: none; }
 .wb-stat { padding: 18px; display: flex; flex-direction: column; gap: 8px; border-top: 3px solid var(--wb-primary); }
 .wb-stat strong { color: var(--wb-primary-dark); font-size: 28px; }
 .wb-dashboard-shell { display: flex; flex-direction: column; gap: 18px; width: min(1060px, 100%); margin: 0 auto; }
+.wb-newconn-page-shell { display: flex; flex-direction: column; gap: 18px; width: min(1120px, 100%); margin: 0 auto; }
+.wb-newconn-page-shell > .wb-page-head { margin-bottom: 4px; }
+.wb-newconn-page-shell .wb-application-card { margin-top: 0; }
 .wb-dashboard-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
 .wb-dashboard-intro h1 { margin: 2px 0 4px; color: var(--wb-text); font-size: 26px; font-weight: 900; line-height: 1.15; }
 .wb-dashboard-intro p { margin: 0; color: var(--wb-text-muted); }
@@ -734,6 +737,15 @@ textarea.form-control:focus,
 .wb-review-panel dl div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px dashed var(--wb-border-strong); }
 .wb-review-panel dt { color: var(--wb-text-muted); font-weight: 700; }
 .wb-review-panel dd { margin: 0; color: var(--wb-text); font-weight: 900; text-align: right; }
+.wb-fee-panel { margin-top: 14px; border: 1px solid #bfdbfe; border-radius: 12px; background: #eff6ff; padding: 14px; display: grid; gap: 8px; color: var(--wb-text); }
+.wb-fee-panel > strong { color: var(--wb-primary-deep); font-size: 16px; }
+.wb-fee-panel > span { color: var(--wb-text-muted); }
+.wb-fee-panel dl { margin: 0; display: grid; gap: 0; }
+.wb-fee-panel dl div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px dashed #bfdbfe; }
+.wb-fee-panel dl div:last-child { border-bottom: 0; }
+.wb-fee-panel dt { color: var(--wb-text-muted); font-weight: 700; }
+.wb-fee-panel dd { margin: 0; font-weight: 900; text-align: right; }
+.wb-fee-panel .is-total { color: var(--wb-primary-deep); font-size: 16px; }
 .wb-review-docs { display: grid; gap: 4px; padding-top: 12px; color: var(--wb-text-muted); }
 .wb-review-docs strong { color: var(--wb-primary-deep); }
 .wb-inline-note { padding: 12px 14px; border-radius: 10px; background: #e8fbfd; color: #075985; font-weight: 700; font-size: 13px; }
@@ -751,4 +763,84 @@ textarea.form-control:focus,
     .wb-document-row input, .wb-document-row em { grid-column: 2; max-width: 100%; }
     .wb-review-panel dl div { display: grid; }
     .wb-review-panel dd { text-align: left; }
+}
+
+.wb-public-auth-shell {
+    min-height: calc(100vh - 32px);
+    display: grid;
+    place-items: center;
+    padding: 42px 18px;
+    background:
+        radial-gradient(circle at 25% 20%, rgba(16,152,173,.22), transparent 34%),
+        linear-gradient(135deg, #102033 0%, #151a3d 100%);
+}
+.wb-public-auth-card {
+    width: min(100%, 430px);
+    display: grid;
+    gap: 18px;
+    padding: 38px;
+    border: 1px solid rgba(255,255,255,.72);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 28px 72px rgba(15,23,42,.28);
+}
+.wb-public-auth-icon {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    justify-self: center;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--wb-primary), #2563eb);
+    box-shadow: 0 14px 28px rgba(37,99,235,.24);
+    font-size: 13px;
+    font-weight: 900;
+}
+.wb-public-auth-card .wb-kicker,
+.wb-public-auth-card h1,
+.wb-public-auth-subtitle,
+.wb-public-auth-foot { text-align: center; }
+.wb-public-auth-card h1 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 900;
+}
+.wb-public-auth-subtitle {
+    margin: -8px 0 4px;
+    color: var(--wb-text-muted);
+    line-height: 1.5;
+}
+.wb-public-auth-form { display: grid; gap: 18px; }
+.wb-public-auth-divider {
+    position: relative;
+    display: grid;
+    place-items: center;
+    color: #94a3b8;
+    font-size: 12px;
+}
+.wb-public-auth-divider::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--wb-border-strong);
+}
+.wb-public-auth-divider span {
+    position: relative;
+    padding: 0 10px;
+    background: #fff;
+}
+.wb-public-auth-foot {
+    margin: 0;
+    color: var(--wb-text-muted);
+    font-size: 12.5px;
+}
+
+@media (max-width: 575.98px) {
+    .wb-public-auth-shell { min-height: 100vh; padding: 0; border-radius: 0; }
+    .wb-public-auth-card { min-height: 100vh; align-content: center; border: 0; border-radius: 0; box-shadow: none; }
 }

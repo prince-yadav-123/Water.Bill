@@ -10,6 +10,16 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.AccountController",
+    "Method": "AuthStatus",
+    "RelativePath": "Account/AuthStatus",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Water.Bill.API.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/Auth/login",
@@ -631,6 +641,11 @@
         "IsRequired": false
       },
       {
+        "Name": "Result.VillageId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
         "Name": "Result.ConnectionCategory",
         "Type": "System.String",
         "IsRequired": false
@@ -661,6 +676,26 @@
         "IsRequired": false
       },
       {
+        "Name": "Result.Rid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.DevType",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.Remarks",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.DeclarationAccepted",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
         "Name": "Result.SubmittedByConsumerNo",
         "Type": "System.String",
         "IsRequired": false
@@ -676,6 +711,11 @@
         "IsRequired": false
       },
       {
+        "Name": "Result.WorkflowStages",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionWorkflowStageDto, Water.Bill.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
         "Name": "Result.Id",
         "Type": "System.Int64",
         "IsRequired": false
@@ -687,6 +727,11 @@
       },
       {
         "Name": "Result.ApplicationStatus",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.FinalConsumerNo",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -722,6 +767,21 @@
       },
       {
         "Name": "Result.IsPublicApplication",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.TotalFee",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.PaymentStatus",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Result.CanContinue",
         "Type": "System.Boolean",
         "IsRequired": false
       }

@@ -1,0 +1,30 @@
+@model string
+@{
+    ViewData["Title"] = "Verify Mobile";
+}
+
+<main class="wb-public-auth-shell">
+    <section class="wb-public-auth-card">
+        <div class="wb-public-auth-icon">NO</div>
+        <p class="wb-kicker">Noida Water Connection</p>
+        <h1>Apply for New Water Connection</h1>
+        <p class="wb-public-auth-subtitle">Verify your mobile number to start or continue your Noida water connection application.</p>
+
+        <form asp-action="Start" method="post" class="wb-public-auth-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="wb-field">
+                <label class="form-label required" for="mobileNumber">Mobile Number</label>
+                <div class="wb-input-shell">
+                    <span class="wb-input-icon">+91</span>
+                    <input id="mobileNumber" name="mobileNumber" class="wb-input" maxlength="10" inputmode="numeric" autocomplete="tel" placeholder="Enter 10 digit mobile number" value="@Model" />
+                </div>
+                <span class="text-danger">@Html.ValidationMessage("mobileNumber")</span>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Send OTP</button>
+        </form>
+
+        <div class="wb-public-auth-divider"><span>secure verification</span></div>
+        <p class="wb-public-auth-foot">Your mobile number will be used to track this application and resume pending payment.</p>
+    </section>
+</main>

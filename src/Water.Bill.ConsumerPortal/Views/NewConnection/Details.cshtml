@@ -3,13 +3,15 @@
     ViewData["Title"] = "Application Details";
 }
 
-<div class="wb-page-head">
-    <div>
-        <p class="wb-kicker">New Connection</p>
-        <h1>@Model.ApplicationNo</h1>
-        <p>Application details and status timeline.</p>
+<div class="wb-newconn-page-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">New Connection</p>
+            <h1>@Model.ApplicationNo</h1>
+            <p>Application details and status timeline.</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="MyApplications">Back to Applications</a>
     </div>
-    <a class="btn btn-outline-primary" asp-action="MyApplications">Back to Applications</a>
-</div>
 
-@await Html.PartialAsync("_NewConnectionDetailsCard", Model)
+    @await Html.PartialAsync("~/Views/NewConnection/_NewConnectionDetailsCard.cshtml", Model)
+</div>

@@ -16,6 +16,8 @@ public class NewConnectionApplicationDetailsDto : NewConnectionApplicationSummar
 
     public string? VillageName { get; set; }
 
+    public int? VillageId { get; set; }
+
     public string? ConnectionCategory { get; set; }
 
     public string? ConnectionType { get; set; }
@@ -28,9 +30,34 @@ public class NewConnectionApplicationDetailsDto : NewConnectionApplicationSummar
 
     public string? OtherConnection { get; set; }
 
+    public string? Rid { get; set; }
+
+    public int? DevType { get; set; }
+
+    public string? Remarks { get; set; }
+
+    public bool DeclarationAccepted { get; set; }
+
     public string? SubmittedByConsumerNo { get; set; }
 
     public IReadOnlyList<NewConnectionDocumentDto> Documents { get; set; } = [];
 
     public IReadOnlyList<NewConnectionApprovalHistoryDto> Timeline { get; set; } = [];
+
+    public IReadOnlyList<NewConnectionWorkflowStageDto> WorkflowStages { get; set; } = [];
+}
+
+public class NewConnectionWorkflowStageDto
+{
+    public int StageOrder { get; set; }
+
+    public string StageName { get; set; } = string.Empty;
+
+    public string State { get; set; } = "Upcoming";
+
+    public string? Remarks { get; set; }
+
+    public DateTime? AssignedOn { get; set; }
+
+    public DateTime? ActionOn { get; set; }
 }

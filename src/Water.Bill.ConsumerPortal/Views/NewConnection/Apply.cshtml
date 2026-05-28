@@ -2,22 +2,27 @@
 @{
     ViewData["Title"] = "New Connection";
     var documentTypes = ViewData["DocumentTypes"] as string[] ?? [];
+    var formAction = ViewData["FormAction"]?.ToString() ?? "Apply";
+    var formRouteId = ViewData["FormRouteId"];
+    var isContinuation = string.Equals(formAction, "Continue", StringComparison.OrdinalIgnoreCase);
 }
 
-<div class="wb-page-head">
-    <div>
-        <p class="wb-kicker">New Connection</p>
-        <h1>Apply for New Connection</h1>
-        <p>Submit a staged request for a new water connection. Final consumer creation will happen only after authority approval.</p>
+<div class="wb-newconn-page-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">New Connection</p>
+            <h1>@(isContinuation ? "Complete New Connection Application" : "Apply for New Connection")</h1>
+            <p>@(isContinuation ? "Review the saved request, complete pending details, and submit the same application." : "Submit a staged request for a new water connection. Final consumer creation will happen only after authority approval.")</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="MyApplications">My Applications</a>
     </div>
-    <a class="btn btn-outline-primary" asp-action="MyApplications">My Applications</a>
-</div>
 
-<form asp-action="Apply" method="post" enctype="multipart/form-data" class="wb-page-card wb-newconn-form">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    @await Html.PartialAsync("_NewConnectionFormFields", Model)
-</form>
+    <form asp-action="@formAction" asp-route-id="@formRouteId" method="post" enctype="multipart/form-data" class="wb-page-card wb-newconn-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @await Html.PartialAsync("~/Views/NewConnection/_NewConnectionFormFields.cshtml", Model)
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

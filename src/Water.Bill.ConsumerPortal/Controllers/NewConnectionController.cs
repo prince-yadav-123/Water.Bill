@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Water.Bill.Application.DTOs.NewConnection;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
@@ -20,15 +21,18 @@ public class NewConnectionController : Controller
     private readonly IConfiguration _configuration;
     private readonly INewConnectionApplicationService _service;
     private readonly INewConnectionLookupService _lookupService;
+    private readonly INewConnectionFeeService _feeService;
 
     public NewConnectionController(
         IConfiguration configuration,
         INewConnectionApplicationService service,
-        INewConnectionLookupService lookupService)
+        INewConnectionLookupService lookupService,
+        INewConnectionFeeService feeService)
     {
         _configuration = configuration;
         _service = service;
         _lookupService = lookupService;
+        _feeService = feeService;
     }
 
     [HttpGet("/Consumer/NewConnection/Apply")]
@@ -36,6 +40,7 @@ public class NewConnectionController : Controller
     {
         ViewData["Title"] = "New Connection";
         ViewData["ActiveMenu"] = "New Connection";
+        ViewData["FormAction"] = nameof(Apply);
         await LoadLookupDataAsync(ct);
         return View(new NewConnectionApplicationFormDto
         {
@@ -50,6 +55,7 @@ public class NewConnectionController : Controller
     {
         ViewData["Title"] = "New Connection";
         ViewData["ActiveMenu"] = "New Connection";
+        ViewData["FormAction"] = nameof(Apply);
         await LoadLookupDataAsync(ct);
 
         NormalizeDeclarationFromRequest(model);
@@ -81,11 +87,15 @@ public class NewConnectionController : Controller
                 ActionByName = User.FindFirstValue("FullName") ?? User.Identity?.Name ?? "Consumer",
                 ActionByRole = AppConstants.Roles.Consumer,
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                UserAgent = Request.Headers.UserAgent.ToString()
+                UserAgent = Request.Headers.UserAgent.ToString(),
+                TargetStatus = "PendingPayment",
+                StatusAction = "FeeCalculated",
+                StatusRemarks = "Application fee calculated and payment is pending.",
+                FeeQuote = await ResolveFeeAsync(model, ct),
+                StartWorkflow = false
             }, ct);
 
-            TempData["SuccessMessage"] = $"Application submitted successfully. Your application number is {result.ApplicationNo}.";
-            return RedirectToAction(nameof(Details), new { id = result.Id });
+            return RedirectToAction(nameof(Payment), new { id = result.Id });
         }
         catch (InvalidOperationException ex)
         {
@@ -101,6 +111,13 @@ public class NewConnectionController : Controller
     [HttpGet("/Consumer/NewConnection/Lookups/ConnectionSubTypes")]
     public async Task<IActionResult> ConnectionSubTypes(string connectionCategoryId, CancellationToken ct)
         => Json(await _lookupService.GetConnectionSubTypesAsync(connectionCategoryId, ResolveDevType(), ct));
+
+    [HttpGet("/Consumer/NewConnection/FeePreview")]
+    public async Task<IActionResult> FeePreview([FromQuery] NewConnectionFeeRequestDto request, CancellationToken ct)
+    {
+        var fee = await _feeService.GetFeeAsync(request, ct);
+        return fee is null ? NotFound() : Json(fee);
+    }
 
     [HttpGet("/Consumer/NewConnection/MyApplications")]
     public async Task<IActionResult> MyApplications(CancellationToken ct)
@@ -123,11 +140,197 @@ public class NewConnectionController : Controller
         return View(details);
     }
 
+    [HttpGet("/Consumer/NewConnection/Continue/{id:long}")]
+    public async Task<IActionResult> Continue(long id, CancellationToken ct)
+    {
+        var model = await _service.GetConsumerContinuationFormAsync(id, ResolveConsumerNo(), ResolveConsumerUserId(), ct);
+        if (model is null)
+            return NotFound();
+
+        ViewData["Title"] = "Complete New Connection";
+        ViewData["ActiveMenu"] = "My Applications";
+        ViewData["FormAction"] = nameof(Continue);
+        ViewData["FormRouteId"] = id;
+        ViewData["ExistingFeeQuote"] = await _service.GetApplicationFeeAsync(id, ct);
+        var existing = await _service.GetConsumerApplicationDetailsAsync(id, ResolveConsumerNo(), ResolveConsumerUserId(), ct);
+        ViewData["ExistingDocumentTypes"] = existing?.Documents.Select(x => x.DocumentType).ToArray() ?? [];
+        await LoadLookupDataAsync(ct);
+        return View("Apply", model);
+    }
+
+    [HttpPost("/Consumer/NewConnection/Continue/{id:long}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Continue(long id, NewConnectionApplicationFormDto model, CancellationToken ct)
+    {
+        var consumerNo = ResolveConsumerNo();
+        var consumerUserId = ResolveConsumerUserId();
+        var existing = await _service.GetConsumerApplicationDetailsAsync(id, consumerNo, consumerUserId, ct);
+        if (existing is null || !existing.CanContinue)
+            return NotFound();
+
+        ViewData["Title"] = "Complete New Connection";
+        ViewData["ActiveMenu"] = "My Applications";
+        ViewData["FormAction"] = nameof(Continue);
+        ViewData["FormRouteId"] = id;
+        ViewData["ExistingFeeQuote"] = await _service.GetApplicationFeeAsync(id, ct);
+        ViewData["ExistingDocumentTypes"] = existing.Documents.Select(x => x.DocumentType).ToArray();
+        await LoadLookupDataAsync(ct);
+
+        NormalizeDeclarationFromRequest(model);
+        ValidateDeclaration(model);
+
+        if (!ModelState.IsValid)
+            return View("Apply", model);
+
+        ValidateRequiredDocuments(Request.Form.Files, await GetDocumentTypeNamesAsync(ct), existing.Documents.Select(x => x.DocumentType).ToArray());
+        if (!ModelState.IsValid)
+            return View("Apply", model);
+
+        var fee = await _service.GetApplicationFeeAsync(id, ct)
+            ?? await _feeService.GetFeeAsync(new NewConnectionFeeRequestDto
+            {
+                ConnectionCategory = model.ConnectionCategory,
+                ConnectionType = model.ConnectionType,
+                PipeSize = model.PipeSize,
+                PlotSize = model.PlotSize
+            }, ct);
+
+        if (fee is null)
+        {
+            ModelState.AddModelError(string.Empty, "Fee configuration is not available for the selected connection details. Please contact support.");
+            return View("Apply", model);
+        }
+
+        try
+        {
+            var savedDocuments = await SaveDocumentsAsync(Request.Form.Files, existing.ApplicationNo, ct);
+            var result = await _service.CompleteConsumerApplicationAsync(id, consumerNo, consumerUserId, new NewConnectionSubmitRequest
+            {
+                Form = model,
+                Documents = savedDocuments,
+                ApplicationNo = existing.ApplicationNo,
+                IsPublicApplication = false,
+                SubmittedByConsumerNo = consumerNo,
+                SubmittedByConsumerUserId = consumerUserId,
+                ActionBy = consumerUserId,
+                ActionByName = User.FindFirstValue("FullName") ?? User.Identity?.Name ?? "Consumer",
+                ActionByRole = AppConstants.Roles.Consumer,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserAgent = Request.Headers.UserAgent.ToString(),
+                TargetStatus = "PendingPayment",
+                StatusAction = "FeeCalculated",
+                StatusRemarks = existing.ApplicationStatus == "Draft"
+                    ? "Application reviewed and fee calculated. Payment is pending."
+                    : "Application updated and fee calculated. Payment is pending.",
+                FeeQuote = fee,
+                StartWorkflow = false
+            }, ct);
+
+            return RedirectToAction(nameof(Payment), new { id = result.Id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View("Apply", model);
+        }
+    }
+
     private string ResolveConsumerNo()
         => (User.FindFirstValue("ConsumerNo") ?? string.Empty).Trim().ToUpperInvariant();
 
     private int? ResolveConsumerUserId()
         => int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
+
+    [HttpGet("/Consumer/NewConnection/Payment/{id:long}")]
+    public async Task<IActionResult> Payment(long id, int step = 1, string? paymentMethod = null, string? paymentIdentifier = null, CancellationToken ct = default)
+    {
+        ViewData["Title"] = "Pay Application Fee";
+        ViewData["ActiveMenu"] = "My Applications";
+
+        var model = await BuildPaymentModelAsync(id, step, paymentMethod, paymentIdentifier, ct);
+        if (model is null)
+            return NotFound();
+
+        return View("~/Views/NewConnection/Payment.cshtml", model);
+    }
+
+    [HttpGet("/Consumer/NewConnection/Payment/{id:long}/Confirm")]
+    public async Task<IActionResult> ConfirmPayment(long id, string? paymentMethod = null, string? paymentIdentifier = null, CancellationToken ct = default)
+        => await Payment(id, 3, paymentMethod, paymentIdentifier, ct);
+
+    [HttpPost("/Consumer/NewConnection/Payment/{id:long}/Confirm")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmPaymentPost(long id, string? paymentMethod, string? paymentIdentifier, CancellationToken ct)
+    {
+        var model = await BuildPaymentModelAsync(id, 3, paymentMethod, paymentIdentifier, ct);
+        if (model is null)
+            return NotFound();
+
+        try
+        {
+            var result = await _service.CompleteConsumerPaymentAsync(id, ResolveConsumerNo(), ResolveConsumerUserId(), new NewConnectionPaymentRequestDto
+            {
+                FeeQuote = model.Fee,
+                ActionBy = ResolveConsumerUserId(),
+                ActionByName = User.FindFirstValue("FullName") ?? User.Identity?.Name ?? "Consumer",
+                ActionByRole = AppConstants.Roles.Consumer,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserAgent = Request.Headers.UserAgent.ToString(),
+                PaymentMethod = paymentMethod,
+                PaymentIdentifier = paymentIdentifier,
+                StartWorkflow = true
+            }, ct);
+
+            TempData["SuccessMessage"] = $"Application submitted successfully. Application Number: {result.ApplicationNo}.";
+            return RedirectToAction(nameof(Details), new { id = result.Id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction(nameof(Payment), new { id, step = 3, paymentMethod, paymentIdentifier });
+        }
+    }
+
+    private async Task<NewConnectionPaymentViewModel?> BuildPaymentModelAsync(long id, int step, string? paymentMethod, string? paymentIdentifier, CancellationToken ct)
+    {
+        var application = await _service.GetConsumerApplicationDetailsAsync(id, ResolveConsumerNo(), ResolveConsumerUserId(), ct);
+        if (application is null || !application.CanContinue)
+            return null;
+
+        var fee = await _service.GetApplicationFeeAsync(id, ct)
+            ?? await _feeService.GetFeeAsync(new NewConnectionFeeRequestDto
+            {
+                ConnectionCategory = application.ConnectionCategory,
+                ConnectionType = application.ConnectionType,
+                PipeSize = application.PipeSize,
+                PlotSize = application.PlotSize
+            }, ct);
+
+        if (fee is null)
+            return null;
+
+        return new NewConnectionPaymentViewModel
+        {
+            Application = application,
+            Fee = fee,
+            Step = Math.Clamp(step, 1, 3),
+            PaymentMethod = string.IsNullOrWhiteSpace(paymentMethod) ? "UPI" : paymentMethod,
+            PaymentIdentifier = paymentIdentifier
+        };
+    }
+
+    private async Task<NewConnectionFeeQuoteDto> ResolveFeeAsync(NewConnectionApplicationFormDto model, CancellationToken ct)
+    {
+        var fee = await _feeService.GetFeeAsync(new NewConnectionFeeRequestDto
+        {
+            ConnectionCategory = model.ConnectionCategory,
+            ConnectionType = model.ConnectionType,
+            PipeSize = model.PipeSize,
+            PlotSize = model.PlotSize
+        }, ct);
+
+        return fee ?? throw new InvalidOperationException("Fee configuration is not available for the selected connection details. Please contact support.");
+    }
 
     private async Task<IReadOnlyList<NewConnectionDocumentInputDto>> SaveDocumentsAsync(IFormFileCollection files, string applicationNo, CancellationToken ct)
     {
@@ -184,12 +387,17 @@ public class NewConnectionController : Controller
         return string.IsNullOrWhiteSpace(normalized) ? "Other" : normalized;
     }
 
-    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> configuredDocumentTypes)
+    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> configuredDocumentTypes, IReadOnlyCollection<string>? existingDocumentTypes = null)
     {
         var uploadedTypes = files
             .Where(x => x.Length > 0)
             .Select(x => ResolveDocumentType(x.Name))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (existingDocumentTypes is not null)
+        {
+            foreach (var existingDocumentType in existingDocumentTypes)
+                uploadedTypes.Add(existingDocumentType);
+        }
 
         var requiredTypes = RequiredDocumentTypes
             .Where(requiredType => configuredDocumentTypes.Contains(requiredType, StringComparer.OrdinalIgnoreCase));
@@ -206,6 +414,9 @@ public class NewConnectionController : Controller
         var lookups = await _lookupService.GetLookupDataAsync(ResolveDevType(), ct);
         ViewData["LookupData"] = lookups;
         ViewData["DocumentTypes"] = lookups.DocumentTypes.Select(x => x.Text).ToArray();
+        ViewData["BlocksUrl"] = Url.Action(nameof(Blocks), "NewConnection");
+        ViewData["ConnectionSubTypesUrl"] = Url.Action(nameof(ConnectionSubTypes), "NewConnection");
+        ViewData["FeePreviewUrl"] = Url.Action(nameof(FeePreview), "NewConnection");
     }
 
     private async Task<IReadOnlyList<string>> GetDocumentTypeNamesAsync(CancellationToken ct)

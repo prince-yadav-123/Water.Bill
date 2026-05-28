@@ -1,0 +1,44 @@
+@model Water.Bill.Application.DTOs.NewConnection.NewConnectionTrackRequestDto
+@{
+    ViewData["Title"] = "Track New Connection";
+}
+
+<div class="wb-public-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">Application Tracking</p>
+            <h1>Track New Connection</h1>
+            <p>Enter your application number and registered mobile number to view status.</p>
+        </div>
+        <a class="btn btn-primary" asp-action="Apply">Apply for New Connection</a>
+    </div>
+
+    <form asp-action="Track" method="post" class="wb-page-card wb-track-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="wb-form-grid">
+            <div class="wb-field">
+                <label asp-for="ApplicationNo" class="form-label required">Application Number</label>
+                <input asp-for="ApplicationNo" class="form-control" placeholder="NC20260520000001" />
+                <span asp-validation-for="ApplicationNo" class="text-danger"></span>
+            </div>
+            <div class="wb-field">
+                <label asp-for="MobileNumber" class="form-label required">Mobile Number</label>
+                <input asp-for="MobileNumber" class="form-control" maxlength="10" placeholder="9876543210" />
+                <span asp-validation-for="MobileNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Track Application</button>
+        </div>
+    </form>
+
+    @if (Model.Result is not null)
+    {
+        @await Html.PartialAsync("_NewConnectionDetailsCard", Model.Result)
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

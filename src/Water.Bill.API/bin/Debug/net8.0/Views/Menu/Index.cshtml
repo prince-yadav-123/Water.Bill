@@ -1,0 +1,143 @@
+@model MenuIndexViewModel
+@{
+    ViewData["Title"] = "Menu Management";
+    var roots = Model.Items.Where(x => x.ParentId == null).OrderBy(x => x.Order).ThenBy(x => x.Label).ToList();
+    var children = Model.Items.Where(x => x.ParentId != null).GroupBy(x => x.ParentId!.Value).ToDictionary(x => x.Key, x => x.OrderBy(c => c.Order).ThenBy(c => c.Label).ToList());
+}
+
+@Html.AntiForgeryToken()
+
+<div class="wb-page-head">
+    <div>
+        <h1>Menu Management</h1>
+        <p>Create parent-child menus, set route URLs, icons, order, and permission modules.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Add Menu Item</a>
+</div>
+
+<section class="wb-page-card">
+    <div class="wb-admin-toolbar">
+        <div>
+            <h2 class="wb-section-title">Authority Menu</h2>
+            <span>Manage sidebar menu structure, routes, modules, and visibility.</span>
+        </div>
+        <input id="menuSearch" class="form-control wb-search" type="search" placeholder="Search menu" oninput="filterMenu()" />
+    </div>
+
+    @if (!Model.Items.Any())
+    {
+        <div class="wb-empty">No menu items found. Add the first menu item to show it in the sidebar.</div>
+    }
+    else
+    {
+        <div id="menuTree" class="wb-menu-tree">
+            @foreach (var item in roots)
+            {
+                var itemChildren = children.TryGetValue(item.Id, out var childList) ? childList : [];
+                var itemModuleName = item.PermissionModule?.Name ?? item.Module;
+                <article class="wb-menu-node root-item" data-id="@item.Id" data-search="@($"{item.Label} {item.Url} {itemModuleName} {item.SectionLabel}".ToLowerInvariant())">
+                    <div class="wb-menu-node-main">
+                        <span class="wb-drag" title="Drag to reorder">::</span>
+                        <span class="wb-menu-icon">@(string.IsNullOrWhiteSpace(item.Icon) ? "[]" : item.Icon)</span>
+                        <div class="wb-menu-copy">
+                            <strong>@item.Label</strong>
+                            <span>@(string.IsNullOrWhiteSpace(item.Url) ? "No URL" : item.Url)</span>
+                            @if (!string.IsNullOrWhiteSpace(itemModuleName))
+                            {
+                                <small>Module: @itemModuleName</small>
+                            }
+                        </div>
+                        <div class="wb-row-actions">
+                            <span class="badge @(item.ShowInSidebar ? "text-bg-info" : "text-bg-light")">@(item.ShowInSidebar ? "Sidebar" : "Hidden")</span>
+                            <span class="badge @(item.IsActive == true ? "text-bg-success" : "text-bg-secondary")">@(item.IsActive == true ? "Active" : "Inactive")</span>
+                            @if (itemChildren.Any())
+                            {
+                                <span class="badge text-bg-secondary">@itemChildren.Count children</span>
+                            }
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this menu item?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="wb-menu-children">
+                        @foreach (var child in itemChildren)
+                        {
+                            var childModuleName = child.PermissionModule?.Name ?? child.Module;
+                            <div class="wb-menu-node child-item" data-id="@child.Id" data-parent="@item.Id" data-search="@($"{child.Label} {child.Url} {childModuleName} {child.SectionLabel}".ToLowerInvariant())">
+                                <div class="wb-menu-node-main">
+                                    <span class="wb-drag" title="Drag to reorder">::</span>
+                                    <span class="wb-menu-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
+                                    <div class="wb-menu-copy">
+                                        <strong>@child.Label</strong>
+                                        <span>@(string.IsNullOrWhiteSpace(child.Url) ? "No URL" : child.Url)</span>
+                                        @if (!string.IsNullOrWhiteSpace(childModuleName))
+                                        {
+                                            <small>Module: @childModuleName</small>
+                                        }
+                                    </div>
+                                    <div class="wb-row-actions">
+                                        <span class="badge @(child.ShowInSidebar ? "text-bg-info" : "text-bg-light")">@(child.ShowInSidebar ? "Sidebar" : "Hidden")</span>
+                                        <span class="badge @(child.IsActive == true ? "text-bg-success" : "text-bg-secondary")">@(child.IsActive == true ? "Active" : "Inactive")</span>
+                                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@child.Id">Edit</a>
+                                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this child menu item?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@child.Id" />
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+function filterMenu() {
+    var q = (document.getElementById('menuSearch').value || '').toLowerCase();
+    document.querySelectorAll('.wb-menu-node').forEach(function(row) {
+        row.style.display = !q || (row.dataset.search || '').includes(q) ? '' : 'none';
+    });
+}
+
+function collectOrders() {
+    var items = [];
+    var rootOrder = 1;
+    document.querySelectorAll('#menuTree > .root-item').forEach(function(root) {
+        var id = root.dataset.id;
+        items.push({ id: id, order: rootOrder++, parentId: null });
+        var childOrder = 1;
+        root.querySelectorAll(':scope > .wb-menu-children > .child-item').forEach(function(child) {
+            items.push({ id: child.dataset.id, order: childOrder++, parentId: id });
+        });
+    });
+    return items;
+}
+
+function saveMenuOrder() {
+    fetch('@Url.Action("Reorder", "Menu")', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: JSON.stringify(collectOrders())
+    }).catch(function() { alert('Menu order could not be saved.'); });
+}
+
+if (window.Sortable) {
+    Sortable.create(document.getElementById('menuTree'), { handle: '.wb-drag', animation: 150, onEnd: saveMenuOrder });
+    document.querySelectorAll('.wb-menu-children').forEach(function(container) {
+        Sortable.create(container, { handle: '.wb-drag', animation: 150, onEnd: saveMenuOrder });
+    });
+}
+</script>
+}

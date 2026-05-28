@@ -60,6 +60,9 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(ConsumerLoginViewModel model, string? returnUrl = null)
     {
+        if (User.Identity?.IsAuthenticated == true && User.IsInRole(AppConstants.Roles.Consumer))
+            return LocalRedirect("/Consumer/Dashboard");
+
         ViewData["Title"] = "Login";
         ViewData["ReturnUrl"] = returnUrl;
 
@@ -140,6 +143,9 @@ public class AccountController : Controller
     [HttpGet("/Consumer/VerifyOtp")]
     public IActionResult VerifyOtp(string consumerNo, string? returnUrl = null)
     {
+        if (User.Identity?.IsAuthenticated == true && User.IsInRole(AppConstants.Roles.Consumer))
+            return LocalRedirect("/Consumer/Dashboard");
+
         ViewData["Title"] = "Verify OTP";
         ViewData["ReturnUrl"] = returnUrl;
 
@@ -183,6 +189,9 @@ public class AccountController : Controller
 
             if (!string.IsNullOrWhiteSpace(result.Email))
                 claims.Add(new Claim(ClaimTypes.Email, result.Email));
+
+            if (!string.IsNullOrWhiteSpace(result.MobileNo))
+                claims.Add(new Claim("MobileNo", result.MobileNo));
 
             var identity = new ClaimsIdentity(claims, AppConstants.CookieScheme);
             var principal = new ClaimsPrincipal(identity);
@@ -229,6 +238,9 @@ public class AccountController : Controller
 
         await _auditLogService.LogAsync(AuditAction.Logout);
         await HttpContext.SignOutAsync(AppConstants.CookieScheme);
+        HttpContext.Session.Clear();
+        Response.Cookies.Delete("WaterBill.ConsumerPortal.Auth");
+        Response.Cookies.Delete("WaterBill.PublicNewConnection.Session");
         return RedirectToAction(nameof(Login));
     }
 

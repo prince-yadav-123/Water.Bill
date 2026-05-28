@@ -1,8 +1,13 @@
 @model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationFormDto
 @using Water.Bill.Application.DTOs.NewConnection
+@using System.Globalization
 @{
     var documentTypes = ViewData["DocumentTypes"] as string[] ?? [];
+    var existingDocumentTypes = ViewData["ExistingDocumentTypes"] as string[] ?? [];
     var lookupData = ViewData["LookupData"] as NewConnectionLookupDataDto ?? new NewConnectionLookupDataDto();
+    var selectedPipeSize = Model.PipeSize?.ToString("0.##", CultureInfo.InvariantCulture);
+    var blocksUrl = ViewData["BlocksUrl"] as string ?? Url.Action("Blocks", "NewConnection");
+    var subtypesUrl = ViewData["ConnectionSubTypesUrl"] as string ?? Url.Action("ConnectionSubTypes", "NewConnection");
     string ChoiceIcon(string text)
     {
         var normalized = (text ?? string.Empty).ToLowerInvariant();
@@ -13,13 +18,13 @@
     }
 }
 
-<div class="wb-newconn-wizard" data-newconn-wizard data-blocks-url="@Url.Action("Blocks", "NewConnection")" data-subtypes-url="@Url.Action("ConnectionSubTypes", "NewConnection")">
+<div class="wb-newconn-wizard" data-newconn-wizard data-blocks-url="@blocksUrl" data-subtypes-url="@subtypesUrl">
     <div class="wb-newconn-stepper" aria-label="New connection application steps">
         <button class="wb-step-pill is-active" type="button" data-step-target="1"><span>1</span> Connection Type</button>
         <button class="wb-step-pill" type="button" data-step-target="2"><span>2</span> Property Details</button>
         <button class="wb-step-pill" type="button" data-step-target="3"><span>3</span> Applicant Details</button>
         <button class="wb-step-pill" type="button" data-step-target="4"><span>4</span> Documents</button>
-        <button class="wb-step-pill" type="button" data-step-target="5"><span>5</span> Review & Submit</button>
+        <button class="wb-step-pill" type="button" data-step-target="5"><span>5</span> Review</button>
     </div>
 
     <div class="wb-newconn-layout">
@@ -73,7 +78,7 @@
                             <option value="">Select</option>
                             @foreach (var pipeSize in lookupData.PipeSizes)
                             {
-                                <option value="@pipeSize.Value">@pipeSize.Text</option>
+                                <option value="@pipeSize.Value" selected="@(pipeSize.Value == selectedPipeSize)">@pipeSize.Text</option>
                             }
                         </select>
                         <span asp-validation-for="PipeSize" class="text-danger"></span>
@@ -175,7 +180,14 @@
                     </div>
                     <div class="wb-field">
                         <label asp-for="MobileNumber" class="form-label required">Mobile Number</label>
-                        <input asp-for="MobileNumber" class="form-control" maxlength="10" data-review-label="Mobile number" />
+                        @if (ViewData["LockMobileNumber"] as bool? == true)
+                        {
+                            <input asp-for="MobileNumber" class="form-control" maxlength="10" data-review-label="Mobile number" readonly />
+                        }
+                        else
+                        {
+                            <input asp-for="MobileNumber" class="form-control" maxlength="10" data-review-label="Mobile number" />
+                        }
                         <span asp-validation-for="MobileNumber" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
@@ -200,14 +212,15 @@
                     {
                         var inputName = $"Documents_{documentType.Replace(" ", "_").Replace("/", "_")}";
                         var isRequired = documentType is "ID Proof" or "Address Proof" or "Property Document";
+                        var hasExisting = existingDocumentTypes.Contains(documentType, StringComparer.OrdinalIgnoreCase);
                         <label class="wb-document-row @(isRequired ? "is-required" : string.Empty)">
                             <span class="wb-document-icon">File</span>
                             <span>
                                 <strong>@documentType @(isRequired ? "*" : string.Empty)</strong>
-                                <small>@(isRequired ? "Required for verification" : "Upload if applicable")</small>
+                                <small>@(hasExisting ? "Already uploaded. Choose a file only to replace it." : isRequired ? "Required for verification" : "Upload if applicable")</small>
                             </span>
-                            <input type="file" name="@inputName" accept=".pdf,.jpg,.jpeg,.png" data-document-type="@documentType" data-required-document="@isRequired.ToString().ToLowerInvariant()" />
-                            <em data-file-status>Browse</em>
+                            <input type="file" name="@inputName" accept=".pdf,.jpg,.jpeg,.png" data-document-type="@documentType" data-required-document="@isRequired.ToString().ToLowerInvariant()" data-existing-document="@hasExisting.ToString().ToLowerInvariant()" />
+                            <em data-file-status>@(hasExisting ? "Saved" : "Browse")</em>
                         </label>
                     }
                 </div>
@@ -215,11 +228,11 @@
 
             <section class="wb-form-section wb-wizard-step" data-step="5">
                 <div>
-                    <h2>Review & Submit</h2>
-                    <p>Please review the application before submission. Your final consumer number will be created only after authority approval.</p>
+                    <h2>Review Application Details</h2>
+                    <p>Check the filled details before moving to fee payment. Your final consumer number will be created only after authority approval.</p>
                 </div>
                 <div class="wb-review-panel" data-review-panel></div>
-                <div class="wb-inline-note">After submission, the application will move to document verification and site inspection.</div>
+                <div class="wb-inline-note">Next, you will review the fee breakup and choose a payment option.</div>
                 <div class="form-check">
                     <input asp-for="DeclarationAccepted" class="form-check-input" data-review-label="Declaration" data-required-declaration="true" />
                     <label asp-for="DeclarationAccepted" class="form-check-label required">I confirm that the submitted details are correct.</label>
@@ -230,27 +243,17 @@
             <div class="wb-wizard-actions">
                 <button class="btn btn-outline-primary" type="button" data-step-back>Back</button>
                 <button class="btn btn-primary" type="button" data-step-next>Continue</button>
-                <button class="btn btn-primary" type="submit" data-step-submit hidden>Submit Application</button>
+                <button class="btn btn-primary" type="submit" data-step-submit hidden>Continue to Payment</button>
             </div>
         </div>
 
         <aside class="wb-newconn-side">
             <section class="wb-side-card">
-                <h3>Estimated Charges</h3>
-                <div class="wb-side-row"><span>Application fee</span><strong>Configurable</strong></div>
-                <div class="wb-side-row"><span>Security deposit</span><strong>As assessed</strong></div>
-                <div class="wb-side-row"><span>Meter installation</span><strong>As applicable</strong></div>
-                <div class="wb-side-row is-total"><span>Total estimate</span><strong>Final after review</strong></div>
-            </section>
-            <section class="wb-side-card">
-                <h3>Timeline</h3>
-                <ol class="wb-side-timeline">
-                    <li class="is-done">Submit application <small>Today</small></li>
-                    <li>Document verification <small>Within 24 hours</small></li>
-                    <li>Site inspection <small>Day 2-3</small></li>
-                    <li>Approval & meter install <small>Day 7-10</small></li>
-                    <li>First bill generated <small>After billing cycle</small></li>
-                </ol>
+                <h3>Application Progress</h3>
+                <div class="wb-side-row"><span>Mobile verification</span><strong>Done</strong></div>
+                <div class="wb-side-row"><span>Application form</span><strong>In progress</strong></div>
+                <div class="wb-side-row"><span>Fee payment</span><strong>Next step</strong></div>
+                <div class="wb-side-row is-total"><span>Submission</span><strong>After payment</strong></div>
             </section>
         </aside>
     </div>
@@ -312,7 +315,7 @@
                 }
                 continue;
             }
-            if (field.type === "file" && field.dataset.requiredDocument === "true" && !field.files.length) {
+            if (field.type === "file" && field.dataset.requiredDocument === "true" && field.dataset.existingDocument !== "true" && !field.files.length) {
                 showAlert(`Please upload ${field.dataset.documentType}.`);
                 return false;
             }
@@ -361,10 +364,14 @@
         const files = [...wizard.querySelectorAll("input[type=file]")]
             .filter(input => input.files.length)
             .map(input => input.dataset.documentType);
+        const savedFiles = [...wizard.querySelectorAll('input[type=file][data-existing-document="true"]')]
+            .filter(input => !input.files.length)
+            .map(input => `${input.dataset.documentType} (saved)`);
+        const documentNames = files.concat(savedFiles);
 
         reviewPanel.innerHTML = `
             <dl>${rows.map(row => `<div><dt>${row.label}</dt><dd>${row.value}</dd></div>`).join("")}</dl>
-            <div class="wb-review-docs"><strong>Documents uploaded</strong><span>${files.length ? files.join(", ") : "No documents selected"}</span></div>
+            <div class="wb-review-docs"><strong>Documents uploaded</strong><span>${documentNames.length ? documentNames.join(", ") : "No documents selected"}</span></div>
         `;
     }
 

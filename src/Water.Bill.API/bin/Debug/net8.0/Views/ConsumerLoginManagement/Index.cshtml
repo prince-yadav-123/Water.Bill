@@ -1,0 +1,80 @@
+@model IReadOnlyList<ConsumerLoginUserListItemViewModel>
+@{
+    ViewData["Title"] = "Consumer Login Management";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Consumer Login Management</h1>
+        <p>Manage Consumer Portal username, email, password, and account status separately from Authority users.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-primary" asp-action="Create">New Consumer Login</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-admin-toolbar">
+        <div>
+            <h2 class="wb-section-title">Consumer Login Users</h2>
+            <span>@Model.Count record@(Model.Count == 1 ? "" : "s")</span>
+        </div>
+        <input id="consumerLoginSearch" class="form-control wb-search" type="search" placeholder="Search consumer no, name, username, email" oninput="filterConsumerLogins()" />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle wb-table wb-admin-table">
+            <thead>
+                <tr>
+                    <th>Consumer</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Last Login</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model)
+            {
+                <tr class="consumer-login-row" data-search="@($"{user.ConsumerNo} {user.ConsumerName} {user.ConsumerMobileNo} {user.Username} {user.Email}".ToLowerInvariant())">
+                    <td>
+                        <div class="fw-semibold">@user.ConsumerNo</div>
+                        <div class="text-muted small">@user.ConsumerName</div>
+                        <div class="text-muted small">@(string.IsNullOrWhiteSpace(user.ConsumerMobileNo) ? "-" : user.ConsumerMobileNo)</div>
+                    </td>
+                    <td>@user.Username</td>
+                    <td>@(string.IsNullOrWhiteSpace(user.Email) ? "-" : user.Email)</td>
+                    <td>@(user.LastLoginAt.HasValue ? user.LastLoginAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") : "-")</td>
+                    <td><span class="badge @(user.IsActive ? "text-bg-success" : "text-bg-secondary")">@(user.IsActive ? "Active" : "Inactive")</span></td>
+                    <td>
+                        <div class="wb-row-actions justify-content-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@user.Id">View</a>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                            <form asp-action="ToggleStatus" asp-route-id="@user.Id" method="post" onsubmit="return confirm('@(user.IsActive ? "Deactivate" : "Activate") this consumer login user?');">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm @(user.IsActive ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(user.IsActive ? "Deactivate" : "Activate")</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">No consumer login users found.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+function filterConsumerLogins() {
+    var q = (document.getElementById('consumerLoginSearch').value || '').toLowerCase();
+    document.querySelectorAll('.consumer-login-row').forEach(function(row) {
+        row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+    });
+}
+</script>
+}

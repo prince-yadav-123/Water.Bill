@@ -35,4 +35,8 @@
     <ProjectReference Include="..\Water.Bill.Infrastructure\Water.Bill.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\**\*.cshtml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

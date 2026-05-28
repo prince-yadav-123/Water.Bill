@@ -1,0 +1,327 @@
+@model Water.Bill.API.Models.Approvals.ApprovalDetailsViewModel
+@using System.Globalization
+@{
+    var app = Model.NewConnectionApplication;
+    var task = Model.Task;
+    var fee = Model.Fee;
+    var inr = CultureInfo.GetCultureInfo("en-IN");
+    var isCurrentPendingTask = task.IsActive
+        && task.Status == "Pending"
+        && task.WorkflowInstance.CurrentStageId == task.StageId
+        && task.WorkflowInstance.IsActive;
+    var approveText = task.Stage.IsFinalStage ? "Final Approve" : "Approve & Move Next";
+    var submittedOn = app?.SubmittedOn ?? app?.CreatedOn;
+
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string DateTimeOrDash(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy hh:mm tt") : "-";
+    string Money(decimal? value) => value.HasValue ? value.Value.ToString("C", inr) : "-";
+    string DocumentInitials(string value) => string.IsNullOrWhiteSpace(value)
+        ? "DC"
+        : value.Trim()[..Math.Min(2, value.Trim().Length)].ToUpperInvariant();
+    string StageStateClass(string state) => state switch
+    {
+        "Current" => "is-current",
+        "Approved" => "is-done",
+        "Rejected" => "is-rejected",
+        _ => "is-waiting"
+    };
+    string StageStateLabel(string state) => state switch
+    {
+        "Current" => "Current",
+        "Approved" => "Completed",
+        "Rejected" => "Rejected",
+        _ => "Waiting"
+    };
+    string StatusBadgeClass(string? status) => status switch
+    {
+        "Pending" or "UnderReview" or "Submitted" => "text-bg-primary",
+        "Approved" or "FinalConsumerCreated" => "text-bg-success",
+        "Rejected" => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>New Connection Approval</h1>
+        <p>@task.ApplicationNo - @task.Stage.StageName</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Pending">Back to Applications</a>
+</div>
+
+@if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="alert alert-success">
+        <strong>@successMessage</strong>
+        @if (TempData["FinalConsumerNo"] is string consumerNo)
+        {
+            <div>Final Consumer No: <span class="fw-bold">@consumerNo</span></div>
+        }
+    </div>
+}
+
+<section class="wb-approval-summary-card">
+    <div class="wb-approval-summary-head">
+        <div>
+            <p class="wb-kicker">Authority Review Copy</p>
+            @* <h2>Noida Jal New Connection Application</h2> *@
+            <span>Submitted application details for approval of a new connection.</span>
+        </div>
+        <span class="badge @StatusBadgeClass(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)">
+            @(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)
+        </span>
+    </div>
+    <div class="wb-approval-summary-grid">
+        <div><span>Application No</span><strong>@task.ApplicationNo</strong></div>
+        <div><span>Applicant Name</span><strong>@TextOrDash(app?.ApplicantName)</strong></div>
+        <div><span>Submitted Date</span><strong>@DateTimeOrDash(submittedOn)</strong></div>
+        <div><span>Fee / Payment</span><strong>@(fee is null ? "-" : $"{fee.PaymentStatus} - {fee.TotalAmount.ToString("C", inr)}")</strong></div>
+        <div><span>Current Status</span><strong>@(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)</strong></div>
+        <div><span>Current Stage</span><strong>@task.Stage.StageName</strong></div>
+    </div>
+    @if (app is not null
+        && string.Equals(app.ApplicationStatus, "FinalConsumerCreated", StringComparison.OrdinalIgnoreCase)
+        && !string.IsNullOrWhiteSpace(app.FinalConsumerNo))
+    {
+        <div class="wb-final-consumer-banner">
+            Application approved successfully. Final Consumer No: <strong>@app.FinalConsumerNo</strong>
+        </div>
+    }
+</section>
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact">
+        <div>
+            <p class="wb-kicker">Workflow Progress</p>
+            <h2>Approval Path</h2>
+        </div>
+    </div>
+    <div class="wb-approval-stage-grid">
+        @foreach (var stage in Model.StageProgress)
+        {
+            <div class="wb-approval-stage @StageStateClass(stage.State)">
+                <div class="wb-approval-stage-top">
+                    <span>@stage.Stage.StageOrder</span>
+                    <strong>@StageStateLabel(stage.State)</strong>
+                </div>
+                <h3>@stage.Stage.StageName</h3>
+                <p>@(stage.Stage.Department?.DeptName ?? "Department not set")</p>
+                <small>Role/User: @stage.RoleName / @stage.UserName</small>
+                @if (stage.Task?.ActionOn is not null)
+                {
+                    <small>Action: @stage.Task.ActionOn.Value.ToString("dd MMM yyyy hh:mm tt")</small>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@if (app is not null)
+{
+    <section class="wb-application-paper">
+        <div class="wb-application-paper-title">
+            <h2>Review Application Form</h2>
+            <p>Submitted form data organized for authority review.</p>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Application & Payment Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Application No</th><td>@app.ApplicationNo</td><th>Application Date</th><td>@DateTimeOrDash(submittedOn)</td></tr>
+                    <tr><th>Payment Ref No</th><td>-</td><th>Paid Amount</th><td>@Money(fee?.TotalAmount)</td></tr>
+                    <tr><th>Applied From</th><td>@(app.IsPublicApplication ? "Public Portal" : "Consumer Portal")</td><th>Payment Status</th><td>@TextOrDash(fee?.PaymentStatus)</td></tr>
+                    <tr><th>Final Consumer No</th><td>@TextOrDash(app.FinalConsumerNo)</td><th>Current Status</th><td>@app.ApplicationStatus</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Applicant Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Applicant Name</th><td>@app.ApplicantName</td><th>Father Name</th><td>@TextOrDash(app.FatherName)</td></tr>
+                    <tr><th>Mobile No</th><td>@app.MobileNumber</td><th>Email</th><td>@TextOrDash(app.EmailId)</td></tr>
+                    <tr><th>Applicant Address</th><td colspan="3">@app.Address</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Property Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Sector</th><td>@app.Sector</td><th>Block</th><td>@app.Block</td></tr>
+                    <tr><th>Plot / Flat No</th><td>@app.FlatNo</td><th>Plot Size</th><td>@app.PlotSize</td></tr>
+                    <tr><th>Khasra No</th><td>@TextOrDash(app.KhasraNo)</td><th>Village</th><td>@TextOrDash(app.VillageName)</td></tr>
+                    <tr><th>Installation Address</th><td colspan="3">@app.Address</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Connection Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Connection Category</th><td>@app.ConnectionCategory</td><th>Connection Type</th><td>@app.ConnectionType</td></tr>
+                    <tr><th>Flat Type</th><td>@app.FlatType</td><th>Pipe Size</th><td>@(app.PipeSize?.ToString() ?? "-")</td></tr>
+                    <tr><th>Purpose</th><td>@TextOrDash(app.PurposeOfConnection)</td><th>Division</th><td>@(app.DevType?.ToString() ?? "-")</td></tr>
+                    <tr><th>Previous Connection</th><td>@TextOrDash(app.PreviousConnectionYesNo)</td><th>Other Connection</th><td>@TextOrDash(app.OtherConnection)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Uploaded Documents</h3>
+            @if (app.Documents.Where(x => !x.IsDeleted).Any())
+            {
+                <div class="wb-document-rows">
+                    @foreach (var document in app.Documents.Where(x => !x.IsDeleted).OrderBy(x => x.DocumentType))
+                    {
+                        <div class="wb-document-mini-row">
+                            <span>@DocumentInitials(document.DocumentType)</span>
+                            <div>
+                                <strong>@document.DocumentType</strong>
+                                <small>@(document.FileName ?? document.FilePath ?? "Uploaded")</small>
+                            </div>
+                            <em>@document.UploadedOn.ToString("dd MMM yyyy")</em>
+                            @if (!string.IsNullOrWhiteSpace(document.FilePath))
+                            {
+                                <a class="btn btn-sm btn-outline-primary" href="@document.FilePath" target="_blank" rel="noopener">View</a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-outline-secondary" type="button" disabled>View</button>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="wb-empty">No documents uploaded.</div>
+            }
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Declaration</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Declaration</th><td colspan="3">@(app.DeclarationAccepted ? "Applicant accepted the declaration while submitting this application." : "Declaration not accepted.")</td></tr>
+                    <tr><th>Submitted By</th><td>@app.ApplicantName</td><th>Submitted Date</th><td>@DateTimeOrDash(submittedOn)</td></tr>
+                    <tr><th>Applicant Remarks</th><td colspan="3">@TextOrDash(app.Remarks)</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+}
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact">
+        <div>
+            <p class="wb-kicker">Fee / Payment Summary</p>
+            <h2>Payment Details</h2>
+        </div>
+        @if (fee is not null)
+        {
+            <span class="badge @StatusBadgeClass(fee.PaymentStatus)">@fee.PaymentStatus</span>
+        }
+    </div>
+    @if (fee is not null)
+    {
+        <div class="wb-fee-summary-list">
+            <div><span>Application Fee</span><strong>@fee.ApplicationFee.ToString("C", inr)</strong></div>
+            <div><span>Processing Fee</span><strong>@fee.ProcessingFee.ToString("C", inr)</strong></div>
+            <div><span>Security Amount</span><strong>@fee.SecurityAmount.ToString("C", inr)</strong></div>
+            <div><span>Meter Installation</span><strong>@fee.MeterInstallationFee.ToString("C", inr)</strong></div>
+            <div><span>Other Charges</span><strong>@fee.OtherCharges.ToString("C", inr)</strong></div>
+            <div class="is-total"><span>Total Paid / Payable</span><strong>@fee.TotalAmount.ToString("C", inr)</strong></div>
+        </div>
+    }
+    else
+    {
+        <div class="wb-empty">No fee record found.</div>
+    }
+</section>
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact">
+        <div>
+            <p class="wb-kicker">Remarks & Workflow History</p>
+            <h2>Approval Timeline</h2>
+        </div>
+    </div>
+    @if (Model.WorkflowTimeline.Count == 0)
+    {
+        <div class="wb-empty">No workflow history found.</div>
+    }
+    else
+    {
+        <div class="wb-approval-history">
+            @foreach (var item in Model.WorkflowTimeline)
+            {
+                <div class="wb-approval-history-item">
+                    <span></span>
+                    <div>
+                        <strong>@item.Action</strong>
+                        <small>@(item.FromStatus ?? "-") -> @item.ToStatus</small>
+                        <small>@item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
+                        @if (!string.IsNullOrWhiteSpace(item.ActionByName))
+                        {
+                            <small>By @item.ActionByName @(string.IsNullOrWhiteSpace(item.ActionByRole) ? "" : $"({item.ActionByRole})")</small>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Remarks))
+                        {
+                            <p>@item.Remarks</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@if (isCurrentPendingTask)
+{
+    <section class="wb-page-card wb-admin-card wb-approval-section wb-current-action-card">
+        <div class="wb-section-head-compact">
+            <div>
+                <p class="wb-kicker">Current Stage Action</p>
+                <h2>@task.Stage.StageName</h2>
+            </div>
+        </div>
+        <form asp-action="Action" method="post" class="wb-current-action-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="taskId" value="@task.Id" />
+            <div>
+                <label class="form-label">Remarks / Comments</label>
+                <textarea name="remarks" class="form-control" rows="3" maxlength="500" placeholder="Add review remarks before approving or rejecting this application"></textarea>
+            </div>
+            <div class="wb-current-action-buttons">
+                @if (task.Stage.CanApprove)
+                {
+                    @if (task.Stage.IsFinalStage)
+                    {
+                        <button class="btn btn-success btn-sm" type="submit" name="actionType" value="Approve">@approveText</button>
+                        @if (Model.CanMoveToNextStage)
+                        {
+                            <button class="btn btn-primary btn-sm" type="submit" name="actionType" value="MoveNext">Move to Next Authority</button>
+                        }
+                    }
+                    else
+                    {
+                        <button class="btn btn-success btn-sm" type="submit" name="actionType" value="Approve">@approveText</button>
+                    }
+                }
+                @if (task.Stage.CanReject)
+                {
+                    <button class="btn btn-danger btn-sm" type="submit" name="actionType" value="Reject">Reject</button>
+                }
+            </div>
+        </form>
+    </section>
+}

@@ -1,0 +1,16 @@
+@model PermissionModule
+@{
+    ViewData["Title"] = "Create Permission Module";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Create Permission Module</h1>
+        <p>Add a dynamic module for menu and role-permission configuration.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<partial name="_PermissionModuleForm" model="Model" />
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

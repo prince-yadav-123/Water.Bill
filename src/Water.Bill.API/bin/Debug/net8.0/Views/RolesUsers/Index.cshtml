@@ -1,0 +1,117 @@
+@model RolesUsersViewModel
+@{
+    ViewData["Title"] = "Roles & Users";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Roles &amp; Users</h1>
+        <p>Manage admin users, role assignment, and access control.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-primary" asp-action="Permissions">Permission Matrix</a>
+        <a class="btn btn-outline-primary" asp-action="CreateRole">New Role</a>
+        <a class="btn btn-primary" asp-action="CreateUser">New User</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <section class="wb-page-card h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="wb-section-title">Role Management</h2>
+                <span class="badge text-bg-primary">@Model.Roles.Count roles</span>
+            </div>
+
+            @if (!Model.Roles.Any())
+            {
+                <div class="wb-empty">No roles found. Create the first role to begin permission setup.</div>
+            }
+            else
+            {
+                <div class="wb-list-stack">
+                    @foreach (var role in Model.Roles)
+                    {
+                        var userCount = Model.Users.Count(u => u.RoleId == role.Id);
+                        <article class="wb-list-row">
+                            <div>
+                                <strong>@role.Name</strong>
+                                <span>@(string.IsNullOrWhiteSpace(role.Description) ? "No description added" : role.Description)</span>
+                            </div>
+                            <div class="wb-row-actions">
+                                <span class="badge text-bg-secondary">@userCount users</span>
+                                <a class="btn btn-sm btn-outline-primary" asp-action="EditRole" asp-route-id="@role.Id">Edit</a>
+                                <form asp-action="DeleteRole" method="post" onsubmit="return confirm('Delete this role?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@role.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+
+    <div class="col-lg-7">
+        <section class="wb-page-card h-100">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <h2 class="wb-section-title">User Management</h2>
+                <input id="userSearch" class="form-control wb-search" type="search" placeholder="Search users" oninput="filterUsers()" />
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle wb-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        var roleName = user.Role?.Name ?? "Unassigned";
+                        <tr class="user-row" data-search="@($"{user.FullName} {user.Username} {user.Email} {roleName}".ToLowerInvariant())">
+                            <td>
+                                <div class="fw-semibold">@user.FullName</div>
+                                <div class="text-muted small">@user.Username / @user.Email</div>
+                            </td>
+                            <td><span class="badge text-bg-secondary">@roleName</span></td>
+                            <td><span class="badge @(user.IsActive == true ? "text-bg-success" : "text-bg-secondary")">@(user.IsActive == true ? "Active" : "Inactive")</span></td>
+                            <td>
+                                <div class="wb-row-actions justify-content-end">
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="EditUser" asp-route-id="@user.Id">Edit</a>
+                                    <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Delete this user?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Users.Any())
+                    {
+                        <tr><td colspan="4" class="text-center text-muted py-4">No users found.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function filterUsers() {
+    var q = (document.getElementById('userSearch').value || '').toLowerCase();
+    document.querySelectorAll('.user-row').forEach(function(row) {
+        row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+    });
+}
+</script>
+}

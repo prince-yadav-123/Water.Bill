@@ -8,5 +8,7 @@ public class ConsumerOtpVerifyResult
 
     public string? Email { get; set; }
 
+    public string? MobileNo { get; set; }
+
     public int? ConsumerRoleId { get; set; }
 }

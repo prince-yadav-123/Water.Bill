@@ -1,0 +1,41 @@
+@model Approle
+@{
+    ViewData["Title"] = "Role Details";
+    var userCount = ViewBag.UserCount as int? ?? 0;
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Role Details</h1>
+        <p>Review role information before editing permissions or assignments.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-primary" asp-action="Roles">Back</a>
+        <a class="btn btn-primary" asp-action="EditRole" asp-route-id="@Model.Id">Edit Role</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-form-card wb-form-card-wide">
+    <dl class="wb-detail-grid">
+        <div>
+            <dt>Role Name</dt>
+            <dd>@Model.Name</dd>
+        </div>
+        <div>
+            <dt>Assigned Users</dt>
+            <dd>@userCount</dd>
+        </div>
+        <div class="wb-detail-span">
+            <dt>Description</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.Description) ? "No description added" : Model.Description)</dd>
+        </div>
+        <div>
+            <dt>Created</dt>
+            <dd>@Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</dd>
+        </div>
+        <div>
+            <dt>Last Updated</dt>
+            <dd>@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") : "-")</dd>
+        </div>
+    </dl>
+</section>

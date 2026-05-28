@@ -23,5 +23,15 @@ public class NewConnectionSubmitRequest
     public string? IpAddress { get; set; }
 
     public string? UserAgent { get; set; }
+
+    public string? TargetStatus { get; set; }
+
+    public string? StatusAction { get; set; }
+
+    public string? StatusRemarks { get; set; }
+
+    public NewConnectionFeeQuoteDto? FeeQuote { get; set; }
+
+    public bool StartWorkflow { get; set; }
 }
 

@@ -1,0 +1,36 @@
+@model Water.Bill.Infrastructure.Data.Entities.NewConnectionFeeConfiguration
+
+<div class="wb-page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p>Leave category/type/pipe blank only when this fee should apply as a fallback.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="post" class="wb-form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger wb-field-wide"></div>
+        <div class="wb-field"><label asp-for="ConnectionCategory" class="form-label">Connection Category</label><input asp-for="ConnectionCategory" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="ConnectionType" class="form-label">Connection Type</label><input asp-for="ConnectionType" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="PipeSize" class="form-label">Pipe Size</label><input asp-for="PipeSize" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="PlotSizeFrom" class="form-label">Plot Size From</label><input asp-for="PlotSizeFrom" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="PlotSizeTo" class="form-label">Plot Size To</label><input asp-for="PlotSizeTo" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="ApplicationFee" class="form-label">Application Fee</label><input asp-for="ApplicationFee" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="ProcessingFee" class="form-label">Processing Fee</label><input asp-for="ProcessingFee" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="SecurityAmount" class="form-label">Security Amount</label><input asp-for="SecurityAmount" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="MeterInstallationFee" class="form-label">Meter Installation Fee</label><input asp-for="MeterInstallationFee" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="OtherCharges" class="form-label">Other Charges</label><input asp-for="OtherCharges" type="number" step="0.01" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="EffectiveFrom" class="form-label required">Effective From</label><input asp-for="EffectiveFrom" type="date" class="form-control" /></div>
+        <div class="wb-field"><label asp-for="EffectiveTo" class="form-label">Effective To</label><input asp-for="EffectiveTo" type="date" class="form-control" /></div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label">Status</label>
+            <div class="wb-status-choice">
+                <label><input asp-for="IsActive" type="radio" value="true" /> Active</label>
+                <label><input asp-for="IsActive" type="radio" value="false" /> Inactive</label>
+            </div>
+        </div>
+        <div class="wb-field wb-field-wide"><button class="btn btn-primary" type="submit">Save</button></div>
+    </form>
+</section>

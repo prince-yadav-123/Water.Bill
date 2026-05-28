@@ -6,6 +6,33 @@ public static class AppConstants
     public const int DefaultTenantId = 1;
     public const int ConsumerTenantId = 2;
 
+    public static class Divisions
+    {
+        public static readonly DivisionOption Jal1 = new(1, "JAL1", "JAL-1", "Sector-5");
+        public static readonly DivisionOption Jal2 = new(2, "JAL2", "JAL-2", "Sector-37");
+        public static readonly DivisionOption Jal3 = new(3, "JAL3", "JAL-3", "Sector-39");
+        public static readonly DivisionOption AllDivision = new(4, "ALL", "All Divisions", null);
+
+        public static readonly IReadOnlyList<DivisionOption> Options =
+        [
+            Jal1,
+            Jal2,
+            Jal3,
+            AllDivision
+        ];
+
+        public static DivisionOption? Find(int? devType)
+            => Options.FirstOrDefault(x => x.DevType == devType);
+
+        public static string FormatDisplay(int? devType)
+            => Find(devType)?.DisplayText ?? devType?.ToString() ?? string.Empty;
+    }
+
+    public sealed record DivisionOption(int DevType, string Code, string Name, string? Office)
+    {
+        public string DisplayText => string.IsNullOrWhiteSpace(Office) ? Name : $"{Name} ({Office})";
+    }
+
     public static class Roles
     {
         public const string Admin = "Admin";
@@ -47,5 +74,9 @@ public static class AppConstants
         public const string ConsumerBills = "Consumer Bills";
         public const string ConsumerProfile = "Consumer Profile";
         public const string ConsumerNewConnection = "Consumer New Connection";
+        public const string DepartmentMaster = "Department Master";
+        public const string WorkflowMaster = "Workflow Master";
+        public const string MyPendingApplications = "My Pending Applications";
+        public const string NewConnectionFeeConfiguration = "New Connection Fee Configuration";
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Water.Bill.Application.DependencyInjection;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.DependencyInjection;
@@ -8,6 +9,14 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.Name = "WaterBill.PublicNewConnection.Session";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddAuthentication(AppConstants.CookieScheme)
     .AddCookie(AppConstants.CookieScheme, options =>
     {
@@ -33,7 +42,27 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication();
+app.Use(async (context, next) =>
+{
+    var endpoint = context.GetEndpoint();
+    var isProtectedEndpoint = endpoint?.Metadata.GetMetadata<IAuthorizeData>() is not null;
+    var isAuthenticatedRequest = context.User.Identity?.IsAuthenticated == true;
+
+    if (isProtectedEndpoint || isAuthenticatedRequest)
+    {
+        context.Response.OnStarting(() =>
+        {
+            context.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate, max-age=0";
+            context.Response.Headers.Pragma = "no-cache";
+            context.Response.Headers.Expires = "0";
+            return Task.CompletedTask;
+        });
+    }
+
+    await next();
+});
 app.UseAuthorization();
 
 app.MapGet("/", (HttpContext context) =>

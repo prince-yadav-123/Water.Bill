@@ -1,4 +1,5 @@
 using Serilog;
+using Microsoft.AspNetCore.Authorization;
 using Water.Bill.API.Extensions;
 using Water.Bill.Application.DependencyInjection;
 using Water.Bill.Core.Common;
@@ -46,7 +47,31 @@ try
 
     app.UseHttpsRedirection();
     app.UseStaticFiles();
+    app.UseRouting();
     app.UseAuthentication();
+    app.Use(async (context, next) =>
+    {
+        var endpoint = context.GetEndpoint();
+        var isProtectedEndpoint = endpoint?.Metadata.GetMetadata<IAuthorizeData>() is not null;
+        var isAuthenticatedRequest = context.User.Identity?.IsAuthenticated == true;
+        var isAuthorityNavigationPage =
+            context.Request.Path.Equals("/", StringComparison.OrdinalIgnoreCase) ||
+            context.Request.Path.StartsWithSegments("/Landing", StringComparison.OrdinalIgnoreCase) ||
+            context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase);
+
+        if (isProtectedEndpoint || isAuthenticatedRequest || isAuthorityNavigationPage)
+        {
+            context.Response.OnStarting(() =>
+            {
+                context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+                context.Response.Headers["Pragma"] = "no-cache";
+                context.Response.Headers["Expires"] = "0";
+                return Task.CompletedTask;
+            });
+        }
+
+        await next();
+    });
     app.UseAuthorization();
     app.MapControllerRoute(
         name: "default",

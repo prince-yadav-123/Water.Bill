@@ -29,10 +29,14 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<ISecuritySettingsService, SecuritySettingsService>();
         services.AddScoped<IConsumerOtpService, ConsumerOtpService>();
+        services.AddScoped<IPublicNewConnectionOtpService, PublicNewConnectionOtpService>();
         services.AddScoped<IConsumerSmsSender, LoggingConsumerSmsSender>();
         services.AddScoped<IConsumerAccountService, ConsumerAccountService>();
         services.AddScoped<INewConnectionApplicationService, NewConnectionApplicationService>();
+        services.AddScoped<INewConnectionFeeService, NewConnectionFeeService>();
         services.AddScoped<INewConnectionLookupService, NewConnectionLookupService>();
+        services.AddScoped<INewConnectionFinalizationService, NewConnectionFinalizationService>();
+        services.AddScoped<IWorkflowService, WorkflowService>();
         services.AddScoped<IConsumerPaymentService, ConsumerPaymentService>();
 
         return services;

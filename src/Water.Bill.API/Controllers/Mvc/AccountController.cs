@@ -22,10 +22,12 @@ public class AccountController : Controller
         _auditLogService = auditLogService;
     }
 
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     [HttpGet]
-    public IActionResult Login(string? returnUrl = null)
+    public async Task<IActionResult> Login(string? returnUrl = null)
     {
-        if (User.Identity?.IsAuthenticated == true)
+        var cookieAuth = await HttpContext.AuthenticateAsync(AppConstants.CookieScheme);
+        if (cookieAuth.Succeeded)
             return RedirectToAction("Index", "Dashboard");
 
         ViewData["Title"] = "Authority Login";
@@ -33,9 +35,13 @@ public class AccountController : Controller
         return View(new LoginRequestDto());
     }
 
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginRequestDto model, string? returnUrl = null)
     {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction("Index", "Dashboard");
+
         ViewData["Title"] = "Authority Login";
         ViewData["ReturnUrl"] = returnUrl;
 
@@ -86,6 +92,7 @@ public class AccountController : Controller
     }
 
     [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     [HttpGet]
     public async Task<IActionResult> Logout()
     {
@@ -95,6 +102,7 @@ public class AccountController : Controller
 
         await _auditLogService.LogAsync(AuditAction.Logout);
         await HttpContext.SignOutAsync(AppConstants.CookieScheme);
+        Response.Cookies.Delete("WaterBill.Authority.Auth");
         return RedirectToAction(nameof(Login));
     }
 
@@ -103,5 +111,28 @@ public class AccountController : Controller
     {
         ViewData["Title"] = "Access Denied";
         return View();
+    }
+
+    [HttpGet("/Account/AuthStatus")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> AuthStatus()
+    {
+        Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
+
+        var cookieAuth = await HttpContext.AuthenticateAsync(AppConstants.CookieScheme);
+        if (!cookieAuth.Succeeded)
+            return Unauthorized(new
+            {
+                isAuthenticated = false,
+                redirectUrl = "/Account/Login"
+            });
+
+        return Json(new
+        {
+            isAuthenticated = true,
+            redirectUrl = "/Dashboard"
+        });
     }
 }

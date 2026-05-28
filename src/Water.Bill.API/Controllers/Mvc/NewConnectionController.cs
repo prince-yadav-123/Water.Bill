@@ -65,7 +65,8 @@ public class NewConnectionController : Controller
                 ActionByName = "Public User",
                 ActionByRole = "Public",
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                UserAgent = Request.Headers.UserAgent.ToString()
+                UserAgent = Request.Headers.UserAgent.ToString(),
+                StartWorkflow = true
             }, ct);
 
             TempData["SuccessMessage"] = $"Application submitted successfully. Your application number is {result.ApplicationNo}.";

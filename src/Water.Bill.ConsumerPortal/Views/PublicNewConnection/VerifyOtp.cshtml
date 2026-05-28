@@ -1,0 +1,32 @@
+@model string
+@{
+    ViewData["Title"] = "Verify OTP";
+}
+
+<main class="wb-public-auth-shell">
+    <section class="wb-public-auth-card">
+        <div class="wb-public-auth-icon">OTP</div>
+        <p class="wb-kicker">Mobile Verification</p>
+        <h1>Enter verification code</h1>
+        <p class="wb-public-auth-subtitle">@(TempData["OtpMessage"] ?? "Enter the OTP sent to your mobile number to continue your new connection application.")</p>
+
+        @if (TempData["DevelopmentOtp"] is string otp)
+        {
+            <div class="alert alert-info">Testing OTP: <strong>@otp</strong></div>
+        }
+
+        <form asp-action="VerifyOtp" method="post" class="wb-public-auth-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="mobileNumber" value="@Model" />
+            <div class="wb-field">
+                <label class="form-label required" for="otp">OTP</label>
+                <input id="otp" name="otp" class="form-control wb-otp-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" />
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Verify & Continue</button>
+        </form>
+
+        <div class="wb-public-auth-divider"><span>did not receive otp?</span></div>
+        <a class="btn btn-outline-primary w-100" asp-action="Start">Change Mobile Number</a>
+    </section>
+</main>

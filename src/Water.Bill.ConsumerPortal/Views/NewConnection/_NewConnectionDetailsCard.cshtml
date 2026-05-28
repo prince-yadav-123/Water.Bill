@@ -10,12 +10,61 @@
     </div>
     <dl class="wb-info-grid">
         <div><dt>Applicant</dt><dd>@Model.ApplicantName</dd></div>
+        <div><dt>Final Consumer No</dt><dd>@(Model.FinalConsumerNo ?? "-")</dd></div>
         <div><dt>Mobile</dt><dd>@Model.MobileNumber</dd></div>
         <div><dt>Submitted On</dt><dd>@(Model.SubmittedOn?.ToString("dd MMM yyyy hh:mm tt") ?? "-")</dd></div>
         <div><dt>Property</dt><dd>@Model.Sector / @Model.Block / @Model.FlatNo</dd></div>
         <div><dt>Connection Type</dt><dd>@Model.ConnectionType</dd></div>
         <div><dt>Category</dt><dd>@Model.ConnectionCategory</dd></div>
     </dl>
+    @if (string.Equals(Model.ApplicationStatus, "FinalConsumerCreated", StringComparison.OrdinalIgnoreCase)
+        && !string.IsNullOrWhiteSpace(Model.FinalConsumerNo))
+    {
+        <div class="alert alert-success mb-3">
+            Final consumer number generated: <strong>@Model.FinalConsumerNo</strong>
+        </div>
+    }
+    @if (Model.WorkflowStages.Count > 0)
+    {
+        <h3 class="h5 mt-4">Approval Progress</h3>
+        <div class="row g-3 mb-4">
+            @foreach (var stage in Model.WorkflowStages)
+            {
+                var badgeClass = stage.State switch
+                {
+                    "Current" => "text-bg-primary",
+                    "Approved" => "text-bg-success",
+                    "Rejected" => "text-bg-danger",
+                    _ => "text-bg-secondary"
+                };
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="border rounded-3 p-3 h-100">
+                        <div class="d-flex justify-content-between gap-2">
+                            <div>
+                                <div class="small text-muted">Stage @stage.StageOrder</div>
+                                <strong>@stage.StageName</strong>
+                            </div>
+                            <span class="badge @badgeClass">@stage.State</span>
+                        </div>
+                        @if (stage.AssignedOn.HasValue)
+                        {
+                            <div class="small text-muted mt-2">Assigned @stage.AssignedOn.Value.ToString("dd MMM yyyy hh:mm tt")</div>
+                        }
+                        @if (stage.ActionOn.HasValue)
+                        {
+                            <div class="small text-muted">Action @stage.ActionOn.Value.ToString("dd MMM yyyy hh:mm tt")</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(stage.Remarks))
+                        {
+                            <p class="small mb-0 mt-2">@stage.Remarks</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <h3 class="h5 mt-4">Status Timeline</h3>
     <div class="wb-timeline">
         @foreach (var item in Model.Timeline)
         {

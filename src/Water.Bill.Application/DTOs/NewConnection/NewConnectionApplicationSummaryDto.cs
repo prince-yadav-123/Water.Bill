@@ -8,6 +8,8 @@ public class NewConnectionApplicationSummaryDto
 
     public string ApplicationStatus { get; set; } = null!;
 
+    public string? FinalConsumerNo { get; set; }
+
     public string ApplicantName { get; set; } = null!;
 
     public string MobileNumber { get; set; } = null!;
@@ -21,4 +23,10 @@ public class NewConnectionApplicationSummaryDto
     public DateTime? SubmittedOn { get; set; }
 
     public bool IsPublicApplication { get; set; }
+
+    public decimal? TotalFee { get; set; }
+
+    public string? PaymentStatus { get; set; }
+
+    public bool CanContinue { get; set; }
 }

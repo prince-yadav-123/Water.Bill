@@ -201,6 +201,7 @@ public class ConsumerOtpService : IConsumerOtpService
             ConsumerNo = normalizedConsumerNo,
             ConsumerName = GetConsumerName(consumer),
             Email = consumer.EmailId,
+            MobileNo = NormalizeMobileNo(consumer.MobNo),
             ConsumerRoleId = consumerRole?.Id
         };
     }

@@ -5,6 +5,18 @@
     "version": "1.0"
   },
   "paths": {
+    "/Account/AuthStatus": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Auth/login": {
       "post": {
         "tags": [
@@ -930,6 +942,14 @@
             }
           },
           {
+            "name": "Result.VillageId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
             "name": "Result.ConnectionCategory",
             "in": "query",
             "schema": {
@@ -972,6 +992,35 @@
             }
           },
           {
+            "name": "Result.Rid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Result.DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Result.Remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Result.DeclarationAccepted",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "Result.SubmittedByConsumerNo",
             "in": "query",
             "schema": {
@@ -999,6 +1048,16 @@
             }
           },
           {
+            "name": "Result.WorkflowStages",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/NewConnectionWorkflowStageDto"
+              }
+            }
+          },
+          {
             "name": "Result.Id",
             "in": "query",
             "schema": {
@@ -1015,6 +1074,13 @@
           },
           {
             "name": "Result.ApplicationStatus",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Result.FinalConsumerNo",
             "in": "query",
             "schema": {
               "type": "string"
@@ -1065,6 +1131,28 @@
           },
           {
             "name": "Result.IsPublicApplication",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Result.TotalFee",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Result.PaymentStatus",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Result.CanContinue",
             "in": "query",
             "schema": {
               "type": "boolean"
@@ -2061,6 +2149,38 @@
           "uploadedOn": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NewConnectionWorkflowStageDto": {
+        "type": "object",
+        "properties": {
+          "stageOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stageName": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "remarks": {
+            "type": "string",
+            "nullable": true
+          },
+          "assignedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "actionOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
