@@ -68,8 +68,8 @@
     <div class="wb-approval-summary-head">
         <div>
             <p class="wb-kicker">Authority Review Copy</p>
-            <h2>Noida Jal New Connection Application</h2>
-            <span>Submitted application details for workflow approval.</span>
+            @* <h2>Noida Jal New Connection Application</h2> *@
+            <span>Submitted application details for approval of a new connection.</span>
         </div>
         <span class="badge @StatusBadgeClass(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)">
             @(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)
@@ -110,7 +110,7 @@
                 </div>
                 <h3>@stage.Stage.StageName</h3>
                 <p>@(stage.Stage.Department?.DeptName ?? "Department not set")</p>
-                <small>Role/User: @(stage.Stage.ApproverRoleId?.ToString() ?? "-") / @(stage.Stage.ApproverUserId?.ToString() ?? "-")</small>
+                <small>Role/User: @stage.RoleName / @stage.UserName</small>
                 @if (stage.Task?.ActionOn is not null)
                 {
                     <small>Action: @stage.Task.ActionOn.Value.ToString("dd MMM yyyy hh:mm tt")</small>
@@ -124,7 +124,7 @@
 {
     <section class="wb-application-paper">
         <div class="wb-application-paper-title">
-            <h2>New Connection Application Form</h2>
+            <h2>Review Application Form</h2>
             <p>Submitted form data organized for authority review.</p>
         </div>
 
@@ -304,7 +304,18 @@
             <div class="wb-current-action-buttons">
                 @if (task.Stage.CanApprove)
                 {
-                    <button class="btn btn-success btn-sm" type="submit" name="actionType" value="Approve">@approveText</button>
+                    @if (task.Stage.IsFinalStage)
+                    {
+                        <button class="btn btn-success btn-sm" type="submit" name="actionType" value="Approve">@approveText</button>
+                        @if (Model.CanMoveToNextStage)
+                        {
+                            <button class="btn btn-primary btn-sm" type="submit" name="actionType" value="MoveNext">Move to Next Authority</button>
+                        }
+                    }
+                    else
+                    {
+                        <button class="btn btn-success btn-sm" type="submit" name="actionType" value="Approve">@approveText</button>
+                    }
                 }
                 @if (task.Stage.CanReject)
                 {

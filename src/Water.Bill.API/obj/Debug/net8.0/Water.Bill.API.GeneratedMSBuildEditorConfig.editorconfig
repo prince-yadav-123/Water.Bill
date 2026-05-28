@@ -38,6 +38,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwcm92YWxzXFBlbmRpbmcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/BillSearchPrint/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmlsbFNlYXJjaFByaW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/BillSearchPrint/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmlsbFNlYXJjaFByaW50XFByaW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/ConsumerLoginManagement/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uc3VtZXJMb2dpbk1hbmFnZW1lbnRcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -56,6 +64,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/ConsumerLoginManagement/_ConsumerLoginForm.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uc3VtZXJMb2dpbk1hbmFnZW1lbnRcX0NvbnN1bWVyTG9naW5Gb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/ConsumerQueryManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uc3VtZXJRdWVyeU1hbmFnZW1lbnRcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/ConsumerQueryManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uc3VtZXJRdWVyeU1hbmFnZW1lbnRcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/Dashboard/Index.cshtml]

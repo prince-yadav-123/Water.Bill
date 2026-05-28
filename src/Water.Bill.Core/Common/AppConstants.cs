@@ -74,6 +74,9 @@ public static class AppConstants
         public const string ConsumerBills = "Consumer Bills";
         public const string ConsumerProfile = "Consumer Profile";
         public const string ConsumerNewConnection = "Consumer New Connection";
+        public const string ConsumerSupportQueries = "Consumer Support Queries";
+        public const string ConsumerQueryManagement = "Consumer Query Management";
+        public const string BillSearchPrint = "Bill Search & Print";
         public const string DepartmentMaster = "Department Master";
         public const string WorkflowMaster = "Workflow Master";
         public const string MyPendingApplications = "My Pending Applications";

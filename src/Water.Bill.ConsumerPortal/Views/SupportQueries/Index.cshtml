@@ -1,0 +1,89 @@
+@model Water.Bill.ConsumerPortal.ViewModels.ConsumerSupportQueryListViewModel
+@{
+    string BadgeClass(string status) => status switch
+    {
+        "Open" => "text-bg-primary",
+        "InProgress" => "text-bg-info",
+        "Resolved" => "text-bg-success",
+        "Closed" => "text-bg-secondary",
+        "Rejected" => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Support & Queries</h1>
+        <p>Raise and track your support requests with Noida Jal authority.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Raise New Query</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Query no, subject, bill no" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Category</label>
+            <select class="form-select" name="categoryId" asp-items="Model.Categories">
+                <option value="">All Categories</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status">
+                <option value="">All Status</option>
+                <option value="Open" selected="@(Model.Status == "Open")">Open</option>
+                <option value="InProgress" selected="@(Model.Status == "InProgress")">In Progress</option>
+                <option value="Resolved" selected="@(Model.Status == "Resolved")">Resolved</option>
+                <option value="Closed" selected="@(Model.Status == "Closed")">Closed</option>
+                <option value="Rejected" selected="@(Model.Status == "Rejected")">Rejected</option>
+            </select>
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    @if (Model.Queries.Count == 0)
+    {
+        <div class="wb-empty">No support queries found.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Query No</th>
+                        <th>Category</th>
+                        <th>Subject</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Queries)
+                    {
+                        <tr>
+                            <td><strong>@item.QueryNo</strong></td>
+                            <td>@item.CategoryName</td>
+                            <td>@item.Subject</td>
+                            <td>@item.Priority</td>
+                            <td><span class="badge @BadgeClass(item.Status)">@item.Status</span></td>
+                            <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

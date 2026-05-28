@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Water Billing application contracts, DTOs, validators, and service abstractions.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ce55498e175bdeac66b32e363860bb9580700e7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f14eec06f78b41a098a445e0f809a6056a18bc1e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Water.Bill.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Water.Bill.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

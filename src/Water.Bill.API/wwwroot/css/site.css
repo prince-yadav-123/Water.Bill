@@ -1208,6 +1208,7 @@ textarea.form-control:focus,
 
 .wb-search { max-width: 260px; }
 .wb-admin-card { width: 100%; }
+.wb-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .wb-admin-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px 22px; margin-bottom: 20px; flex-wrap: wrap; }
 .wb-admin-toolbar span { display: block; margin-top: 3px; color: var(--wb-text-muted); font-size: 13px; }
 .wb-admin-toolbar .wb-search { max-width: 360px; min-width: min(360px, 100%); }
@@ -1292,6 +1293,19 @@ textarea.form-control:focus,
 .wb-approval-history-item strong { display: block; color: var(--wb-text); font-size: 13.5px; }
 .wb-approval-history-item small { display: block; margin-top: 2px; color: var(--wb-text-muted); font-size: 12px; }
 .wb-approval-history-item p { margin: 6px 0 0; color: #334155; font-size: 13px; }
+.wb-query-history { gap: 8px; }
+.wb-query-history .wb-approval-history-item { padding-bottom: 8px; border-bottom: 1px dashed var(--wb-border); }
+.wb-query-history .wb-approval-history-item:last-child { padding-bottom: 0; border-bottom: 0; }
+.wb-query-history-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wb-query-history-line .badge { border-radius: 999px; padding: 4px 8px; font-size: 10.5px; }
+.wb-bill-filter-bar .wb-filter-field { flex-basis: 150px; min-width: 150px; }
+.wb-bill-search-results { display: grid; gap: 14px; }
+.wb-bill-consumer-card { border: 1px solid var(--wb-border); border-radius: 12px; background: #fff; box-shadow: var(--wb-shadow-sm); overflow: hidden; }
+.wb-bill-consumer-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; background: linear-gradient(135deg, #f8fafc, #eef9fb); border-bottom: 1px solid var(--wb-border); }
+.wb-bill-consumer-head h2 { margin: 2px 0 0; font-size: 18px; color: var(--wb-text); }
+.wb-bill-consumer-head p { margin: 2px 0 0; color: var(--wb-text-muted); font-size: 13px; }
+.wb-bill-consumer-meta { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; color: var(--wb-text-muted); font-size: 12.5px; }
+.wb-empty-sm { margin: 12px; padding: 12px; }
 .wb-current-action-card { margin-bottom: 0; }
 .wb-current-action-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px; }
 .wb-current-action-form textarea.form-control { min-height: 70px; }

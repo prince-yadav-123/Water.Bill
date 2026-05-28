@@ -92,6 +92,12 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ConsumerRidMobEmailInfo> ConsumerRidMobEmailInfos { get; set; }
 
+    public virtual DbSet<ConsumerSupportQuery> ConsumerSupportQueries { get; set; }
+
+    public virtual DbSet<ConsumerSupportQueryDocument> ConsumerSupportQueryDocuments { get; set; }
+
+    public virtual DbSet<ConsumerSupportQueryHistory> ConsumerSupportQueryHistories { get; set; }
+
     public virtual DbSet<ConsumerTransfer> ConsumerTransfers { get; set; }
 
     public virtual DbSet<ConsumerUser> ConsumerUsers { get; set; }
@@ -251,6 +257,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Sep2024> Sep2024s { get; set; }
 
     public virtual DbSet<Securitysetting> Securitysettings { get; set; }
+
+    public virtual DbSet<SupportQueryCategory> SupportQueryCategories { get; set; }
 
     public virtual DbSet<TbLoginInfo> TbLoginInfos { get; set; }
 

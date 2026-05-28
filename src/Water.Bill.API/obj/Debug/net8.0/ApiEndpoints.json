@@ -36,6 +36,68 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.BillSearchPrintController",
+    "Method": "Index",
+    "RelativePath": "BillSearchPrint",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "consumerNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "billNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "sector",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "block",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "plotNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "devType",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.BillSearchPrintController",
+    "Method": "Print",
+    "RelativePath": "BillSearchPrint/Print",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "consumerNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "billNo",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Water.Bill.API.Controllers.Mvc.ConsumerLoginManagementController",
     "Method": "Index",
     "RelativePath": "ConsumerLoginManagement",

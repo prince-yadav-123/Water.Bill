@@ -1,0 +1,86 @@
+@model Water.Bill.ConsumerPortal.ViewModels.ConsumerSupportQueryFormViewModel
+
+<div class="wb-page-head">
+    <div>
+        <h1>Raise Support Query</h1>
+        <p>Tell us what went wrong. The authority team can review and respond from the admin portal.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">My Queries</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="wb-form-grid">
+            <div>
+                <label asp-for="CategoryId" class="form-label">Query Category</label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                    <option value="">Select category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Priority" class="form-label">Priority</label>
+                <select asp-for="Priority" class="form-select">
+                    <option value="Normal">Normal</option>
+                    <option value="Low">Low</option>
+                    <option value="High">High</option>
+                    <option value="Urgent">Urgent</option>
+                </select>
+            </div>
+            <div>
+                <label asp-for="ConsumerNo" class="form-label">Related Consumer No</label>
+                <input asp-for="ConsumerNo" class="form-control" />
+                <span asp-validation-for="ConsumerNo" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="MobileNo" class="form-label">Contact Mobile</label>
+                <input asp-for="MobileNo" class="form-control" />
+            </div>
+            <div>
+                <label asp-for="Email" class="form-label">Contact Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="RelatedBillNo" class="form-label">Related Bill No</label>
+                <input asp-for="RelatedBillNo" class="form-control" placeholder="Optional" />
+            </div>
+            <div>
+                <label asp-for="RelatedApplicationNo" class="form-label">Related Application No</label>
+                <input asp-for="RelatedApplicationNo" class="form-control" placeholder="Optional" />
+            </div>
+            <div>
+                <label class="form-label">Supporting Documents</label>
+                <input class="form-control" type="file" name="documents" multiple accept=".pdf,.jpg,.jpeg,.png" />
+                <small class="text-muted">Optional. Allowed: PDF, JPG, PNG. Max size depends on configuration.</small>
+            </div>
+            <div class="wb-detail-span">
+                <label asp-for="Subject" class="form-label">Subject / Title</label>
+                <input asp-for="Subject" class="form-control" />
+                <span asp-validation-for="Subject" class="text-danger"></span>
+            </div>
+            <div class="wb-detail-span">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="confirmQuery" required />
+            <label class="form-check-label" for="confirmQuery">I confirm that the information provided is correct.</label>
+        </div>
+
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+            <button class="btn btn-primary" type="submit">Submit Query</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
