@@ -9,9 +9,9 @@ public class ConsumerApplyNdcConfiguration : IEntityTypeConfiguration<ConsumerAp
 {
     public void Configure(EntityTypeBuilder<ConsumerApplyNdc> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("consumer_apply_ndc");
+        entity.HasKey(e => e.AutoId).HasName("PRIMARY");
+
+        entity.ToTable("consumer_apply_ndc");
         
         entity.HasIndex(e => e.AutoId, "IX_CONSUMER_APPLY_NDC_AUTO_ID_AUTO");
         

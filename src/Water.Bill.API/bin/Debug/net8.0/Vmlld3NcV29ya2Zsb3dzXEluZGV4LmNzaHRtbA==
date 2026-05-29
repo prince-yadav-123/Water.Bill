@@ -1,0 +1,31 @@
+@model IReadOnlyList<Water.Bill.Infrastructure.Data.Entities.WorkflowMaster>
+
+<div class="wb-page-head">
+    <div>
+        <h1>Workflow Master</h1>
+        <p>Configure approval workflows by application type.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Add Workflow</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="table-responsive">
+        <table class="table align-middle wb-table wb-admin-table">
+            <thead><tr><th>Workflow</th><th>Application Type</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><strong>@item.WorkflowName</strong></td>
+                    <td>@item.ApplicationType</td>
+                    <td><span class="badge @(item.IsActive ? "text-bg-success" : "text-bg-secondary")">@(item.IsActive ? "Active" : "Inactive")</span></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Stages" asp-route-workflowId="@item.Id">Stages</a>
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

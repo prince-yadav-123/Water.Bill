@@ -1,0 +1,123 @@
+@model Water.Bill.API.Models.Ndc.NdcApplicationIndexViewModel
+@using Water.Bill.Core.Common
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string StatusClass(string? status) => status switch
+    {
+        "A" or "Approved" => "text-bg-success",
+        "C" or "R" or "Rejected" => "text-bg-danger",
+        "Submitted" or "Pending" => "text-bg-primary",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>NDC Applications</h1>
+        <p>Review no-dues applications and start the configured NDC approval workflow.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    @if (TempData["SuccessMessage"] is string success)
+    {
+        <div class="alert alert-success">@success</div>
+    }
+    @if (TempData["ErrorMessage"] is string error)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+
+    <form method="get" class="wb-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Application, consumer, name, mobile" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status">
+                <option value="">All Status</option>
+                <option value="Submitted" selected="@(Model.Status == "Submitted")">Submitted</option>
+                <option value="A" selected="@(Model.Status == "A")">Approved</option>
+                <option value="R" selected="@(Model.Status == "R")">Rejected</option>
+                <option value="C" selected="@(Model.Status == "C")">Cancelled</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Division</label>
+            <select class="form-select" name="divisionType">
+                <option value="">All Divisions</option>
+                @foreach (var division in AppConstants.Divisions.Options.Where(x => x.DevType != AppConstants.Divisions.AllDivision.DevType))
+                {
+                    <option value="@division.DevType" selected="@(Model.DivisionType == division.DevType)">@division.DisplayText</option>
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="wb-empty">No NDC applications found.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                <tr>
+                    <th>Application No</th>
+                    <th>Consumer</th>
+                    <th>Mobile</th>
+                    <th>Property</th>
+                    <th>Division</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                    <th>Created</th>
+                    <th class="text-end">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><strong>@item.ApplicationNo</strong></td>
+                        <td>
+                            <strong>@(item.ConsumerNo ?? "-")</strong>
+                            <small class="d-block text-muted">@(item.ConsumerName ?? "-")</small>
+                        </td>
+                        <td>@(item.MobileNo ?? "-")</td>
+                        <td>@(item.PropertyNo ?? "-")</td>
+                        <td>@(item.Division ?? "-")</td>
+                        <td><span class="badge @StatusClass(item.Status)">@item.Status</span></td>
+                        <td>@(item.Amount?.ToString("N2") ?? "-")</td>
+                        <td>@DateText(item.CreatedOn)</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.AutoId">View</a>
+                            @if (item.WorkflowTaskId.HasValue)
+                            {
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="Approvals" asp-action="Details" asp-route-id="@item.WorkflowTaskId.Value">Review & Action</a>
+                            }
+                            else if (item.WorkflowStarted)
+                            {
+                                <span class="badge text-bg-light">Not assigned</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

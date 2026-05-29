@@ -1,0 +1,173 @@
+@model Water.Bill.ConsumerPortal.ViewModels.ConsumerNdcDetailsViewModel
+@{
+    var app = Model.Application;
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy hh:mm tt") : "-";
+    string StatusText()
+        => !string.IsNullOrWhiteSpace(app.FinalStatus) ? app.FinalStatus!
+            : !string.IsNullOrWhiteSpace(app.CurrentStatus) ? app.CurrentStatus!
+            : !string.IsNullOrWhiteSpace(app.Status) ? app.Status!
+            : "Pending";
+    string BadgeClass(string status) => status switch
+    {
+        "A" or "Approved" => "text-bg-success",
+        "C" or "R" or "Rejected" => "text-bg-danger",
+        "Submitted" => "text-bg-primary",
+        _ => "text-bg-secondary"
+    };
+    bool canPrint = string.Equals(app.FinalStatus, "A", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(app.CurrentStatus, "Approved", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(app.CurrentStatus, "FinalApproved", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(app.Status, "A", StringComparison.OrdinalIgnoreCase)
+        || !string.IsNullOrWhiteSpace(app.CertificateUrl);
+    var status = StatusText();
+}
+
+<div class="wb-newconn-page-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">No Dues Certificate</p>
+            <h1>@app.ApplicationNo</h1>
+            <p>Submitted NDC application details and approval timeline.</p>
+        </div>
+        <div class="wb-actions">
+            @if (canPrint)
+            {
+                <a class="btn btn-primary" asp-action="Certificate" asp-route-id="@app.AutoId" target="_blank">Print Certificate</a>
+            }
+            <a class="btn btn-outline-primary" asp-action="Index">Back to NDC Applications</a>
+        </div>
+    </div>
+
+    <section class="wb-approval-summary-card">
+        <div class="wb-approval-summary-head">
+            <div>
+                <p class="wb-kicker">NDC Application</p>
+                <h2>@TextOrDash(app.ConsName)</h2>
+                <span>@TextOrDash(app.ConsumerNo)</span>
+            </div>
+            <span class="badge @BadgeClass(status)">@status</span>
+        </div>
+        <div class="wb-approval-summary-grid">
+            <div><span>Application No</span><strong>@app.ApplicationNo</strong></div>
+            <div><span>Consumer No</span><strong>@TextOrDash(app.ConsumerNo)</strong></div>
+            <div><span>Submitted On</span><strong>@DateText(app.CreatedOn)</strong></div>
+            <div><span>Mobile</span><strong>@TextOrDash(app.MobileNo)</strong></div>
+            <div><span>Email</span><strong>@TextOrDash(app.Email)</strong></div>
+            <div><span>Division</span><strong>@TextOrDash(app.DivisionTypeName)</strong></div>
+        </div>
+    </section>
+
+    <section class="wb-page-card wb-approval-section">
+        <div class="wb-section-head-compact"><h2>Consumer & Property Details</h2></div>
+        <dl class="wb-info-grid">
+            <div><dt>Consumer Name</dt><dd>@TextOrDash(app.ConsName)</dd></div>
+            <div><dt>RID</dt><dd>@TextOrDash(app.Rid)</dd></div>
+            <div><dt>Sector</dt><dd>@TextOrDash(app.Sector)</dd></div>
+            <div><dt>Block / Plot</dt><dd>@TextOrDash($"{app.Block}-{app.PlotNo}".Trim('-'))</dd></div>
+            <div><dt>Plot Area</dt><dd>@TextOrDash(app.PlotArea)</dd></div>
+            <div><dt>Pipe Size</dt><dd>@TextOrDash(app.PipeSize)</dd></div>
+        </dl>
+    </section>
+
+    <section class="wb-page-card wb-approval-section">
+        <div class="wb-section-head-compact"><h2>Uploaded Documents</h2></div>
+        @if (Model.Documents.Count == 0)
+        {
+            <div class="wb-empty-state">
+                <strong>No documents found.</strong>
+                <span>The uploaded NDC documents are not available.</span>
+            </div>
+        }
+        else
+        {
+            <div class="wb-document-rows">
+                @foreach (var document in Model.Documents)
+                {
+                    <div class="wb-document-mini-row">
+                        <span>ND</span>
+                        <div>
+                            <strong>@TextOrDash(document.AttachmentName)</strong>
+                            <small>@TextOrDash(document.AttachmentPath)</small>
+                        </div>
+                        <em>@DateText(document.CreatedOn)</em>
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Document" asp-route-id="@document.AutoId" target="_blank">View</a>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="wb-page-card wb-approval-section">
+        <div class="wb-section-head-compact"><h2>Approval Progress</h2></div>
+        @if (Model.WorkflowTasks.Count == 0)
+        {
+            <div class="alert alert-info mb-0">The configured NDC approval workflow has not started yet.</div>
+        }
+        else
+        {
+            <div class="table-responsive wb-approval-table-wrap">
+                <table class="table align-middle wb-table wb-approval-table">
+                    <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Status</th>
+                        <th>Assigned On</th>
+                        <th>Action On</th>
+                        <th>Remarks</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var task in Model.WorkflowTasks)
+                    {
+                        <tr>
+                            <td>@task.Stage.StageName</td>
+                            <td><span class="badge @BadgeClass(task.Status)">@task.Status</span></td>
+                            <td>@DateText(task.AssignedOn)</td>
+                            <td>@DateText(task.ActionOn)</td>
+                            <td>@TextOrDash(task.Remarks)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="wb-page-card wb-approval-section">
+        <div class="wb-section-head-compact"><h2>Status Timeline</h2></div>
+        @if (Model.WorkflowHistory.Count == 0)
+        {
+            <div class="wb-empty-state">
+                <strong>No workflow history yet.</strong>
+                <span>Status updates will appear here after authority action.</span>
+            </div>
+        }
+        else
+        {
+            <div class="wb-approval-history wb-query-history">
+                @foreach (var item in Model.WorkflowHistory.OrderByDescending(x => x.ActionOn))
+                {
+                    <div class="wb-approval-history-item">
+                        <span></span>
+                        <div>
+                            <div class="wb-query-history-line">
+                                <strong>@item.Action</strong>
+                                <span class="badge @BadgeClass(item.ToStatus)">@item.ToStatus</span>
+                            </div>
+                            <small>@(item.FromStatus ?? "-") -> @item.ToStatus - @item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
+                            @if (!string.IsNullOrWhiteSpace(item.ActionByName))
+                            {
+                                <small>By @item.ActionByName @(string.IsNullOrWhiteSpace(item.ActionByRole) ? "" : $"({item.ActionByRole})")</small>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(item.Remarks))
+                            {
+                                <p>@item.Remarks</p>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+</div>

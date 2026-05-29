@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex flex-column gap-4">
+    <div class="wb-page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+            <div>
+                <p class="text-uppercase text-primary fw-semibold mb-2 small">Authority Login</p>
+                <h1 class="h3 mb-2">Welcome to Noida Jal Authority Services</h1>
+                <p class="text-muted mb-0">
+                    Monitor consumers, bills, payments, and recent activity from one place.
+                </p>
+            </div>
+            <div class="d-flex align-items-start">
+                <span class="badge text-bg-primary px-3 py-2">Dashboard</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="wb-stat h-100">
+                <span class="text-muted">Total Consumers</span>
+                <strong>0</strong>
+                <small class="text-muted">Registered consumer accounts</small>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="wb-stat h-100">
+                <span class="text-muted">Total Bills</span>
+                <strong>0</strong>
+                <small class="text-muted">Generated water bills</small>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="wb-stat h-100">
+                <span class="text-muted">Pending Payments</span>
+                <strong>0</strong>
+                <small class="text-muted">Payments waiting for completion</small>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="wb-stat h-100">
+                <span class="text-muted">Recent Activity</span>
+                <strong>0</strong>
+                <small class="text-muted">Latest admin actions</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="wb-page-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Recent Activity</h2>
+            <span class="text-muted small">Placeholder</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Activity</th>
+                        <th scope="col">Module</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dashboard loaded</td>
+                        <td>Authority Services</td>
+                        <td><span class="badge text-bg-success">Ready</span></td>
+                        <td>Now</td>
+                    </tr>
+                    <tr>
+                        <td>Water billing modules will appear here as they are connected.</td>
+                        <td>System</td>
+                        <td><span class="badge text-bg-secondary">Pending data</span></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

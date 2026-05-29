@@ -1,0 +1,83 @@
+@model Water.Bill.API.Models.Payments.OnlinePaymentHistoryDetailsViewModel
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy hh:mm tt") : "-";
+    string Amount(double? value) => value.HasValue ? value.Value.ToString("N2") : "-";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Payment Transaction Details</h1>
+        <p>@Model.JalRefId - @(Model.ConsumerNo ?? "Consumer not available")</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back to Payments</a>
+</div>
+
+<section class="wb-approval-summary-card">
+    <div class="wb-approval-summary-head">
+        <div>
+            <p class="wb-kicker">Payment Reference</p>
+            <h2>@Model.JalRefId</h2>
+            <span>@(Model.ConsumerName ?? "-")</span>
+        </div>
+        <span class="badge text-bg-info">@(Model.PaymentStatus ?? "-")</span>
+    </div>
+    <div class="wb-approval-summary-grid">
+        <div><span>Consumer No</span><strong>@(Model.ConsumerNo ?? "-")</strong></div>
+        <div><span>Property</span><strong>@(Model.PropertyNo ?? "-")</strong></div>
+        <div><span>Bill No</span><strong>@(Model.BillNo ?? "-")</strong></div>
+        <div><span>Challan No</span><strong>@(Model.ChallanNo ?? "-")</strong></div>
+        <div><span>Amount</span><strong>@Amount(Model.Amount)</strong></div>
+        <div><span>Bank</span><strong>@(Model.DepositBank ?? "-")</strong></div>
+        <div><span>Mobile</span><strong>@(Model.MobileNo ?? "-")</strong></div>
+        <div><span>Email</span><strong>@(Model.Email ?? "-")</strong></div>
+        <div><span>Bill Period</span><strong>@Model.DateFrom?.ToString("dd MMM yyyy") - @Model.DateTo?.ToString("dd MMM yyyy")</strong></div>
+        <div><span>Created On</span><strong>@DateText(Model.EntryDate)</strong></div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-section-head-compact">
+        <div>
+            <p class="wb-kicker">Bank Response</p>
+            <h2>Transaction Attempts</h2>
+        </div>
+    </div>
+    @if (Model.Transactions.Count == 0)
+    {
+        <div class="wb-empty">No bank response rows found for this reference.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle wb-table wb-admin-table">
+                <thead>
+                <tr>
+                    <th>Transaction No</th>
+                    <th>Bank Ref</th>
+                    <th>Amount</th>
+                    <th>Bank</th>
+                    <th>Txn Date</th>
+                    <th>Status</th>
+                    <th>Error</th>
+                    <th>Entry Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Transactions)
+                {
+                    <tr>
+                        <td><strong>@(row.TransactionReferenceNo ?? "-")</strong></td>
+                        <td>@(row.BankReferenceNo ?? "-")</td>
+                        <td>@(row.TransactionAmount ?? "-")</td>
+                        <td>@(row.BankId ?? "-")</td>
+                        <td>@(row.TransactionDate ?? "-")</td>
+                        <td><span class="badge text-bg-secondary">@(row.AuthStatus ?? "-")</span></td>
+                        <td>@(row.ErrorDescription ?? row.ErrorStatus ?? "-")</td>
+                        <td>@DateText(row.EntryDate)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

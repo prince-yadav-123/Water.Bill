@@ -1,0 +1,44 @@
+@model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationDetailsDto
+
+<section class="wb-page-card wb-application-card">
+    <div class="wb-card-title-row">
+        <div>
+            <p class="wb-kicker">Application Status</p>
+            <h2>@Model.ApplicationNo</h2>
+        </div>
+        <span class="badge text-bg-primary">@Model.ApplicationStatus</span>
+    </div>
+    <dl class="wb-info-grid">
+        <div><dt>Applicant</dt><dd>@Model.ApplicantName</dd></div>
+        <div><dt>Final Consumer No</dt><dd>@(Model.FinalConsumerNo ?? "-")</dd></div>
+        <div><dt>Mobile</dt><dd>@Model.MobileNumber</dd></div>
+        <div><dt>Submitted On</dt><dd>@(Model.SubmittedOn?.ToString("dd MMM yyyy hh:mm tt") ?? "-")</dd></div>
+        <div><dt>Property</dt><dd>@Model.Sector / @Model.Block / @Model.FlatNo</dd></div>
+        <div><dt>Connection Type</dt><dd>@Model.ConnectionType</dd></div>
+        <div><dt>Category</dt><dd>@Model.ConnectionCategory</dd></div>
+    </dl>
+    @if (string.Equals(Model.ApplicationStatus, "FinalConsumerCreated", StringComparison.OrdinalIgnoreCase)
+        && !string.IsNullOrWhiteSpace(Model.FinalConsumerNo))
+    {
+        <div class="alert alert-success mb-3">
+            Final consumer number generated: <strong>@Model.FinalConsumerNo</strong>
+        </div>
+    }
+
+    <div class="wb-timeline">
+        @foreach (var item in Model.Timeline)
+        {
+            <div class="wb-timeline-item">
+                <span></span>
+                <div>
+                    <strong>@item.Action</strong>
+                    <small>@item.FromStatus -> @item.ToStatus · @item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
+                    @if (!string.IsNullOrWhiteSpace(item.Remarks))
+                    {
+                        <p>@item.Remarks</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</section>

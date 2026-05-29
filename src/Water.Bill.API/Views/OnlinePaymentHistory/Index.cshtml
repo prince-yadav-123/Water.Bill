@@ -1,0 +1,115 @@
+@model Water.Bill.API.Models.Payments.OnlinePaymentHistoryIndexViewModel
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Amount(double? value) => value.HasValue ? value.Value.ToString("N2") : "-";
+    string StatusClass(string? status) => status switch
+    {
+        "Y" or "0300" or "SUCCESS" or "SUC000" or "Success" => "text-bg-success",
+        "N" or "Failed" or "Failure" => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Online Payment History</h1>
+        <p>Search and review online payment transactions from the old Noida Jal payment tables.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Ref, consumer, name, mobile, transaction" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" type="search" name="consumerNo" value="@Model.ConsumerNo" placeholder="Consumer No" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">JAL Ref ID</label>
+            <input class="form-control" type="search" name="jalRefId" value="@Model.JalRefId" placeholder="JAL Ref ID" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Transaction No</label>
+            <input class="form-control" type="search" name="transactionNo" value="@Model.TransactionNo" placeholder="Transaction No" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status">
+                <option value="">All Status</option>
+                <option value="Y" selected="@(Model.Status == "Y")">Payment Success</option>
+                <option value="N" selected="@(Model.Status == "N")">Payment Pending</option>
+                <option value="0300" selected="@(Model.Status == "0300")">Bank Success</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    @if (!Model.HasSearched)
+    {
+        <div class="wb-empty">Use filters to search payment transactions.</div>
+    }
+    else if (Model.Items.Count == 0)
+    {
+        <div class="wb-empty">No payment transactions found.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                <tr>
+                    <th>JAL Ref ID</th>
+                    <th>Consumer</th>
+                    <th>Property</th>
+                    <th>Bill / Challan</th>
+                    <th>Amount</th>
+                    <th>Bank</th>
+                    <th>Status</th>
+                    <th>Transaction No</th>
+                    <th>Date</th>
+                    <th class="text-end">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><strong>@item.JalRefId</strong></td>
+                        <td>
+                            <strong>@(item.ConsumerNo ?? "-")</strong>
+                            <small class="d-block text-muted">@(item.ConsumerName ?? "-")</small>
+                        </td>
+                        <td>@(item.PropertyNo ?? "-")</td>
+                        <td>
+                            <span>@(item.BillNo ?? "-")</span>
+                            <small class="d-block text-muted">@(item.ChallanNo ?? "-")</small>
+                        </td>
+                        <td>@Amount(item.Amount)</td>
+                        <td>@(item.Bank ?? "-")</td>
+                        <td><span class="badge @StatusClass(item.TransactionStatus ?? item.PaymentStatus)">@(item.TransactionStatus ?? item.PaymentStatus ?? "-")</span></td>
+                        <td>@(item.TransactionNo ?? "-")</td>
+                        <td>@DateText(item.EntryDate)</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-jalRefId="@item.JalRefId">View</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

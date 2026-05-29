@@ -1,0 +1,66 @@
+@model Water.Bill.API.Models.Ndc.NdcCertificateIndexViewModel
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>NDC Certificate Management</h1>
+        <p>View and print approved no-dues certificates.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Application, consumer, name, mobile" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="wb-empty">No approved NDC certificates found.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                <tr>
+                    <th>Application No</th>
+                    <th>Consumer</th>
+                    <th>Mobile</th>
+                    <th>Property</th>
+                    <th>Division</th>
+                    <th>Approved On</th>
+                    <th class="text-end">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><strong>@item.ApplicationNo</strong></td>
+                        <td>
+                            <strong>@(item.ConsumerNo ?? "-")</strong>
+                            <small class="d-block text-muted">@(item.ConsumerName ?? "-")</small>
+                        </td>
+                        <td>@(item.MobileNo ?? "-")</td>
+                        <td>@(item.PropertyNo ?? "-")</td>
+                        <td>@(item.Division ?? "-")</td>
+                        <td>@DateText(item.CreatedOn)</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Print" asp-route-id="@item.AutoId" target="_blank">View / Print</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

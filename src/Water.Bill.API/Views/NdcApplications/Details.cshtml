@@ -1,0 +1,132 @@
+@model Water.Bill.API.Models.Ndc.NdcApplicationDetailsViewModel
+@{
+    var app = Model.Application;
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy hh:mm tt") : "-";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>NDC Application Details</h1>
+        <p>@app.ApplicationNo - @(app.ConsumerNo ?? "Consumer not available")</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back to NDC Applications</a>
+</div>
+
+@if (TempData["SuccessMessage"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+@if (TempData["ErrorMessage"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<section class="wb-approval-summary-card">
+    <div class="wb-approval-summary-head">
+        <div>
+            <p class="wb-kicker">No Dues Application</p>
+            <h2>@app.ApplicationNo</h2>
+            <span>@TextOrDash(app.ConsName)</span>
+        </div>
+        <span class="badge text-bg-info">@TextOrDash(app.CurrentStatus ?? app.FinalStatus ?? app.Status)</span>
+    </div>
+    <div class="wb-approval-summary-grid">
+        <div><span>Consumer No</span><strong>@TextOrDash(app.ConsumerNo)</strong></div>
+        <div><span>Mobile</span><strong>@TextOrDash(app.MobileNo)</strong></div>
+        <div><span>Email</span><strong>@TextOrDash(app.Email)</strong></div>
+        <div><span>Division</span><strong>@TextOrDash(app.DivisionTypeName)</strong></div>
+        <div><span>Property</span><strong>@TextOrDash($"{app.Sector} / {app.Block}-{app.PlotNo}".Trim(' ', '/', '-'))</strong></div>
+        <div><span>Amount</span><strong>@(app.Amount?.ToString("N2") ?? "-")</strong></div>
+        <div><span>Challan No</span><strong>@TextOrDash(app.ChallanNo)</strong></div>
+        <div><span>Created On</span><strong>@DateText(app.CreatedOn)</strong></div>
+    </div>
+</section>
+
+<section class="wb-application-paper">
+    <div class="wb-application-paper-title">
+        <h2>NDC Review Copy</h2>
+        <p>Submitted application data from the old-compatible NDC table.</p>
+    </div>
+    <div class="wb-paper-section">
+        <h3>Application Details</h3>
+        <table class="wb-review-table">
+            <tbody>
+            <tr><th>Application No</th><td>@app.ApplicationNo</td><th>Consumer No</th><td>@TextOrDash(app.ConsumerNo)</td></tr>
+            <tr><th>Consumer Name</th><td>@TextOrDash(app.ConsName)</td><th>RID</th><td>@TextOrDash(app.Rid)</td></tr>
+            <tr><th>Mobile</th><td>@TextOrDash(app.MobileNo)</td><th>Email</th><td>@TextOrDash(app.Email)</td></tr>
+            <tr><th>Sector</th><td>@TextOrDash(app.Sector)</td><th>Block / Plot</th><td>@TextOrDash($"{app.Block}-{app.PlotNo}".Trim('-'))</td></tr>
+            <tr><th>Plot Area</th><td>@TextOrDash(app.PlotArea)</td><th>Pipe Size</th><td>@TextOrDash(app.PipeSize)</td></tr>
+            <tr><th>Bill Period</th><td>@app.BillFromDate?.ToString("dd MMM yyyy") - @app.BillToDate?.ToString("dd MMM yyyy")</td><th>Payment Date</th><td>@DateText(app.PaymentSuccessDate)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="wb-paper-section">
+        <h3>Uploaded Documents</h3>
+        @if (Model.Documents.Count == 0)
+        {
+            <div class="wb-empty">No uploaded documents found.</div>
+        }
+        else
+        {
+            <div class="wb-document-rows">
+                @foreach (var document in Model.Documents)
+                {
+                    <div class="wb-document-mini-row">
+                        <span>ND</span>
+                        <div>
+                            <strong>@TextOrDash(document.AttachmentName)</strong>
+                            <small>@TextOrDash(document.AttachmentPath)</small>
+                        </div>
+                        <em>@DateText(document.CreatedOn)</em>
+                        @if (!string.IsNullOrWhiteSpace(document.AttachmentPath))
+                        {
+                            <a class="btn btn-sm btn-outline-primary" href="@document.AttachmentPath" target="_blank" rel="noopener">View</a>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact">
+        <div>
+            <p class="wb-kicker">Workflow</p>
+            <h2>Approval Status</h2>
+        </div>
+        @if (Model.CanStartWorkflow)
+        {
+            <form asp-action="StartWorkflow" asp-route-id="@app.AutoId" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-primary btn-sm" type="submit">Start NDC Workflow</button>
+            </form>
+        }
+    </div>
+    @if (Model.WorkflowInstance is null)
+    {
+        <div class="wb-empty">Workflow has not been started for this application.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle wb-table wb-admin-table">
+                <thead><tr><th>Stage</th><th>Status</th><th>Assigned On</th><th>Action On</th><th>Remarks</th></tr></thead>
+                <tbody>
+                @foreach (var task in Model.WorkflowTasks)
+                {
+                    <tr>
+                        <td>@task.Stage.StageName</td>
+                        <td><span class="badge text-bg-secondary">@task.Status</span></td>
+                        <td>@DateText(task.AssignedOn)</td>
+                        <td>@DateText(task.ActionOn)</td>
+                        <td>@TextOrDash(task.Remarks)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

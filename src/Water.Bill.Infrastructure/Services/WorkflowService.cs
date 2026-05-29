@@ -9,6 +9,7 @@ namespace Water.Bill.Infrastructure.Services;
 public class WorkflowService : IWorkflowService
 {
     public const string ApplicationTypeNewConnection = "NewConnection";
+    public const string ApplicationTypeNdc = "NDC";
     public const string TaskStatusPending = "Pending";
     public const string TaskStatusApproved = "Approved";
     public const string TaskStatusRejected = "Rejected";
@@ -172,9 +173,14 @@ public class WorkflowService : IWorkflowService
             var application = task.WorkflowInstance.ApplicationType == ApplicationTypeNewConnection
                 ? await _db.NewConnectionApplications.FirstOrDefaultAsync(x => x.Id == task.ApplicationId && !x.IsDeleted, ct)
                 : null;
+            var ndcApplication = task.WorkflowInstance.ApplicationType == ApplicationTypeNdc
+                ? await _db.ConsumerApplyNdcs.FirstOrDefaultAsync(x => x.AutoId == task.ApplicationId, ct)
+                : null;
 
             if (task.WorkflowInstance.ApplicationType == ApplicationTypeNewConnection && application is null)
                 throw new InvalidOperationException("New connection application not found.");
+            if (task.WorkflowInstance.ApplicationType == ApplicationTypeNdc && ndcApplication is null)
+                throw new InvalidOperationException("NDC application not found.");
 
             var fromStatus = task.WorkflowInstance.CurrentStatus;
             var nextStatus = ResolveApplicationStatus(normalizedAction, task.Stage);
@@ -306,6 +312,10 @@ public class WorkflowService : IWorkflowService
                     IsDeleted = false
                 });
             }
+            else if (ndcApplication is not null)
+            {
+                ApplyNdcWorkflowStatus(ndcApplication, nextStatus, normalizedAction, request.ActorUserId, now, request.Remarks);
+            }
 
             var workflowActionToStatus = nextStatus;
             string? finalConsumerNo = null;
@@ -321,6 +331,20 @@ public class WorkflowService : IWorkflowService
                     ct);
 
                 nextStatus = StatusFinalConsumerCreated;
+                task.WorkflowInstance.CurrentStatus = nextStatus;
+                task.WorkflowInstance.CompletedOn = now;
+                task.WorkflowInstance.IsActive = false;
+            }
+            else if (ndcApplication is not null && normalizedAction == ActionApproved && nextStage is null)
+            {
+                ndcApplication.Status = "A";
+                ndcApplication.FinalStatus = "A";
+                ndcApplication.CurrentStatus = "Approved";
+                ndcApplication.CompletedDate = now;
+                ndcApplication.LastUpdatedBy = request.ActorUserId;
+                ndcApplication.LastUpdatedOn = now;
+                ndcApplication.CertificateUrl = $"/NdcCertificates/Print/{ndcApplication.AutoId}";
+                nextStatus = "Approved";
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
@@ -584,5 +608,44 @@ public class WorkflowService : IWorkflowService
     {
         var trimmed = value?.Trim();
         return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+    }
+
+    private static string NormalizeNdcStatus(ConsumerApplyNdc application)
+        => !string.IsNullOrWhiteSpace(application.FinalStatus)
+            ? application.FinalStatus!
+            : !string.IsNullOrWhiteSpace(application.CurrentStatus)
+                ? application.CurrentStatus!
+                : !string.IsNullOrWhiteSpace(application.Status)
+                    ? application.Status!
+                    : "Pending";
+
+    private static void ApplyNdcWorkflowStatus(
+        ConsumerApplyNdc application,
+        string nextStatus,
+        string action,
+        int? actorUserId,
+        DateTime now,
+        string? remarks)
+    {
+        application.LastUpdatedBy = actorUserId;
+        application.LastUpdatedOn = now;
+        application.CurrentStatus = nextStatus;
+
+        if (action == ActionRejected)
+        {
+            application.Status = "R";
+            application.FinalStatus = "C";
+            application.Level2Remark2 = Normalize(remarks);
+            application.Level2ActionDate2 = now;
+            application.Level2Action2 = "Rejected";
+            application.CompletedDate = now;
+            return;
+        }
+
+        if (action is ActionApproved or ActionMoveNext)
+        {
+            application.Status = "A";
+            application.Level = (application.Level ?? 0) + 1;
+        }
     }
 }

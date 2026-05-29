@@ -1,0 +1,140 @@
+@model Water.Bill.ConsumerPortal.ViewModels.ConsumerNdcApplyViewModel
+@{
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    var consumer = Model.SelectedConsumer;
+}
+
+<div class="wb-newconn-page-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">No Dues Certificate</p>
+            <h1>Apply for NDC</h1>
+            <p>Select the consumer number, verify details, upload required documents, and submit for approval.</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="Index">My NDC Applications</a>
+    </div>
+
+    <form asp-action="Apply" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <section class="wb-page-card wb-approval-section">
+            <div class="wb-section-head-compact">
+                <div>
+                    <p class="wb-kicker">Consumer Selection</p>
+                    <h2>Linked Consumer</h2>
+                </div>
+            </div>
+            <div class="wb-form-grid">
+                <div>
+                    <label asp-for="ConsumerNo" class="form-label">Consumer No</label>
+                    <select asp-for="ConsumerNo" asp-items="Model.Consumers" class="form-select" onchange="window.location.href='@Url.Action("Apply", "Ndc")?consumerNo=' + encodeURIComponent(this.value)">
+                    </select>
+                    <span asp-validation-for="ConsumerNo" class="text-danger"></span>
+                    <small class="text-muted">Primary consumer is selected by default. You can choose any connection linked with your mobile number.</small>
+                </div>
+                <div>
+                    <label asp-for="MobileNo" class="form-label">Mobile Number</label>
+                    <input asp-for="MobileNo" class="form-control" maxlength="15" />
+                    <span asp-validation-for="MobileNo" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
+
+        @if (consumer is not null)
+        {
+            <section class="wb-approval-summary-card">
+                <div class="wb-approval-summary-head">
+                    <div>
+                        <p class="wb-kicker">Consumer Details</p>
+                        <h2>@TextOrDash(consumer.ConsumerName)</h2>
+                        <span>@consumer.ConsumerNo</span>
+                    </div>
+                    <span class="badge text-bg-light">@TextOrDash(consumer.DivisionName)</span>
+                </div>
+                <div class="wb-approval-summary-grid">
+                    <div><span>Consumer No</span><strong>@consumer.ConsumerNo</strong></div>
+                    <div><span>Connection Category</span><strong>@TextOrDash(consumer.ConnectionCategory)</strong></div>
+                    <div><span>Connection Type</span><strong>@TextOrDash(consumer.ConnectionType)</strong></div>
+                    <div><span>Property</span><strong>@TextOrDash($"{consumer.Sector} / {consumer.Block}-{consumer.PlotNo}".Trim(' ', '/', '-'))</strong></div>
+                    <div><span>Plot Size</span><strong>@TextOrDash(consumer.PlotSize)</strong></div>
+                    <div><span>Pipe Size</span><strong>@TextOrDash(consumer.PipeSize)</strong></div>
+                    <div><span>Registration No</span><strong>@TextOrDash(consumer.RegistrationNo)</strong></div>
+                    <div><span>Estimation Date</span><strong>@DateText(consumer.EstimationDate)</strong></div>
+                    <div><span>Connection Date</span><strong>@DateText(consumer.ConnectionDate)</strong></div>
+                </div>
+            </section>
+        }
+
+        <section class="wb-page-card wb-approval-section">
+            <div class="wb-section-head-compact">
+                <div>
+                    <p class="wb-kicker">Documents</p>
+                    <h2>Required NDC Documents</h2>
+                </div>
+            </div>
+            @if (Model.Documents.Count == 0)
+            {
+                <div class="alert alert-warning">No active NDC document requirements are configured in Document Upload Master for Doc For = ND.</div>
+            }
+            else
+            {
+                <div class="table-responsive wb-approval-table-wrap">
+                    <table class="table align-middle wb-table wb-approval-table">
+                        <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Document No</th>
+                            <th>Document Date</th>
+                            <th>Upload</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (var i = 0; i < Model.Documents.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@Model.Documents[i].DocumentName</strong>
+                                    <input type="hidden" asp-for="Documents[i].DocumentId" />
+                                    <input type="hidden" asp-for="Documents[i].DocumentName" />
+                                </td>
+                                <td>
+                                    <input class="form-control form-control-sm" asp-for="Documents[i].DocumentNo" placeholder="Enter number" />
+                                </td>
+                                <td>
+                                    <input class="form-control form-control-sm" asp-for="Documents[i].DocumentDate" type="date" />
+                                </td>
+                                <td>
+                                    <input class="form-control form-control-sm" type="file" name="DocumentFile_@Model.Documents[i].DocumentId" accept=".pdf,.jpg,.jpeg,.png" />
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section class="wb-page-card wb-approval-section">
+            <div class="form-check">
+                <input asp-for="DeclarationAccepted" class="form-check-input" />
+                <label asp-for="DeclarationAccepted" class="form-check-label">I confirm that the selected consumer details and uploaded documents are correct for No Dues Certificate processing.</label>
+                <span asp-validation-for="DeclarationAccepted" class="text-danger d-block"></span>
+            </div>
+            <div class="form-actions">
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+                <button class="btn btn-primary" type="submit">Submit NDC Application</button>
+            </div>
+        </section>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

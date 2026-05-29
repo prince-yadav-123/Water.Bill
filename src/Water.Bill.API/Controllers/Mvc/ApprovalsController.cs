@@ -8,6 +8,7 @@ using Water.Bill.Application.Interfaces;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Services;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
@@ -94,6 +95,15 @@ public class ApprovalsController : Controller
             .AsNoTracking()
             .Where(x => applicationIds.Contains(x.Id) && !x.IsDeleted)
             .ToDictionaryAsync(x => x.Id, ct);
+        var ndcApplicationIds = rows
+            .Where(x => x.WorkflowInstance.ApplicationType == WorkflowService.ApplicationTypeNdc)
+            .Select(x => (int)x.ApplicationId)
+            .Distinct()
+            .ToList();
+        var ndcApplications = await _db.ConsumerApplyNdcs
+            .AsNoTracking()
+            .Where(x => ndcApplicationIds.Contains(x.AutoId))
+            .ToDictionaryAsync(x => x.AutoId, ct);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -101,9 +111,13 @@ public class ApprovalsController : Controller
             rows = rows.Where(x =>
             {
                 applications.TryGetValue(x.ApplicationId, out var app);
+                ndcApplications.TryGetValue((int)x.ApplicationId, out var ndc);
                 return x.ApplicationNo.Contains(term, StringComparison.OrdinalIgnoreCase)
                     || (app?.ApplicantName?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
-                    || (app?.MobileNumber?.Contains(term, StringComparison.OrdinalIgnoreCase) == true);
+                    || (app?.MobileNumber?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
+                    || (ndc?.ConsName?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
+                    || (ndc?.MobileNo?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
+                    || (ndc?.ConsumerNo?.Contains(term, StringComparison.OrdinalIgnoreCase) == true);
             }).ToList();
         }
 
@@ -115,18 +129,23 @@ public class ApprovalsController : Controller
         var items = rows.Select(x =>
         {
             applications.TryGetValue(x.ApplicationId, out var app);
+            ndcApplications.TryGetValue((int)x.ApplicationId, out var ndc);
             return new ApprovalListItemViewModel
             {
                 TaskId = x.Id,
                 ApplicationNo = x.ApplicationNo,
                 ApplicationType = x.WorkflowInstance.ApplicationType,
-                ApplicantName = app?.ApplicantName,
-                MobileNumber = app?.MobileNumber,
-                Property = app is null ? "-" : $"{app.Sector} / {app.Block} / {app.FlatNo}",
-                CurrentStatus = app?.ApplicationStatus ?? x.WorkflowInstance.CurrentStatus,
+                ApplicantName = app?.ApplicantName ?? ndc?.ConsName,
+                MobileNumber = app?.MobileNumber ?? ndc?.MobileNo,
+                Property = app is not null
+                    ? $"{app.Sector} / {app.Block} / {app.FlatNo}"
+                    : ndc is not null
+                        ? $"{ndc.Sector} / {ndc.Block} / {ndc.PlotNo}"
+                        : "-",
+                CurrentStatus = app?.ApplicationStatus ?? ndc?.CurrentStatus ?? ndc?.FinalStatus ?? ndc?.Status ?? x.WorkflowInstance.CurrentStatus,
                 CurrentStage = x.Stage.StageName,
                 AssignedTo = ResolveAssignedTo(x, users, roles),
-                SubmittedOn = app?.SubmittedOn,
+                SubmittedOn = app?.SubmittedOn ?? ndc?.CreatedOn,
                 AssignedOn = x.AssignedOn,
                 CanAct = x.IsActive
                     && x.Status == "Pending"
@@ -169,6 +188,18 @@ public class ApprovalsController : Controller
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == task.ApplicationId && !x.IsDeleted, ct)
             : null;
+        var ndcApplication = task.WorkflowInstance.ApplicationType == WorkflowService.ApplicationTypeNdc
+            ? await _db.ConsumerApplyNdcs
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.AutoId == task.ApplicationId, ct)
+            : null;
+        List<NdcDocument> ndcDocuments = ndcApplication is null
+            ? []
+            : await _db.NdcDocuments
+                .AsNoTracking()
+                .Where(x => x.NdcAutoId == ndcApplication.AutoId || x.ConsumerNo == ndcApplication.ConsumerNo)
+                .OrderByDescending(x => x.CreatedOn)
+                .ToListAsync(ct);
 
         var fee = application is null
             ? null
@@ -249,6 +280,8 @@ public class ApprovalsController : Controller
         {
             Task = task,
             NewConnectionApplication = application,
+            NdcApplication = ndcApplication,
+            NdcDocuments = ndcDocuments,
             Fee = fee,
             WorkflowTimeline = timeline,
             StageProgress = stageProgress,

@@ -74,9 +74,13 @@ public static class AppConstants
         public const string ConsumerBills = "Consumer Bills";
         public const string ConsumerProfile = "Consumer Profile";
         public const string ConsumerNewConnection = "Consumer New Connection";
+        public const string ConsumerNdcApplications = "Consumer NDC Applications";
         public const string ConsumerSupportQueries = "Consumer Support Queries";
         public const string ConsumerQueryManagement = "Consumer Query Management";
         public const string BillSearchPrint = "Bill Search & Print";
+        public const string OnlinePaymentHistory = "Online Payment History";
+        public const string NdcApplications = "NDC Applications";
+        public const string NdcCertificateManagement = "NDC Certificate Management";
         public const string DepartmentMaster = "Department Master";
         public const string WorkflowMaster = "Workflow Master";
         public const string MyPendingApplications = "My Pending Applications";

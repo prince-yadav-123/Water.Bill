@@ -1,0 +1,352 @@
+@{
+    Layout = null;
+    var authorityLoginUrl = ViewData["AuthorityLoginUrl"]?.ToString() ?? "/Account/Login";
+    var consumerLoginUrl = ViewData["ConsumerLoginUrl"]?.ToString() ?? "https://localhost:7040/Account/Login";
+    var publicNewConnectionStartUrl = ViewData["PublicNewConnectionStartUrl"]?.ToString() ?? "/NewConnection/Start";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Noida Water Billing System</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @await Html.PartialAsync("_WaterLoader")
+
+    <div class="wb-landing-page">
+        <div class="wb-landing-strip">
+            <div class="wb-landing-ticker" aria-label="Announcements">
+                <div class="wb-landing-ticker-track">
+                    <span>Welcome to Noida Water Billing System</span>
+                    <span>Secure access for consumers and authority users</span>
+                    <span>View your water bill, payment history, and receipts online</span>
+                    <span>Authority users can manage billing operations with role-based access</span>
+                    <span>Consumer services are available through a secure digital portal</span>
+                    <span aria-hidden="true">Welcome to Noida Water Billing System</span>
+                    <span aria-hidden="true">Secure access for consumers and authority users</span>
+                    <span aria-hidden="true">View your water bill, payment history, and receipts online</span>
+                    <span aria-hidden="true">Authority users can manage billing operations with role-based access</span>
+                    <span aria-hidden="true">Consumer services are available through a secure digital portal</span>
+                </div>
+            </div>
+        </div>
+
+        <header class="wb-landing-header">
+            <div class="wb-landing-container wb-landing-header-inner">
+                <a class="wb-landing-brand" href="/">
+                    <img src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" />
+                    <div>
+                        <strong>Noida Water Billing</strong>
+                        <span>Digital consumer service platform</span>
+                    </div>
+                </a>
+
+                <nav class="wb-landing-nav" aria-label="Public page sections">
+                    <a href="#about">About</a>
+                    <a href="#consumer-services">Consumer Services</a>
+                    <a href="#authority-services">Authority Services</a>
+                    <a href="#new-connection">New Connection</a>
+                    <a href="#process">How It Works</a>
+                    <a href="#faq">FAQ</a>
+                </nav>
+
+                <div class="wb-landing-actions wb-landing-actions-header">
+                    <a class="wb-landing-button wb-landing-button-primary" href="@publicNewConnectionStartUrl">Apply New Connection</a>
+                    <a class="wb-landing-button wb-landing-button-light" href="@authorityLoginUrl">Authority Login</a>
+                    <a class="wb-landing-button wb-landing-button-primary" href="@consumerLoginUrl">Consumer Login</a>
+                </div>
+
+                <button class="wb-landing-menu-button" type="button" aria-label="Toggle login actions" aria-expanded="false">Menu</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="wb-landing-hero">
+                <div class="wb-landing-container wb-landing-hero-grid">
+                    <div class="wb-landing-copy">
+                        <p class="wb-landing-eyebrow">Smart. Secure. Transparent.</p>
+                        <h1>Manage Noida water services digitally.</h1>
+                        <p>Noida Water Billing System gives consumers and authority users a clean, secure platform for water bills, consumer records, payments, receipts, reports, and service operations.</p>
+
+                        <div class="wb-landing-actions" aria-label="Login choices">
+                            <a class="wb-landing-button wb-landing-button-primary" href="@publicNewConnectionStartUrl">Apply for New Connection</a>
+                            <a class="wb-landing-button wb-landing-button-primary" href="@consumerLoginUrl">Consumer Login</a>
+                            <a class="wb-landing-button wb-landing-button-light" href="@authorityLoginUrl">Authority Login</a>
+                        </div>
+                    </div>
+
+                    <aside class="wb-landing-trust" aria-label="System highlights">
+                        <article>
+                            <span>C</span>
+                            <h2>Consumer Friendly</h2>
+                            <p>Access bills, receipts, profile details, contact updates, and payment records after secure login.</p>
+                        </article>
+                        <article>
+                            <span>R</span>
+                            <h2>Role-Based Access</h2>
+                            <p>Authority and consumer users enter through separate login flows with permission-based access.</p>
+                        </article>
+                        <article>
+                            <span>D</span>
+                            <h2>Digital Services</h2>
+                            <p>Reduce manual dependency with organized billing information and guided online service access.</p>
+                        </article>
+                    </aside>
+                </div>
+            </section>
+
+            <section class="wb-landing-section" id="about">
+                <div class="wb-landing-container wb-landing-split">
+                    <div class="wb-landing-list-panel">
+                        <div>
+                            <strong>Centralized Consumer Information</strong>
+                            <span>Consumer profile, connection details, property information, and contact details.</span>
+                        </div>
+                        <div>
+                            <strong>Current Bill Visibility</strong>
+                            <span>Bill amount, bill period, due date, arrears, and payment status after login.</span>
+                        </div>
+                        <div>
+                            <strong>Secure Authority Operations</strong>
+                            <span>Permission-based access for users, menus, reports, and administrative modules.</span>
+                        </div>
+                    </div>
+                    <div class="wb-landing-section-heading">
+                        <p>About The System</p>
+                        <h2>Built for better billing transparency and service access.</h2>
+                        <span>The system helps consumers access water billing information online and supports authority users in managing records, reports, payments, and role-based administration.</span>
+                    </div>
+
+                    
+                </div>
+            </section>
+
+            <section class="wb-landing-section" id="consumer-services">
+                <div class="wb-landing-container">
+                    <div class="wb-landing-section-heading wb-landing-section-heading-center">
+                        <p>Consumer Portal</p>
+                        <h2>Online services for water consumers.</h2>
+                        <span>Consumers can securely access account details, bill details, payment records, and service updates through the Consumer Portal.</span>
+                    </div>
+
+                    <div class="wb-landing-card-grid">
+                        <article>
+                            <span>01</span>
+                            <h3>My Profile</h3>
+                            <p>View consumer number, name, mobile, email, property address, category, and connection details.</p>
+                        </article>
+                        <article>
+                            <span>02</span>
+                            <h3>Current Bill</h3>
+                            <p>Check current bill amount, billing period, due date, arrears, and total payable amount.</p>
+                        </article>
+                        <article>
+                            <span>03</span>
+                            <h3>Download Bill</h3>
+                            <p>Download or print the latest water bill for payment reference or personal records.</p>
+                        </article>
+                        <article>
+                            <span>04</span>
+                            <h3>Payment History</h3>
+                            <p>View previous online and offline payments, challan details, and receipt information.</p>
+                        </article>
+                        <article>
+                            <span>05</span>
+                            <h3>Update Contact</h3>
+                            <p>Update mobile number or email securely through OTP-based verification when enabled.</p>
+                        </article>
+                        <article>
+                            <span>06</span>
+                            <h3>NDC / No Dues</h3>
+                            <p>Access no-dues services, application status, and certificate details when available.</p>
+                        </article>
+                        <article>
+                            <span>07</span>
+                            <h3>New Connection</h3>
+                            <p>Apply for a new water connection and track application progress online.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="wb-landing-section wb-landing-new-connection" id="new-connection">
+                <div class="wb-landing-container wb-landing-new-connection-box">
+                    <div class="wb-landing-section-heading">
+                        <p>New Connection</p>
+                        <h2>Apply for a new water connection online.</h2>
+                        <span>Submit a staged application with applicant, property, connection, and document details. Track the progress using application number and mobile number.</span>
+                    </div>
+
+                    <div class="wb-landing-track-card">
+                        <strong>Already applied?</strong>
+                        <span>Track your application status and approval timeline.</span>
+                        <a class="wb-landing-button wb-landing-button-light" href="/NewConnection/Track">Track Application</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="wb-landing-section wb-landing-section-soft" id="authority-services">
+                <div class="wb-landing-container">
+                    <div class="wb-landing-section-heading wb-landing-section-heading-center">
+                        <p>Authority Login</p>
+                        <h2>Secure tools for authorized staff.</h2>
+                        <span>Authority users can manage billing operations through dashboards, reports, security modules, and permission-controlled menus.</span>
+                    </div>
+
+                    <div class="wb-landing-card-grid wb-landing-card-grid-three">
+                        <article>
+                            <span>CM</span>
+                            <h3>Consumer Management</h3>
+                            <p>Search and view consumer records, connection details, property data, and service history.</p>
+                        </article>
+                        <article>
+                            <span>DR</span>
+                            <h3>Dashboard & Reports</h3>
+                            <p>Monitor billing, collections, pending dues, payment status, and operational performance.</p>
+                        </article>
+                        <article>
+                            <span>RP</span>
+                            <h3>Role Permissions</h3>
+                            <p>Manage users, roles, menus, modules, and permissions through matrix-based access control.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="wb-landing-section" id="process">
+                <div class="wb-landing-container">
+                    <div class="wb-landing-section-heading wb-landing-section-heading-center">
+                        <p>How It Works</p>
+                        <h2>Simple and secure access flow.</h2>
+                        <span>The platform separates public consumer access and internal authority access for better security and a cleaner user experience.</span>
+                    </div>
+
+                    <div class="wb-landing-process">
+                        <article>
+                            <span>1</span>
+                            <h3>Open Portal</h3>
+                            <p>User opens the Noida Water Billing System common home page.</p>
+                        </article>
+                        <article>
+                            <span>2</span>
+                            <h3>Select Login</h3>
+                            <p>User chooses Consumer Login or Authority Login based on access type.</p>
+                        </article>
+                        <article>
+                            <span>3</span>
+                            <h3>Secure Access</h3>
+                            <p>User logs in through the configured secure authentication flow.</p>
+                        </article>
+                        <article>
+                            <span>4</span>
+                            <h3>Use Services</h3>
+                            <p>User accesses dashboard, bill details, payments, reports, or assigned modules.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="wb-landing-access">
+                <div class="wb-landing-container wb-landing-access-box">
+                    <div>
+                        <h2>Choose your login type to continue.</h2>
+                        <p>Consumers can view bills, payment history, profile details, and receipts. Authority users can access operational modules based on assigned role permissions.</p>
+                    </div>
+
+                    <div class="wb-landing-actions">
+                        <a class="wb-landing-button wb-landing-button-primary" href="@publicNewConnectionStartUrl">Apply for New Connection</a>
+                        <a class="wb-landing-button wb-landing-button-light" href="@authorityLoginUrl">Authority Login</a>
+                        <a class="wb-landing-button wb-landing-button-primary" href="@consumerLoginUrl">Consumer Login</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="wb-landing-section" id="faq">
+                <div class="wb-landing-container">
+                    <div class="wb-landing-section-heading wb-landing-section-heading-center">
+                        <p>Common Questions</p>
+                        <h2>Helpful information before login.</h2>
+                        <span>Basic guidance for consumers and authority users using the Water Billing System.</span>
+                    </div>
+
+                    <div class="wb-landing-faq">
+                        <details open>
+                            <summary>How can a consumer access water bill details?</summary>
+                            <p>Consumers can use Consumer Login to access their dashboard, current bill, payment history, profile information, and downloadable bill or receipt details.</p>
+                        </details>
+                        <details>
+                            <summary>Who should use Authority Login?</summary>
+                            <p>Authority Login is for internal department users, administrators, and authorized staff who manage consumers, reports, billing operations, users, roles, and permissions.</p>
+                        </details>
+                        <details>
+                            <summary>Is consumer and authority access separate?</summary>
+                            <p>Yes. Consumer users and authority users use separate login flows and permissions so each user can access only the correct modules and information.</p>
+                        </details>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="wb-landing-footer">
+            <div class="wb-landing-container wb-landing-footer-inner">
+                <div>
+                    <strong>Noida Water Billing System</strong>
+                    <p>Secure digital platform for water billing and consumer services.</p>
+                </div>
+
+                <div>
+                    <a href="#about">About</a>
+                    <a href="#consumer-services">Consumer Services</a>
+                    <a href="#authority-services">Authority Services</a>
+                    <a href="#faq">FAQ</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            async function redirectIfAuthoritySessionExists() {
+                try {
+                    const response = await fetch('/Account/AuthStatus', {
+                        cache: 'no-store',
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (!response.ok) return;
+
+                    const result = await response.json();
+                    if (result && result.isAuthenticated) {
+                        window.location.replace(result.redirectUrl || '/Dashboard');
+                    }
+                } catch {
+                    // Keep the public landing page available if the check cannot complete.
+                }
+            }
+
+            var menuButton = document.querySelector('.wb-landing-menu-button');
+            var actions = document.querySelector('.wb-landing-actions-header');
+
+            if (menuButton && actions) {
+                menuButton.addEventListener('click', function () {
+                    var isOpen = actions.classList.toggle('show');
+                    menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+            }
+
+            window.addEventListener('pageshow', redirectIfAuthoritySessionExists);
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) {
+                    redirectIfAuthoritySessionExists();
+                }
+            });
+        })();
+    </script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

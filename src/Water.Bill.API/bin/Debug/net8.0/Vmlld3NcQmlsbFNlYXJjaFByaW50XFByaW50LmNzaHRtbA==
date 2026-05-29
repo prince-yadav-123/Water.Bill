@@ -1,0 +1,156 @@
+@model Water.Bill.API.Models.Billing.BillPrintViewModel
+@using Water.Bill.Core.Common
+@{
+    Layout = null;
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd-MMM-yyyy") : "-";
+    string Amount(double? value) => value.HasValue ? value.Value.ToString("N2") : "0.00";
+    var total = Model.TotalBillAmount
+        ?? ((Model.MinimumTotalAmount ?? 0)
+            + (Model.CessAmount ?? 0)
+            + (Model.ArrearAmount ?? 0)
+            + (Model.ArrearInterest ?? 0)
+            - (Model.RebateAmount ?? 0)
+            - (Model.AdvanceAmount ?? 0));
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print Bill - @Model.BillNo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        :root { --ink: #0f172a; --muted: #475569; --line: #cbd5e1; --soft: #f8fafc; --brand: #0f96a8; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: var(--ink); background: #eef4f8; font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
+        .print-shell { max-width: 920px; margin: 18px auto; padding: 0 14px; }
+        .print-toolbar { position: sticky; top: 10px; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; padding: 13px 16px; border: 1px solid #dbe5ef; border-radius: 14px; background: rgba(255,255,255,.96); box-shadow: 0 12px 28px rgba(15,23,42,.09); backdrop-filter: blur(10px); }
+        .print-toolbar h1 { margin: 0; font-size: 18px; font-weight: 900; color: var(--ink); }
+        .print-toolbar p { margin: 3px 0 0; color: var(--muted); font-size: 12.5px; }
+        .print-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex: 0 0 auto; }
+        .print-actions .btn { min-width: 74px; min-height: 34px; border-radius: 8px; padding: 6px 14px; font-size: 12.5px; font-weight: 800; box-shadow: none; }
+        .print-actions .btn-primary { border-color: var(--brand); background: var(--brand); }
+        .print-actions .btn-primary:hover { border-color: #0c7f8f; background: #0c7f8f; }
+        .bill-page { background: #fff; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(15,23,42,.08); }
+        .bill-head { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 18px 20px 14px; border-bottom: 2px solid var(--ink); }
+        .bill-head h2 { margin: 0; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: .03em; }
+        .bill-head p { margin: 3px 0 0; color: var(--muted); line-height: 1.35; }
+        .bill-title { text-align: right; }
+        .bill-title strong { display: block; font-size: 18px; text-transform: uppercase; }
+        .bill-title span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+        .bill-strip { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
+        .bill-strip div { padding: 9px 12px; border-right: 1px solid var(--line); }
+        .bill-strip div:last-child { border-right: 0; }
+        .label { display: block; margin-bottom: 3px; color: var(--muted); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+        .value { font-weight: 800; }
+        .bill-section { padding: 14px 20px; border-bottom: 1px solid var(--line); }
+        .bill-section h3 { margin: 0 0 10px; font-size: 14px; font-weight: 900; text-transform: uppercase; }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1px solid var(--line); }
+        .detail-item { display: grid; grid-template-columns: 150px 1fr; min-height: 34px; border-bottom: 1px solid var(--line); }
+        .detail-item:nth-last-child(-n + 2) { border-bottom: 0; }
+        .detail-item:nth-child(odd) { border-right: 1px solid var(--line); }
+        .detail-item span:first-child { padding: 8px 10px; color: var(--muted); background: var(--soft); font-weight: 700; }
+        .detail-item span:last-child { padding: 8px 10px; font-weight: 700; }
+        .charges { width: 100%; border-collapse: collapse; border: 1px solid var(--line); }
+        .charges th, .charges td { padding: 8px 10px; border-bottom: 1px solid var(--line); }
+        .charges th { color: var(--muted); background: var(--soft); font-size: 11px; text-transform: uppercase; }
+        .charges td:last-child, .charges th:last-child { text-align: right; }
+        .charges .total-row td { color: #fff; background: var(--brand); font-size: 16px; font-weight: 900; }
+        .notice { padding: 12px 20px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+        .sign-row { display: grid; grid-template-columns: 1fr 220px; gap: 24px; padding: 24px 20px 18px; }
+        .sign-box { text-align: center; border-top: 1px solid var(--ink); padding-top: 7px; font-weight: 800; }
+        @@media print {
+            body { background: #fff; }
+            .print-shell { max-width: none; margin: 0; padding: 0; }
+            .print-toolbar { display: none; }
+            .bill-page { border: 0; box-shadow: none; }
+            @@page { size: A4; margin: 10mm; }
+        }
+    </style>
+</head>
+<body>
+    <main class="print-shell">
+        <div class="print-toolbar">
+            <div>
+                <h1>Water Bill Print</h1>
+                <p>Consumer @Model.ConsumerNo · Bill @Model.BillNo · @(Model.ConsumerName ?? "-")</p>
+            </div>
+            <div class="print-actions">
+                <button class="btn btn-primary btn-sm" type="button" onclick="window.print()">Print</button>
+                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="window.close()">Close</button>
+            </div>
+        </div>
+
+        <article class="bill-page">
+            <header class="bill-head">
+                <div>
+                    <h2>Noida Jal</h2>
+                    <p>Water Works Department, Noida Authority</p>
+                    <p>Computer generated bill cum challan for water charges</p>
+                </div>
+                <div class="bill-title">
+                    <strong>Water Bill</strong>
+                    <span>Bill No: @Model.BillNo</span>
+                    <span>Challan No: @(Model.ChallanNo ?? "-")</span>
+                </div>
+            </header>
+
+            <section class="bill-strip">
+                <div><span class="label">Consumer No</span><span class="value">@Model.ConsumerNo</span></div>
+                <div><span class="label">Bill Date</span><span class="value">@DateText(Model.BillDate)</span></div>
+                <div><span class="label">Due Date</span><span class="value">@DateText(Model.BillDueDate)</span></div>
+                <div><span class="label">Division</span><span class="value">@AppConstants.Divisions.FormatDisplay(Model.DevType)</span></div>
+            </section>
+
+            <section class="bill-section">
+                <h3>Consumer & Property Details</h3>
+                <div class="detail-grid">
+                    <div class="detail-item"><span>Consumer Name</span><span>@(Model.ConsumerName ?? "-")</span></div>
+                    <div class="detail-item"><span>Mobile No</span><span>@(Model.MobileNo ?? "-")</span></div>
+                    <div class="detail-item"><span>Property No</span><span>@(Model.PropertyNo ?? "-")</span></div>
+                    <div class="detail-item"><span>Email</span><span>@(Model.Email ?? "-")</span></div>
+                    <div class="detail-item"><span>Address</span><span>@(Model.Address ?? Model.PropertyNo ?? "-")</span></div>
+                    <div class="detail-item"><span>Bill Period</span><span>@DateText(Model.BillDateFrom) to @DateText(Model.BillDateTo)</span></div>
+                    <div class="detail-item"><span>Connection Type</span><span>@(Model.ConnectionType ?? "-")</span></div>
+                    <div class="detail-item"><span>Category</span><span>@(Model.Category ?? "-")</span></div>
+                    <div class="detail-item"><span>Flat Type</span><span>@(Model.FlatType ?? "-")</span></div>
+                    <div class="detail-item"><span>Pipe Size</span><span>@(Model.PipeSize?.ToString() ?? "-") mm</span></div>
+                </div>
+            </section>
+
+            <section class="bill-section">
+                <h3>Bill Amount Details</h3>
+                <table class="charges">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Minimum Rate</td><td>@Amount(Model.MinimumRate)</td></tr>
+                        <tr><td>Minimum Total Amount</td><td>@Amount(Model.MinimumTotalAmount)</td></tr>
+                        <tr><td>Cess Amount</td><td>@Amount(Model.CessAmount)</td></tr>
+                        <tr><td>Arrear Amount</td><td>@Amount(Model.ArrearAmount)</td></tr>
+                        <tr><td>Arrear Interest</td><td>@Amount(Model.ArrearInterest)</td></tr>
+                        <tr><td>Rebate Amount</td><td>@Amount(Model.RebateAmount)</td></tr>
+                        <tr><td>Advance Amount</td><td>@Amount(Model.AdvanceAmount)</td></tr>
+                        <tr><td>Last Paid Amount</td><td>@Amount(Model.LastPaidAmount)</td></tr>
+                        <tr class="total-row"><td>Total Payable</td><td>@Amount(total)</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="notice">
+                Payment shall be made on or before the due date. This is a computer generated demand and does not require a physical signature.
+                If payment has already been deposited, please submit payment proof to the concerned office for reconciliation.
+            </div>
+
+            <div class="sign-row">
+                <div></div>
+                <div class="sign-box">Authorised Signatory</div>
+            </div>
+        </article>
+    </main>
+</body>
+</html>

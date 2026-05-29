@@ -1,0 +1,250 @@
+@using System.Security.Claims
+@using Water.Bill.Application.DTOs.Menu
+@using Water.Bill.Application.Interfaces
+@using Water.Bill.Core.Common
+@inject IPermissionService PermissionService
+
+@{
+    var currentPath = Context.Request.Path.Value ?? "";
+    var activeMenu = ViewData["ActiveMenu"]?.ToString();
+    var tenantId = AppConstants.DefaultTenantId;
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var userName = User.Identity?.Name ?? "";
+    var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
+    var initial = string.IsNullOrWhiteSpace(userName) ? "U" : userName[..1].ToUpperInvariant();
+
+    IReadOnlyList<MenuItemDto> menuItems = [];
+    HashSet<string> menuVisibleModules = [];
+    HashSet<int> menuVisibleModuleIds = [];
+    if (isAuthenticated && int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
+    {
+        menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
+        menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
+        menuVisibleModules = await PermissionService.GetMenuVisibleModulesAsync(roleId);
+    }
+
+    bool CanSeeSelf(MenuItemDto item)
+    {
+        if (!item.IsActive || !item.ShowInSidebar) return false;
+        if (item.ModuleId.HasValue) return menuVisibleModuleIds.Contains(item.ModuleId.Value);
+        if (!string.IsNullOrWhiteSpace(item.Module)) return menuVisibleModules.Contains(item.Module);
+        return false;
+    }
+
+    IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
+        => item.Children.Where(CanSeeSelf).OrderBy(x => x.Order).ToList();
+
+    bool CanRender(MenuItemDto item)
+        => item.Children.Count > 0
+            ? VisibleChildren(item).Count > 0
+            : CanSeeSelf(item);
+
+    bool IsCurrent(MenuItemDto item)
+    {
+        if (!string.IsNullOrWhiteSpace(activeMenu))
+        {
+            if (string.Equals(item.Label, activeMenu, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return item.Children.Any(IsCurrent);
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.Url) &&
+            currentPath.StartsWith(item.Url, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return item.Children.Any(IsCurrent);
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Noida Jal Authority</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="wb-body" data-sidebar-storage-key="water-bill-admin-sidebar-collapsed">
+    @await Html.PartialAsync("_WaterLoader")
+
+    @if (isAuthenticated)
+    {
+        <div class="wb-sidebar-backdrop" data-sidebar-dismiss></div>
+        <aside class="wb-sidebar" id="adminSidebar">
+            <div class="wb-brand">
+                @* <img class="wb-brand-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" /> *@
+                <div class="wb-brand-copy">
+                    <div class="wb-brand-title">Noida Jal</div>
+                    <div class="wb-brand-sub">Authority Services</div>
+                </div>
+                <button class="wb-sidebar-toggle" type="button" data-sidebar-toggle aria-label="Toggle sidebar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <nav class="wb-nav">
+                @foreach (var item in menuItems.Where(CanRender).OrderBy(x => x.Order))
+                {
+                    var children = VisibleChildren(item);
+                    var hasChildren = children.Count > 0;
+                    var isOpen = IsCurrent(item);
+                    var itemId = $"menu-{item.Id}";
+
+                    if (hasChildren)
+                    {
+                        <div class="wb-nav-group @(isOpen ? "open" : "")">
+                            <button class="wb-nav-link wb-nav-parent @(isOpen ? "active" : "")" type="button" data-menu-toggle aria-expanded="@isOpen.ToString().ToLowerInvariant()" aria-controls="@itemId">
+                                <span class="wb-nav-icon">@item.Icon</span>
+                                <span class="wb-nav-text">@item.Label</span>
+                                <span class="wb-nav-arrow"></span>
+                            </button>
+                            <div class="wb-nav-children" id="@itemId">
+                                @foreach (var child in children)
+                                {
+                                    <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
+                                        <span class="wb-nav-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
+                                        <span class="wb-nav-text">@child.Label</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="wb-nav-link @(IsCurrent(item) ? "active" : "")" href="@(item.Url ?? "#")" target="@(item.OpenInNewTab ? "_blank" : null)">
+                            <span class="wb-nav-icon">@item.Icon</span>
+                            <span class="wb-nav-text">@item.Label</span>
+                        </a>
+                    }
+                }
+            </nav>
+            <div class="wb-sidebar-bottom">
+                <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+                <a class="wb-nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+            </div>
+        </aside>
+    }
+
+    <main class="@(isAuthenticated ? "wb-main" : "wb-main-full")">
+        @if (isAuthenticated)
+        {
+            <header class="wb-topbar">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="wb-mobile-menu" type="button" data-sidebar-toggle aria-label="Open menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="fw-semibold">@ViewData["Title"]</div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge text-bg-primary">@roleName</span>
+                    <span class="wb-avatar" title="@userName">@initial</span>
+                </div>
+            </header>
+        }
+
+        <section class="wb-content @(isAuthenticated ? "admin-page-container" : "")">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-success wb-toast-message">
+                        <span class="wb-toast-icon">✓</span>
+                        <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-danger wb-toast-message">
+                        <span class="wb-toast-icon">!</span>
+                        <span>@TempData["ErrorMessage"]</span>
+                    </div>
+                </div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-info wb-toast-message">
+                        <span class="wb-toast-icon">i</span>
+                        <span>@TempData["InfoMessage"]</span>
+                    </div>
+                </div>
+            }
+            @RenderBody()
+        </section>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var isAuthenticated = @isAuthenticated.ToString().ToLowerInvariant();
+            var dashboardUrl = '/Dashboard';
+            var loginUrl = '/Account/Login';
+
+            async function checkAuthoritySession() {
+                try {
+                    var response = await fetch('/Account/AuthStatus', {
+                        cache: 'no-store',
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (!response.ok) {
+                        if (isAuthenticated) {
+                            window.location.replace(loginUrl);
+                        }
+                        return;
+                    }
+
+                    var result = await response.json();
+                    if (isAuthenticated && (!result || !result.isAuthenticated)) {
+                        window.location.replace(loginUrl);
+                        return;
+                    }
+
+                    if (!isAuthenticated && result && result.isAuthenticated) {
+                        window.location.replace(result.redirectUrl || dashboardUrl);
+                    }
+                } catch {
+                    if (isAuthenticated) {
+                        window.location.replace(loginUrl);
+                    }
+                }
+            }
+
+            if (isAuthenticated && window.history && window.history.pushState) {
+                window.history.replaceState({ waterBillAuthorityPage: true }, document.title, window.location.href);
+                window.history.pushState({ waterBillAuthorityGuard: true }, document.title, window.location.href);
+
+                window.addEventListener('popstate', function () {
+                    window.location.replace(dashboardUrl);
+                });
+            }
+
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) {
+                    checkAuthoritySession();
+                    return;
+                }
+
+                if (isAuthenticated) {
+                    checkAuthoritySession();
+                }
+            });
+
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden && isAuthenticated) {
+                    checkAuthoritySession();
+                }
+            });
+        })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

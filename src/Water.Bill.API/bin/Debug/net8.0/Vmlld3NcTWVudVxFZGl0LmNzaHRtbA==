@@ -1,0 +1,16 @@
+@model MenuFormViewModel
+@{
+    ViewData["Title"] = "Edit Menu Item";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Edit Menu Item</h1>
+        <p>Update menu label, route, parent, module, icon, and status.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<partial name="_MenuForm" model="Model" />
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

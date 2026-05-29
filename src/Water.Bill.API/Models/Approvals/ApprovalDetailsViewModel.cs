@@ -8,6 +8,10 @@ public class ApprovalDetailsViewModel
 
     public NewConnectionApplication? NewConnectionApplication { get; set; }
 
+    public ConsumerApplyNdc? NdcApplication { get; set; }
+
+    public IReadOnlyList<NdcDocument> NdcDocuments { get; set; } = [];
+
     public NewConnectionApplicationFee? Fee { get; set; }
 
     public IReadOnlyList<ApplicationWorkflowHistory> WorkflowTimeline { get; set; } = [];

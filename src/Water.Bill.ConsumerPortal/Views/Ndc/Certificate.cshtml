@@ -1,0 +1,81 @@
+@model Water.Bill.Infrastructure.Data.Entities.ConsumerApplyNdc
+@{
+    Layout = null;
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "................................" : value;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>NDC Certificate - @Model.ApplicationNo</title>
+    <style>
+        body { margin: 0; background: #f3f6fb; font-family: Arial, sans-serif; color: #0f172a; }
+        .toolbar { position: sticky; top: 0; background: white; border-bottom: 1px solid #dbe3ef; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .toolbar h1 { font-size: 18px; margin: 0; }
+        .toolbar p { margin: 3px 0 0; color: #64748b; font-size: 12px; }
+        .btn { border: 1px solid #cbd5e1; background: white; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .btn-primary { background: #0ea5b7; border-color: #0ea5b7; color: white; }
+        .page { width: 800px; margin: 24px auto; background: white; padding: 48px 56px; box-shadow: 0 18px 45px rgba(15,23,42,.12); }
+        .center { text-align: center; }
+        h2 { margin: 0; font-size: 18px; line-height: 1.5; }
+        .meta { text-align: right; margin: 28px 0; line-height: 1.7; }
+        .content { line-height: 1.9; font-size: 15px; }
+        .signature { display: flex; justify-content: space-between; margin-top: 70px; }
+        @@media print {
+            body { background: white; }
+            .toolbar { display: none; }
+            .page { width: auto; margin: 0; box-shadow: none; padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="toolbar">
+    <div>
+        <h1>NDC Certificate</h1>
+        <p>@Model.ApplicationNo - @TextOrDash(Model.ConsumerNo)</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="window.print()">Print</button>
+        <button class="btn" onclick="window.close()">Close</button>
+    </div>
+</div>
+<main class="page">
+    <div class="center">
+        <h2>NOIDA<br />NEW OKHLA INDUSTRIAL DEVELOPMENT AUTHORITY<br />JAL / WATER DEPARTMENT</h2>
+        <p><strong>No Dues Certificate</strong></p>
+    </div>
+    <div class="meta">
+        No.: Noida (REV) Jal / Sewer / <strong>@Model.ApplicationNo</strong><br />
+        Dated: <strong>@DateTime.Now.ToString("dd-MMM-yyyy")</strong>
+    </div>
+    <div class="content">
+        <p>
+            To,<br />
+            <strong>@TextOrDash(Model.ConsName)</strong><br />
+            @TextOrDash($"{Model.Block}-{Model.PlotNo}".Trim('-')), Sector @TextOrDash(Model.Sector)<br />
+            Noida
+        </p>
+        <p>
+            With reference to your application dated <strong>@(Model.CreatedOn?.ToString("dd-MMM-yyyy") ?? "................................")</strong>,
+            this is to certify that the statement of account for premises no.
+            <strong>@TextOrDash($"{Model.Block}-{Model.PlotNo}".Trim('-'))</strong>, Sector
+            <strong>@TextOrDash(Model.Sector)</strong>, has been reviewed for No Dues processing.
+        </p>
+        <p>
+            Water bill / sewer connection dues are shown cleared for the approved NDC application
+            <strong>@Model.ApplicationNo</strong>, consumer no. <strong>@TextOrDash(Model.ConsumerNo)</strong>,
+            against challan no. <strong>@TextOrDash(Model.ChallanNo)</strong>
+            for amount Rs. <strong>@(Model.Amount?.ToString("N2") ?? "................................")</strong>.
+        </p>
+        <p>
+            Any dues found later for the period before issuance of this certificate may be recovered in future bills
+            as per authority rules.
+        </p>
+    </div>
+    <div class="signature">
+        <div>Prepared By</div>
+        <div>Authorized Signatory</div>
+    </div>
+</main>
+</body>
+</html>

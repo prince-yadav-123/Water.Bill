@@ -1,0 +1,153 @@
+@model Water.Bill.Infrastructure.Data.Entities.ConsumerSupportQuery
+@{
+    string BadgeClass(string status) => status switch
+    {
+        "Open" => "text-bg-primary",
+        "InProgress" => "text-bg-info",
+        "Resolved" => "text-bg-success",
+        "Closed" => "text-bg-secondary",
+        "Rejected" => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+    IReadOnlyList<(string Value, string Text)> NextStatuses(string status) => status switch
+    {
+        "Open" => [("InProgress", "Mark In Progress"), ("Resolved", "Resolve Query"), ("Rejected", "Reject Query")],
+        "InProgress" => [("Resolved", "Resolve Query"), ("Rejected", "Reject Query")],
+        "Resolved" => [("Closed", "Close Query")],
+        "Rejected" => [("Closed", "Close Query")],
+        _ => []
+    };
+    var nextStatuses = NextStatuses(Model.Status);
+    var isClosed = string.Equals(Model.Status, "Closed", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Consumer Query Details</h1>
+        <p>@Model.QueryNo - @Model.Subject</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back to Queries</a>
+</div>
+
+<section class="wb-approval-summary-card">
+    <div class="wb-approval-summary-head">
+        <div>
+            <p class="wb-kicker">Consumer Support Request</p>
+            <h2>@Model.Subject</h2>
+            <span>@Model.CategoryName</span>
+        </div>
+        <span class="badge @BadgeClass(Model.Status)">@Model.Status</span>
+    </div>
+    <div class="wb-approval-summary-grid">
+        <div><span>Query No</span><strong>@Model.QueryNo</strong></div>
+        <div><span>Consumer No</span><strong>@Model.ConsumerNo</strong></div>
+        <div><span>Consumer Name</span><strong>@Model.ConsumerName</strong></div>
+        <div><span>Mobile</span><strong>@(Model.MobileNo ?? "-")</strong></div>
+        <div><span>Priority</span><strong>@Model.Priority</strong></div>
+        <div><span>Created Date</span><strong>@Model.CreatedAt.ToString("dd MMM yyyy hh:mm tt")</strong></div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact"><h2>Query Details</h2></div>
+    <dl class="wb-detail-grid">
+        <div><dt>Category</dt><dd>@Model.CategoryName</dd></div>
+        <div><dt>Email</dt><dd>@(Model.Email ?? "-")</dd></div>
+        <div><dt>Related Bill No</dt><dd>@(Model.RelatedBillNo ?? "-")</dd></div>
+        <div><dt>Related Application No</dt><dd>@(Model.RelatedApplicationNo ?? "-")</dd></div>
+        <div class="wb-detail-span"><dt>Description</dt><dd>@Model.Description</dd></div>
+        <div class="wb-detail-span"><dt>Current Admin Remarks</dt><dd>@(Model.AdminRemarks ?? "-")</dd></div>
+    </dl>
+</section>
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact"><h2>Uploaded Documents</h2></div>
+    @if (Model.Documents.Where(x => !x.IsDeleted).Any())
+    {
+        <div class="wb-document-rows">
+            @foreach (var doc in Model.Documents.Where(x => !x.IsDeleted))
+            {
+                <div class="wb-document-mini-row">
+                    <span>DC</span>
+                    <div><strong>@doc.DocumentType</strong><small>@doc.FileName</small></div>
+                    <em>@doc.UploadedAt.ToString("dd MMM yyyy")</em>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Document" asp-route-id="@doc.Id" target="_blank">View</a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="wb-empty">No documents uploaded.</div>
+    }
+</section>
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact"><h2>Admin Action / Resolution</h2></div>
+    @if (isClosed)
+    {
+        <div class="alert alert-info mb-0">
+            This query is closed. No further action is allowed.
+        </div>
+        <dl class="wb-detail-grid mt-3">
+            <div class="wb-detail-span"><dt>Final Remarks</dt><dd>@(Model.AdminRemarks ?? "-")</dd></div>
+            <div><dt>Closed On</dt><dd>@(Model.ClosedAt?.ToString("dd MMM yyyy hh:mm tt") ?? "-")</dd></div>
+        </dl>
+    }
+    else if (nextStatuses.Count == 0)
+    {
+        <div class="alert alert-info mb-0">No further action is available for the current query status.</div>
+    }
+    else
+    {
+        <form asp-action="UpdateStatus" method="post" class="wb-current-action-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="QueryId" value="@Model.Id" />
+            <div class="wb-form-grid">
+                <div>
+                    <label class="form-label">Next Status</label>
+                    <select class="form-select" name="Status" required>
+                        @foreach (var status in nextStatuses)
+                        {
+                            <option value="@status.Value">@status.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="wb-detail-span">
+                    <label class="form-label">Remarks / Resolution Comments</label>
+                    <textarea class="form-control" name="Remarks" rows="4" maxlength="1000" required placeholder="Remarks are required for audit and consumer visibility">@Model.AdminRemarks</textarea>
+                </div>
+            </div>
+            <div class="wb-current-action-buttons">
+                <button class="btn btn-primary btn-sm" type="submit">Update Query</button>
+            </div>
+        </form>
+    }
+</section>
+
+<section class="wb-page-card wb-admin-card wb-approval-section">
+    <div class="wb-section-head-compact"><h2>Status History</h2></div>
+    <div class="wb-approval-history wb-query-history">
+        @foreach (var item in Model.Histories.Where(x => !x.IsDeleted).OrderByDescending(x => x.ActionAt))
+        {
+            <div class="wb-approval-history-item">
+                <span></span>
+                <div>
+                    <div class="wb-query-history-line">
+                        <strong>@item.Action</strong>
+                        <span class="badge @BadgeClass(item.ToStatus)">@item.ToStatus</span>
+                    </div>
+                    <small>@(item.FromStatus ?? "-") -> @item.ToStatus - @item.ActionAt.ToString("dd MMM yyyy hh:mm tt")</small>
+                    @if (!string.IsNullOrWhiteSpace(item.ActionByName))
+                    {
+                        <small>By @item.ActionByName @(string.IsNullOrWhiteSpace(item.ActionByRole) ? "" : $"({item.ActionByRole})")</small>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(item.Remarks))
+                    {
+                        <p>@item.Remarks</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</section>

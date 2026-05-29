@@ -1,0 +1,39 @@
+@model Water.Bill.Infrastructure.Data.Entities.WorkflowMaster
+
+<div class="wb-page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p>One active workflow per application type is recommended.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="post" class="wb-form-grid">
+        @Html.AntiForgeryToken()
+        <div class="wb-field">
+            <label asp-for="WorkflowName" class="form-label required">Workflow Name</label>
+            <input asp-for="WorkflowName" class="form-control" />
+            <span asp-validation-for="WorkflowName" class="text-danger"></span>
+        </div>
+        <div class="wb-field">
+            <label asp-for="ApplicationType" class="form-label required">Application Type</label>
+            <select asp-for="ApplicationType" class="form-select">
+                <option value="NewConnection">New Connection</option>
+                <option value="NDC">NDC / No Dues</option>
+                <option value="NameTransfer">Name Transfer</option>
+            </select>
+            <span asp-validation-for="ApplicationType" class="text-danger"></span>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label">Status</label>
+            <div class="wb-status-choice">
+                <label><input asp-for="IsActive" type="radio" value="true" /> Active</label>
+                <label><input asp-for="IsActive" type="radio" value="false" /> Inactive</label>
+            </div>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    </form>
+</section>

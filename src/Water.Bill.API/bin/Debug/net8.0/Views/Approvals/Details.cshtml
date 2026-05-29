@@ -2,6 +2,7 @@
 @using System.Globalization
 @{
     var app = Model.NewConnectionApplication;
+    var ndc = Model.NdcApplication;
     var task = Model.Task;
     var fee = Model.Fee;
     var inr = CultureInfo.GetCultureInfo("en-IN");
@@ -10,7 +11,10 @@
         && task.WorkflowInstance.CurrentStageId == task.StageId
         && task.WorkflowInstance.IsActive;
     var approveText = task.Stage.IsFinalStage ? "Final Approve" : "Approve & Move Next";
-    var submittedOn = app?.SubmittedOn ?? app?.CreatedOn;
+    var submittedOn = app?.SubmittedOn ?? app?.CreatedOn ?? ndc?.CreatedOn;
+    var applicantName = app?.ApplicantName ?? ndc?.ConsName;
+    var mobileNo = app?.MobileNumber ?? ndc?.MobileNo;
+    var currentStatus = app?.ApplicationStatus ?? ndc?.CurrentStatus ?? ndc?.FinalStatus ?? ndc?.Status ?? task.WorkflowInstance.CurrentStatus;
 
     string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
     string DateTimeOrDash(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy hh:mm tt") : "-";
@@ -43,7 +47,7 @@
 
 <div class="wb-page-head">
     <div>
-        <h1>New Connection Approval</h1>
+        <h1>@(ndc is null ? "New Connection Approval" : "NDC Application Approval")</h1>
         <p>@task.ApplicationNo - @task.Stage.StageName</p>
     </div>
     <a class="btn btn-outline-primary" asp-action="Pending">Back to Applications</a>
@@ -69,18 +73,18 @@
         <div>
             <p class="wb-kicker">Authority Review Copy</p>
             @* <h2>Noida Jal New Connection Application</h2> *@
-            <span>Submitted application details for approval of a new connection.</span>
+            <span>Submitted application details for authority approval.</span>
         </div>
-        <span class="badge @StatusBadgeClass(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)">
-            @(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)
+        <span class="badge @StatusBadgeClass(currentStatus)">
+            @currentStatus
         </span>
     </div>
     <div class="wb-approval-summary-grid">
         <div><span>Application No</span><strong>@task.ApplicationNo</strong></div>
-        <div><span>Applicant Name</span><strong>@TextOrDash(app?.ApplicantName)</strong></div>
+        <div><span>Applicant Name</span><strong>@TextOrDash(applicantName)</strong></div>
         <div><span>Submitted Date</span><strong>@DateTimeOrDash(submittedOn)</strong></div>
         <div><span>Fee / Payment</span><strong>@(fee is null ? "-" : $"{fee.PaymentStatus} - {fee.TotalAmount.ToString("C", inr)}")</strong></div>
-        <div><span>Current Status</span><strong>@(app?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus)</strong></div>
+        <div><span>Current Status</span><strong>@currentStatus</strong></div>
         <div><span>Current Stage</span><strong>@task.Stage.StageName</strong></div>
     </div>
     @if (app is not null
@@ -216,6 +220,67 @@
                     <tr><th>Applicant Remarks</th><td colspan="3">@TextOrDash(app.Remarks)</td></tr>
                 </tbody>
             </table>
+        </div>
+    </section>
+}
+else if (ndc is not null)
+{
+    <section class="wb-application-paper">
+        <div class="wb-application-paper-title">
+            <h2>NDC Review Application</h2>
+            <p>No dues application details organized for authority review.</p>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Application & Payment Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Application No</th><td>@ndc.ApplicationNo</td><th>Application Date</th><td>@DateTimeOrDash(ndc.CreatedOn)</td></tr>
+                    <tr><th>Consumer No</th><td>@TextOrDash(ndc.ConsumerNo)</td><th>RID</th><td>@TextOrDash(ndc.Rid)</td></tr>
+                    <tr><th>Challan No</th><td>@TextOrDash(ndc.ChallanNo)</td><th>Amount</th><td>@(ndc.Amount?.ToString("N2") ?? "-")</td></tr>
+                    <tr><th>Payment Status</th><td>@TextOrDash(ndc.SuccessStatus)</td><th>Payment Date</th><td>@DateTimeOrDash(ndc.PaymentSuccessDate)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Consumer Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Consumer Name</th><td>@TextOrDash(ndc.ConsName)</td><th>Mobile No</th><td>@TextOrDash(ndc.MobileNo)</td></tr>
+                    <tr><th>Email</th><td>@TextOrDash(ndc.Email)</td><th>Division</th><td>@TextOrDash(ndc.DivisionTypeName)</td></tr>
+                    <tr><th>Sector</th><td>@TextOrDash(ndc.Sector)</td><th>Block / Plot</th><td>@TextOrDash($"{ndc.Block}-{ndc.PlotNo}".Trim('-'))</td></tr>
+                    <tr><th>Plot Area</th><td>@TextOrDash(ndc.PlotArea)</td><th>Pipe Size</th><td>@TextOrDash(ndc.PipeSize)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Uploaded Documents</h3>
+            @if (Model.NdcDocuments.Count == 0)
+            {
+                <div class="wb-empty">No documents uploaded.</div>
+            }
+            else
+            {
+                <div class="wb-document-rows">
+                    @foreach (var document in Model.NdcDocuments)
+                    {
+                        <div class="wb-document-mini-row">
+                            <span>ND</span>
+                            <div>
+                                <strong>@TextOrDash(document.AttachmentName)</strong>
+                                <small>@TextOrDash(document.AttachmentPath)</small>
+                            </div>
+                            <em>@DateTimeOrDash(document.CreatedOn)</em>
+                            @if (!string.IsNullOrWhiteSpace(document.AttachmentPath))
+                            {
+                                <a class="btn btn-sm btn-outline-primary" href="@document.AttachmentPath" target="_blank" rel="noopener">View</a>
+                            }
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </section>
 }

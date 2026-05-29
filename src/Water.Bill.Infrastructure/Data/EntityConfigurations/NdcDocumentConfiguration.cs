@@ -9,9 +9,9 @@ public class NdcDocumentConfiguration : IEntityTypeConfiguration<NdcDocument>
 {
     public void Configure(EntityTypeBuilder<NdcDocument> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("ndc_document");
+        entity.HasKey(e => e.AutoId).HasName("PRIMARY");
+
+        entity.ToTable("ndc_document");
         
         entity.HasIndex(e => e.AutoId, "IX_NDC_DOCUMENT_AUTO_ID_AUTO");
         
