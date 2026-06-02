@@ -1,0 +1,132 @@
+@model Water.Bill.ConsumerPortal.ViewModels.ConnectionChangeRequestViewModel
+@{
+    var consumer = Model.SelectedConsumer;
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+}
+
+<div class="wb-newconn-page-shell">
+    <div class="wb-page-head">
+        <div>
+            <h1>Connection Type / Category Change</h1>
+            <p>Submit a request to change the connection type or consumer category for a linked connection.</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="Index">My Requests</a>
+    </div>
+
+    <form asp-action="ConnectionChange" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <section class="wb-page-card wb-approval-section">
+            <div class="wb-section-head-compact">
+                <div>
+                    <h2>Linked Consumer</h2>
+                </div>
+            </div>
+            <div class="wb-form-grid">
+                <div>
+                    <label asp-for="ConsumerNo" class="form-label"></label>
+                    <select asp-for="ConsumerNo" asp-items="Model.Consumers" class="form-select" onchange="window.location.href='@Url.Action("ConnectionChange", "ServiceRequests")?consumerNo=' + encodeURIComponent(this.value)"></select>
+                    <span asp-validation-for="ConsumerNo" class="text-danger"></span>
+                    <small class="text-muted">You can choose any active connection linked with your mobile number.</small>
+                </div>
+                <div>
+                    <label asp-for="MobileNo" class="form-label"></label>
+                    <input asp-for="MobileNo" class="form-control" maxlength="15" />
+                    <span asp-validation-for="MobileNo" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
+
+        @if (consumer is not null)
+        {
+            <section class="wb-approval-summary-card">
+                <div class="wb-approval-summary-head">
+                    <div>
+                        <h2>@TextOrDash(consumer.ConsNm1)</h2>
+                        <span>@consumer.ConsNo</span>
+                    </div>
+                    <span class="badge text-bg-light">@Water.Bill.Core.Common.AppConstants.Divisions.FormatDisplay(consumer.DevType)</span>
+                </div>
+                <div class="wb-approval-summary-grid">
+                    <div><span>Current Type</span><strong>@TextOrDash(consumer.ConTp)</strong></div>
+                    <div><span>Current Category</span><strong>@TextOrDash(consumer.ConsCtg)</strong></div>
+                    <div><span>Property</span><strong>@($"{consumer.Sector} / {consumer.BlkNo}-{consumer.FlatNo}".Trim(' ', '/', '-'))</strong></div>
+                    <div><span>Monthly Rate</span><strong>@(consumer.MonthlyRate?.ToString("N2") ?? "-")</strong></div>
+                    <div><span>Security</span><strong>@(consumer.Secu?.ToString() ?? "-")</strong></div>
+                    <div><span>Pipe Size</span><strong>@(consumer.PipeSize?.ToString() ?? "-")</strong></div>
+                </div>
+            </section>
+        }
+
+        <section class="wb-page-card wb-approval-section">
+            <div class="wb-section-head-compact">
+                <div>
+                    <h2>Requested Connection Change</h2>
+                </div>
+            </div>
+            <div class="wb-form-grid">
+                <div>
+                    <label asp-for="NewConnectionType" class="form-label"></label>
+                    <select asp-for="NewConnectionType" asp-items="Model.ConnectionTypeOptions" class="form-select">
+                        <option value="">No change</option>
+                    </select>
+                    <span asp-validation-for="NewConnectionType" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="NewConsumerCategory" class="form-label"></label>
+                    <select asp-for="NewConsumerCategory" asp-items="Model.ConsumerCategoryOptions" class="form-select">
+                        <option value="">No change</option>
+                    </select>
+                    <span asp-validation-for="NewConsumerCategory" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="TypeChangeDate" class="form-label"></label>
+                    <input asp-for="TypeChangeDate" class="form-control" type="date" />
+                    <span asp-validation-for="TypeChangeDate" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="EstimationNo" class="form-label"></label>
+                    <input asp-for="EstimationNo" class="form-control" maxlength="50" />
+                    <span asp-validation-for="EstimationNo" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="EstimationAmount" class="form-label"></label>
+                    <input asp-for="EstimationAmount" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="EstimationAmount" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="SecurityAmount" class="form-label"></label>
+                    <input asp-for="SecurityAmount" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="SecurityAmount" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="MonthlyRate" class="form-label"></label>
+                    <input asp-for="MonthlyRate" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="MonthlyRate" class="text-danger"></span>
+                </div>
+                <div class="wb-span-2">
+                    <label asp-for="Remarks" class="form-label"></label>
+                    <textarea asp-for="Remarks" class="form-control" rows="3" maxlength="500"></textarea>
+                    <span asp-validation-for="Remarks" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="wb-page-card wb-approval-section">
+            <div class="form-check">
+                <input asp-for="DeclarationAccepted" class="form-check-input" />
+                <label asp-for="DeclarationAccepted" class="form-check-label">I confirm that the requested connection change details are correct and may be reviewed by the authority.</label>
+                <span asp-validation-for="DeclarationAccepted" class="text-danger d-block"></span>
+            </div>
+            <div class="form-actions">
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+                <button class="btn btn-primary" type="submit">Submit Request</button>
+            </div>
+        </section>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

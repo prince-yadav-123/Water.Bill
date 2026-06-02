@@ -48,6 +48,94 @@
         }
       }
     },
+    "/BillRevision": {
+      "get": {
+        "tags": [
+          "BillRevision"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/BillRevision/Details": {
+      "get": {
+        "tags": [
+          "BillRevision"
+        ],
+        "parameters": [
+          {
+            "name": "billNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/BillRevision/Reverse": {
+      "post": {
+        "tags": [
+          "BillRevision"
+        ],
+        "parameters": [
+          {
+            "name": "BillNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Reason",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 250,
+              "minLength": 0,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/BillSearchPrint": {
       "get": {
         "tags": [
@@ -120,6 +208,2780 @@
           },
           {
             "name": "billNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/BulkBillGeneration": {
+      "get": {
+        "tags": [
+          "BulkBillGeneration"
+        ],
+        "parameters": [
+          {
+            "name": "BillDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BillDueDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BillDateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BillDateTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "BillType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IncludeArrears",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IncludeCess",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IncludeGst",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "GstPercent",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "RebatePercent",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RebateMode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SchemeId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "BillPercentage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ArrearInterestPercent",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "AfterDueSurchargePercent",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "UseLegacyRateDate",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "LegacyRateDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ApplyCreditRebateGuard",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "CreditRebateThresholdMonths",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "MaxConsumers",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "HasPreview",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "DivisionOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "PreviewRows",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/BulkBillPreviewRowViewModel"
+              }
+            }
+          },
+          {
+            "name": "Result.RequestedCount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Result.GeneratedCount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Result.SkippedCount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Result.GeneratedBillNos",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "preview",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/BulkBillGeneration/Generate": {
+      "post": {
+        "tags": [
+          "BulkBillGeneration"
+        ],
+        "parameters": [
+          {
+            "name": "BillDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BillDueDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BillDateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BillDateTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "BillType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IncludeArrears",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IncludeCess",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IncludeGst",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "GstPercent",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "RebatePercent",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RebateMode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SchemeId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "BillPercentage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ArrearInterestPercent",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "AfterDueSurchargePercent",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "UseLegacyRateDate",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "LegacyRateDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ApplyCreditRebateGuard",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "CreditRebateThresholdMonths",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "MaxConsumers",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "HasPreview",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "DivisionOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "PreviewRows",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/BulkBillPreviewRowViewModel"
+              }
+            }
+          },
+          {
+            "name": "Result.RequestedCount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Result.GeneratedCount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Result.SkippedCount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Result.GeneratedBillNos",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement": {
+      "get": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "plotNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement/Create": {
+      "get": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "plotNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "purpose",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FatherName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.MobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PropertyNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConnectionType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FlatType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PipeSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.PlotSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ConsumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "MobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PlotNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HasConsumerSearch",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Consumers",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ChallanConsumerSearchRowViewModel"
+              }
+            }
+          },
+          {
+            "name": "Purpose",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Amount",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maximum": 99999999,
+              "minimum": 1,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "BillPeriodFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BillPeriodTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "DueDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "BankCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PurposeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "BankOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "BillNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "BillOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "SuggestedAmountNote",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement/Cancel/{id}": {
+      "post": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "cancelReason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement/PostPayment/{id}": {
+      "post": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ChallanId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "PaymentDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Amount",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maximum": 99999999,
+              "minimum": 1,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "PaymentMode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "BankCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "TransactionReferenceNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "schema": {
+              "maxLength": 500,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "PaymentModeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "BankOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement/Details/{id}": {
+      "get": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement/Print/{id}": {
+      "get": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement/Receipt/{id}": {
+      "get": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ChallanManagement/PaymentHistory": {
+      "get": {
+        "tags": [
+          "ChallanManagement"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "challanNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "paymentMode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/CommunicationTemplates": {
+      "get": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "purposeKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "activeStatus",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/CommunicationTemplates/Create": {
+      "get": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PurposeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PurposeKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Channel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "TemplateName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Subject",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Body",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ExternalTemplateId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Language",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsDefault",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Purposes",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "Channels",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "AllowedPlaceholders",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/CommunicationTemplates/Edit/{id}": {
+      "get": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PurposeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PurposeKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Channel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "TemplateName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Subject",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Body",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ExternalTemplateId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Language",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsDefault",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Purposes",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "Channels",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "AllowedPlaceholders",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/CommunicationTemplates/Details/{id}": {
+      "get": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/CommunicationTemplates/Preview/{id}": {
+      "get": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/CommunicationTemplates/ToggleStatus/{id}": {
+      "post": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/CommunicationTemplates/AllowedPlaceholders": {
+      "get": {
+        "tags": [
+          "CommunicationTemplates"
+        ],
+        "parameters": [
+          {
+            "name": "purposeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ComplaintManagement": {
+      "get": {
+        "tags": [
+          "ComplaintManagement"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ComplaintManagement/Details/{id}": {
+      "get": {
+        "tags": [
+          "ComplaintManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ComplaintManagement/UpdateStatus": {
+      "post": {
+        "tags": [
+          "ComplaintManagement"
+        ],
+        "parameters": [
+          {
+            "name": "ComplaintId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ComplaintManagement/Document/{id}": {
+      "get": {
+        "tags": [
+          "ComplaintManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConnectionTypeCategoryChange": {
+      "get": {
+        "tags": [
+          "ConnectionTypeCategoryChange"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConnectionTypeCategoryChange/SearchConsumer": {
+      "get": {
+        "tags": [
+          "ConnectionTypeCategoryChange"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConnectionTypeCategoryChange/Create/{consumerNo}": {
+      "get": {
+        "tags": [
+          "ConnectionTypeCategoryChange"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConnectionTypeCategoryChange/Create": {
+      "post": {
+        "tags": [
+          "ConnectionTypeCategoryChange"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsNm1",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsNm2",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConTp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsCtg",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FlatType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FlatNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.BlkNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PlotSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.PipeSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.RegNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConnDt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.EstiNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.EstiAmt",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.Secu",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.EstiDt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.Esti1Amt",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.OldNewEn",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.OldNewUp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.MobNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.EmailId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsAddress",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.OtherCon",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.IssueOfficer",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PurposeCon",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.NoduesDt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.TypeChangeDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.MonthlyRate",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Consumer.Status",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.Userid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.EntryDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.ModifyDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.DeleteDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.CessAmt",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Consumer.MaonthyCharges",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Consumer.CalDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.LedgerDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.KhasraNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.VillgaeName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.VillgaeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.NewStatus",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.Rid",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Consumer.Narration",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PlotMapId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.KiloLitter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerDetailsTrans",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ConsumerDetailsTran"
+              }
+            }
+          },
+          {
+            "name": "Consumer.ConsumerNodues",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ConsumerNodue"
+              }
+            }
+          },
+          {
+            "name": "Consumer.ConsumerTransfers",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ConsumerTransfer"
+              }
+            }
+          },
+          {
+            "name": "NewConnectionType",
+            "in": "query",
+            "schema": {
+              "maxLength": 2,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "NewConsumerCategory",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 10,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TypeChangeDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EstimationNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 10,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "EstimationAmount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "SecurityAmount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "MonthlyRate",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 500,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConnectionTypeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "ConsumerCategoryOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConnectionTypeCategoryChange/Details/{id}": {
+      "get": {
+        "tags": [
+          "ConnectionTypeCategoryChange"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConnectionTypeCategoryChange/Approve": {
+      "post": {
+        "tags": [
+          "ConnectionTypeCategoryChange"
+        ],
+        "parameters": [
+          {
+            "name": "ApplicationId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 0,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConnectionTypeCategoryChange/Reject": {
+      "post": {
+        "tags": [
+          "ConnectionTypeCategoryChange"
+        ],
+        "parameters": [
+          {
+            "name": "ApplicationId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 0,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerAccountAdjustments": {
+      "get": {
+        "tags": [
+          "ConsumerAccountAdjustments"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "adjustmentType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerAccountAdjustments/Create": {
+      "get": {
+        "tags": [
+          "ConsumerAccountAdjustments"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ConsumerAccountAdjustments"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConsumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "MobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PropertyNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "AdjustmentType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Amount",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maximum": 99999999,
+              "minimum": 0.01,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "EffectiveDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "SourceBillNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "SourceChallanNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 500,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TypeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerAccountAdjustments/Details/{id}": {
+      "get": {
+        "tags": [
+          "ConsumerAccountAdjustments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerAccountAdjustments/Cancel/{id}": {
+      "post": {
+        "tags": [
+          "ConsumerAccountAdjustments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerAccountAdjustments/Reverse/{id}": {
+      "post": {
+        "tags": [
+          "ConsumerAccountAdjustments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerLedger": {
+      "get": {
+        "tags": [
+          "ConsumerLedger"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "entryType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerLedger/Print": {
+      "get": {
+        "tags": [
+          "ConsumerLedger"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "entryType",
             "in": "query",
             "schema": {
               "type": "string"
@@ -377,6 +3239,967 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerMasterMaintenance": {
+      "get": {
+        "tags": [
+          "ConsumerMasterMaintenance"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "plotNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "devType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerMasterMaintenance/Details": {
+      "get": {
+        "tags": [
+          "ConsumerMasterMaintenance"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerMasterMaintenance/Edit": {
+      "get": {
+        "tags": [
+          "ConsumerMasterMaintenance"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ConsumerMasterMaintenance"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConsumerName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 150,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "FatherName",
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "MobileNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 12,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Email",
+            "in": "query",
+            "schema": {
+              "maxLength": 50,
+              "minLength": 0,
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "name": "Address",
+            "in": "query",
+            "schema": {
+              "maxLength": 150,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Sector",
+            "in": "query",
+            "schema": {
+              "maxLength": 25,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Block",
+            "in": "query",
+            "schema": {
+              "maxLength": 15,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "FlatNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 20,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "PlotSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PipeSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "FlatType",
+            "in": "query",
+            "schema": {
+              "maxLength": 6,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConnectionType",
+            "in": "query",
+            "schema": {
+              "maxLength": 1,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Category",
+            "in": "query",
+            "schema": {
+              "maxLength": 10,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "RegistrationNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 8,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ConnectionDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "TypeChangeDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EstimateNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 10,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "EstimateAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SecurityAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "EstimateDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "MonthlyRate",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "MonthlyCharges",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "CessAmount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Purpose",
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "OtherConnection",
+            "in": "query",
+            "schema": {
+              "maxLength": 150,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "KhasraNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 20,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "VillageName",
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "VillageId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "IssueOfficer",
+            "in": "query",
+            "schema": {
+              "maxLength": 50,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "PlotMapId",
+            "in": "query",
+            "schema": {
+              "maxLength": 25,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "KiloLiter",
+            "in": "query",
+            "schema": {
+              "maxLength": 50,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Narration",
+            "in": "query",
+            "schema": {
+              "maxLength": 250,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "DivisionOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "ConnectionTypeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "CategoryOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "PipeSizeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "FlatTypeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ConsumerMasterMaintenance/ToggleStatus": {
+      "post": {
+        "tags": [
+          "ConsumerMasterMaintenance"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement": {
+      "get": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "plotNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement/Create": {
+      "get": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FatherName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.MobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PropertyNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConnectionType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.Status",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Reason",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NoticeDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "DueDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "OutstandingAmount",
+            "in": "query",
+            "schema": {
+              "maximum": 999999999,
+              "minimum": 0,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "DisconnectionFee",
+            "in": "query",
+            "schema": {
+              "maximum": 999999999,
+              "minimum": 0,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "ReconnectionFee",
+            "in": "query",
+            "schema": {
+              "maximum": 999999999,
+              "minimum": 0,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "FieldOfficerName",
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 500,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ReasonOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement/Details/{id}": {
+      "get": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement/Print/{id}": {
+      "get": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement/Disconnect/{id}": {
+      "post": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement/RequestReconnect/{id}": {
+      "post": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement/Reconnect/{id}": {
+      "post": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/DisconnectionManagement/Cancel/{id}": {
+      "post": {
+        "tags": [
+          "DisconnectionManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -682,6 +4505,952 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/MeterReadingManagement": {
+      "get": {
+        "tags": [
+          "MeterReadingManagement"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "block",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "plotNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "meterStatus",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/MeterReadingManagement/Create": {
+      "get": {
+        "tags": [
+          "MeterReadingManagement"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "MeterReadingManagement"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FatherName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.MobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PropertyNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConnectionType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PipeSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ReadingDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PeriodFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PeriodTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PreviousReading",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "CurrentReading",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maximum": 999999999,
+              "minimum": 0,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Consumption",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "MeterStatus",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "MeterNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 50,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "schema": {
+              "maxLength": 500,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "StatusOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/MeterReadingManagement/Details/{id}": {
+      "get": {
+        "tags": [
+          "MeterReadingManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NameTransferMutation": {
+      "get": {
+        "tags": [
+          "NameTransferMutation"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NameTransferMutation/SearchConsumer": {
+      "get": {
+        "tags": [
+          "NameTransferMutation"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NameTransferMutation/Create/{consumerNo}": {
+      "get": {
+        "tags": [
+          "NameTransferMutation"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NameTransferMutation/Create": {
+      "post": {
+        "tags": [
+          "NameTransferMutation"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsNm1",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsNm2",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConTp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsCtg",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FlatType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FlatNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.BlkNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PlotSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.PipeSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.RegNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConnDt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.EstiNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.EstiAmt",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.Secu",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.EstiDt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.Esti1Amt",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.OldNewEn",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.OldNewUp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.MobNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.EmailId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsAddress",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.OtherCon",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.IssueOfficer",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PurposeCon",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.NoduesDt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.TypeChangeDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.MonthlyRate",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Consumer.Status",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.Userid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.EntryDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.ModifyDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.DeleteDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.CessAmt",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Consumer.MaonthyCharges",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Consumer.CalDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.LedgerDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Consumer.KhasraNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.VillgaeName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.VillgaeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.NewStatus",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Consumer.Rid",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Consumer.Narration",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PlotMapId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.KiloLitter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerDetailsTrans",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ConsumerDetailsTran"
+              }
+            }
+          },
+          {
+            "name": "Consumer.ConsumerNodues",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ConsumerNodue"
+              }
+            }
+          },
+          {
+            "name": "Consumer.ConsumerTransfers",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ConsumerTransfer"
+              }
+            }
+          },
+          {
+            "name": "NewConsumerName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 100,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "NewFatherName",
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "MobileNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 12,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ChallanNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 50,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ChallanDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "TransferFee",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "SecurityAmount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 500,
+              "minLength": 0,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NameTransferMutation/Details/{id}": {
+      "get": {
+        "tags": [
+          "NameTransferMutation"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NameTransferMutation/Approve": {
+      "post": {
+        "tags": [
+          "NameTransferMutation"
+        ],
+        "parameters": [
+          {
+            "name": "ApplicationId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 0,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NameTransferMutation/Reject": {
+      "post": {
+        "tags": [
+          "NameTransferMutation"
+        ],
+        "parameters": [
+          {
+            "name": "ApplicationId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 0,
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -1435,6 +6204,449 @@
         }
       }
     },
+    "/NoticeManagement": {
+      "get": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "noticeType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NoticeManagement/Create": {
+      "get": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "parameters": [
+          {
+            "name": "consumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "noticeType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "templateId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "parameters": [
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConsumerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.FatherName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.MobileNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.PropertyNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.ConnectionType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.Category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Consumer.DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "TemplateId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "NoticeType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Subject",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Body",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "NoticeDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "DueDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "AmountDue",
+            "in": "query",
+            "schema": {
+              "maximum": 999999999,
+              "minimum": 0,
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "RelatedBillNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "RelatedChallanNo",
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "RelatedDisconnectionCaseId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Remarks",
+            "in": "query",
+            "schema": {
+              "maxLength": 500,
+              "minLength": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TemplateOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "TypeOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          },
+          {
+            "name": "CaseOptions",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SelectListItem"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NoticeManagement/Details/{id}": {
+      "get": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NoticeManagement/Print/{id}": {
+      "get": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NoticeManagement/Issue/{id}": {
+      "post": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NoticeManagement/Cancel/{id}": {
+      "post": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NoticeManagement/Templates": {
+      "get": {
+        "tags": [
+          "NoticeManagement"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/OnlinePaymentHistory": {
       "get": {
         "tags": [
@@ -1512,6 +6724,191 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/OnlinePaymentHistory/Reconcile/{jalRefId}": {
+      "post": {
+        "tags": [
+          "OnlinePaymentHistory"
+        ],
+        "parameters": [
+          {
+            "name": "jalRefId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/OperatorAudit": {
+      "get": {
+        "tags": [
+          "OperatorAudit"
+        ],
+        "parameters": [
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Module",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Rows",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/OperatorAuditRowViewModel"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/ReportsMis": {
+      "get": {
+        "tags": [
+          "ReportsMis"
+        ],
+        "parameters": [
+          {
+            "name": "ReportType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ConsumerNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Summary.TotalCount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Summary.TotalAmount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Summary.PaidAmount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Summary.PendingAmount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "Rows",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/MisReportRowViewModel"
+              }
             }
           }
         ],
@@ -2253,6 +7650,618 @@
         },
         "additionalProperties": false
       },
+      "BulkBillPreviewRowViewModel": {
+        "type": "object",
+        "properties": {
+          "consumerNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "propertyNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "devType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "connectionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "pipeSize": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "plotSize": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "monthlyRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "minimumTotalAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "cessAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "arrearAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "arrearInterest": {
+            "type": "number",
+            "format": "double"
+          },
+          "debitAdjustmentAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "creditAdjustmentAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "rebateAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "appliedRebatePercent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gstAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalBillAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "afterDueAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "billPercentage": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "schemeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "oldRateFlag": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alreadyGenerated": {
+            "type": "boolean"
+          },
+          "rateSource": {
+            "type": "string",
+            "nullable": true
+          },
+          "warning": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChallanConsumerSearchRowViewModel": {
+        "type": "object",
+        "properties": {
+          "consumerNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobileNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "propertyNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "connectionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "devType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConsumerDetailsMaster": {
+        "type": "object",
+        "properties": {
+          "consNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "consNm1": {
+            "type": "string",
+            "nullable": true
+          },
+          "consNm2": {
+            "type": "string",
+            "nullable": true
+          },
+          "conTp": {
+            "type": "string",
+            "nullable": true
+          },
+          "consCtg": {
+            "type": "string",
+            "nullable": true
+          },
+          "flatType": {
+            "type": "string",
+            "nullable": true
+          },
+          "flatNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "blkNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "sector": {
+            "type": "string",
+            "nullable": true
+          },
+          "plotSize": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "pipeSize": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "regNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "connDt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "estiNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "estiAmt": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "secu": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "estiDt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "esti1Amt": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "devType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "oldNewEn": {
+            "type": "string",
+            "nullable": true
+          },
+          "oldNewUp": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailId": {
+            "type": "string",
+            "nullable": true
+          },
+          "consAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherCon": {
+            "type": "string",
+            "nullable": true
+          },
+          "issueOfficer": {
+            "type": "string",
+            "nullable": true
+          },
+          "purposeCon": {
+            "type": "string",
+            "nullable": true
+          },
+          "noduesDt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "typeChangeDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "monthlyRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "userid": {
+            "type": "string",
+            "nullable": true
+          },
+          "entryDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deleteDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "cessAmt": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maonthyCharges": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "calDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ledgerDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "khasraNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "villgaeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "villgaeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "newStatus": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "rid": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "narration": {
+            "type": "string",
+            "nullable": true
+          },
+          "plotMapId": {
+            "type": "string",
+            "nullable": true
+          },
+          "kiloLitter": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerDetailsTrans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsumerDetailsTran"
+            },
+            "nullable": true
+          },
+          "consumerNodues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsumerNodue"
+            },
+            "nullable": true
+          },
+          "consumerTransfers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsumerTransfer"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConsumerDetailsTran": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "consNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "calDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "allotDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "posDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "compDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssiDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "affidavitYn": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "userid": {
+            "type": "string",
+            "nullable": true
+          },
+          "entryDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deleteDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "devType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "consNoNavigation": {
+            "$ref": "#/components/schemas/ConsumerDetailsMaster"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConsumerNodue": {
+        "type": "object",
+        "properties": {
+          "nodueId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "consNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "nodueAmt": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "nodueDt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "challanNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "challanDt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "challanBank": {
+            "type": "string",
+            "nullable": true
+          },
+          "secu": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "userid": {
+            "type": "string",
+            "nullable": true
+          },
+          "entryDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deleteDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ndcUpto": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "devType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "consNoNavigation": {
+            "$ref": "#/components/schemas/ConsumerDetailsMaster"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConsumerTransfer": {
+        "type": "object",
+        "properties": {
+          "transfId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "consNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "consNm": {
+            "type": "string",
+            "nullable": true
+          },
+          "consFnm": {
+            "type": "string",
+            "nullable": true
+          },
+          "transDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "transAmt": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "challanNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankNm": {
+            "type": "string",
+            "nullable": true
+          },
+          "challanDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "secu": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "userid": {
+            "type": "string",
+            "nullable": true
+          },
+          "entryDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deleteDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "devType": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "consNoNavigation": {
+            "$ref": "#/components/schemas/ConsumerDetailsMaster"
+          }
+        },
+        "additionalProperties": false
+      },
       "LoginRequestDto": {
         "required": [
           "password",
@@ -2356,10 +8365,6 @@
             "type": "string",
             "nullable": true
           },
-          "module": {
-            "type": "string",
-            "nullable": true
-          },
           "moduleId": {
             "type": "integer",
             "format": "int32",
@@ -2403,6 +8408,49 @@
           },
           "parent": {
             "$ref": "#/components/schemas/Menuitem"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisReportRowViewModel": {
+        "type": "object",
+        "properties": {
+          "referenceNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "propertyNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "division": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "paidAmount": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -2495,6 +8543,48 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OperatorAuditRowViewModel": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "module": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ipAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "details": {
+            "type": "string",
+            "nullable": true
+          },
+          "success": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2600,6 +8690,42 @@
           },
           "role": {
             "$ref": "#/components/schemas/Approle"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SelectListGroup": {
+        "type": "object",
+        "properties": {
+          "disabled": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SelectListItem": {
+        "type": "object",
+        "properties": {
+          "disabled": {
+            "type": "boolean"
+          },
+          "group": {
+            "$ref": "#/components/schemas/SelectListGroup"
+          },
+          "selected": {
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

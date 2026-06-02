@@ -45,14 +45,16 @@ public class NewConnectionFinalizationService : INewConnectionFinalizationServic
         var consumerNo = await GenerateConsumerNoAsync(application, ct);
         var now = DateTime.Now;
         var actorUserId = actionByUserId?.ToString();
+        var connectionTypeCode = NormalizeConnectionTypeCode(application.ConnectionCategory);
+        var consumerCategoryCode = NormalizeConsumerCategoryCode(application.ConnectionType);
 
         _db.ConsumerDetailsMasters.Add(new ConsumerDetailsMaster
         {
             ConsNo = consumerNo,
             ConsNm1 = Trim(application.ApplicantName, 150),
             ConsNm2 = Trim(application.FatherName, 30),
-            ConTp = Trim(application.ConnectionCategory, 1),
-            ConsCtg = Trim(application.ConnectionType, 10),
+            ConTp = connectionTypeCode,
+            ConsCtg = consumerCategoryCode,
             FlatType = Trim(application.FlatType, 6),
             FlatNo = Trim(application.FlatNo, 20),
             BlkNo = Trim(application.Block, 15),
@@ -229,6 +231,43 @@ public class NewConnectionFinalizationService : INewConnectionFinalizationServic
     private static string? ToLegacyDate(DateTime? value) => value?.ToString("dd-MM-yyyy");
 
     private static string? ToLegacyDate(DateOnly? value) => value?.ToString("dd-MM-yyyy");
+
+    private static string? NormalizeConnectionTypeCode(string? value)
+    {
+        var normalized = NormalizeToken(value);
+        return normalized switch
+        {
+            "R" or "RESIDENTIAL" => "R",
+            "C" or "COMMERCIAL" => "C",
+            "I" or "INSTITUTIONAL" => "I",
+            "T" or "INDUSTRIAL" or "INDUSTRY" => "T",
+            "S" or "STAFF" => "S",
+            "V" or "VILLAGE" => "V",
+            "H" or "HOUSING" => "H",
+            "G" or "GROUPHOUSING" or "GROUP HOUSING" => "G",
+            "CC" or "COURTCASE" or "COURT CASE" => "CC",
+            "D" or "DISCONNECTION" or "DISCONNECTED" => "D",
+            _ => Trim(value, 1)
+        };
+    }
+
+    private static string? NormalizeConsumerCategoryCode(string? value)
+    {
+        var normalized = NormalizeToken(value);
+        return normalized switch
+        {
+            "R" or "REGULAR" => "R",
+            "T" or "TEMPORARY" => "T",
+            "S" or "STAFF" => "S",
+            "M" or "RMC" => "M",
+            "CC" or "COURTCASE" or "COURT CASE" => "CC",
+            "D" or "DISCONNECTION" or "DISCONNECTED" => "D",
+            _ => Trim(value, 10)
+        };
+    }
+
+    private static string NormalizeToken(string? value)
+        => (value ?? string.Empty).Trim().ToUpperInvariant();
 
     private static string? Trim(string? value, int maxLength)
     {

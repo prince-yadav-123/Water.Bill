@@ -75,9 +75,23 @@ public static class AppConstants
         public const string ConsumerProfile = "Consumer Profile";
         public const string ConsumerNewConnection = "Consumer New Connection";
         public const string ConsumerNdcApplications = "Consumer NDC Applications";
+        public const string ConsumerChallans = "Consumer Challans";
+        public const string ConsumerServiceRequests = "Consumer Service Requests";
         public const string ConsumerSupportQueries = "Consumer Support Queries";
         public const string ConsumerQueryManagement = "Consumer Query Management";
+        public const string ConsumerComplaints = "Consumer Complaints";
+        public const string ComplaintManagement = "Complaint Management";
+        public const string ConsumerMasterMaintenance = "Consumer Master Maintenance";
+        public const string ConsumerAccountAdjustments = "Consumer Account Adjustments";
+        public const string ConsumerLedger = "Consumer Ledger";
+        public const string MeterReadingManagement = "Meter Reading Management";
+        public const string DisconnectionManagement = "Disconnection / Reconnection Management";
+        public const string NoticeManagement = "Notice Management";
+        public const string NameTransferMutation = "Name Transfer / Mutation";
+        public const string ConnectionTypeCategoryChange = "Connection Type / Category Change";
         public const string BillSearchPrint = "Bill Search & Print";
+        public const string BulkBillGeneration = "Bulk Bill Generation";
+        public const string ChallanManagement = "Challan Management";
         public const string OnlinePaymentHistory = "Online Payment History";
         public const string NdcApplications = "NDC Applications";
         public const string NdcCertificateManagement = "NDC Certificate Management";
@@ -85,5 +99,7 @@ public static class AppConstants
         public const string WorkflowMaster = "Workflow Master";
         public const string MyPendingApplications = "My Pending Applications";
         public const string NewConnectionFeeConfiguration = "New Connection Fee Configuration";
+        public const string CommunicationTemplates = "Communication Templates";
     }
+
 }

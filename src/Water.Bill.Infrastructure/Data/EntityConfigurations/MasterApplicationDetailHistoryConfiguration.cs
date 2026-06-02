@@ -9,10 +9,10 @@ public class MasterApplicationDetailHistoryConfiguration : IEntityTypeConfigurat
 {
     public void Configure(EntityTypeBuilder<MasterApplicationDetailHistory> entity)
     {
-        entity
-            .HasNoKey()
-            .ToTable("master_application_detail_history");
-        
+        entity.HasKey(e => new { e.ApplicationId, e.SerialNumber }).HasName("PRIMARY");
+
+        entity.ToTable("master_application_detail_history");
+
         entity.Property(e => e.ApplicationId)
             .HasMaxLength(10)
             .HasColumnName("Application_id");
@@ -36,6 +36,5 @@ public class MasterApplicationDetailHistoryConfiguration : IEntityTypeConfigurat
         entity.Property(e => e.Status)
             .HasMaxLength(1)
             .HasColumnName("status");
-        
     }
 }

@@ -10,6 +10,8 @@ public class WorkflowService : IWorkflowService
 {
     public const string ApplicationTypeNewConnection = "NewConnection";
     public const string ApplicationTypeNdc = "NDC";
+    public const string ApplicationTypeNameTransfer = "NameTransfer";
+    public const string ApplicationTypeConnectionChange = "ConnectionChange";
     public const string TaskStatusPending = "Pending";
     public const string TaskStatusApproved = "Approved";
     public const string TaskStatusRejected = "Rejected";
@@ -176,11 +178,18 @@ public class WorkflowService : IWorkflowService
             var ndcApplication = task.WorkflowInstance.ApplicationType == ApplicationTypeNdc
                 ? await _db.ConsumerApplyNdcs.FirstOrDefaultAsync(x => x.AutoId == task.ApplicationId, ct)
                 : null;
+            var legacyApplication = IsLegacyConsumerChange(task.WorkflowInstance.ApplicationType)
+                ? await _db.MasterApplicationDetails.FirstOrDefaultAsync(x =>
+                    x.ApplicationId == task.ApplicationNo
+                    && x.AppType == ResolveLegacyAppType(task.WorkflowInstance.ApplicationType), ct)
+                : null;
 
             if (task.WorkflowInstance.ApplicationType == ApplicationTypeNewConnection && application is null)
                 throw new InvalidOperationException("New connection application not found.");
             if (task.WorkflowInstance.ApplicationType == ApplicationTypeNdc && ndcApplication is null)
                 throw new InvalidOperationException("NDC application not found.");
+            if (IsLegacyConsumerChange(task.WorkflowInstance.ApplicationType) && legacyApplication is null)
+                throw new InvalidOperationException("Consumer service request not found.");
 
             var fromStatus = task.WorkflowInstance.CurrentStatus;
             var nextStatus = ResolveApplicationStatus(normalizedAction, task.Stage);
@@ -316,6 +325,15 @@ public class WorkflowService : IWorkflowService
             {
                 ApplyNdcWorkflowStatus(ndcApplication, nextStatus, normalizedAction, request.ActorUserId, now, request.Remarks);
             }
+            else if (legacyApplication is not null)
+            {
+                ApplyLegacyWorkflowStatus(legacyApplication, nextStatus, normalizedAction, request.Remarks, now);
+                AddMasterApplicationHistory(
+                    legacyApplication.ApplicationId,
+                    legacyApplication.DivName,
+                    $"{historyAction}. {Normalize(request.Remarks)}",
+                    normalizedAction == ActionRejected ? "3" : "1");
+            }
 
             var workflowActionToStatus = nextStatus;
             string? finalConsumerNo = null;
@@ -344,6 +362,18 @@ public class WorkflowService : IWorkflowService
                 ndcApplication.LastUpdatedBy = request.ActorUserId;
                 ndcApplication.LastUpdatedOn = now;
                 ndcApplication.CertificateUrl = $"/NdcCertificates/Print/{ndcApplication.AutoId}";
+                nextStatus = "Approved";
+                task.WorkflowInstance.CurrentStatus = nextStatus;
+                task.WorkflowInstance.CompletedOn = now;
+                task.WorkflowInstance.IsActive = false;
+            }
+            else if (legacyApplication is not null && normalizedAction == ActionApproved && nextStage is null)
+            {
+                if (task.WorkflowInstance.ApplicationType == ApplicationTypeNameTransfer)
+                    await FinalizeNameTransferAsync(legacyApplication, request, now, ct);
+                else if (task.WorkflowInstance.ApplicationType == ApplicationTypeConnectionChange)
+                    await FinalizeConnectionChangeAsync(legacyApplication, request, now, ct);
+
                 nextStatus = "Approved";
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
@@ -609,6 +639,209 @@ public class WorkflowService : IWorkflowService
         var trimmed = value?.Trim();
         return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
     }
+
+    private static bool IsLegacyConsumerChange(string? applicationType)
+        => string.Equals(applicationType, ApplicationTypeNameTransfer, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(applicationType, ApplicationTypeConnectionChange, StringComparison.OrdinalIgnoreCase);
+
+    private static string ResolveLegacyAppType(string applicationType)
+        => string.Equals(applicationType, ApplicationTypeNameTransfer, StringComparison.OrdinalIgnoreCase) ? "TRN" : "CTC";
+
+    private void ApplyLegacyWorkflowStatus(
+        MasterApplicationDetail application,
+        string nextStatus,
+        string action,
+        string? remarks,
+        DateTime now)
+    {
+        application.ApplicationStatus = nextStatus;
+        application.StatusDate = DateOnly.FromDateTime(now);
+        if (action == ActionRejected)
+            application.ApplcationStatusDetail = AppendDetail(application.ApplcationStatusDetail, "RejectionRemarks", remarks);
+        else if (!string.IsNullOrWhiteSpace(remarks))
+            application.ApplcationStatusDetail = AppendDetail(application.ApplcationStatusDetail, "WorkflowRemarks", remarks);
+    }
+
+    private async Task FinalizeNameTransferAsync(
+        MasterApplicationDetail application,
+        WorkflowActionRequest request,
+        DateTime now,
+        CancellationToken ct)
+    {
+        var consumer = await _db.ConsumerDetailsMasters.FirstOrDefaultAsync(x => x.ConsNo == application.ConsNo, ct)
+            ?? throw new InvalidOperationException("Linked consumer was not found.");
+
+        var detail = DecodeDetail(application.ApplcationStatusDetail);
+        var oldName = consumer.ConsNm1;
+        var oldFather = consumer.ConsNm2;
+        consumer.ConsNm1 = application.ConName;
+        consumer.ConsNm2 = DetailValue(detail, "NewFather") ?? consumer.ConsNm2;
+        consumer.MobNo = application.ConPhoneMobile ?? consumer.MobNo;
+        consumer.ModifyDate = now;
+        consumer.Userid = UserIdText(request.ActorUserId);
+
+        _db.ConsumerTransfers.Add(new ConsumerTransfer
+        {
+            ConsNo = consumer.ConsNo,
+            ConsNm = application.ConName,
+            ConsFnm = consumer.ConsNm2,
+            TransDate = now,
+            TransAmt = ToDouble(ExtractDecimal(detail, "TransferFee")),
+            ChallanNo = DetailValue(detail, "ChallanNo"),
+            ChallanDate = ExtractDate(detail, "ChallanDate") ?? now,
+            Secu = ToDouble(ExtractDecimal(detail, "SecurityAmount")) ?? 0,
+            Status = 1,
+            Userid = UserIdText(request.ActorUserId),
+            EntryDate = now,
+            DevType = consumer.DevType
+        });
+
+        application.ApplicationStatus = "Approved";
+        application.StatusDate = DateOnly.FromDateTime(now);
+        application.ApplcationStatusDetail = AppendDetail(application.ApplcationStatusDetail, "ApprovalRemarks", request.Remarks);
+        AddMasterApplicationHistory(
+            application.ApplicationId,
+            application.DivName,
+            $"Approved and applied to consumer master. Old name: {oldName}; old father/name2: {oldFather}. {Normalize(request.Remarks)}",
+            "2");
+    }
+
+    private async Task FinalizeConnectionChangeAsync(
+        MasterApplicationDetail application,
+        WorkflowActionRequest request,
+        DateTime now,
+        CancellationToken ct)
+    {
+        var consumer = await _db.ConsumerDetailsMasters.FirstOrDefaultAsync(x => x.ConsNo == application.ConsNo, ct)
+            ?? throw new InvalidOperationException("Linked consumer was not found.");
+
+        var detail = DecodeDetail(application.ApplcationStatusDetail);
+        consumer.ConTp = NormalizeConnectionTypeCode(DetailValue(detail, "NewConnectionType")) ?? consumer.ConTp;
+        consumer.ConsCtg = NormalizeConsumerCategoryCode(DetailValue(detail, "NewCategory")) ?? consumer.ConsCtg;
+        consumer.TypeChangeDate = ExtractDate(detail, "TypeChangeDate") ?? now;
+        consumer.EstiNo = DetailValue(detail, "EstimationNo") ?? consumer.EstiNo;
+        consumer.EstiAmt = ToInt(ExtractDecimal(detail, "EstimationAmount")) ?? consumer.EstiAmt;
+        consumer.Secu = ToInt(ExtractDecimal(detail, "SecurityAmount")) ?? consumer.Secu;
+        consumer.MonthlyRate = ToDouble(ExtractDecimal(detail, "MonthlyRate")) ?? consumer.MonthlyRate;
+        consumer.ModifyDate = now;
+        consumer.Userid = UserIdText(request.ActorUserId);
+
+        application.ApplicationStatus = "Approved";
+        application.StatusDate = DateOnly.FromDateTime(now);
+        application.ApplcationStatusDetail = AppendDetail(application.ApplcationStatusDetail, "ApprovalRemarks", request.Remarks);
+        AddMasterApplicationHistory(application.ApplicationId, application.DivName, "Approved and applied to consumer master. " + Normalize(request.Remarks), "2");
+    }
+
+    private void AddMasterApplicationHistory(string appId, string? division, string remark, string status)
+    {
+        var persistedMax = (_db.MasterApplicationDetailHistories
+            .Where(x => x.ApplicationId == appId)
+            .Select(x => x.SerialNumber ?? 0)
+            .DefaultIfEmpty()
+            .Max());
+        var localMax = _db.ChangeTracker.Entries<MasterApplicationDetailHistory>()
+            .Where(x => x.Entity.ApplicationId == appId)
+            .Select(x => x.Entity.SerialNumber ?? 0)
+            .DefaultIfEmpty()
+            .Max();
+        var next = Math.Max(persistedMax, localMax) + 1;
+
+        _db.MasterApplicationDetailHistories.Add(new MasterApplicationDetailHistory
+        {
+            ApplicationId = appId,
+            SerialNumber = next,
+            Division = division,
+            CurrentHoldingPer = division,
+            ForwardDate = DateOnly.FromDateTime(DateTime.Today),
+            Remark = Truncate(remark, 200),
+            Flag = "N",
+            CurentStatus = status,
+            Status = "1"
+        });
+    }
+
+    private static Dictionary<string, string> DecodeDetail(string? text)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(text))
+            return result;
+
+        foreach (var item in text.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = item.Split('=', 2);
+            if (parts.Length == 2)
+                result[parts[0]] = parts[1];
+        }
+
+        return result;
+    }
+
+    private static string? DetailValue(IReadOnlyDictionary<string, string> detail, string key)
+        => detail.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : null;
+
+    private static decimal? ExtractDecimal(IReadOnlyDictionary<string, string> detail, string key)
+        => decimal.TryParse(DetailValue(detail, key), out var value) ? value : null;
+
+    private static DateTime? ExtractDate(IReadOnlyDictionary<string, string> detail, string key)
+        => DateTime.TryParse(DetailValue(detail, key), out var value) ? value : null;
+
+    private static int? ToInt(decimal? value)
+        => value.HasValue ? Convert.ToInt32(value.Value) : null;
+
+    private static double? ToDouble(decimal? value)
+        => value.HasValue ? Convert.ToDouble(value.Value) : null;
+
+    private static string UserIdText(int? userId)
+        => userId.HasValue ? userId.Value.ToString() : "0";
+
+    private static string Truncate(string value, int max)
+        => value.Length <= max ? value : value[..max];
+
+    private static string AppendDetail(string? existing, string key, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return existing ?? string.Empty;
+
+        var sanitized = value.Replace(";", ",").Replace("=", "-").Trim();
+        return string.IsNullOrWhiteSpace(existing) ? $"{key}={sanitized}" : $"{existing};{key}={sanitized}";
+    }
+
+    private static string? NormalizeConnectionTypeCode(string? value)
+    {
+        var normalized = NormalizeToken(value);
+        return normalized switch
+        {
+            "R" or "RESIDENTIAL" => "R",
+            "C" or "COMMERCIAL" => "C",
+            "I" or "INSTITUTIONAL" => "I",
+            "T" or "INDUSTRIAL" or "INDUSTRY" => "T",
+            "S" or "STAFF" => "S",
+            "V" or "VILLAGE" => "V",
+            "H" or "HOUSING" => "H",
+            "G" or "GROUPHOUSING" or "GROUP HOUSING" => "G",
+            "CC" or "COURTCASE" or "COURT CASE" => "CC",
+            "D" or "DISCONNECTION" or "DISCONNECTED" => "D",
+            _ => string.IsNullOrWhiteSpace(value) ? null : value.Trim()[..Math.Min(value.Trim().Length, 1)]
+        };
+    }
+
+    private static string? NormalizeConsumerCategoryCode(string? value)
+    {
+        var normalized = NormalizeToken(value);
+        return normalized switch
+        {
+            "R" or "REGULAR" => "R",
+            "T" or "TEMPORARY" => "T",
+            "S" or "STAFF" => "S",
+            "M" or "RMC" => "M",
+            "CC" or "COURTCASE" or "COURT CASE" => "CC",
+            "D" or "DISCONNECTION" or "DISCONNECTED" => "D",
+            _ => string.IsNullOrWhiteSpace(value) ? null : value.Trim()[..Math.Min(value.Trim().Length, 10)]
+        };
+    }
+
+    private static string NormalizeToken(string? value)
+        => (value ?? string.Empty).Trim().ToUpperInvariant();
 
     private static string NormalizeNdcStatus(ConsumerApplyNdc application)
         => !string.IsNullOrWhiteSpace(application.FinalStatus)

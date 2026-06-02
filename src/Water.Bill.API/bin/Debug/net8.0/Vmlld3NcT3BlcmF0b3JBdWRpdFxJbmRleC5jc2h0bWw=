@@ -1,0 +1,59 @@
+@model Water.Bill.API.Models.Audit.OperatorAuditIndexViewModel
+@{
+    string DateText(DateTime value) => value.ToString("dd MMM yyyy hh:mm tt");
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Operator Activity Logs</h1>
+        <p>Review user actions recorded in the audit log.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" name="Search" value="@Model.Search" placeholder="User / module / entity / details" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Module</label>
+            <input class="form-control" name="Module" value="@Model.Module" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">User Id</label>
+            <input class="form-control" name="UserId" value="@Model.UserId" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="ToDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+        </div>
+    </form>
+
+    <div class="table-responsive wb-approval-table-wrap mt-3">
+        <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+            <thead><tr><th>Date</th><th>User</th><th>Module</th><th>Entity</th><th>Action</th><th>Result</th><th>Details</th></tr></thead>
+            <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr>
+                    <td>@DateText(row.Timestamp)</td>
+                    <td>@(row.Username ?? row.UserId?.ToString() ?? "-")</td>
+                    <td>@(row.Module ?? "-")</td>
+                    <td>@(row.EntityId ?? "-")</td>
+                    <td>@row.Action</td>
+                    <td><span class="badge @(row.Success ? "text-bg-success" : "text-bg-danger")">@(row.Success ? "Success" : "Failed")</span></td>
+                    <td>@(row.Details ?? "-")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

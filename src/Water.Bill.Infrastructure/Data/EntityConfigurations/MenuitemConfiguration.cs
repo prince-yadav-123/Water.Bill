@@ -29,7 +29,6 @@ entity
             .IsRequired()
             .HasDefaultValueSql("'1'");
         entity.Property(e => e.Label).HasMaxLength(100);
-        entity.Property(e => e.Module).HasMaxLength(100);
         entity.Property(e => e.SectionLabel).HasMaxLength(100);
         entity.Property(e => e.ShowInSidebar)
             .HasDefaultValueSql("'1'");

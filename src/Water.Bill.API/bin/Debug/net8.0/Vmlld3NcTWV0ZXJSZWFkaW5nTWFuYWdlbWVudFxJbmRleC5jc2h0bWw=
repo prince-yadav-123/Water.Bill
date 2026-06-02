@@ -1,0 +1,190 @@
+@model Water.Bill.API.Models.MeterReadings.MeterReadingIndexViewModel
+@using Water.Bill.API.Models.MeterReadings
+@using Water.Bill.Core.Common
+@{
+    ViewData["Title"] = "Meter Reading Management";
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Amount(decimal? value) => value.HasValue ? value.Value.ToString("N2") : "-";
+    string Badge(string status) => status switch
+    {
+        MeterReadingStatuses.Normal => "text-bg-success",
+        MeterReadingStatuses.Average => "text-bg-info",
+        MeterReadingStatuses.Locked or MeterReadingStatuses.Faulty => "text-bg-warning",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Meter Reading Management</h1>
+        <p>Search consumers, record meter readings, and review reading history for billing preparation.</p>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] is string success)
+{
+    <div class="alert alert-success wb-alert">@success</div>
+}
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Reading no / consumer / name / mobile" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" type="search" name="consumerNo" value="@Model.ConsumerNo" placeholder="Consumer no" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer Name</label>
+            <input class="form-control" type="search" name="consumerName" value="@Model.ConsumerName" placeholder="Name" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Mobile</label>
+            <input class="form-control" type="search" name="mobileNo" value="@Model.MobileNo" placeholder="Mobile" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Sector</label>
+            <input class="form-control" type="search" name="sector" value="@Model.Sector" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Block</label>
+            <input class="form-control" type="search" name="block" value="@Model.Block" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Plot</label>
+            <input class="form-control" type="search" name="plotNo" value="@Model.PlotNo" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Meter Status</label>
+            <select class="form-select" name="meterStatus" asp-items="Model.StatusOptions">
+                <option value="">All Status</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From Date</label>
+            <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To Date</label>
+            <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+</section>
+
+@if (Model.HasConsumerSearch)
+{
+    <section class="wb-page-card wb-admin-card">
+        <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+            <div>
+                <h2 class="wb-section-title mb-1">Consumer Search</h2>
+                <p class="text-muted mb-0">Choose a consumer to record a fresh meter reading.</p>
+            </div>
+            <span class="badge text-bg-secondary">@Model.Consumers.Count result@(Model.Consumers.Count == 1 ? "" : "s")</span>
+        </div>
+        @if (Model.Consumers.Count == 0)
+        {
+            <div class="wb-empty">No matching consumers found.</div>
+        }
+        else
+        {
+            <div class="table-responsive wb-approval-table-wrap">
+                <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                    <thead>
+                        <tr>
+                            <th>Consumer No</th>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Property</th>
+                            <th>Connection</th>
+                            <th>Last Reading</th>
+                            <th>Division</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var consumer in Model.Consumers)
+                    {
+                        <tr>
+                            <td><strong>@consumer.ConsumerNo</strong></td>
+                            <td>@(consumer.ConsumerName ?? "-")</td>
+                            <td>@(consumer.MobileNo ?? "-")</td>
+                            <td>@(consumer.PropertyNo ?? "-")</td>
+                            <td>@(consumer.ConnectionType ?? "-")</td>
+                            <td>
+                                @Amount(consumer.LastReading)
+                                <div><small class="text-muted">@DateText(consumer.LastReadingDate)</small></div>
+                            </td>
+                            <td>@AppConstants.Divisions.FormatDisplay(consumer.DevType)</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-primary" asp-action="Create" asp-route-consumerNo="@consumer.ConsumerNo">Record Reading</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+
+<section class="wb-page-card wb-admin-card">
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+        <div>
+            <h2 class="wb-section-title mb-1">Latest Meter Readings</h2>
+            <p class="text-muted mb-0">Recent readings are shown latest first.</p>
+        </div>
+        <span class="badge text-bg-secondary">@Model.Readings.Count record@(Model.Readings.Count == 1 ? "" : "s")</span>
+    </div>
+
+    @if (Model.Readings.Count == 0)
+    {
+        <div class="wb-empty">No meter readings found.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Reading No</th>
+                        <th>Consumer</th>
+                        <th>Property</th>
+                        <th>Reading Date</th>
+                        <th>Previous</th>
+                        <th>Current</th>
+                        <th>Consumption</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Readings)
+                {
+                    <tr>
+                        <td><strong>@row.ReadingNo</strong></td>
+                        <td>
+                            <div class="fw-semibold">@row.ConsumerNo</div>
+                            <small class="text-muted">@((row.ConsumerName ?? "-")) · @(row.MobileNo ?? "-")</small>
+                        </td>
+                        <td>@(row.PropertyNo ?? "-")</td>
+                        <td>@DateText(row.ReadingDate)</td>
+                        <td>@Amount(row.PreviousReading)</td>
+                        <td>@Amount(row.CurrentReading)</td>
+                        <td>@Amount(row.Consumption)</td>
+                        <td><span class="badge @Badge(row.MeterStatus)">@MeterReadingStatuses.Display(row.MeterStatus)</span></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">View</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

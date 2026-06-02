@@ -34,7 +34,7 @@
             @foreach (var item in roots)
             {
                 var itemChildren = children.TryGetValue(item.Id, out var childList) ? childList : [];
-                var itemModuleName = item.PermissionModule?.Name ?? item.Module;
+                var itemModuleName = item.PermissionModule?.Name;
                 <article class="wb-menu-node root-item" data-id="@item.Id" data-search="@($"{item.Label} {item.Url} {itemModuleName} {item.SectionLabel}".ToLowerInvariant())">
                     <div class="wb-menu-node-main">
                         <span class="wb-drag" title="Drag to reorder">::</span>
@@ -65,7 +65,7 @@
                     <div class="wb-menu-children">
                         @foreach (var child in itemChildren)
                         {
-                            var childModuleName = child.PermissionModule?.Name ?? child.Module;
+                            var childModuleName = child.PermissionModule?.Name;
                             <div class="wb-menu-node child-item" data-id="@child.Id" data-parent="@item.Id" data-search="@($"{child.Label} {child.Url} {childModuleName} {child.SectionLabel}".ToLowerInvariant())">
                                 <div class="wb-menu-node-main">
                                     <span class="wb-drag" title="Drag to reorder">::</span>

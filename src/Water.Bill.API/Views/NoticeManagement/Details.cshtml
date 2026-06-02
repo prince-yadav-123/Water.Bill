@@ -1,0 +1,139 @@
+@model Water.Bill.API.Models.Notices.NoticeDetailsViewModel
+@using Water.Bill.API.Models.Notices
+@using Water.Bill.Core.Common
+@{
+    ViewData["Title"] = "Notice Details";
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string DateTimeText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy hh:mm tt") : "-";
+    string Amount(decimal value) => value.ToString("N2");
+    string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string Badge(string status) => status switch
+    {
+        NoticeStatuses.Draft => "text-bg-warning",
+        NoticeStatuses.Issued => "text-bg-success",
+        NoticeStatuses.Cancelled => "text-bg-secondary",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Notice Details</h1>
+        <p>@Model.NoticeNo - @Model.ConsumerNo</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-primary" asp-action="Print" asp-route-id="@Model.Id" target="_blank">Print</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] is string success)
+{
+    <div class="alert alert-success wb-alert">@success</div>
+}
+@if (TempData["ErrorMessage"] is string error)
+{
+    <div class="alert alert-danger wb-alert">@error</div>
+}
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-approval-summary-card">
+        <div class="wb-approval-summary-head">
+            <div>
+                <span class="wb-kicker">Notice</span>
+                <h2>@Model.NoticeNo</h2>
+                <span>@NoticeTypes.Display(Model.NoticeType) - @DateText(Model.NoticeDate)</span>
+            </div>
+            <span class="badge @Badge(Model.Status)">@NoticeStatuses.Display(Model.Status)</span>
+        </div>
+        <div class="wb-approval-summary-grid">
+            <div><span>Consumer</span><strong>@Model.ConsumerNo - @Text(Model.ConsumerName)</strong></div>
+            <div><span>Property</span><strong>@Text(Model.PropertyNo)</strong></div>
+            <div><span>Amount Due</span><strong>Rs. @Amount(Model.AmountDue)</strong></div>
+            <div><span>Due Date</span><strong>@DateText(Model.DueDate)</strong></div>
+            <div><span>Bill / Challan</span><strong>@Text(Model.RelatedBillNo) / @Text(Model.RelatedChallanNo)</strong></div>
+            <div><span>Created By</span><strong>@Text(Model.CreatedByName)</strong></div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-5">
+            <div class="wb-detail-section h-100">
+                <h2 class="wb-section-title">Consumer Details</h2>
+                <dl class="wb-detail-grid">
+                    <div><dt>Mobile</dt><dd>@Text(Model.Consumer?.MobileNo)</dd></div>
+                    <div><dt>Email</dt><dd>@Text(Model.Consumer?.Email)</dd></div>
+                    <div><dt>Connection</dt><dd>@Text(Model.Consumer?.ConnectionType)</dd></div>
+                    <div><dt>Division</dt><dd>@AppConstants.Divisions.FormatDisplay(Model.Consumer?.DevType)</dd></div>
+                    <div style="grid-column: 1 / -1;"><dt>Address</dt><dd>@Text(Model.Consumer?.Address)</dd></div>
+                </dl>
+            </div>
+        </div>
+        <div class="col-12 col-lg-7">
+            <div class="wb-detail-section h-100">
+                <h2 class="wb-section-title">@Model.Subject</h2>
+                <div class="border rounded-3 p-3 bg-light" style="white-space: pre-line;">@Model.Body</div>
+                @if (!string.IsNullOrWhiteSpace(Model.Remarks))
+                {
+                    <p class="text-muted mt-3 mb-0"><strong>Remarks:</strong> @Model.Remarks</p>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@if (Model.CanIssue || Model.CanCancel)
+{
+    <section class="wb-page-card wb-admin-card">
+        <h2 class="wb-section-title">Current Action</h2>
+        <div class="row g-3">
+            @if (Model.CanIssue)
+            {
+                <div class="col-12 col-lg-6">
+                    <form asp-action="Issue" asp-route-id="@Model.Id" method="post" class="border rounded-3 p-3 h-100">
+                        @Html.AntiForgeryToken()
+                        <label class="form-label">Issue Remarks</label>
+                        <textarea name="remarks" class="form-control mb-3" rows="3"></textarea>
+                        <button class="btn btn-success" type="submit">Issue Notice</button>
+                    </form>
+                </div>
+            }
+            @if (Model.CanCancel)
+            {
+                <div class="col-12 col-lg-6">
+                    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="border rounded-3 p-3 h-100">
+                        @Html.AntiForgeryToken()
+                        <label class="form-label">Cancellation Remarks</label>
+                        <textarea name="remarks" class="form-control mb-3" rows="3" required></textarea>
+                        <button class="btn btn-outline-danger" type="submit" onclick="return confirm('Cancel this notice?');">Cancel Notice</button>
+                    </form>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+<section class="wb-page-card wb-admin-card">
+    <h2 class="wb-section-title">Notice History</h2>
+    @if (Model.Histories.Count == 0)
+    {
+        <div class="wb-empty">No history found.</div>
+    }
+    else
+    {
+        <div class="wb-timeline">
+            @foreach (var item in Model.Histories)
+            {
+                <div class="wb-timeline-item">
+                    <span></span>
+                    <div>
+                        <strong>@item.Action</strong>
+                        <small>@Text(item.FromStatus) -> @NoticeStatuses.Display(item.ToStatus) - @DateTimeText(item.ActionAt)</small>
+                        <small>By @Text(item.ActionByName)</small>
+                        <p>@Text(item.Remarks)</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>

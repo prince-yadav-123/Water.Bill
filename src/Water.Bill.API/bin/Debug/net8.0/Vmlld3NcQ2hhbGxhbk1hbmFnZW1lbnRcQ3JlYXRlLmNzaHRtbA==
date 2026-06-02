@@ -1,0 +1,127 @@
+@model Water.Bill.API.Models.Challans.ChallanCreateViewModel
+@using Water.Bill.API.Models.Challans
+@using Water.Bill.Core.Common
+@{
+    string ValueOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Generate Challan</h1>
+        <p>Create an old-compatible challan record for the selected consumer.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="border rounded-3 p-3 h-100 bg-light">
+                <span class="wb-kicker">Selected Consumer</span>
+                <h2 class="h5 mt-1 mb-2">@Model.ConsumerNo</h2>
+                <dl class="row small mb-0">
+                    <dt class="col-5">Name</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.ConsumerName)</dd>
+                    <dt class="col-5">Mobile</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.MobileNo)</dd>
+                    <dt class="col-5">Property</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.PropertyNo)</dd>
+                    <dt class="col-5">Connection</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.ConnectionType)</dd>
+                    <dt class="col-5">Division</dt>
+                    <dd class="col-7">@AppConstants.Divisions.FormatDisplay(Model.Consumer?.DevType)</dd>
+                    <dt class="col-5">Pipe / Plot</dt>
+                    <dd class="col-7">@((Model.Consumer?.PipeSize?.ToString() ?? "-")) / @((Model.Consumer?.PlotSize?.ToString() ?? "-"))</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <form asp-action="Create" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ConsumerNo" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="col-md-6">
+                    <label asp-for="Purpose" class="form-label"></label>
+                    <select asp-for="Purpose" asp-items="Model.PurposeOptions" class="form-select" id="challanPurpose"></select>
+                    <span asp-validation-for="Purpose" class="text-danger"></span>
+                </div>
+
+                @if (Model.Purpose == ChallanPurposes.ExistingBillDue)
+                {
+                    <div class="col-md-6">
+                        <label asp-for="BillNo" class="form-label"></label>
+                        <select asp-for="BillNo" asp-items="Model.BillOptions" class="form-select" id="sourceBillNo">
+                            <option value="">Latest generated bill</option>
+                        </select>
+                        <span asp-validation-for="BillNo" class="text-danger"></span>
+                    </div>
+                }
+
+                <div class="col-md-6">
+                    <label asp-for="Amount" class="form-label"></label>
+                    <input asp-for="Amount" class="form-control" type="number" min="1" step="0.01" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                    @if (!string.IsNullOrWhiteSpace(Model.SuggestedAmountNote))
+                    {
+                        <small class="text-muted">@Model.SuggestedAmountNote</small>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BillPeriodFrom" class="form-label"></label>
+                    <input asp-for="BillPeriodFrom" class="form-control" type="date" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BillPeriodTo" class="form-label"></label>
+                    <input asp-for="BillPeriodTo" class="form-control" type="date" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="DueDate" class="form-label"></label>
+                    <input asp-for="DueDate" class="form-control" type="date" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="BankCode" class="form-label"></label>
+                    <select asp-for="BankCode" asp-items="Model.BankOptions" class="form-select">
+                        <option value="">Select bank / counter</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Remarks" class="form-label"></label>
+                    <input asp-for="Remarks" class="form-control" maxlength="100" placeholder="Internal note, if any" />
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                    <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+                    <button class="btn btn-primary" type="submit">Generate Challan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('challanPurpose')?.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            url.searchParams.set('purpose', this.value);
+            url.searchParams.delete('billNo');
+            window.location.href = url.toString();
+        });
+        document.getElementById('sourceBillNo')?.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            if (this.value) {
+                url.searchParams.set('billNo', this.value);
+            } else {
+                url.searchParams.delete('billNo');
+            }
+            window.location.href = url.toString();
+        });
+    </script>
+}

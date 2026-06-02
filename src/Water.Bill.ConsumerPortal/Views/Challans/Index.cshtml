@@ -1,0 +1,96 @@
+@model ConsumerChallanIndexViewModel
+@{
+    ViewData["Title"] = "My Challans";
+
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string TabClass(string status) => Model.ActiveStatus.Equals(status, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    string StatusText(string status) => status == "PendingPayment" ? "Pending Payment" : status;
+    string StatusClass(string status) => status switch
+    {
+        "Paid" => "paid",
+        "Cancelled" => "cancelled",
+        _ => "due"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">Consumer Billing</p>
+        <h1>My Challans</h1>
+        <p>View admin-generated payment requests, print challans, and complete pending payments.</p>
+    </div>
+    <div class="wb-page-actions">
+        <button class="btn btn-outline-primary" type="button" data-export-table="#challanTable" data-export-name="my-challans.csv">Export CSV</button>
+    </div>
+</div>
+
+<form method="get" asp-controller="Challans" asp-action="Index" class="wb-history-toolbar">
+    <div class="wb-tabs">
+        <a class="@TabClass("Pending")" asp-controller="Challans" asp-action="Index" asp-route-status="Pending" asp-route-search="@Model.Search">Pending</a>
+        <a class="@TabClass("Paid")" asp-controller="Challans" asp-action="Index" asp-route-status="Paid" asp-route-search="@Model.Search">Paid</a>
+        <a class="@TabClass("All")" asp-controller="Challans" asp-action="Index" asp-route-status="All" asp-route-search="@Model.Search">All</a>
+    </div>
+    <input type="hidden" name="status" value="@Model.ActiveStatus" />
+    <div class="wb-history-filters">
+        <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Search by challan no, purpose, amount..." />
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+<section class="wb-page-card wb-table-card">
+    @if (Model.Challans.Count == 0)
+    {
+        <div class="wb-empty-state">
+            <strong>No challans found.</strong>
+            <span>Generated challans and payment requests will appear here.</span>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table wb-history-table mb-0" id="challanTable">
+                <thead>
+                    <tr>
+                        <th>Challan No</th>
+                        <th>Purpose</th>
+                        <th>Amount</th>
+                        <th>Generated</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Challans)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.ChallanNo</strong>
+                                <small>@item.ConsumerNo</small>
+                            </td>
+                            <td>@item.Purpose</td>
+                            <td><strong>@FormatAmount(item.Amount)</strong></td>
+                            <td>@FormatDate(item.GeneratedDate)</td>
+                            <td>@FormatDate(item.DueDate)</td>
+                            <td><span class="wb-status-pill @StatusClass(item.Status)">@StatusText(item.Status)</span></td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-controller="Challans" asp-action="Details" asp-route-id="@item.Id">View</a>
+                                @if (item.CanPay)
+                                {
+                                    <a class="btn btn-sm btn-primary" asp-controller="Challans" asp-action="Pay" asp-route-id="@item.Id">Pay Now</a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" asp-controller="Challans" asp-action="Print" asp-route-id="@item.Id" target="_blank">Print</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<p class="wb-list-footnote">Showing @Model.Challans.Count challan@(Model.Challans.Count == 1 ? "" : "s")</p>

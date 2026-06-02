@@ -1,0 +1,96 @@
+@model ConsumerChallanDetailsViewModel
+@{
+    Layout = null;
+
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string StatusText(string status) => status == "PendingPayment" ? "Pending Payment" : status;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Print Challan - @Model.ChallanNo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { background: #f4f8fb; color: #0f172a; font-family: Arial, sans-serif; }
+        .print-shell { max-width: 860px; margin: 28px auto; }
+        .print-card { background: #fff; border: 1px solid #d9e5ef; border-radius: 14px; box-shadow: 0 12px 28px rgba(15, 23, 42, .08); padding: 22px; }
+        .print-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; border-bottom: 2px solid #e8f0f7; padding-bottom: 14px; margin-bottom: 18px; }
+        .print-head h1 { font-size: 22px; margin: 0; }
+        .print-head p { margin: 4px 0 0; color: #64748b; }
+        .print-actions { display: flex; gap: 8px; }
+        .section-title { font-size: 13px; text-transform: uppercase; color: #0f94a7; letter-spacing: .06em; margin: 18px 0 10px; font-weight: 700; }
+        .info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #e2edf5; border-radius: 10px; overflow: hidden; }
+        .info-grid div { padding: 10px 12px; border-bottom: 1px solid #e2edf5; }
+        .info-grid div:nth-child(odd) { border-right: 1px solid #e2edf5; }
+        .info-grid span { display: block; font-size: 11px; color: #64748b; text-transform: uppercase; }
+        .info-grid strong { display: block; margin-top: 3px; font-size: 14px; }
+        .amount-row { display: flex; justify-content: space-between; border-bottom: 1px solid #e2edf5; padding: 9px 0; }
+        .amount-row.total { border-bottom: 0; font-size: 18px; font-weight: 700; color: #0f94a7; }
+        .note { background: #ecfeff; border: 1px solid #bae6fd; border-radius: 10px; padding: 12px; color: #155e75; margin-top: 18px; }
+        @@media print {
+            body { background: #fff; }
+            .print-shell { margin: 0; max-width: none; }
+            .print-actions { display: none; }
+            .print-card { box-shadow: none; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+    <main class="print-shell">
+        <section class="print-card">
+            <div class="print-head">
+                <div>
+                    <h1>Noida Jal - Water Challan</h1>
+                    <p>Challan @Model.ChallanNo - @Model.Purpose</p>
+                </div>
+                <div class="print-actions">
+                    <button class="btn btn-primary btn-sm" type="button" onclick="window.print()">Print</button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="window.close()">Close</button>
+                </div>
+            </div>
+
+            <div class="section-title">Challan Details</div>
+            <div class="info-grid">
+                <div><span>Challan No</span><strong>@Model.ChallanNo</strong></div>
+                <div><span>Status</span><strong>@StatusText(Model.Status)</strong></div>
+                <div><span>Generated Date</span><strong>@FormatDate(Model.GeneratedDate)</strong></div>
+                <div><span>Due Date</span><strong>@FormatDate(Model.DueDate)</strong></div>
+                <div><span>Consumer No</span><strong>@Model.ConsumerNo</strong></div>
+                <div><span>Consumer Name</span><strong>@TextOrDash(Model.ConsumerName)</strong></div>
+                <div><span>Property</span><strong>@TextOrDash(Model.PropertyNo)</strong></div>
+                <div><span>Source Bill</span><strong>@TextOrDash(Model.SourceBillNo)</strong></div>
+            </div>
+
+            <div class="section-title">Amount Details</div>
+            <div>
+                <div class="amount-row"><span>Bill Amount</span><strong>@FormatAmount(Model.BillAmount)</strong></div>
+                <div class="amount-row"><span>Surcharge</span><strong>@FormatAmount(Model.Surcharge)</strong></div>
+                <div class="amount-row"><span>NDC Amount</span><strong>@FormatAmount(Model.NdcAmount)</strong></div>
+                <div class="amount-row"><span>Connection Charge</span><strong>@FormatAmount(Model.ConnectionCharge)</strong></div>
+                <div class="amount-row"><span>Other Charges</span><strong>@FormatAmount(Model.OtherCharge)</strong></div>
+                <div class="amount-row total"><span>Total Payable</span><strong>@FormatAmount(Model.Amount)</strong></div>
+            </div>
+
+            @if (Model.Payments.Count > 0)
+            {
+                var payment = Model.Payments.First();
+                <div class="section-title">Payment Receipt</div>
+                <div class="info-grid">
+                    <div><span>Payment Date</span><strong>@FormatDate(payment.PaymentDate)</strong></div>
+                    <div><span>Amount Paid</span><strong>@FormatAmount(payment.Amount)</strong></div>
+                    <div><span>Payment Mode</span><strong>@TextOrDash(payment.PaymentMode)</strong></div>
+                    <div><span>Reference No</span><strong>@TextOrDash(payment.TransactionReferenceNo)</strong></div>
+                </div>
+            }
+            else
+            {
+                <div class="note">This challan is pending payment. Please pay before the due date where applicable.</div>
+            }
+        </section>
+    </main>
+</body>
+</html>

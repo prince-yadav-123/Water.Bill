@@ -1,0 +1,135 @@
+@model Water.Bill.ConsumerPortal.ViewModels.ConsumerServiceRequestDetailsViewModel
+@{
+    var app = Model.Application;
+    var detail = Model.DetailValues;
+    var isNameTransfer = app.AppType == "TRN";
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string? DetailValue(string key) => detail.TryGetValue(key, out var value) ? value : null;
+    string StatusClass(string? status) => status switch
+    {
+        "Submitted" or "Pending" or "UnderReview" => "text-bg-primary",
+        "Approved" => "text-bg-success",
+        "Rejected" => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-newconn-page-shell">
+    <div class="wb-page-head">
+        <div>
+            <h1>@(isNameTransfer ? "Name Transfer Details" : "Connection Change Details")</h1>
+            <p>@app.ApplicationId - @app.ConsNo</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="Index">Back to My Requests</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string success)
+    {
+        <div class="alert alert-success">@success</div>
+    }
+
+    <section class="wb-approval-summary-card">
+        <div class="wb-approval-summary-head">
+            <div>
+                <h2>@TextOrDash(app.ConName)</h2>
+                <span>@(isNameTransfer ? "Name Transfer / Mutation" : "Connection Type / Category Change")</span>
+            </div>
+            <span class="badge @StatusClass(app.ApplicationStatus)">@TextOrDash(app.ApplicationStatus)</span>
+        </div>
+        <div class="wb-approval-summary-grid">
+            <div><span>Application No</span><strong>@app.ApplicationId</strong></div>
+            <div><span>Consumer No</span><strong>@TextOrDash(app.ConsNo)</strong></div>
+            <div><span>Mobile No</span><strong>@TextOrDash(app.ConPhoneMobile)</strong></div>
+            <div><span>Submitted Date</span><strong>@(app.EnterDate?.ToString("dd MMM yyyy") ?? "-")</strong></div>
+            <div><span>Current Status</span><strong>@TextOrDash(app.ApplicationStatus)</strong></div>
+            <div><span>Division</span><strong>@TextOrDash(app.DivName)</strong></div>
+        </div>
+    </section>
+
+    <section class="wb-page-card wb-approval-section">
+        <div class="wb-section-head-compact">
+            <div>
+                <h2>Property Details</h2>
+            </div>
+        </div>
+        <div class="wb-approval-summary-grid">
+            <div><span>Sector</span><strong>@TextOrDash(app.SectorVill)</strong></div>
+            <div><span>Block</span><strong>@TextOrDash(app.Block)</strong></div>
+            <div><span>Plot / Flat No</span><strong>@TextOrDash(app.PlotNo)</strong></div>
+            <div><span>Plot Area</span><strong>@TextOrDash(app.PlotArea)</strong></div>
+            <div><span>Pipe Size</span><strong>@TextOrDash(app.PipeSize)</strong></div>
+            <div><span>Previous Detail</span><strong>@TextOrDash(app.PrevConDetail)</strong></div>
+        </div>
+    </section>
+
+    <section class="wb-page-card wb-approval-section">
+        <div class="wb-section-head-compact">
+            <div>
+                <h2>Requested Change</h2>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table wb-table align-middle">
+                <tbody>
+                @if (isNameTransfer)
+                {
+                    <tr><th>Old Name</th><td>@TextOrDash(DetailValue("OldName"))</td><th>New Name</th><td>@TextOrDash(DetailValue("NewName") ?? app.ConName)</td></tr>
+                    <tr><th>Old Father / Name2</th><td>@TextOrDash(DetailValue("OldFather"))</td><th>New Father / Name2</th><td>@TextOrDash(DetailValue("NewFather"))</td></tr>
+                    <tr><th>Transfer Fee</th><td>@TextOrDash(DetailValue("TransferFee"))</td><th>Security Amount</th><td>@TextOrDash(DetailValue("SecurityAmount"))</td></tr>
+                    <tr><th>Challan No</th><td>@TextOrDash(DetailValue("ChallanNo"))</td><th>Challan Date</th><td>@TextOrDash(DetailValue("ChallanDate"))</td></tr>
+                }
+                else
+                {
+                    <tr><th>Old Connection Type</th><td>@TextOrDash(DetailValue("OldConnectionType"))</td><th>New Connection Type</th><td>@TextOrDash(DetailValue("NewConnectionType") ?? app.ConnType)</td></tr>
+                    <tr><th>Old Category</th><td>@TextOrDash(DetailValue("OldCategory"))</td><th>New Category</th><td>@TextOrDash(DetailValue("NewCategory") ?? app.PropertyType)</td></tr>
+                    <tr><th>Estimation No</th><td>@TextOrDash(DetailValue("EstimationNo"))</td><th>Estimation Amount</th><td>@TextOrDash(DetailValue("EstimationAmount"))</td></tr>
+                    <tr><th>Security Amount</th><td>@TextOrDash(DetailValue("SecurityAmount"))</td><th>Monthly Rate</th><td>@TextOrDash(DetailValue("MonthlyRate"))</td></tr>
+                }
+                <tr><th>Remarks</th><td colspan="3">@TextOrDash(DetailValue("Remarks"))</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="wb-page-card wb-approval-section">
+        <div class="wb-section-head-compact">
+            <div>
+                <h2>Status Timeline</h2>
+            </div>
+        </div>
+        @if (Model.WorkflowHistory.Count == 0 && Model.Histories.Count == 0)
+        {
+            <div class="wb-empty">No status history found.</div>
+        }
+        else
+        {
+            <div class="wb-approval-history">
+                @foreach (var item in Model.WorkflowHistory)
+                {
+                    <div class="wb-approval-history-item">
+                        <span></span>
+                        <div>
+                            <strong>@item.Action</strong>
+                            <small>@(item.FromStatus ?? "-") -> @item.ToStatus</small>
+                            <small>@item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
+                            @if (!string.IsNullOrWhiteSpace(item.Remarks))
+                            {
+                                <p>@item.Remarks</p>
+                            }
+                        </div>
+                    </div>
+                }
+                @foreach (var item in Model.Histories)
+                {
+                    <div class="wb-approval-history-item">
+                        <span></span>
+                        <div>
+                            <strong>@TextOrDash(item.Remark)</strong>
+                            <small>@(item.ForwardDate?.ToString("dd MMM yyyy") ?? "-")</small>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+</div>

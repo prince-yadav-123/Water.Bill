@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.Application.DTOs.Communication;
+using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -20,11 +22,13 @@ public class SupportQueriesController : Controller
 
     private readonly ApplicationDbContext _db;
     private readonly IConfiguration _configuration;
+    private readonly ICommunicationService _communicationService;
 
-    public SupportQueriesController(ApplicationDbContext db, IConfiguration configuration)
+    public SupportQueriesController(ApplicationDbContext db, IConfiguration configuration, ICommunicationService communicationService)
     {
         _db = db;
         _configuration = configuration;
+        _communicationService = communicationService;
     }
 
     [HttpGet("/Consumer/SupportQueries")]
@@ -146,6 +150,30 @@ public class SupportQueriesController : Controller
 
         await SaveDocumentsAsync(query, documents, ct);
         await _db.SaveChangesAsync(ct);
+
+        await _communicationService.SendAsync(
+            CommunicationPurposes.QueryRaised,
+            new NotificationRecipient
+            {
+                Name = query.ConsumerName,
+                Email = query.Email,
+                Mobile = query.MobileNo,
+                UserType = AppConstants.Roles.Consumer,
+                UserId = query.ConsumerUserId
+            },
+            new Dictionary<string, string?>
+            {
+                ["ConsumerName"] = query.ConsumerName,
+                ["ConsumerNo"] = query.ConsumerNo,
+                ["QueryNo"] = query.QueryNo,
+                ["Status"] = query.Status,
+                ["Date"] = now.ToString("dd MMM yyyy")
+            },
+            NotificationChannelOptions.For(CommunicationChannels.InApp, CommunicationChannels.Email, CommunicationChannels.Sms),
+            "ConsumerSupportQuery",
+            query.Id.ToString(),
+            query.QueryNo,
+            ct);
 
         TempData["SuccessMessage"] = $"Query {query.QueryNo} submitted successfully.";
         return RedirectToAction(nameof(Details), new { id = query.Id });

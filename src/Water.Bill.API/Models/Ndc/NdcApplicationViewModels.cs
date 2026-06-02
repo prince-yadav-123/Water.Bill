@@ -59,6 +59,10 @@ public class NdcApplicationDetailsViewModel
     public IReadOnlyList<ApplicationWorkflowHistory> WorkflowHistory { get; set; } = [];
 
     public bool CanStartWorkflow { get; set; }
+
+    public long? ActiveWorkflowTaskId { get; set; }
+
+    public bool CanActOnCurrentStage => ActiveWorkflowTaskId.HasValue;
 }
 
 public class NdcCertificateIndexViewModel

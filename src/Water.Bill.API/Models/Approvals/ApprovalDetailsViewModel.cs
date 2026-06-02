@@ -12,6 +12,10 @@ public class ApprovalDetailsViewModel
 
     public IReadOnlyList<NdcDocument> NdcDocuments { get; set; } = [];
 
+    public MasterApplicationDetail? LegacyApplication { get; set; }
+
+    public IReadOnlyDictionary<string, string> LegacyDetailValues { get; set; } = new Dictionary<string, string>();
+
     public NewConnectionApplicationFee? Fee { get; set; }
 
     public IReadOnlyList<ApplicationWorkflowHistory> WorkflowTimeline { get; set; } = [];

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.DTOs.NewConnection;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -32,11 +34,13 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
 
     private readonly ApplicationDbContext _db;
     private readonly IWorkflowService _workflowService;
+    private readonly ICommunicationService _communicationService;
 
-    public NewConnectionApplicationService(ApplicationDbContext db, IWorkflowService workflowService)
+    public NewConnectionApplicationService(ApplicationDbContext db, IWorkflowService workflowService, ICommunicationService communicationService)
     {
         _db = db;
         _workflowService = workflowService;
+        _communicationService = communicationService;
     }
 
     public async Task<NewConnectionApplicationDetailsDto> SubmitAsync(NewConnectionSubmitRequest request, CancellationToken ct = default)
@@ -164,6 +168,30 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             }
 
             await transaction.CommitAsync(ct);
+
+            await _communicationService.SendAsync(
+                CommunicationPurposes.NewConnectionSubmitted,
+                new NotificationRecipient
+                {
+                    Name = entity.ApplicantName,
+                    Email = entity.EmailId,
+                    Mobile = entity.MobileNumber,
+                    UserType = request.IsPublicApplication ? null : AppConstants.Roles.Consumer,
+                    UserId = request.SubmittedByConsumerUserId
+                },
+                new Dictionary<string, string?>
+                {
+                    ["ConsumerName"] = entity.ApplicantName,
+                    ["ApplicationNo"] = entity.ApplicationNo,
+                    ["Amount"] = entity.EstimationAmount?.ToString("0.00"),
+                    ["Status"] = entity.ApplicationStatus,
+                    ["Date"] = now.ToString("dd MMM yyyy")
+                },
+                NotificationChannelOptions.For(CommunicationChannels.InApp, CommunicationChannels.Email, CommunicationChannels.Sms),
+                "NewConnectionApplication",
+                entity.Id.ToString(),
+                entity.ApplicationNo,
+                ct);
 
             return await EnrichWorkflowProgressAsync(
                 (await GetDetailsQuery().FirstAsync(x => x.Id == entity.Id, ct))!,

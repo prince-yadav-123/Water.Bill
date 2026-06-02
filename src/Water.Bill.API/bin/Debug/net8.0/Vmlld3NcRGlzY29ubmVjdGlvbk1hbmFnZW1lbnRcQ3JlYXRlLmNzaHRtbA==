@@ -1,0 +1,90 @@
+@model Water.Bill.API.Models.Disconnections.DisconnectionCreateViewModel
+@using Water.Bill.Core.Common
+@{
+    ViewData["Title"] = "Generate Disconnection Notice";
+    string Amount(decimal value) => value.ToString("N2");
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Generate Disconnection Notice</h1>
+        <p>Create a controlled disconnection case for an existing consumer.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    @if (Model.Consumer is not null)
+    {
+        <div class="wb-approval-summary-card">
+            <div class="wb-approval-summary-head">
+                <div>
+                    <span class="wb-kicker">Consumer</span>
+                    <h2>@Model.Consumer.ConsumerNo - @(Model.Consumer.ConsumerName ?? "-")</h2>
+                    <span>@(Model.Consumer.PropertyNo ?? "-") · @(Model.Consumer.MobileNo ?? "-")</span>
+                </div>
+                <span class="badge text-bg-info">@AppConstants.Divisions.FormatDisplay(Model.Consumer.DevType)</span>
+            </div>
+            <div class="wb-approval-summary-grid">
+                <div><span>Connection</span><strong>@(Model.Consumer.ConnectionType ?? "-")</strong></div>
+                <div><span>Category</span><strong>@(Model.Consumer.Category ?? "-")</strong></div>
+                <div><span>Outstanding</span><strong>Rs. @Amount(Model.OutstandingAmount)</strong></div>
+            </div>
+        </div>
+    }
+
+    <form asp-action="Create" method="post" class="wb-form-grid">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ConsumerNo" />
+        <div asp-validation-summary="ModelOnly" class="text-danger" style="grid-column: 1 / -1;"></div>
+
+        <div class="wb-form-field">
+            <label asp-for="Reason" class="form-label"></label>
+            <select asp-for="Reason" class="form-select" asp-items="Model.ReasonOptions"></select>
+            <span asp-validation-for="Reason" class="text-danger"></span>
+        </div>
+        <div class="wb-form-field">
+            <label asp-for="NoticeDate" class="form-label"></label>
+            <input asp-for="NoticeDate" type="date" class="form-control" />
+            <span asp-validation-for="NoticeDate" class="text-danger"></span>
+        </div>
+        <div class="wb-form-field">
+            <label asp-for="DueDate" class="form-label"></label>
+            <input asp-for="DueDate" type="date" class="form-control" />
+            <span asp-validation-for="DueDate" class="text-danger"></span>
+        </div>
+        <div class="wb-form-field">
+            <label asp-for="OutstandingAmount" class="form-label"></label>
+            <input asp-for="OutstandingAmount" class="form-control" />
+            <span asp-validation-for="OutstandingAmount" class="text-danger"></span>
+        </div>
+        <div class="wb-form-field">
+            <label asp-for="DisconnectionFee" class="form-label"></label>
+            <input asp-for="DisconnectionFee" class="form-control" />
+            <span asp-validation-for="DisconnectionFee" class="text-danger"></span>
+        </div>
+        <div class="wb-form-field">
+            <label asp-for="ReconnectionFee" class="form-label"></label>
+            <input asp-for="ReconnectionFee" class="form-control" />
+            <span asp-validation-for="ReconnectionFee" class="text-danger"></span>
+        </div>
+        <div class="wb-form-field" style="grid-column: 1 / -1;">
+            <label asp-for="FieldOfficerName" class="form-label"></label>
+            <input asp-for="FieldOfficerName" class="form-control" placeholder="Optional field officer / team name" />
+            <span asp-validation-for="FieldOfficerName" class="text-danger"></span>
+        </div>
+        <div class="wb-form-field" style="grid-column: 1 / -1;">
+            <label asp-for="Remarks" class="form-label"></label>
+            <textarea asp-for="Remarks" class="form-control" rows="3" placeholder="Reason, dues detail, notice instructions, or site remarks"></textarea>
+            <span asp-validation-for="Remarks" class="text-danger"></span>
+        </div>
+        <div class="wb-form-actions" style="grid-column: 1 / -1;">
+            <button class="btn btn-primary" type="submit">Generate Notice</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

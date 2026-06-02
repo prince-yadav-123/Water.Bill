@@ -19,8 +19,6 @@ public partial class Menuitem
 
     public string? SectionLabel { get; set; }
 
-    public string? Module { get; set; }
-
     public int? ModuleId { get; set; }
 
     public int Order { get; set; }

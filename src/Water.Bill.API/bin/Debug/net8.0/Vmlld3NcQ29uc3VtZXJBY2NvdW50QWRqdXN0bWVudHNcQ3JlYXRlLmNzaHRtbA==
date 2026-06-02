@@ -1,0 +1,87 @@
+@model Water.Bill.API.Models.Adjustments.ConsumerAccountAdjustmentCreateViewModel
+@using Water.Bill.API.Models.Adjustments
+@{
+    ViewData["Title"] = "New Adjustment";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>New Account Adjustment</h1>
+        <p>Create a controlled pending adjustment for the consumer account. It will be consumed by future bill generation.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form asp-action="Create" method="post" class="wb-bulk-bill-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="wb-form-section-head">
+            <h2 class="wb-section-title mb-1">Consumer</h2>
+            <p class="text-muted mb-0">Enter a valid existing consumer number. Consumer number is checked before saving.</p>
+        </div>
+
+        <div class="wb-form-grid wb-form-grid-2">
+            <div class="wb-form-field">
+                <label asp-for="ConsumerNo" class="form-label"></label>
+                <input asp-for="ConsumerNo" class="form-control" />
+                <span asp-validation-for="ConsumerNo" class="text-danger"></span>
+            </div>
+            <div class="wb-form-field">
+                <label class="form-label">Consumer Summary</label>
+                <div class="form-control-plaintext">
+                    <strong>@(Model.ConsumerName ?? "-")</strong>
+                    <small class="d-block text-muted">@(Model.MobileNo ?? "-") | @(Model.PropertyNo ?? "-")</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="wb-form-section-head">
+            <h2 class="wb-section-title mb-1">Adjustment Details</h2>
+        </div>
+
+        <div class="wb-form-grid wb-form-grid-2">
+            <div class="wb-form-field">
+                <label asp-for="AdjustmentType" class="form-label"></label>
+                <select asp-for="AdjustmentType" asp-items="Model.TypeOptions" class="form-select"></select>
+                <span asp-validation-for="AdjustmentType" class="text-danger"></span>
+                <small class="text-muted">Credit, advance, rebate and other credit reduce payable amount.</small>
+            </div>
+            <div class="wb-form-field">
+                <label asp-for="Amount" class="form-label"></label>
+                <input asp-for="Amount" class="form-control" type="number" min="0.01" step="0.01" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="wb-form-field">
+                <label asp-for="EffectiveDate" class="form-label"></label>
+                <input asp-for="EffectiveDate" class="form-control" type="date" />
+                <span asp-validation-for="EffectiveDate" class="text-danger"></span>
+            </div>
+            <div class="wb-form-field">
+                <label asp-for="SourceBillNo" class="form-label"></label>
+                <input asp-for="SourceBillNo" class="form-control" />
+                <span asp-validation-for="SourceBillNo" class="text-danger"></span>
+            </div>
+            <div class="wb-form-field">
+                <label asp-for="SourceChallanNo" class="form-label"></label>
+                <input asp-for="SourceChallanNo" class="form-control" />
+                <span asp-validation-for="SourceChallanNo" class="text-danger"></span>
+            </div>
+            <div class="wb-form-field" style="grid-column: 1 / -1;">
+                <label asp-for="Remarks" class="form-label"></label>
+                <textarea asp-for="Remarks" class="form-control" rows="3" placeholder="Reason is mandatory for audit."></textarea>
+                <span asp-validation-for="Remarks" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="wb-form-actions">
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+            <button class="btn btn-primary" type="submit">Save Adjustment</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

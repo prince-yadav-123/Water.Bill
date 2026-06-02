@@ -14,21 +14,17 @@
     var initial = string.IsNullOrWhiteSpace(userName) ? "U" : userName[..1].ToUpperInvariant();
 
     IReadOnlyList<MenuItemDto> menuItems = [];
-    HashSet<string> menuVisibleModules = [];
     HashSet<int> menuVisibleModuleIds = [];
     if (isAuthenticated && int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
     {
         menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
         menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
-        menuVisibleModules = await PermissionService.GetMenuVisibleModulesAsync(roleId);
     }
 
     bool CanSeeSelf(MenuItemDto item)
     {
         if (!item.IsActive || !item.ShowInSidebar) return false;
-        if (item.ModuleId.HasValue) return menuVisibleModuleIds.Contains(item.ModuleId.Value);
-        if (!string.IsNullOrWhiteSpace(item.Module)) return menuVisibleModules.Contains(item.Module);
-        return false;
+        return item.ModuleId.HasValue && menuVisibleModuleIds.Contains(item.ModuleId.Value);
     }
 
     IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
@@ -101,12 +97,39 @@
                                 <span class="wb-nav-arrow"></span>
                             </button>
                             <div class="wb-nav-children" id="@itemId">
-                                @foreach (var child in children)
+                                @{
+                                    var childGroups = children
+                                        .GroupBy(child => string.IsNullOrWhiteSpace(child.SectionLabel) ? item.Label : child.SectionLabel)
+                                        .Select(group => new
+                                        {
+                                            Label = group.Key,
+                                            Items = group.OrderBy(child => child.Order).ToList(),
+                                            Order = group.Min(child => child.Order)
+                                        })
+                                        .OrderBy(group => group.Order)
+                                        .ToList();
+                                    var showChildSectionLabels = childGroups.Count > 1;
+                                }
+                                @foreach (var group in childGroups)
                                 {
-                                    <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
-                                        <span class="wb-nav-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
-                                        <span class="wb-nav-text">@child.Label</span>
-                                    </a>
+                                    var sectionId = $"{itemId}-section-{Math.Abs(group.Label.GetHashCode())}";
+                                    var isSectionOpen = group.Items.Any(IsCurrent);
+                                    if (showChildSectionLabels)
+                                    {
+                                        <button class="wb-nav-section-heading @(isSectionOpen ? "open" : "")" type="button" data-section-toggle aria-expanded="@isSectionOpen.ToString().ToLowerInvariant()" aria-controls="@sectionId">
+                                            <span>@group.Label</span>
+                                            <span class="wb-nav-section-arrow"></span>
+                                        </button>
+                                    }
+                                    <div class="wb-nav-section @(isSectionOpen || !showChildSectionLabels ? "open" : "")" id="@sectionId">
+                                        @foreach (var child in group.Items)
+                                        {
+                                            <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
+                                                <span class="wb-nav-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
+                                                <span class="wb-nav-text">@child.Label</span>
+                                            </a>
+                                        }
+                                    </div>
                                 }
                             </div>
                         </div>

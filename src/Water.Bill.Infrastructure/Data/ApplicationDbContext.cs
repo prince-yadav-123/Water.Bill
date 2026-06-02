@@ -56,6 +56,10 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Challan> Challans { get; set; }
 
+    public virtual DbSet<ChallanHistory> ChallanHistories { get; set; }
+
+    public virtual DbSet<ChallanPaymentHistory> ChallanPaymentHistories { get; set; }
+
     public virtual DbSet<ChallanJan2025> ChallanJan2025s { get; set; }
 
     public virtual DbSet<ChallanLog> ChallanLogs { get; set; }
@@ -66,15 +70,37 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ConnectionTypeMst> ConnectionTypeMsts { get; set; }
 
+    public virtual DbSet<ComplaintCategory> ComplaintCategories { get; set; }
+
     public virtual DbSet<ConsCessUpdation> ConsCessUpdations { get; set; }
 
     public virtual DbSet<ConsumerApplyNdc> ConsumerApplyNdcs { get; set; }
+
+    public virtual DbSet<ConsumerAccountAdjustment> ConsumerAccountAdjustments { get; set; }
+
+    public virtual DbSet<ConsumerAccountAdjustmentHistory> ConsumerAccountAdjustmentHistories { get; set; }
 
     public virtual DbSet<ConsumerChallanPdf> ConsumerChallanPdfs { get; set; }
 
     public virtual DbSet<ConsumerDetailsMaster> ConsumerDetailsMasters { get; set; }
 
     public virtual DbSet<ConsumerDetailsTran> ConsumerDetailsTrans { get; set; }
+
+    public virtual DbSet<ConsumerDisconnectionCase> ConsumerDisconnectionCases { get; set; }
+
+    public virtual DbSet<ConsumerDisconnectionCaseHistory> ConsumerDisconnectionCaseHistories { get; set; }
+
+    public virtual DbSet<ConsumerComplaint> ConsumerComplaints { get; set; }
+
+    public virtual DbSet<ConsumerComplaintDocument> ConsumerComplaintDocuments { get; set; }
+
+    public virtual DbSet<ConsumerComplaintHistory> ConsumerComplaintHistories { get; set; }
+
+    public virtual DbSet<CommunicationLog> CommunicationLogs { get; set; }
+
+    public virtual DbSet<CommunicationPurpose> CommunicationPurposes { get; set; }
+
+    public virtual DbSet<CommunicationTemplate> CommunicationTemplates { get; set; }
 
     public virtual DbSet<ConsumerEconsumerMail> ConsumerEconsumerMails { get; set; }
 
@@ -86,7 +112,13 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ConsumerLogin> ConsumerLogins { get; set; }
 
+    public virtual DbSet<ConsumerMeterReading> ConsumerMeterReadings { get; set; }
+
     public virtual DbSet<ConsumerNodue> ConsumerNodues { get; set; }
+
+    public virtual DbSet<ConsumerNotice> ConsumerNotices { get; set; }
+
+    public virtual DbSet<ConsumerNoticeHistory> ConsumerNoticeHistories { get; set; }
 
     public virtual DbSet<ConsumerOtpVerification> ConsumerOtpVerifications { get; set; }
 
@@ -123,6 +155,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<DocumentMaster> DocumentMasters { get; set; }
 
     public virtual DbSet<ErpPaymentResponse> ErpPaymentResponses { get; set; }
+
+    public virtual DbSet<InAppNotification> InAppNotifications { get; set; }
 
     public virtual DbSet<JalBankMaster> JalBankMasters { get; set; }
 
@@ -213,6 +247,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<NoDueAmountMst> NoDueAmountMsts { get; set; }
 
     public virtual DbSet<NotificationLog> NotificationLogs { get; set; }
+
+    public virtual DbSet<NoticeTemplate> NoticeTemplates { get; set; }
 
     public virtual DbSet<Oct2024> Oct2024s { get; set; }
 

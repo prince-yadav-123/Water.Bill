@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Payments;
 using Water.Bill.Core.Common;
@@ -183,6 +184,20 @@ public class OnlinePaymentHistoryController : Controller
             })
             .ToListAsync(ct);
 
+        var hasSuccess = transactions.Any(x => IsSuccessfulStatus(x.AuthStatus));
+        var bill = string.IsNullOrWhiteSpace(master.BillNo)
+            ? null
+            : await _db.JalPrintBillMasters
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.BillNo == master.BillNo && x.ConsNo == master.Consid, ct);
+        var isBillPaid = bill?.PaidDate.HasValue == true
+            || string.Equals(bill?.PaidStatus, "Y", StringComparison.OrdinalIgnoreCase)
+            || (bill?.PaidAmt.GetValueOrDefault() > 0);
+        var canReconcile = hasSuccess
+            && !string.IsNullOrWhiteSpace(master.BillNo)
+            && bill is not null
+            && !isBillPaid;
+
         return View(new OnlinePaymentHistoryDetailsViewModel
         {
             JalRefId = master.Jalrefid,
@@ -201,8 +216,85 @@ public class OnlinePaymentHistoryController : Controller
             DueDate = master.DueDate,
             BillNdc = master.BillNdc,
             EntryDate = master.EntryDate,
-            Transactions = transactions
+            Transactions = transactions,
+            HasSuccessfulGatewayResponse = hasSuccess,
+            IsBillPaid = isBillPaid,
+            CanReconcileBillPayment = canReconcile,
+            ReconciliationStatus = ResolveReconciliationStatus(master, bill, hasSuccess, isBillPaid)
         });
+    }
+
+    [HttpPost("/OnlinePaymentHistory/Reconcile/{jalRefId}")]
+    [ValidateAntiForgeryToken]
+    [RequirePermission("Online Payment History.edit")]
+    public async Task<IActionResult> Reconcile(string jalRefId, CancellationToken ct)
+    {
+        jalRefId = Normalize(jalRefId) ?? string.Empty;
+        var strategy = _db.Database.CreateExecutionStrategy();
+        try
+        {
+            await strategy.ExecuteAsync(async () =>
+            {
+                await using var tx = await _db.Database.BeginTransactionAsync(ct);
+                var master = await _db.JalnoidaBankpayMasters.FirstOrDefaultAsync(x => x.Jalrefid == jalRefId, ct)
+                    ?? throw new InvalidOperationException("Payment reference not found.");
+
+                var latestTransaction = await _db.JalnoidaBankpayTrans
+                    .AsNoTracking()
+                    .Where(x => x.Jalrefid == jalRefId)
+                    .OrderByDescending(x => x.EntryDate)
+                    .FirstOrDefaultAsync(ct);
+
+                if (!IsSuccessfulStatus(latestTransaction?.AuthStatus))
+                    throw new InvalidOperationException("Only successful gateway transactions can be reconciled.");
+                if (string.IsNullOrWhiteSpace(master.BillNo))
+                    throw new InvalidOperationException("This payment reference is not linked with a bill number.");
+
+                var bill = await _db.JalPrintBillMasters.FirstOrDefaultAsync(x => x.BillNo == master.BillNo && x.ConsNo == master.Consid, ct)
+                    ?? throw new InvalidOperationException("Linked bill was not found.");
+
+                if (bill.PaidDate.HasValue || string.Equals(bill.PaidStatus, "Y", StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException("Linked bill is already marked as paid.");
+
+                var amount = master.Payamount ?? ParseDouble(latestTransaction?.TxnAmount) ?? bill.TotalBillAmt ?? bill.DueAmt ?? 0;
+                var paidOn = ParseDate(latestTransaction?.TxnDate) ?? latestTransaction?.EntryDate ?? DateTime.Now;
+                bill.PaidDate = paidOn;
+                bill.PaidAmt = amount;
+                bill.PaidStatus = "Y";
+                bill.PaymentType ??= 1;
+                bill.BankCode = master.DepositBank ?? latestTransaction?.BankId ?? bill.BankCode;
+                bill.PaymentMode ??= 1;
+                bill.Diff = Math.Round((bill.TotalBillAmt ?? bill.DueAmt ?? amount) - amount, 2);
+                bill.UpdateRecord = TrimToLength($"Reconciled {master.Jalrefid}", 20);
+
+                master.Paymentstatus = "Y";
+                master.Status = "1";
+                _db.Auditlogs.Add(new Auditlog
+                {
+                    Timestamp = DateTime.Now,
+                    UserId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : null,
+                    Username = User.Identity?.Name,
+                    Action = 2,
+                    Module = "Online Payment History",
+                    EntityId = master.Jalrefid,
+                    Details = $"Payment reconciled for bill {master.BillNo}.",
+                    Success = true,
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    UserAgent = Request.Headers.UserAgent.ToString()
+                });
+
+                await _db.SaveChangesAsync(ct);
+                await tx.CommitAsync(ct);
+            });
+
+            TempData["SuccessMessage"] = "Payment reconciled and linked bill marked as paid.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Details), new { jalRefId });
     }
 
     private static string? Normalize(string? value)
@@ -215,4 +307,30 @@ public class OnlinePaymentHistoryController : Controller
             string value => !string.IsNullOrWhiteSpace(value),
             _ => true
         });
+
+    private static bool IsSuccessfulStatus(string? value)
+        => value?.Trim().Equals("SUCCESS", StringComparison.OrdinalIgnoreCase) == true
+           || value?.Trim().Equals("SUC000", StringComparison.OrdinalIgnoreCase) == true
+           || value?.Trim().Equals("Y", StringComparison.OrdinalIgnoreCase) == true
+           || value?.Trim().Equals("S", StringComparison.OrdinalIgnoreCase) == true;
+
+    private static string ResolveReconciliationStatus(JalnoidaBankpayMaster master, JalPrintBillMaster? bill, bool hasSuccess, bool isBillPaid)
+    {
+        if (!hasSuccess)
+            return "Gateway response is not successful.";
+        if (string.IsNullOrWhiteSpace(master.BillNo))
+            return "Payment reference is not linked with a bill.";
+        if (bill is null)
+            return "Linked bill was not found.";
+        return isBillPaid ? "Bill is already marked as paid." : "Ready for reconciliation.";
+    }
+
+    private static double? ParseDouble(string? value)
+        => double.TryParse(value, out var result) ? result : null;
+
+    private static DateTime? ParseDate(string? value)
+        => DateTime.TryParse(value, out var result) ? result : null;
+
+    private static string? TrimToLength(string? value, int length)
+        => string.IsNullOrWhiteSpace(value) ? null : value.Trim()[..Math.Min(value.Trim().Length, length)];
 }

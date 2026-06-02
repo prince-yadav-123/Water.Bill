@@ -104,6 +104,15 @@ public class ApprovalsController : Controller
             .AsNoTracking()
             .Where(x => ndcApplicationIds.Contains(x.AutoId))
             .ToDictionaryAsync(x => x.AutoId, ct);
+        var legacyApplicationNos = rows
+            .Where(x => IsLegacyConsumerChange(x.WorkflowInstance.ApplicationType))
+            .Select(x => x.ApplicationNo)
+            .Distinct()
+            .ToList();
+        var legacyApplications = await _db.MasterApplicationDetails
+            .AsNoTracking()
+            .Where(x => legacyApplicationNos.Contains(x.ApplicationId))
+            .ToDictionaryAsync(x => x.ApplicationId, ct);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -112,12 +121,16 @@ public class ApprovalsController : Controller
             {
                 applications.TryGetValue(x.ApplicationId, out var app);
                 ndcApplications.TryGetValue((int)x.ApplicationId, out var ndc);
+                legacyApplications.TryGetValue(x.ApplicationNo, out var legacy);
                 return x.ApplicationNo.Contains(term, StringComparison.OrdinalIgnoreCase)
                     || (app?.ApplicantName?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
                     || (app?.MobileNumber?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
                     || (ndc?.ConsName?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
                     || (ndc?.MobileNo?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
-                    || (ndc?.ConsumerNo?.Contains(term, StringComparison.OrdinalIgnoreCase) == true);
+                    || (ndc?.ConsumerNo?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
+                    || (legacy?.ConName?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
+                    || (legacy?.ConPhoneMobile?.Contains(term, StringComparison.OrdinalIgnoreCase) == true)
+                    || (legacy?.ConsNo?.Contains(term, StringComparison.OrdinalIgnoreCase) == true);
             }).ToList();
         }
 
@@ -130,22 +143,25 @@ public class ApprovalsController : Controller
         {
             applications.TryGetValue(x.ApplicationId, out var app);
             ndcApplications.TryGetValue((int)x.ApplicationId, out var ndc);
+            legacyApplications.TryGetValue(x.ApplicationNo, out var legacy);
             return new ApprovalListItemViewModel
             {
                 TaskId = x.Id,
                 ApplicationNo = x.ApplicationNo,
                 ApplicationType = x.WorkflowInstance.ApplicationType,
-                ApplicantName = app?.ApplicantName ?? ndc?.ConsName,
-                MobileNumber = app?.MobileNumber ?? ndc?.MobileNo,
+                ApplicantName = app?.ApplicantName ?? ndc?.ConsName ?? legacy?.ConName,
+                MobileNumber = app?.MobileNumber ?? ndc?.MobileNo ?? legacy?.ConPhoneMobile,
                 Property = app is not null
                     ? $"{app.Sector} / {app.Block} / {app.FlatNo}"
                     : ndc is not null
                         ? $"{ndc.Sector} / {ndc.Block} / {ndc.PlotNo}"
-                        : "-",
-                CurrentStatus = app?.ApplicationStatus ?? ndc?.CurrentStatus ?? ndc?.FinalStatus ?? ndc?.Status ?? x.WorkflowInstance.CurrentStatus,
+                        : legacy is not null
+                            ? $"{legacy.SectorVill} / {legacy.Block} / {legacy.PlotNo}"
+                            : "-",
+                CurrentStatus = app?.ApplicationStatus ?? ndc?.CurrentStatus ?? ndc?.FinalStatus ?? ndc?.Status ?? legacy?.ApplicationStatus ?? x.WorkflowInstance.CurrentStatus,
                 CurrentStage = x.Stage.StageName,
                 AssignedTo = ResolveAssignedTo(x, users, roles),
-                SubmittedOn = app?.SubmittedOn ?? ndc?.CreatedOn,
+                SubmittedOn = app?.SubmittedOn ?? ndc?.CreatedOn ?? legacy?.EnterDate?.ToDateTime(TimeOnly.MinValue),
                 AssignedOn = x.AssignedOn,
                 CanAct = x.IsActive
                     && x.Status == "Pending"
@@ -192,6 +208,11 @@ public class ApprovalsController : Controller
             ? await _db.ConsumerApplyNdcs
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.AutoId == task.ApplicationId, ct)
+            : null;
+        var legacyApplication = IsLegacyConsumerChange(task.WorkflowInstance.ApplicationType)
+            ? await _db.MasterApplicationDetails
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ApplicationId == task.ApplicationNo && x.AppType == ResolveLegacyAppType(task.WorkflowInstance.ApplicationType), ct)
             : null;
         List<NdcDocument> ndcDocuments = ndcApplication is null
             ? []
@@ -282,6 +303,8 @@ public class ApprovalsController : Controller
             NewConnectionApplication = application,
             NdcApplication = ndcApplication,
             NdcDocuments = ndcDocuments,
+            LegacyApplication = legacyApplication,
+            LegacyDetailValues = DecodeDetail(legacyApplication?.ApplcationStatusDetail),
             Fee = fee,
             WorkflowTimeline = timeline,
             StageProgress = stageProgress,
@@ -430,5 +453,28 @@ public class ApprovalsController : Controller
             parts.Add(roleName);
 
         return parts.Count == 0 ? "Unassigned" : string.Join(" / ", parts);
+    }
+
+    private static bool IsLegacyConsumerChange(string? applicationType)
+        => string.Equals(applicationType, WorkflowService.ApplicationTypeNameTransfer, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(applicationType, WorkflowService.ApplicationTypeConnectionChange, StringComparison.OrdinalIgnoreCase);
+
+    private static string ResolveLegacyAppType(string applicationType)
+        => string.Equals(applicationType, WorkflowService.ApplicationTypeNameTransfer, StringComparison.OrdinalIgnoreCase) ? "TRN" : "CTC";
+
+    private static Dictionary<string, string> DecodeDetail(string? text)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(text))
+            return result;
+
+        foreach (var item in text.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = item.Split('=', 2);
+            if (parts.Length == 2)
+                result[parts[0]] = parts[1];
+        }
+
+        return result;
     }
 }

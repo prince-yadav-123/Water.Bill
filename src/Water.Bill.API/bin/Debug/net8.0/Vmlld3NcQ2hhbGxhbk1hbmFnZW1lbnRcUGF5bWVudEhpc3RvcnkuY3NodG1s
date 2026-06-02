@@ -1,0 +1,100 @@
+@model Water.Bill.API.Models.Challans.ChallanPaymentHistoryIndexViewModel
+@using Water.Bill.API.Models.Challans
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string DateTextRequired(DateTime value) => value.ToString("dd MMM yyyy");
+    string Amount(double value) => value.ToString("N2");
+    string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Challan Payment History</h1>
+        <p>Search posted payments and open receipts for challan collections.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to Challans</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Challan / Consumer / Ref / Name" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" type="search" name="consumerNo" value="@Model.ConsumerNo" placeholder="Consumer No" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Challan No</label>
+            <input class="form-control" type="search" name="challanNo" value="@Model.ChallanNo" placeholder="Challan No" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Mode</label>
+            <select class="form-select" name="paymentMode" asp-items="Model.PaymentModeOptions">
+                <option value="">All Modes</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="PaymentHistory">Reset</a>
+        </div>
+    </form>
+
+    @if (Model.Payments.Count == 0)
+    {
+        <div class="wb-empty">No challan payments found.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap mt-3">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Challan No</th>
+                        <th>Consumer</th>
+                        <th>Source Bill</th>
+                        <th>Payment Date</th>
+                        <th>Amount</th>
+                        <th>Mode</th>
+                        <th>Reference No</th>
+                        <th>Posted By</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var payment in Model.Payments)
+                {
+                    <tr>
+                        <td><strong>@Text(payment.ChallanNo)</strong></td>
+                        <td>
+                            <div class="fw-semibold">@Text(payment.ConsumerNo)</div>
+                            <small class="text-muted">@Text(payment.ConsumerName)</small>
+                        </td>
+                        <td>@Text(payment.SourceBillNo)</td>
+                        <td>@DateTextRequired(payment.PaymentDate)</td>
+                        <td>Rs. @Amount(payment.Amount)</td>
+                        <td>@ChallanPaymentModes.Display(payment.PaymentMode)</td>
+                        <td>@Text(payment.TransactionReferenceNo)</td>
+                        <td>@Text(payment.PostedByName)</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@payment.ChallanId">View</a>
+                                <a class="btn btn-outline-secondary" asp-action="Receipt" asp-route-id="@payment.ChallanId" target="_blank">Receipt</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

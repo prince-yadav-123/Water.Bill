@@ -1,0 +1,99 @@
+@model Water.Bill.API.Models.Reports.MisReportIndexViewModel
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Amount(double value) => value.ToString("N2");
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Reports / MIS</h1>
+        <p>Operational reports from old-compatible bill, challan, payment, and consumer tables.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field">
+            <label class="form-label">Report</label>
+            <select class="form-select" name="ReportType">
+                <option value="Collection" selected="@(Model.ReportType == "Collection")">Collection</option>
+                <option value="Dues" selected="@(Model.ReportType == "Dues")">Pending Dues</option>
+                <option value="Bill" selected="@(Model.ReportType == "Bill")">Bill Register</option>
+                <option value="Challan" selected="@(Model.ReportType == "Challan")">Challan Register</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" name="ConsumerNo" value="@Model.ConsumerNo" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Division</label>
+            <input class="form-control" name="DevType" value="@Model.DevType" placeholder="1 / 2 / 3" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status</label>
+            <input class="form-control" name="Status" value="@Model.Status" placeholder="1 / Y / Pending" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="ToDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Run Report</button>
+        </div>
+    </form>
+</section>
+
+<section class="wb-approval-summary-card">
+    <div class="wb-approval-summary-grid">
+        <div><span>Total Records</span><strong>@Model.Summary.TotalCount</strong></div>
+        <div><span>Total Amount</span><strong>@Amount(Model.Summary.TotalAmount)</strong></div>
+        <div><span>Paid Amount</span><strong>@Amount(Model.Summary.PaidAmount)</strong></div>
+        <div><span>Pending Amount</span><strong>@Amount(Model.Summary.PendingAmount)</strong></div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card">
+    @if (Model.Rows.Count == 0)
+    {
+        <div class="wb-empty">No data found for selected filters.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Consumer</th>
+                        <th>Property / Division</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Paid</th>
+                        <th>Pending</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td><strong>@(row.ReferenceNo ?? "-")</strong></td>
+                        <td>@(row.ConsumerNo ?? "-")<small class="d-block text-muted">@(row.ConsumerName ?? "")</small></td>
+                        <td>@(row.PropertyNo ?? "-")<small class="d-block text-muted">@row.Division</small></td>
+                        <td><span class="badge text-bg-secondary">@(row.Status ?? "-")</span></td>
+                        <td>@DateText(row.Date)</td>
+                        <td>@Amount(row.Amount)</td>
+                        <td>@Amount(row.PaidAmount)</td>
+                        <td>@Amount(Math.Max(0, row.Amount - row.PaidAmount))</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

@@ -124,24 +124,49 @@ public class DashboardController : Controller
             };
         });
 
-        var offlinePayments = await _db.Challans
+        var postedChallanPayments = await _db.ChallanPaymentHistories
             .AsNoTracking()
-            .Where(x => x.ConsNo == consumerNo)
-            .OrderByDescending(x => x.PayDate ?? x.EntryDate)
+            .Where(x => x.ConsumerNo == consumerNo && !x.IsDeleted)
+            .OrderByDescending(x => x.PaymentDate)
+            .Take(6)
+            .Select(x => new RecentPaymentViewModel
+            {
+                ReferenceNo = x.TransactionReferenceNo ?? x.ChallanNo ?? "Challan payment",
+                PaymentDate = x.PaymentDate,
+                Amount = x.Amount,
+                Source = "Challan",
+                Status = "Paid",
+                BankName = x.BankName ?? x.BankCode
+            })
+            .ToListAsync(ct);
+
+        var postedChallanNos = (await _db.ChallanPaymentHistories
+            .AsNoTracking()
+            .Where(x => x.ConsumerNo == consumerNo && !x.IsDeleted && x.ChallanNo != null)
+            .Select(x => x.ChallanNo)
+            .ToListAsync(ct))
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var legacyOfflinePayments = await _db.Challans
+            .AsNoTracking()
+            .Where(x => x.ConsNo == consumerNo && x.PayDate != null)
+            .OrderByDescending(x => x.PayDate)
             .Take(6)
             .Select(x => new RecentPaymentViewModel
             {
                 ReferenceNo = x.RecpNo ?? x.ReceiptId ?? x.ReceiptId1 ?? "Offline payment",
-                PaymentDate = x.PayDate ?? x.EntryDate,
+                PaymentDate = x.PayDate,
                 Amount = x.PaidAmt ?? x.BillAmt ?? 0,
                 Source = "Offline",
-                Status = string.IsNullOrWhiteSpace(x.Status) ? "Recorded" : x.Status,
+                Status = "Paid",
                 BankName = x.BnkCd ?? x.BrNm
             })
             .ToListAsync(ct);
 
         return onlinePayments
-            .Concat(offlinePayments)
+            .Concat(postedChallanPayments)
+            .Concat(legacyOfflinePayments.Where(x => string.IsNullOrWhiteSpace(x.ReferenceNo) || !postedChallanNos.Contains(x.ReferenceNo)))
             .OrderByDescending(x => x.PaymentDate ?? DateTime.MinValue)
             .Take(3)
             .ToList();
@@ -149,8 +174,7 @@ public class DashboardController : Controller
 
     private static ConsumerSummaryViewModel MapConsumer(ConsumerDetailsMaster consumer)
     {
-        var name = string.Join(" ", new[] { consumer.ConsNm1, consumer.ConsNm2 }
-            .Where(x => !string.IsNullOrWhiteSpace(x))).Trim();
+        var name = (consumer.ConsNm1 ?? string.Empty).Trim();
 
         return new ConsumerSummaryViewModel
         {

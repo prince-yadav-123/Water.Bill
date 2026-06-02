@@ -57,8 +57,7 @@ public class ConsumerAccountService : IConsumerAccountService
         user.LastLoginAt = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
 
-        var name = string.Join(" ", new[] { consumer.ConsNm1, consumer.ConsNm2 }
-            .Where(x => !string.IsNullOrWhiteSpace(x))).Trim();
+        var name = (consumer.ConsNm1 ?? string.Empty).Trim();
 
         var consumerRole = await _db.Approles
             .AsNoTracking()

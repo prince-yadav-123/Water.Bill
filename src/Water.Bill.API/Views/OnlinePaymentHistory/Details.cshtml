@@ -38,6 +38,36 @@
 <section class="wb-page-card wb-admin-card">
     <div class="wb-section-head-compact">
         <div>
+            <p class="wb-kicker">Reconciliation</p>
+            <h2>Payment Posting Status</h2>
+        </div>
+        @if (Model.CanReconcileBillPayment)
+        {
+            <form asp-action="Reconcile" asp-route-jalRefId="@Model.JalRefId" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-primary btn-sm" type="submit">Reconcile Bill Payment</button>
+            </form>
+        }
+    </div>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <small class="text-muted">Gateway Success</small>
+            <div><span class="badge @(Model.HasSuccessfulGatewayResponse ? "text-bg-success" : "text-bg-secondary")">@(Model.HasSuccessfulGatewayResponse ? "Yes" : "No")</span></div>
+        </div>
+        <div class="col-md-3">
+            <small class="text-muted">Bill Paid</small>
+            <div><span class="badge @(Model.IsBillPaid ? "text-bg-success" : "text-bg-warning")">@(Model.IsBillPaid ? "Paid" : "Not Paid")</span></div>
+        </div>
+        <div class="col-md-6">
+            <small class="text-muted">Status</small>
+            <div class="fw-semibold">@Model.ReconciliationStatus</div>
+        </div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-section-head-compact">
+        <div>
             <p class="wb-kicker">Bank Response</p>
             <h2>Transaction Attempts</h2>
         </div>

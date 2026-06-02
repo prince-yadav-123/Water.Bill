@@ -1,0 +1,154 @@
+@model Water.Bill.API.Models.Challans.ChallanDetailsViewModel
+@using Water.Bill.Core.Common
+@{
+    Layout = null;
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd-MMM-yyyy") : "-";
+    string Amount(double value) => value.ToString("N2");
+    string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print Challan - @Model.ChallanNo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        :root { --ink: #0f172a; --muted: #475569; --line: #cbd5e1; --soft: #f8fafc; --brand: #0f96a8; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: var(--ink); background: #eef4f8; font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
+        .print-shell { max-width: 900px; margin: 18px auto; padding: 0 14px; }
+        .print-toolbar { position: sticky; top: 10px; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; padding: 13px 16px; border: 1px solid #dbe5ef; border-radius: 14px; background: rgba(255,255,255,.96); box-shadow: 0 12px 28px rgba(15,23,42,.09); }
+        .print-toolbar h1 { margin: 0; font-size: 18px; font-weight: 900; }
+        .print-toolbar p { margin: 3px 0 0; color: var(--muted); font-size: 12.5px; }
+        .print-actions { display: flex; gap: 8px; }
+        .print-actions .btn { min-width: 74px; min-height: 34px; border-radius: 8px; padding: 6px 14px; font-size: 12.5px; font-weight: 800; }
+        .print-actions .btn-primary { border-color: var(--brand); background: var(--brand); }
+        .challan-page { background: #fff; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(15,23,42,.08); }
+        .challan-head { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 18px 20px 14px; border-bottom: 2px solid var(--ink); }
+        .challan-head h2 { margin: 0; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: .03em; }
+        .challan-head p { margin: 3px 0 0; color: var(--muted); line-height: 1.35; }
+        .challan-title { text-align: right; }
+        .challan-title strong { display: block; font-size: 18px; text-transform: uppercase; }
+        .challan-title span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+        .strip { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
+        .strip div { padding: 9px 12px; border-right: 1px solid var(--line); }
+        .strip div:last-child { border-right: 0; }
+        .label { display: block; margin-bottom: 3px; color: var(--muted); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+        .value { font-weight: 800; }
+        .section { padding: 14px 20px; border-bottom: 1px solid var(--line); }
+        .section h3 { margin: 0 0 10px; font-size: 14px; font-weight: 900; text-transform: uppercase; }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--line); }
+        .detail-item { display: grid; grid-template-columns: 150px 1fr; min-height: 34px; border-bottom: 1px solid var(--line); }
+        .detail-item:nth-last-child(-n + 2) { border-bottom: 0; }
+        .detail-item:nth-child(odd) { border-right: 1px solid var(--line); }
+        .detail-item span:first-child { padding: 8px 10px; color: var(--muted); background: var(--soft); font-weight: 700; }
+        .detail-item span:last-child { padding: 8px 10px; font-weight: 700; }
+        .charges { width: 100%; border-collapse: collapse; border: 1px solid var(--line); }
+        .charges th, .charges td { padding: 8px 10px; border-bottom: 1px solid var(--line); }
+        .charges th { color: var(--muted); background: var(--soft); font-size: 11px; text-transform: uppercase; }
+        .charges td:last-child, .charges th:last-child { text-align: right; }
+        .charges .total-row td { color: #fff; background: var(--brand); font-size: 16px; font-weight: 900; }
+        .notice { padding: 12px 20px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+        .sign-row { display: grid; grid-template-columns: 1fr 220px; gap: 24px; padding: 26px 20px 18px; }
+        .sign-box { text-align: center; border-top: 1px solid var(--ink); padding-top: 7px; font-weight: 800; }
+        @@media print {
+            body { background: #fff; }
+            .print-shell { max-width: none; margin: 0; padding: 0; }
+            .print-toolbar { display: none; }
+            .challan-page { border: 0; box-shadow: none; }
+            @@page { size: A4; margin: 10mm; }
+        }
+    </style>
+</head>
+<body>
+    <main class="print-shell">
+        <div class="print-toolbar">
+            <div>
+                <h1>Challan Print</h1>
+                <p>Consumer @Model.Consumer.ConsumerNo - Challan @Model.ChallanNo - @(Model.Consumer.ConsumerName ?? "-")</p>
+            </div>
+            <div class="print-actions">
+                <button class="btn btn-primary btn-sm" type="button" onclick="window.print()">Print</button>
+                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="window.close()">Close</button>
+            </div>
+        </div>
+
+        <article class="challan-page">
+            <header class="challan-head">
+                <div>
+                    <h2>Noida Jal</h2>
+                    <p>Water Works Department, Noida Authority</p>
+                    <p>Computer generated challan for water/service charges</p>
+                </div>
+                <div class="challan-title">
+                    <strong>Payment Challan</strong>
+                    <span>Challan No: @Text(Model.ChallanNo)</span>
+                    <span>Receipt Ref: @Text(Model.ReceiptNo)</span>
+                </div>
+            </header>
+
+            <section class="strip">
+                <div><span class="label">Consumer No</span><span class="value">@Model.Consumer.ConsumerNo</span></div>
+                <div><span class="label">Generated On</span><span class="value">@DateText(Model.GeneratedOn)</span></div>
+                <div><span class="label">Due Date</span><span class="value">@DateText(Model.DueDate)</span></div>
+                <div><span class="label">Division</span><span class="value">@AppConstants.Divisions.FormatDisplay(Model.Consumer.DevType)</span></div>
+            </section>
+
+            <section class="section">
+                <h3>Consumer & Property Details</h3>
+                <div class="detail-grid">
+                    <div class="detail-item"><span>Consumer Name</span><span>@Text(Model.Consumer.ConsumerName)</span></div>
+                    <div class="detail-item"><span>Mobile No</span><span>@Text(Model.Consumer.MobileNo)</span></div>
+                    <div class="detail-item"><span>Property No</span><span>@Text(Model.Consumer.PropertyNo)</span></div>
+                    <div class="detail-item"><span>Email</span><span>@Text(Model.Consumer.Email)</span></div>
+                    <div class="detail-item"><span>Address</span><span>@Text(Model.Consumer.Address)</span></div>
+                    <div class="detail-item"><span>Purpose</span><span>@Text(Model.Purpose)</span></div>
+                    <div class="detail-item"><span>Connection Type</span><span>@Text(Model.Consumer.ConnectionType)</span></div>
+                    <div class="detail-item"><span>Bill Period</span><span>@DateText(Model.BillPeriodFrom) to @DateText(Model.BillPeriodTo)</span></div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h3>Challan Amount Details</h3>
+                <table class="charges">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Bill / Base Amount</td><td>@Amount(Model.BillAmount)</td></tr>
+                        <tr><td>Surcharge</td><td>@Amount(Model.Surcharge)</td></tr>
+                        <tr><td>Arrear</td><td>@Amount(Model.Arrear)</td></tr>
+                        <tr><td>NDC / No Dues Amount</td><td>@Amount(Model.NocAmount)</td></tr>
+                        <tr><td>Connection Charge</td><td>@Amount(Model.ConnectionCharge)</td></tr>
+                        <tr><td>Other / Penalty Charge</td><td>@Amount(Model.PenaltyCharge)</td></tr>
+                        <tr class="total-row"><td>Total Payable</td><td>@Amount(Model.TotalAmount)</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="section">
+                <h3>Payment Counter Details</h3>
+                <div class="detail-grid">
+                    <div class="detail-item"><span>Bank / Counter</span><span>@Text(Model.BankName)</span></div>
+                    <div class="detail-item"><span>Bank Code</span><span>@Text(Model.BankCode)</span></div>
+                    <div class="detail-item"><span>Status</span><span>@Model.Status</span></div>
+                    <div class="detail-item"><span>Generated By</span><span>@Text(Model.GeneratedBy)</span></div>
+                </div>
+            </section>
+
+            <div class="notice">
+                Please deposit the challan amount at the selected counter/bank before the due date. This is a computer generated challan and does not require a physical signature.
+            </div>
+
+            <div class="sign-row">
+                <div></div>
+                <div class="sign-box">Authorised Signatory</div>
+            </div>
+        </article>
+    </main>
+</body>
+</html>

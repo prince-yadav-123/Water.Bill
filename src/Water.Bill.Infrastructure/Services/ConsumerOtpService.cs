@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.DTOs.Consumer;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Core.Common;
@@ -19,14 +20,15 @@ public class ConsumerOtpService : IConsumerOtpService
     private const int MaxAttempts = 5;
 
     private readonly ApplicationDbContext _db;
-    private readonly IConsumerSmsSender _smsSender;
+    private readonly ICommunicationService _communicationService;
     private readonly string? _configuredDefaultOtp;
 
-    public ConsumerOtpService(ApplicationDbContext db, IConsumerSmsSender smsSender, IConfiguration configuration)
+    public ConsumerOtpService(ApplicationDbContext db, ICommunicationService communicationService, IConfiguration configuration)
     {
         _db = db;
-        _smsSender = smsSender;
-        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
+        _communicationService = communicationService;
+        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Communication:Sms:DefaultOtp"])
+            ?? NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
     }
 
     public async Task<ConsumerOtpRequestResult> RequestOtpAsync(string consumerNo, CancellationToken ct = default)
@@ -121,7 +123,7 @@ public class ConsumerOtpService : IConsumerOtpService
         });
 
         await _db.SaveChangesAsync(ct);
-        await _smsSender.SendOtpAsync(mobileNo, otp, expiresAt, ct);
+        await SendLoginOtpAsync(consumer, mobileNo, otp, expiresAt, ct);
 
         return new ConsumerOtpRequestResult
         {
@@ -208,6 +210,33 @@ public class ConsumerOtpService : IConsumerOtpService
 
     private static string NormalizeConsumerNo(string value) => (value ?? string.Empty).Trim().ToUpperInvariant();
 
+    private async Task SendLoginOtpAsync(ConsumerDetailsMaster consumer, string mobileNo, string otp, DateTime expiresAt, CancellationToken ct)
+    {
+        var values = new Dictionary<string, string?>
+        {
+            ["ConsumerName"] = GetConsumerName(consumer),
+            ["ConsumerNo"] = NormalizeConsumerNo(consumer.ConsNo),
+            ["Otp"] = otp,
+            ["Date"] = DateTime.Now.ToString("dd MMM yyyy"),
+            ["ExpiryMinutes"] = Math.Max(1, (int)Math.Ceiling((expiresAt - DateTime.UtcNow).TotalMinutes)).ToString()
+        };
+
+        await _communicationService.SendAsync(
+            CommunicationPurposes.ConsumerOtp,
+            new NotificationRecipient
+            {
+                Name = GetConsumerName(consumer),
+                Mobile = mobileNo,
+                Email = consumer.EmailId
+            },
+            values,
+            NotificationChannelOptions.For(CommunicationChannels.Sms, CommunicationChannels.Email),
+            referenceType: "ConsumerLoginOtp",
+            referenceId: NormalizeConsumerNo(consumer.ConsNo),
+            referenceNo: NormalizeConsumerNo(consumer.ConsNo),
+            ct: ct);
+    }
+
     private static string NormalizeMobileNo(string? value)
     {
         var digits = new string((value ?? string.Empty).Where(char.IsDigit).ToArray());
@@ -244,9 +273,7 @@ public class ConsumerOtpService : IConsumerOtpService
 
     private static string GetConsumerName(ConsumerDetailsMaster consumer)
     {
-        var name = string.Join(" ", new[] { consumer.ConsNm1, consumer.ConsNm2 }
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select(x => x!.Trim()));
+        var name = (consumer.ConsNm1 ?? string.Empty).Trim();
 
         return string.IsNullOrWhiteSpace(name) ? consumer.ConsNo : name;
     }

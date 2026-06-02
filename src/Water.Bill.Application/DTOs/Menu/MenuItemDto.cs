@@ -9,7 +9,6 @@ public class MenuItemDto
     public string? Icon { get; set; }
     public string? Url { get; set; }
     public string? SectionLabel { get; set; }
-    public string? Module { get; set; }
     public int? ModuleId { get; set; }
     public string? ModuleName { get; set; }
     public int Order { get; set; }

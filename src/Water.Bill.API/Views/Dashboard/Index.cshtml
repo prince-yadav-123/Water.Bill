@@ -1,84 +1,1058 @@
-@{
-    ViewData["Title"] = "Dashboard";
+@model Water.Bill.API.Models.Dashboard.DashboardIndexViewModel
+@using Water.Bill.API.Models.Dashboard
+@using System.Globalization
+
+@functions {
+    private static string ToneClass(string tone) => tone switch
+    {
+        "success" => "text-bg-success-subtle text-success-emphasis border-success-subtle",
+        "warning" => "text-bg-warning-subtle text-warning-emphasis border-warning-subtle",
+        "danger" => "text-bg-danger-subtle text-danger-emphasis border-danger-subtle",
+        "info" => "text-bg-info-subtle text-info-emphasis border-info-subtle",
+        "secondary" => "text-bg-secondary-subtle text-secondary-emphasis border-secondary-subtle",
+        _ => "text-bg-primary-subtle text-primary-emphasis border-primary-subtle"
+    };
+
+    private static string StatusTone(string status) => status switch
+    {
+        "Approved" or "Resolved" or "Paid" or "FinalConsumerCreated" => "success",
+        "Pending" or "PendingPayment" or "UnderReview" or "InProgress" => "warning",
+        "Rejected" or "Failed" or "Closed" => "danger",
+        _ => "secondary"
+    };
+
+    private static string BuildDonutBackground(IReadOnlyList<DashboardChartSliceViewModel> items)
+    {
+        var total = items.Sum(x => x.Count);
+        if (total <= 0) return "conic-gradient(#e2e8f0 0 360deg)";
+
+        var start = 0d;
+        var segments = new List<string>();
+        foreach (var item in items)
+        {
+            var angle = item.Count * 360d / total;
+            var end = start + angle;
+            segments.Add($"{item.Color} {start.ToString("0.##", CultureInfo.InvariantCulture)}deg {end.ToString("0.##", CultureInfo.InvariantCulture)}deg");
+            start = end;
+        }
+
+        return $"conic-gradient({string.Join(", ", segments)})";
+    }
+
+    private static string FormatDate(DateTime? value) => value?.ToString("dd MMM yyyy hh:mm tt") ?? "-";
 }
 
-<div class="d-flex flex-column gap-4">
-    <div class="wb-page-card">
-        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+<div class="d-flex flex-column gap-4 wb-dashboard">
+    <section class="wb-page-card wb-admin-card wb-dashboard-hero">
+        <div class="d-flex flex-column flex-xl-row justify-content-between gap-4">
             <div>
-                <p class="text-uppercase text-primary fw-semibold mb-2 small">Authority Login</p>
-                <h1 class="h3 mb-2">Welcome to Noida Jal Authority Services</h1>
-                <p class="text-muted mb-0">
-                    Monitor consumers, bills, payments, and recent activity from one place.
+                <span class="wb-dashboard-eyebrow">Authority Services</span>
+                <h1 class="wb-dashboard-title mb-2">Welcome back, @Model.UserName</h1>
+                <p class="wb-dashboard-subtitle mb-0">
+                    @if (Model.IsAdminView)
+                    {
+                        <span>Here's the live operating picture across consumers, workflow, payments, and service desks.</span>
+                    }
+                    else
+                    {
+                        <span>Here's your current queue, recent actions, and the work that needs your attention today.</span>
+                    }
                 </p>
             </div>
-            <div class="d-flex align-items-start">
-                <span class="badge text-bg-primary px-3 py-2">Dashboard</span>
+            <div class="wb-dashboard-hero-meta">
+                <div class="wb-dashboard-role">@Model.RoleName</div>
+                <div class="wb-dashboard-date">@DateTime.Now.ToString("dddd, dd MMM yyyy")</div>
             </div>
         </div>
-    </div>
+    </section>
 
     <div class="row g-3">
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="wb-stat h-100">
-                <span class="text-muted">Total Consumers</span>
-                <strong>0</strong>
-                <small class="text-muted">Registered consumer accounts</small>
+        @foreach (var card in Model.SummaryCards)
+        {
+            <div class="col-12 col-sm-6 col-xxl-3">
+                @if (!string.IsNullOrWhiteSpace(card.Url))
+                {
+                    <a class="text-decoration-none" href="@card.Url">
+                        <div class="wb-stat wb-dashboard-stat h-100">
+                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                <div>
+                                    <span class="text-muted">@card.Label</span>
+                                    <strong>@card.Value</strong>
+                                    <small class="text-muted">@card.Caption</small>
+                                </div>
+                                <span class="badge border @ToneClass(card.Tone)">Live</span>
+                            </div>
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    <div class="wb-stat wb-dashboard-stat h-100">
+                        <span class="text-muted">@card.Label</span>
+                        <strong>@card.Value</strong>
+                        <small class="text-muted">@card.Caption</small>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    @if (Model.IsAdminView)
+    {
+        <div class="row g-3">
+            <div class="col-12 col-xl-4">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>@Model.PrimaryStatusChart?.Title</h2>
+                            <p>@Model.PrimaryStatusChart?.Caption</p>
+                        </div>
+                    </div>
+                    @if (Model.PrimaryStatusChart is { Items.Count: > 0 } primaryChart)
+                    {
+                        var total = primaryChart.Items.Sum(x => x.Count);
+                        <div class="wb-donut-wrap">
+                            <div class="wb-donut" style="background:@BuildDonutBackground(primaryChart.Items)">
+                                <div class="wb-donut-center">
+                                    <strong>@total</strong>
+                                    <span>Applications</span>
+                                </div>
+                            </div>
+                            <div class="wb-donut-legend">
+                                @foreach (var item in primaryChart.Items)
+                                {
+                                    var percent = total == 0 ? 0 : Math.Round(item.Count * 100m / total, 1);
+                                    <div class="wb-donut-legend-item">
+                                        <span class="wb-color-dot" style="background:@item.Color"></span>
+                                        <div>
+                                            <div class="fw-semibold">@item.Label</div>
+                                            <small class="text-muted">@item.Count item(s) - @percent%</small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="wb-empty">No application data is available yet.</div>
+                    }
+                </section>
+            </div>
+            <div class="col-12 col-xl-4">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>@Model.SecondaryBarChart?.Title</h2>
+                            <p>@Model.SecondaryBarChart?.Caption</p>
+                        </div>
+                    </div>
+                    @if (Model.SecondaryBarChart is { Items.Count: > 0 } deptChart)
+                    {
+                        var max = Math.Max(1, deptChart.Items.Max(x => x.Value));
+                        <div class="wb-bar-list">
+                            @foreach (var item in deptChart.Items)
+                            {
+                                <a class="wb-bar-row text-decoration-none" href="@(item.Url ?? "#")">
+                                    <div class="wb-bar-copy">
+                                        <span>@item.Label</span>
+                                        <strong>@item.Value</strong>
+                                    </div>
+                                    <div class="wb-bar-track">
+                                        <div class="wb-bar-fill" style="width:@(item.Value * 100m / max)%; background:@item.Color"></div>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="wb-empty">No pending workflow load is available right now.</div>
+                    }
+                </section>
+            </div>
+            <div class="col-12 col-xl-4">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>@Model.ServiceDeskPanel?.Title</h2>
+                            <p>@Model.ServiceDeskPanel?.Caption</p>
+                        </div>
+                    </div>
+                    @if (Model.ServiceDeskPanel is { Groups.Count: > 0 } serviceDesk)
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var group in serviceDesk.Groups)
+                            {
+                                <div class="wb-status-panel-group">
+                                    <div class="fw-semibold mb-2">@group.Label</div>
+                                    <div class="row g-2">
+                                        @foreach (var item in group.Items)
+                                        {
+                                            <div class="col-6">
+                                                <a class="wb-status-chip text-decoration-none border @ToneClass(item.Tone)" href="@(item.Url ?? "#")">
+                                                    <span>@item.Label</span>
+                                                    <strong>@item.Value</strong>
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="wb-empty">Service desk counters will appear here once records are available.</div>
+                    }
+                </section>
             </div>
         </div>
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="wb-stat h-100">
-                <span class="text-muted">Total Bills</span>
-                <strong>0</strong>
-                <small class="text-muted">Generated water bills</small>
+    }
+    else
+    {
+        <div class="row g-3">
+            <div class="col-12 col-xl-6">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>@Model.SecondaryBarChart?.Title</h2>
+                            <p>@Model.SecondaryBarChart?.Caption</p>
+                        </div>
+                    </div>
+                    @if (Model.SecondaryBarChart is { Items.Count: > 0 } myWork)
+                    {
+                        var max = Math.Max(1, myWork.Items.Max(x => x.Value));
+                        <div class="wb-bar-list">
+                            @foreach (var item in myWork.Items)
+                            {
+                                <a class="wb-bar-row text-decoration-none" href="@(item.Url ?? "#")">
+                                    <div class="wb-bar-copy">
+                                        <span>@item.Label</span>
+                                        <strong>@item.Value</strong>
+                                    </div>
+                                    <div class="wb-bar-track">
+                                        <div class="wb-bar-fill" style="width:@(item.Value * 100m / max)%; background:@item.Color"></div>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="wb-empty">You do not have any pending assigned work right now.</div>
+                    }
+                </section>
+            </div>
+            <div class="col-12 col-xl-6">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>Quick Links</h2>
+                            <p>Jump straight into the modules you work in most often.</p>
+                        </div>
+                    </div>
+                    <div class="wb-quick-links">
+                        @foreach (var link in Model.QuickLinks)
+                        {
+                            <a class="wb-quick-link" href="@link.Url">
+                                <strong>@link.Label</strong>
+                                <span>@link.Caption</span>
+                            </a>
+                        }
+                    </div>
+                </section>
             </div>
         </div>
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="wb-stat h-100">
-                <span class="text-muted">Pending Payments</span>
-                <strong>0</strong>
-                <small class="text-muted">Payments waiting for completion</small>
+    }
+
+    @if (Model.TrendChart is { Points.Count: > 0 } trendChart)
+    {
+        var maxTrend = Math.Max(1m, trendChart.Points.Max(x => Math.Max(x.PrimaryValue, x.SecondaryValue)));
+        <section class="wb-page-card wb-admin-card">
+            <div class="wb-dashboard-section-header">
+                <div>
+                    <h2>@trendChart.Title</h2>
+                    <p>@trendChart.Caption</p>
+                </div>
+                <div class="wb-trend-legend">
+                    <span><i class="wb-legend-swatch wb-primary"></i>@trendChart.PrimaryLabel</span>
+                    <span><i class="wb-legend-swatch wb-secondary"></i>@trendChart.SecondaryLabel</span>
+                </div>
+            </div>
+            <div class="wb-trend-chart">
+                @foreach (var point in trendChart.Points)
+                {
+                    <div class="wb-trend-col">
+                        <div class="wb-trend-bars">
+                            <div class="wb-trend-bar wb-primary" style="height:@(point.PrimaryValue * 100m / maxTrend)%"></div>
+                            <div class="wb-trend-bar wb-secondary" style="height:@(point.SecondaryValue * 100m / maxTrend)%"></div>
+                        </div>
+                        <div class="wb-trend-values">
+                            <span>@point.PrimaryValue</span>
+                            <span>@point.SecondaryValue</span>
+                        </div>
+                        <div class="wb-trend-label">@point.Label</div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.IsAdminView && Model.QuickLinks.Count > 0)
+    {
+        <section class="wb-page-card wb-admin-card">
+            <div class="wb-dashboard-section-header">
+                <div>
+                    <h2>Quick Links</h2>
+                    <p>Jump straight into the high-traffic operational modules.</p>
+                </div>
+            </div>
+            <div class="wb-quick-links">
+                @foreach (var link in Model.QuickLinks)
+                {
+                    <a class="wb-quick-link" href="@link.Url">
+                        <strong>@link.Label</strong>
+                        <span>@link.Caption</span>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.IsAdminView)
+    {
+        <div class="row g-3">
+            <div class="col-12 col-xxl-7">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>Recent Applications</h2>
+                            <p>Latest incoming requests across the core public and service workflows.</p>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Application No</th>
+                                    <th>Applicant</th>
+                                    <th>Status</th>
+                                    <th>Received</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.RecentApplications.Count == 0)
+                            {
+                                <tr><td colspan="5" class="text-center text-muted py-4">No application activity found.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.RecentApplications)
+                                {
+                                    <tr>
+                                        <td>@row.Type</td>
+                                        <td>
+                                            @if (!string.IsNullOrWhiteSpace(row.Url))
+                                            {
+                                                <a href="@row.Url" class="fw-semibold text-decoration-none">@row.ApplicationNo</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="fw-semibold">@row.ApplicationNo</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">@row.ApplicantName</div>
+                                            <small class="text-muted">@row.Property</small>
+                                        </td>
+                                        <td><span class="badge border @ToneClass(StatusTone(row.Status))">@row.Status</span></td>
+                                        <td>@FormatDate(row.CreatedOn)</td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+            <div class="col-12 col-xxl-5">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>Current Approval Queue</h2>
+                            <p>Tasks waiting at the active workflow stage.</p>
+                        </div>
+                        <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">Open Queue</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Application</th>
+                                    <th>Stage</th>
+                                    <th>Assigned</th>
+                                    <th>Since</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.PendingApprovals.Count == 0)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">No pending approvals at the moment.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.PendingApprovals)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a class="fw-semibold text-decoration-none" href="@row.Url">@row.ApplicationNo</a>
+                                            <div><small class="text-muted">@row.ApplicantName</small></div>
+                                        </td>
+                                        <td>@row.StageName</td>
+                                        <td>@row.AssignedTo</td>
+                                        <td>@FormatDate(row.AssignedOn)</td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
         </div>
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="wb-stat h-100">
-                <span class="text-muted">Recent Activity</span>
-                <strong>0</strong>
-                <small class="text-muted">Latest admin actions</small>
+    }
+    else
+    {
+        <div class="row g-3">
+            <div class="col-12 col-xxl-7">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>Assigned Review Queue</h2>
+                            <p>Only the tasks matched to your current user, role, or department assignment are shown here.</p>
+                        </div>
+                        <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">Open Queue</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Application</th>
+                                    <th>Stage</th>
+                                    <th>Assigned On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.PendingApprovals.Count == 0)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">Nothing is assigned to you right now.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.PendingApprovals)
+                                {
+                                    <tr>
+                                        <td>@row.ApplicationType</td>
+                                        <td>
+                                            <a class="fw-semibold text-decoration-none" href="@row.Url">@row.ApplicationNo</a>
+                                            <div><small class="text-muted">@row.ApplicantName</small></div>
+                                        </td>
+                                        <td>@row.StageName</td>
+                                        <td>@FormatDate(row.AssignedOn)</td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
+            <div class="col-12 col-xxl-5">
+                <section class="wb-page-card wb-admin-card h-100">
+                    <div class="wb-dashboard-section-header">
+                        <div>
+                            <h2>My Challans</h2>
+                            <p>Recent challans that were created or posted under your account.</p>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Challan</th>
+                                    <th>Consumer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.RecentChallans.Count == 0)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">No challans posted by you yet.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.RecentChallans)
+                                {
+                                    <tr>
+                                        <td><a class="fw-semibold text-decoration-none" href="@row.Url">@row.ChallanNo</a></td>
+                                        <td>@row.ConsumerNo</td>
+                                        <td>Rs. @row.Amount.ToString("N2")</td>
+                                        <td><span class="badge border @ToneClass(StatusTone(row.Status))">@row.Status</span></td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    }
+
+    <div class="row g-3">
+        <div class="col-12 col-xxl-6">
+            <section class="wb-page-card wb-admin-card h-100">
+                <div class="wb-dashboard-section-header">
+                    <div>
+                        <h2>@(Model.IsAdminView ? "Recent Challans" : "Assigned Queries & Complaints")</h2>
+                        <p>@(Model.IsAdminView ? "Latest demand records and payment requests raised in the system." : "Service desk items that currently sit with you.")</p>
+                    </div>
+                </div>
+                @if (Model.IsAdminView)
+                {
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Challan</th>
+                                    <th>Consumer</th>
+                                    <th>Purpose</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.RecentChallans.Count == 0)
+                            {
+                                <tr><td colspan="5" class="text-center text-muted py-4">No challans found.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.RecentChallans)
+                                {
+                                    <tr>
+                                        <td><a class="fw-semibold text-decoration-none" href="@row.Url">@row.ChallanNo</a></td>
+                                        <td>@row.ConsumerNo</td>
+                                        <td>@row.Purpose</td>
+                                        <td>Rs. @row.Amount.ToString("N2")</td>
+                                        <td><span class="badge border @ToneClass(StatusTone(row.Status))">@row.Status</span></td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Reference</th>
+                                    <th>Consumer</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.RecentServiceDeskItems.Count == 0)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">No assigned query or complaint items found.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.RecentServiceDeskItems)
+                                {
+                                    <tr>
+                                        <td>@row.Type</td>
+                                        <td><a class="fw-semibold text-decoration-none" href="@row.Url">@row.ReferenceNo</a></td>
+                                        <td>
+                                            <div>@row.ConsumerName</div>
+                                            <small class="text-muted">@row.Subject</small>
+                                        </td>
+                                        <td><span class="badge border @ToneClass(StatusTone(row.Status))">@row.Status</span></td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+        </div>
+        <div class="col-12 col-xxl-6">
+            <section class="wb-page-card wb-admin-card h-100">
+                <div class="wb-dashboard-section-header">
+                    <div>
+                        <h2>@(Model.IsAdminView ? "Recent Queries & Complaints" : "Recent Activity")</h2>
+                        <p>@(Model.IsAdminView ? "Most recent service desk interactions across the application." : "Audit trail of your recent actions across authority modules.")</p>
+                    </div>
+                </div>
+                @if (Model.IsAdminView)
+                {
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Reference</th>
+                                    <th>Consumer</th>
+                                    <th>Status</th>
+                                    <th>Raised</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.RecentServiceDeskItems.Count == 0)
+                            {
+                                <tr><td colspan="5" class="text-center text-muted py-4">No service desk items found.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.RecentServiceDeskItems)
+                                {
+                                    <tr>
+                                        <td>@row.Type</td>
+                                        <td><a class="fw-semibold text-decoration-none" href="@row.Url">@row.ReferenceNo</a></td>
+                                        <td>
+                                            <div>@row.ConsumerName</div>
+                                            <small class="text-muted">@row.Subject</small>
+                                        </td>
+                                        <td><span class="badge border @ToneClass(StatusTone(row.Status))">@row.Status</span></td>
+                                        <td>@FormatDate(row.CreatedOn)</td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table wb-dashboard-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Module</th>
+                                    <th>Status</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model.RecentActivities.Count == 0)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">No recent activity has been logged yet.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var row in Model.RecentActivities)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@row.Action</div>
+                                            <small class="text-muted">@row.Details</small>
+                                        </td>
+                                        <td>@row.Module</td>
+                                        <td>
+                                            <span class="badge border @ToneClass(row.Success == false ? "danger" : row.Success == true ? "success" : "secondary")">
+                                                @(row.Success == false ? "Failed" : row.Success == true ? "Success" : "Logged")
+                                            </span>
+                                        </td>
+                                        <td>@FormatDate(row.OccurredOn)</td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
         </div>
     </div>
 
-    <div class="wb-page-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h5 mb-0">Recent Activity</h2>
-            <span class="text-muted small">Placeholder</span>
-        </div>
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th scope="col">Activity</th>
-                        <th scope="col">Module</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Dashboard loaded</td>
-                        <td>Authority Services</td>
-                        <td><span class="badge text-bg-success">Ready</span></td>
-                        <td>Now</td>
-                    </tr>
-                    <tr>
-                        <td>Water billing modules will appear here as they are connected.</td>
-                        <td>System</td>
-                        <td><span class="badge text-bg-secondary">Pending data</span></td>
-                        <td>-</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    @if (Model.IsAdminView)
+    {
+        <section class="wb-page-card wb-admin-card">
+            <div class="wb-dashboard-section-header">
+                <div>
+                    <h2>Recent Activity</h2>
+                    <p>Latest authority-side actions captured through the audit trail.</p>
+                </div>
+                <a class="btn btn-outline-primary btn-sm" asp-controller="OperatorAudit" asp-action="Index">Open Logs</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table wb-dashboard-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Module</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.RecentActivities.Count == 0)
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-4">No recent operator activity has been logged.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var row in Model.RecentActivities)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">@row.Action</div>
+                                    <small class="text-muted">@row.Details</small>
+                                </td>
+                                <td>@row.Module</td>
+                                <td>@(string.IsNullOrWhiteSpace(row.Username) ? "-" : row.Username)</td>
+                                <td>
+                                    <span class="badge border @ToneClass(row.Success == false ? "danger" : row.Success == true ? "success" : "secondary")">
+                                        @(row.Success == false ? "Failed" : row.Success == true ? "Success" : "Logged")
+                                    </span>
+                                </td>
+                                <td>@FormatDate(row.OccurredOn)</td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
 </div>
+
+@section Scripts {
+    <style>
+        .wb-dashboard-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+            color: #fff;
+        }
+
+        .wb-dashboard-eyebrow {
+            display: inline-block;
+            margin-bottom: 0.65rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .wb-dashboard-title {
+            font-size: 1.95rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .wb-dashboard-subtitle {
+            max-width: 60rem;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .wb-dashboard-hero-meta {
+            min-width: 15rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .wb-dashboard-role {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.55rem 0.9rem;
+            background: rgba(255,255,255,0.12);
+            font-weight: 600;
+        }
+
+        .wb-dashboard-date {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.72);
+        }
+
+        .wb-dashboard-stat {
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        a .wb-dashboard-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.09);
+        }
+
+        .wb-dashboard-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .wb-dashboard-section-header h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .wb-dashboard-section-header p {
+            margin: 0.35rem 0 0;
+            color: #64748b;
+            font-size: 0.92rem;
+        }
+
+        .wb-donut-wrap {
+            display: grid;
+            grid-template-columns: minmax(12rem, 14rem) 1fr;
+            gap: 1.25rem;
+            align-items: center;
+        }
+
+        .wb-donut {
+            width: 13.5rem;
+            height: 13.5rem;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .wb-donut::after {
+            content: "";
+            position: absolute;
+            inset: 1.5rem;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.16);
+        }
+
+        .wb-donut-center {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .wb-donut-center strong {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .wb-donut-center span {
+            margin-top: 0.35rem;
+            font-size: 0.82rem;
+            color: #64748b;
+        }
+
+        .wb-donut-legend {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .wb-donut-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .wb-color-dot {
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 50%;
+            flex: none;
+        }
+
+        .wb-bar-list {
+            display: grid;
+            gap: 0.9rem;
+        }
+
+        .wb-bar-row {
+            display: grid;
+            gap: 0.55rem;
+        }
+
+        .wb-bar-copy {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            color: #0f172a;
+        }
+
+        .wb-bar-track {
+            height: 0.65rem;
+            border-radius: 999px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+
+        .wb-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .wb-status-panel-group {
+            padding: 0.9rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.85rem;
+            background: #f8fafc;
+        }
+
+        .wb-status-chip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem 0.85rem;
+            border-radius: 0.85rem;
+            background: #fff;
+        }
+
+        .wb-status-chip strong {
+            font-size: 1rem;
+        }
+
+        .wb-trend-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        .wb-legend-swatch {
+            display: inline-block;
+            width: 0.85rem;
+            height: 0.85rem;
+            margin-right: 0.45rem;
+            border-radius: 0.25rem;
+            vertical-align: middle;
+        }
+
+        .wb-legend-swatch.wb-primary,
+        .wb-trend-bar.wb-primary {
+            background: #2563eb;
+        }
+
+        .wb-legend-swatch.wb-secondary,
+        .wb-trend-bar.wb-secondary {
+            background: #0f766e;
+        }
+
+        .wb-trend-chart {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+            gap: 1rem;
+            align-items: end;
+            min-height: 18rem;
+        }
+
+        .wb-trend-col {
+            display: grid;
+            gap: 0.55rem;
+            align-items: end;
+        }
+
+        .wb-trend-bars {
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            gap: 0.45rem;
+            height: 13rem;
+            padding: 0 0.35rem;
+        }
+
+        .wb-trend-bar {
+            width: 1.25rem;
+            min-height: 0.4rem;
+            border-radius: 0.6rem 0.6rem 0.2rem 0.2rem;
+        }
+
+        .wb-trend-values {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 0.82rem;
+            color: #475569;
+        }
+
+        .wb-trend-label {
+            text-align: center;
+            font-size: 0.84rem;
+            color: #64748b;
+        }
+
+        .wb-dashboard-table thead th {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #64748b;
+            border-bottom-color: #e2e8f0;
+        }
+
+        .wb-dashboard-table tbody td {
+            padding-top: 0.85rem;
+            padding-bottom: 0.85rem;
+            border-bottom-color: #eef2f7;
+        }
+
+        .wb-quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+            gap: 0.9rem;
+        }
+
+        .wb-quick-link {
+            display: grid;
+            gap: 0.35rem;
+            padding: 1rem;
+            border: 1px solid #dbe5f0;
+            border-radius: 0.9rem;
+            color: #0f172a;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            text-decoration: none;
+        }
+
+        .wb-quick-link:hover {
+            border-color: #93c5fd;
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.08);
+        }
+
+        .wb-quick-link span {
+            color: #64748b;
+            font-size: 0.88rem;
+        }
+
+        @@media (max-width: 1199.98px) {
+            .wb-donut-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .wb-dashboard-hero-meta {
+                align-items: flex-start;
+            }
+        }
+    </style>
+}

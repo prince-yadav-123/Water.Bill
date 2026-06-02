@@ -72,7 +72,6 @@ public class MenuController : Controller
             return View(model);
         }
 
-        await ApplyModuleNameAsync(model.Item, ct);
         model.Item.TenantId = model.Item.TenantId == 0 ? DefaultTenantId : model.Item.TenantId;
         model.Item.CreatedAt = DateTime.UtcNow;
         model.Item.IsDeleted = false;
@@ -115,14 +114,12 @@ public class MenuController : Controller
         var item = await _db.Menuitems.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (item is null) return NotFound();
 
-        await ApplyModuleNameAsync(model.Item, ct);
         item.ParentId = model.Item.ParentId == 0 ? null : model.Item.ParentId;
         item.Label = model.Item.Label;
         item.Icon = model.Item.Icon;
         item.Url = model.Item.Url;
         item.SectionLabel = model.Item.SectionLabel;
         item.ModuleId = model.Item.ModuleId;
-        item.Module = model.Item.Module;
         item.Order = model.Item.Order;
         item.ShowInSidebar = model.Item.ShowInSidebar;
         item.IsActive = model.Item.IsActive ?? true;
@@ -189,20 +186,6 @@ public class MenuController : Controller
             .Where(x => x.IsActive && !x.IsDeleted)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
-
-    private async Task ApplyModuleNameAsync(Menuitem item, CancellationToken ct)
-    {
-        if (!item.ModuleId.HasValue)
-        {
-            item.Module = null;
-            return;
-        }
-
-        item.Module = await _db.PermissionModules
-            .Where(x => x.Id == item.ModuleId.Value && x.IsActive && !x.IsDeleted)
-            .Select(x => x.Name)
-            .FirstOrDefaultAsync(ct);
-    }
 
     private void ValidateMenuItem(Menuitem item)
     {

@@ -3,6 +3,8 @@
 @{
     var app = Model.NewConnectionApplication;
     var ndc = Model.NdcApplication;
+    var legacy = Model.LegacyApplication;
+    var legacyDetail = Model.LegacyDetailValues;
     var task = Model.Task;
     var fee = Model.Fee;
     var inr = CultureInfo.GetCultureInfo("en-IN");
@@ -11,12 +13,20 @@
         && task.WorkflowInstance.CurrentStageId == task.StageId
         && task.WorkflowInstance.IsActive;
     var approveText = task.Stage.IsFinalStage ? "Final Approve" : "Approve & Move Next";
-    var submittedOn = app?.SubmittedOn ?? app?.CreatedOn ?? ndc?.CreatedOn;
-    var applicantName = app?.ApplicantName ?? ndc?.ConsName;
-    var mobileNo = app?.MobileNumber ?? ndc?.MobileNo;
-    var currentStatus = app?.ApplicationStatus ?? ndc?.CurrentStatus ?? ndc?.FinalStatus ?? ndc?.Status ?? task.WorkflowInstance.CurrentStatus;
+    var submittedOn = app?.SubmittedOn ?? app?.CreatedOn ?? ndc?.CreatedOn ?? legacy?.EnterDate?.ToDateTime(TimeOnly.MinValue);
+    var applicantName = app?.ApplicantName ?? ndc?.ConsName ?? legacy?.ConName;
+    var mobileNo = app?.MobileNumber ?? ndc?.MobileNo ?? legacy?.ConPhoneMobile;
+    var currentStatus = app?.ApplicationStatus ?? ndc?.CurrentStatus ?? ndc?.FinalStatus ?? ndc?.Status ?? legacy?.ApplicationStatus ?? task.WorkflowInstance.CurrentStatus;
+    var approvalTitle = task.WorkflowInstance.ApplicationType switch
+    {
+        Water.Bill.Infrastructure.Services.WorkflowService.ApplicationTypeNdc => "NDC Application Approval",
+        Water.Bill.Infrastructure.Services.WorkflowService.ApplicationTypeNameTransfer => "Name Transfer / Mutation Approval",
+        Water.Bill.Infrastructure.Services.WorkflowService.ApplicationTypeConnectionChange => "Connection Type / Category Change Approval",
+        _ => "New Connection Approval"
+    };
 
     string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string? DetailValue(string key) => legacyDetail.TryGetValue(key, out var value) ? value : null;
     string DateTimeOrDash(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy hh:mm tt") : "-";
     string Money(decimal? value) => value.HasValue ? value.Value.ToString("C", inr) : "-";
     string DocumentInitials(string value) => string.IsNullOrWhiteSpace(value)
@@ -47,7 +57,7 @@
 
 <div class="wb-page-head">
     <div>
-        <h1>@(ndc is null ? "New Connection Approval" : "NDC Application Approval")</h1>
+        <h1>@approvalTitle</h1>
         <p>@task.ApplicationNo - @task.Stage.StageName</p>
     </div>
     <a class="btn btn-outline-primary" asp-action="Pending">Back to Applications</a>
@@ -281,6 +291,62 @@ else if (ndc is not null)
                     }
                 </div>
             }
+        </div>
+    </section>
+}
+else if (legacy is not null)
+{
+    <section class="wb-application-paper">
+        <div class="wb-application-paper-title">
+            <h2>@(task.WorkflowInstance.ApplicationType == Water.Bill.Infrastructure.Services.WorkflowService.ApplicationTypeNameTransfer ? "Name Transfer / Mutation Request" : "Connection Type / Category Change Request")</h2>
+            <p>Submitted consumer service request details organized for authority review.</p>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Application Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Application No</th><td>@legacy.ApplicationId</td><th>Application Date</th><td>@(legacy.EnterDate?.ToString("dd MMM yyyy") ?? "-")</td></tr>
+                    <tr><th>Consumer No</th><td>@TextOrDash(legacy.ConsNo)</td><th>Mobile No</th><td>@TextOrDash(legacy.ConPhoneMobile)</td></tr>
+                    <tr><th>Applicant / New Name</th><td>@TextOrDash(legacy.ConName)</td><th>Current Status</th><td>@TextOrDash(legacy.ApplicationStatus)</td></tr>
+                    <tr><th>Division</th><td>@TextOrDash(legacy.DivName)</td><th>Application Type</th><td>@TextOrDash(legacy.AppType)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Property Details</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    <tr><th>Sector</th><td>@TextOrDash(legacy.SectorVill)</td><th>Block</th><td>@TextOrDash(legacy.Block)</td></tr>
+                    <tr><th>Plot / Flat No</th><td>@TextOrDash(legacy.PlotNo)</td><th>Plot Area</th><td>@TextOrDash(legacy.PlotArea)</td></tr>
+                    <tr><th>Pipe Size</th><td>@TextOrDash(legacy.PipeSize)</td><th>Previous Detail</th><td>@TextOrDash(legacy.PrevConDetail)</td></tr>
+                    <tr><th>Address</th><td colspan="3">@TextOrDash(legacy.ConAddress)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="wb-paper-section">
+            <h3>Requested Change</h3>
+            <table class="wb-review-table">
+                <tbody>
+                    @if (task.WorkflowInstance.ApplicationType == Water.Bill.Infrastructure.Services.WorkflowService.ApplicationTypeNameTransfer)
+                    {
+                        <tr><th>Old Name</th><td>@TextOrDash(DetailValue("OldName"))</td><th>New Name</th><td>@TextOrDash(DetailValue("NewName") ?? legacy.ConName)</td></tr>
+                        <tr><th>Old Father / Name2</th><td>@TextOrDash(DetailValue("OldFather"))</td><th>New Father / Name2</th><td>@TextOrDash(DetailValue("NewFather"))</td></tr>
+                        <tr><th>Transfer Fee</th><td>@TextOrDash(DetailValue("TransferFee"))</td><th>Security Amount</th><td>@TextOrDash(DetailValue("SecurityAmount"))</td></tr>
+                        <tr><th>Challan No</th><td>@TextOrDash(DetailValue("ChallanNo"))</td><th>Challan Date</th><td>@TextOrDash(DetailValue("ChallanDate"))</td></tr>
+                    }
+                    else
+                    {
+                        <tr><th>Old Connection Type</th><td>@TextOrDash(DetailValue("OldConnectionType"))</td><th>New Connection Type</th><td>@TextOrDash(DetailValue("NewConnectionType") ?? legacy.ConnType)</td></tr>
+                        <tr><th>Old Category</th><td>@TextOrDash(DetailValue("OldCategory"))</td><th>New Category</th><td>@TextOrDash(DetailValue("NewCategory") ?? legacy.PropertyType)</td></tr>
+                        <tr><th>Estimation No</th><td>@TextOrDash(DetailValue("EstimationNo"))</td><th>Estimation Amount</th><td>@TextOrDash(DetailValue("EstimationAmount"))</td></tr>
+                        <tr><th>Security Amount</th><td>@TextOrDash(DetailValue("SecurityAmount"))</td><th>Monthly Rate</th><td>@TextOrDash(DetailValue("MonthlyRate"))</td></tr>
+                    }
+                    <tr><th>Remarks</th><td colspan="3">@TextOrDash(DetailValue("Remarks"))</td></tr>
+                </tbody>
+            </table>
         </div>
     </section>
 }

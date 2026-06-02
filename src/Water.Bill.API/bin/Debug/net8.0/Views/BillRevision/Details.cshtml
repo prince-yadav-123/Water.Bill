@@ -1,0 +1,52 @@
+@model Water.Bill.API.Models.Billing.BillRevisionDetailsViewModel
+@{
+    var bill = Model.Bill;
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Amount(double? value) => value.HasValue ? value.Value.ToString("N2") : "-";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Bill Revision Details</h1>
+        <p>@bill.BillNo - @bill.ConsumerNo</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+</div>
+
+@if (TempData["SuccessMessage"] is string success) { <div class="alert alert-success">@success</div> }
+@if (TempData["ErrorMessage"] is string error) { <div class="alert alert-danger">@error</div> }
+
+<section class="wb-approval-summary-card">
+    <div class="wb-approval-summary-grid">
+        <div><span>Bill No</span><strong>@bill.BillNo</strong></div>
+        <div><span>Consumer</span><strong>@bill.ConsumerNo</strong></div>
+        <div><span>Name</span><strong>@(bill.ConsumerName ?? "-")</strong></div>
+        <div><span>Property</span><strong>@(bill.PropertyNo ?? "-")</strong></div>
+        <div><span>Bill Date</span><strong>@DateText(bill.BillDate)</strong></div>
+        <div><span>Period</span><strong>@DateText(bill.BillDateFrom) - @DateText(bill.BillDateTo)</strong></div>
+        <div><span>Total Amount</span><strong>@Amount(bill.TotalAmount)</strong></div>
+        <div><span>Status</span><strong>@bill.Status</strong></div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card">
+    <h2 class="wb-section-title">Reverse Bill</h2>
+    @if (!Model.CanReverse)
+    {
+        <div class="wb-empty">This bill cannot be reversed here. Only active unpaid bills are eligible.</div>
+    }
+    else
+    {
+        <form asp-action="Reverse" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="BillNo" value="@bill.BillNo" />
+            <div class="col-12">
+                <label class="form-label">Reason</label>
+                <textarea class="form-control" name="Reason" rows="3" required maxlength="250"></textarea>
+            </div>
+            <div class="col-12 text-end">
+                <button class="btn btn-outline-danger" type="submit">Reverse Bill</button>
+            </div>
+        </form>
+    }
+</section>

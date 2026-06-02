@@ -1,8 +1,11 @@
 @using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
 @using Water.Bill.Application.Interfaces
 @using Water.Bill.Application.DTOs.Menu
 @using Water.Bill.Core.Common
+@using Water.Bill.Infrastructure.Data
 @inject IPermissionService PermissionService
+@inject ApplicationDbContext Db
 
 @{
     var currentPath = Context.Request.Path.Value ?? "";
@@ -15,6 +18,16 @@
     var profileImageUrl = User.FindFirstValue("ProfileImageUrl");
     var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
     var displayName = string.IsNullOrWhiteSpace(fullName) ? userName : fullName;
+    if (isAuthenticated && !string.IsNullOrWhiteSpace(consumerNo))
+    {
+        var consumerNameOnly = await Db.ConsumerDetailsMasters
+            .Where(x => x.ConsNo == consumerNo)
+            .Select(x => x.ConsNm1)
+            .FirstOrDefaultAsync();
+
+        if (!string.IsNullOrWhiteSpace(consumerNameOnly))
+            displayName = consumerNameOnly.Trim();
+    }
 
     string GetInitials(string? name)
     {
@@ -29,21 +42,17 @@
     var initials = GetInitials(displayName);
 
     IReadOnlyList<MenuItemDto> menuItems = [];
-    HashSet<string> menuVisibleModules = [];
     HashSet<int> menuVisibleModuleIds = [];
     if (isAuthenticated && int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
     {
         menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
         menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
-        menuVisibleModules = await PermissionService.GetMenuVisibleModulesAsync(roleId);
     }
 
     bool CanSeeSelf(MenuItemDto item)
     {
         if (!item.IsActive || !item.ShowInSidebar) return false;
-        if (item.ModuleId.HasValue) return menuVisibleModuleIds.Contains(item.ModuleId.Value);
-        if (!string.IsNullOrWhiteSpace(item.Module)) return menuVisibleModules.Contains(item.Module);
-        return false;
+        return item.ModuleId.HasValue && menuVisibleModuleIds.Contains(item.ModuleId.Value);
     }
 
     IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
@@ -170,7 +179,7 @@
                         <span></span>
                         <span></span>
                     </button>
-                    <div class="fw-semibold">@ViewData["Title"]</div>
+                    <div class="wb-topbar-title">@ViewData["Title"]</div>
                 </div>
                 <a class="wb-profile-chip" asp-controller="Profile" asp-action="Index" title="Open My Profile">
                     <span class="wb-profile-avatar" aria-hidden="true">

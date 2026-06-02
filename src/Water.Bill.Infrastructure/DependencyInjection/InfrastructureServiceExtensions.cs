@@ -38,6 +38,12 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<INewConnectionFinalizationService, NewConnectionFinalizationService>();
         services.AddScoped<IWorkflowService, WorkflowService>();
         services.AddScoped<IConsumerPaymentService, ConsumerPaymentService>();
+        services.AddScoped<ITemplateRenderer, TemplateRenderer>();
+        services.AddScoped<IEmailSender, EmailSender>();
+        services.AddScoped<ISmsSender, SmsSender>();
+        services.AddScoped<IWhatsAppSender, WhatsAppSender>();
+        services.AddScoped<IInAppNotificationSender, InAppNotificationSender>();
+        services.AddScoped<ICommunicationService, CommunicationService>();
 
         return services;
     }

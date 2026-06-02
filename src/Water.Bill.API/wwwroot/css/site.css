@@ -152,6 +152,37 @@ a:hover { color: var(--wb-primary-dark); }
 .wb-nav-child .wb-nav-icon { width: 18px; min-width: 18px; height: 18px; border-radius: 5px; font-size: 10px; }
 .wb-nav-child:hover,
 .wb-nav-child.active { padding-left: 14px; background: rgba(16,152,173,.22); }
+.wb-nav-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% - 26px);
+  margin: 10px 8px 5px 18px;
+  padding: 5px 8px 5px 11px;
+  border: 0;
+  border-radius: 7px;
+  color: rgba(230, 251, 255, .62);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.2;
+  text-align: left;
+  text-transform: uppercase;
+}
+.wb-nav-section-heading:hover { color: #fff; background: rgba(255,255,255,.08); }
+.wb-nav-section-arrow {
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  opacity: .76;
+  transform: rotate(-45deg);
+  transition: transform .18s ease;
+}
+.wb-nav-section-heading.open .wb-nav-section-arrow { transform: rotate(45deg); }
+.wb-nav-section { max-height: 0; overflow: hidden; transition: max-height .22s ease; }
+.wb-nav-section.open { max-height: 820px; }
 .wb-nav-dot { position: absolute; left: 22px; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.42); }
 .wb-nav-child.active .wb-nav-dot,
 .wb-nav-child:hover .wb-nav-dot { background: var(--wb-accent); }
@@ -1223,6 +1254,24 @@ textarea.form-control:focus,
 .wb-filter-bar .form-select { min-height: 31px; height: 31px; padding: 5px 10px; border-radius: 7px; font-size: 12.5px; }
 .wb-filter-actions { display: flex; flex: 0 0 auto; gap: 8px; }
 .wb-filter-actions .btn { min-height: 31px; padding: 5px 14px; border-radius: 7px; font-size: 12.5px; line-height: 1.35; box-shadow: none; }
+.wb-checkline { align-self: center; padding-top: 4px; }
+.wb-checkline .form-check { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12.5px; white-space: nowrap; }
+.wb-card-title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.wb-summary-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+.wb-summary-strip > div { padding: 12px 14px; border: 1px solid var(--wb-border); border-radius: 8px; background: var(--wb-surface-soft); }
+.wb-summary-strip span { display: block; color: var(--wb-text-muted); font-size: 12px; }
+.wb-summary-strip strong { display: block; margin-top: 2px; font-size: 22px; color: var(--wb-primary-deep); }
+.wb-bulk-bill-form { display: flex; flex-direction: column; gap: 16px; }
+.wb-form-section-head { padding-bottom: 10px; border-bottom: 1px solid var(--wb-border); }
+.wb-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+.wb-form-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.wb-form-field .form-label { margin-bottom: 5px; color: var(--wb-text); font-weight: 600; font-size: 12.5px; }
+.wb-form-field .form-control,
+.wb-form-field .form-select { min-height: 38px; border-radius: 8px; font-size: 13px; }
+.wb-bulk-options { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 14px; border: 1px solid var(--wb-border); border-radius: 8px; background: var(--wb-surface-soft); }
+.wb-bulk-options .form-check { display: flex; align-items: center; gap: 7px; margin: 0; font-size: 13px; font-weight: 600; color: var(--wb-text); }
+.wb-form-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 2px; }
+.wb-form-actions .btn { min-height: 34px; padding: 6px 16px; border-radius: 8px; }
 .wb-approval-table-wrap { border: 1px solid var(--wb-border); border-radius: 12px; overflow: hidden; box-shadow: var(--wb-shadow-sm); }
 .wb-approval-table thead th { padding: 10px 13px; font-size: 10.5px; background: #f8fafc; }
 .wb-approval-table td { padding: 11px 13px; font-size: 13px; }
@@ -1421,7 +1470,11 @@ textarea.form-control:focus,
 @media (max-width: 767.98px) {
   .wb-admin-toolbar { align-items: stretch; }
   .wb-admin-toolbar .wb-search { max-width: none; width: 100%; }
-  .wb-detail-grid { grid-template-columns: 1fr; }
+  .wb-detail-grid,
+  .wb-form-grid,
+  .wb-form-grid-2 { grid-template-columns: 1fr; }
+  .wb-form-actions { justify-content: stretch; }
+  .wb-form-actions .btn { flex: 1 1 auto; }
   .wb-permission-role-card,
   .wb-permission-role-form { align-items: stretch; flex-direction: column; }
   .wb-permission-role-form { width: 100%; }

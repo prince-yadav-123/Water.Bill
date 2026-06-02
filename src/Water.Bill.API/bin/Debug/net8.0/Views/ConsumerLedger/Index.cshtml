@@ -1,0 +1,214 @@
+@model Water.Bill.API.Models.Ledger.ConsumerLedgerIndexViewModel
+@using Water.Bill.API.Models.Ledger
+@using Water.Bill.Core.Common
+@{
+    ViewData["Title"] = "Consumer Ledger";
+    string DateText(DateTime value) => value.ToString("dd MMM yyyy");
+    string Amount(decimal value) => value.ToString("N2");
+    var routeFromDate = Model.FromDate?.ToString("yyyy-MM-dd");
+    var routeToDate = Model.ToDate?.ToString("yyyy-MM-dd");
+    string Badge(string status) => status switch
+    {
+        "Paid" or "Applied" => "text-bg-success",
+        "Cancelled" or "Reversed" => "text-bg-danger",
+        "Pending" or "PendingPayment" => "text-bg-warning",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Consumer Ledger</h1>
+        <p>View bills, challans, payments, and adjustments in one consumer account statement.</p>
+    </div>
+    @if (Model.Consumer is not null)
+    {
+        <a class="btn btn-outline-primary"
+           asp-action="Print"
+           asp-route-consumerNo="@Model.Consumer.ConsumerNo"
+           asp-route-fromDate="@routeFromDate"
+           asp-route-toDate="@routeToDate"
+           asp-route-entryType="@Model.EntryType"
+           target="_blank">Print Statement</a>
+    }
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search Consumer</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Consumer no / name / mobile / property" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" type="search" name="consumerNo" value="@Model.ConsumerNo" placeholder="Exact consumer no" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From Date</label>
+            <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To Date</label>
+            <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Entry Type</label>
+            <select class="form-select" name="entryType" asp-items="Model.EntryTypeOptions">
+                <option value="">All Entries</option>
+            </select>
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">View Ledger</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+</section>
+
+@if (Model.Consumer is null)
+{
+    <section class="wb-page-card wb-admin-card">
+        @if (!Model.HasSearched)
+        {
+            <div class="wb-empty">Search a consumer to view the account statement.</div>
+        }
+        else if (Model.Consumers.Count == 0)
+        {
+            <div class="wb-empty">No matching consumers found.</div>
+        }
+        else
+        {
+            <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+                <div>
+                    <h2 class="wb-section-title mb-1">Matching Consumers</h2>
+                    <p class="text-muted mb-0">Select a consumer to open the ledger.</p>
+                </div>
+                <span class="badge text-bg-secondary">@Model.Consumers.Count result@(Model.Consumers.Count == 1 ? "" : "s")</span>
+            </div>
+            <div class="table-responsive wb-approval-table-wrap">
+                <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                    <thead>
+                        <tr>
+                            <th>Consumer No</th>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Property</th>
+                            <th>Connection</th>
+                            <th>Division</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var consumer in Model.Consumers)
+                    {
+                        <tr>
+                            <td><strong>@consumer.ConsumerNo</strong></td>
+                            <td>@(consumer.ConsumerName ?? "-")</td>
+                            <td>@(consumer.MobileNo ?? "-")</td>
+                            <td>@(consumer.PropertyNo ?? "-")</td>
+                            <td>@(consumer.ConnectionType ?? "-")</td>
+                            <td>@AppConstants.Divisions.FormatDisplay(consumer.DevType)</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Index" asp-route-consumerNo="@consumer.ConsumerNo">View Ledger</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+else
+{
+    <section class="wb-page-card wb-admin-card">
+        <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+            <div>
+                <h2 class="wb-section-title mb-1">@Model.Consumer.ConsumerNo - @(Model.Consumer.ConsumerName ?? "-")</h2>
+                <p class="text-muted mb-0">
+                    @(Model.Consumer.PropertyNo ?? "-") · @(Model.Consumer.MobileNo ?? "-") · @AppConstants.Divisions.FormatDisplay(Model.Consumer.DevType)
+                </p>
+            </div>
+            <span class="badge @(Model.Consumer.Status == 1 ? "text-bg-success" : "text-bg-secondary")">
+                @(Model.Consumer.Status == 1 ? "Active" : "Inactive")
+            </span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-3">
+                <div class="wb-stat h-100">
+                    <span>Previous Balance</span>
+                    <strong>Rs. @Amount(Model.OpeningBalance)</strong>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="wb-stat h-100">
+                    <span>Total Charges</span>
+                    <strong class="text-danger">Rs. @Amount(Model.TotalDebit)</strong>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="wb-stat h-100">
+                    <span>Total Received / Adjusted</span>
+                    <strong class="text-success">Rs. @Amount(Model.TotalCredit)</strong>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="wb-stat h-100">
+                    <span>Net Outstanding</span>
+                    <strong>Rs. @Amount(Model.ClosingBalance)</strong>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Rows.Count == 0)
+        {
+            <div class="wb-empty">No ledger entries found for selected criteria.</div>
+        }
+        else
+        {
+            <div class="table-responsive wb-approval-table-wrap">
+                <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Reference</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var row in Model.Rows)
+                    {
+                        <tr class="@(!row.AffectsBalance ? "table-light" : "")">
+                            <td>@DateText(row.Date)</td>
+                            <td>@row.EntryType</td>
+                            <td>
+                                <strong>@row.ReferenceNo</strong>
+                                @if (!string.IsNullOrWhiteSpace(row.LinkedReferenceNo))
+                                {
+                                    <div><small class="text-muted">Linked: @row.LinkedReferenceNo</small></div>
+                                }
+                            </td>
+                            <td>
+                                @row.Description
+                                @if (!row.AffectsBalance)
+                                {
+                                    <div><small class="text-muted">Informational entry, not included in balance.</small></div>
+                                }
+                            </td>
+                            <td><span class="badge @Badge(row.Status)">@row.Status</span></td>
+                            <td class="text-end text-danger">@(row.Debit > 0 ? Amount(row.Debit) : "-")</td>
+                            <td class="text-end text-success">@(row.Credit > 0 ? Amount(row.Credit) : "-")</td>
+                            <td class="text-end fw-semibold">Rs. @Amount(row.Balance)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}

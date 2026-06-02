@@ -104,6 +104,14 @@
                 <button class="btn btn-primary btn-sm" type="submit">Start NDC Workflow</button>
             </form>
         }
+        else if (Model.CanActOnCurrentStage)
+        {
+            <a class="btn btn-primary btn-sm" asp-controller="Approvals" asp-action="Details" asp-route-id="@Model.ActiveWorkflowTaskId">Review & Action</a>
+        }
+        @if (app.FinalStatus == "A" || app.CurrentStatus == "Approved" || !string.IsNullOrWhiteSpace(app.CertificateUrl))
+        {
+            <a class="btn btn-outline-primary btn-sm" asp-controller="NdcCertificates" asp-action="Print" asp-route-id="@app.AutoId" target="_blank">Print Certificate</a>
+        }
     </div>
     @if (Model.WorkflowInstance is null)
     {
@@ -130,3 +138,32 @@
         </div>
     }
 </section>
+
+@if (Model.WorkflowHistory.Count > 0)
+{
+    <section class="wb-page-card wb-admin-card wb-approval-section">
+        <div class="wb-section-head-compact">
+            <div>
+                <p class="wb-kicker">Timeline</p>
+                <h2>Workflow History</h2>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle wb-table wb-admin-table">
+                <thead><tr><th>Action</th><th>From / To</th><th>By</th><th>Date</th><th>Remarks</th></tr></thead>
+                <tbody>
+                @foreach (var row in Model.WorkflowHistory.OrderByDescending(x => x.ActionOn))
+                {
+                    <tr>
+                        <td><strong>@TextOrDash(row.Action)</strong></td>
+                        <td>@TextOrDash(row.FromStatus) to @TextOrDash(row.ToStatus)</td>
+                        <td>@TextOrDash(row.ActionByName)</td>
+                        <td>@DateText(row.ActionOn)</td>
+                        <td>@TextOrDash(row.Remarks)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

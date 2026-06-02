@@ -1,0 +1,129 @@
+@model ConsumerChallanDetailsViewModel
+@{
+    ViewData["Title"] = "Challan Details";
+
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string StatusText(string status) => status == "PendingPayment" ? "Pending Payment" : status;
+    string StatusClass(string status) => status switch
+    {
+        "Paid" => "text-bg-success",
+        "Cancelled" => "text-bg-secondary",
+        _ => "text-bg-warning"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">Payment Request</p>
+        <h1>Challan Details</h1>
+        <p>@Model.ChallanNo - @Model.Purpose</p>
+    </div>
+    <div class="wb-page-actions">
+        <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+        <a class="btn btn-outline-primary" asp-action="Print" asp-route-id="@Model.Id" target="_blank">Print / Download</a>
+        @if (Model.CanPay)
+        {
+            <a class="btn btn-primary" asp-action="Pay" asp-route-id="@Model.Id">Pay Now</a>
+        }
+    </div>
+</div>
+
+<section class="wb-page-card">
+    <div class="wb-card-title-row">
+        <div>
+            <p class="wb-kicker">Summary</p>
+            <h2>@Model.ChallanNo</h2>
+        </div>
+        <span class="badge @StatusClass(Model.Status)">@StatusText(Model.Status)</span>
+    </div>
+
+    <div class="wb-pay-context">
+        <div><span>Consumer No</span><strong>@Model.ConsumerNo</strong></div>
+        <div><span>Consumer Name</span><strong>@TextOrDash(Model.ConsumerName)</strong></div>
+        <div><span>Purpose</span><strong>@Model.Purpose</strong></div>
+        <div><span>Amount</span><strong>@FormatAmount(Model.Amount)</strong></div>
+        <div><span>Generated Date</span><strong>@FormatDate(Model.GeneratedDate)</strong></div>
+        <div><span>Due Date</span><strong>@FormatDate(Model.DueDate)</strong></div>
+    </div>
+</section>
+
+<div class="wb-grid-2">
+    <section class="wb-page-card">
+        <div class="wb-card-title-row">
+            <div>
+                <p class="wb-kicker">Consumer Details</p>
+                <h2>Property</h2>
+            </div>
+        </div>
+        <div class="wb-detail-list">
+            <div><span>Mobile</span><strong>@TextOrDash(Model.MobileNo)</strong></div>
+            <div><span>Property</span><strong>@TextOrDash(Model.PropertyNo)</strong></div>
+            <div><span>Address</span><strong>@TextOrDash(Model.Address)</strong></div>
+            <div><span>Source Bill</span><strong>@TextOrDash(Model.SourceBillNo)</strong></div>
+        </div>
+    </section>
+
+    <section class="wb-page-card">
+        <div class="wb-card-title-row">
+            <div>
+                <p class="wb-kicker">Amount Heads</p>
+                <h2>Breakup</h2>
+            </div>
+        </div>
+        <div class="wb-pay-breakup compact">
+            <div><span>Bill Amount</span><strong>@FormatAmount(Model.BillAmount)</strong></div>
+            <div><span>Surcharge</span><strong>@FormatAmount(Model.Surcharge)</strong></div>
+            <div><span>NDC Amount</span><strong>@FormatAmount(Model.NdcAmount)</strong></div>
+            <div><span>Connection Charge</span><strong>@FormatAmount(Model.ConnectionCharge)</strong></div>
+            <div><span>Other Charges</span><strong>@FormatAmount(Model.OtherCharge)</strong></div>
+            <div class="wb-pay-total-row"><span>Total Payable</span><strong>@FormatAmount(Model.Amount)</strong></div>
+        </div>
+    </section>
+</div>
+
+<section class="wb-page-card">
+    <div class="wb-card-title-row">
+        <div>
+            <p class="wb-kicker">Payment</p>
+            <h2>Payment Details</h2>
+        </div>
+    </div>
+
+    @if (Model.Payments.Count == 0)
+    {
+        <div class="wb-empty-state py-3">
+            <strong>No payment recorded yet.</strong>
+            <span>This challan is waiting for payment.</span>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table wb-history-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Payment Date</th>
+                        <th>Amount</th>
+                        <th>Mode</th>
+                        <th>Bank</th>
+                        <th>Reference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var payment in Model.Payments)
+                    {
+                        <tr>
+                            <td>@FormatDate(payment.PaymentDate)</td>
+                            <td><strong>@FormatAmount(payment.Amount)</strong></td>
+                            <td>@TextOrDash(payment.PaymentMode)</td>
+                            <td>@TextOrDash(payment.BankName)</td>
+                            <td>@TextOrDash(payment.TransactionReferenceNo)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

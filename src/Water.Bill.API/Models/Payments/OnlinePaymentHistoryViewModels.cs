@@ -83,6 +83,14 @@ public class OnlinePaymentHistoryDetailsViewModel
     public DateTime? EntryDate { get; set; }
 
     public IReadOnlyList<OnlinePaymentTransactionViewModel> Transactions { get; set; } = [];
+
+    public bool HasSuccessfulGatewayResponse { get; set; }
+
+    public bool IsBillPaid { get; set; }
+
+    public bool CanReconcileBillPayment { get; set; }
+
+    public string ReconciliationStatus { get; set; } = string.Empty;
 }
 
 public class OnlinePaymentTransactionViewModel

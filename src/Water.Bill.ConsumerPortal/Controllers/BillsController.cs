@@ -51,6 +51,7 @@ public class BillsController : Controller
             .AsNoTracking()
             .Where(x => x.ConsNo != null
                 && allowedConsumerNos.Contains(x.ConsNo)
+                && x.Status == "1"
                 && x.BillType != null
                 && x.BillCount != null
                 && x.BillCount != 0);
@@ -271,6 +272,7 @@ public class BillsController : Controller
             .Where(x => x.ConsNo != null
                 && linkedConsumerNos.Contains(x.ConsNo)
                 && x.BillNo == billNo
+                && x.Status == "1"
                 && x.BillType != null
                 && x.BillCount != null
                 && x.BillCount != 0)
@@ -310,9 +312,10 @@ public class BillsController : Controller
         var bill = await _db.JalPrintBillMasters
             .AsNoTracking()
             .Where(x => x.ConsNo == consumerNo
+                && x.Status == "1"
                 && x.BillType != null
                 && x.BillCount != null
-                && x.BillCount != 0)
+                && x.BillCount == 1)
             .OrderByDescending(x => x.BillDateTo ?? x.BillDate ?? x.EntryDate)
             .FirstOrDefaultAsync(ct);
 
@@ -397,8 +400,7 @@ public class BillsController : Controller
 
     private static ConsumerBillConsumerViewModel MapConsumer(ConsumerDetailsMaster consumer)
     {
-        var name = string.Join(" ", new[] { consumer.ConsNm1, consumer.ConsNm2 }
-            .Where(x => !string.IsNullOrWhiteSpace(x))).Trim();
+        var name = (consumer.ConsNm1 ?? string.Empty).Trim();
 
         var property = string.Join(" / ", new[] { consumer.Sector, consumer.BlkNo, consumer.FlatNo }
             .Where(x => !string.IsNullOrWhiteSpace(x)));
@@ -479,10 +481,11 @@ public class BillsController : Controller
     private static string ResolveBillPaymentStatus(JalPrintBillMaster bill, double totalPayable, double lastPaid)
     {
         if (string.Equals(bill.PaidStatus, "Y", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(bill.PaidStatus, "1", StringComparison.OrdinalIgnoreCase))
+            string.Equals(bill.PaidStatus, "1", StringComparison.OrdinalIgnoreCase) ||
+            bill.PaidDate.HasValue)
             return "Paid";
 
-        if (lastPaid > 0 && totalPayable <= 0)
+        if (lastPaid > 0 && totalPayable <= 0 && bill.PaidDate.HasValue)
             return "Paid";
 
         if (lastPaid > 0)

@@ -1,0 +1,128 @@
+@model Water.Bill.API.Models.Ledger.ConsumerLedgerIndexViewModel
+@using Water.Bill.Core.Common
+@{
+    Layout = null;
+    string DateText(DateTime value) => value.ToString("dd MMM yyyy");
+    string Amount(decimal value) => value.ToString("N2");
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Consumer Ledger - @Model.ConsumerNo</title>
+    <style>
+        body { margin: 0; background: #f3f7fb; color: #0f172a; font-family: Arial, sans-serif; font-size: 12px; }
+        .sheet { width: 960px; max-width: calc(100% - 32px); margin: 24px auto; background: #fff; border: 1px solid #dbe5ef; border-radius: 10px; overflow: hidden; }
+        .head { display: flex; justify-content: space-between; gap: 16px; padding: 18px 20px; border-bottom: 1px solid #dbe5ef; }
+        h1 { margin: 0 0 5px; font-size: 20px; }
+        .muted { color: #64748b; }
+        .actions { display: flex; gap: 8px; align-items: flex-start; }
+        button, a { border: 1px solid #0ea5b7; border-radius: 8px; padding: 8px 14px; background: #0ea5b7; color: #fff; font-weight: 700; text-decoration: none; cursor: pointer; }
+        a { background: #fff; color: #0f172a; border-color: #cbd5e1; }
+        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-bottom: 1px solid #dbe5ef; }
+        .summary div { padding: 12px 14px; border-right: 1px solid #dbe5ef; }
+        .summary div:last-child { border-right: 0; }
+        .summary span { display: block; color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; }
+        .summary strong { display: block; margin-top: 4px; font-size: 15px; }
+        .consumer { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 18px; padding: 16px 20px; border-bottom: 1px solid #dbe5ef; }
+        .consumer span { display: block; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .consumer strong { display: block; margin-top: 3px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; color: #475569; font-size: 11px; text-transform: uppercase; text-align: left; }
+        th, td { padding: 9px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .num { text-align: right; white-space: nowrap; }
+        .info { color: #64748b; }
+        .footer { display: flex; justify-content: space-between; gap: 16px; padding: 14px 20px; color: #64748b; }
+        @@media print {
+            body { background: #fff; }
+            .sheet { width: 100%; max-width: 100%; margin: 0; border: 0; border-radius: 0; }
+            .actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <main class="sheet">
+        <section class="head">
+            <div>
+                <h1>Consumer Account Statement</h1>
+                <div class="muted">Noida Jal Water Billing · Generated @DateTime.Now.ToString("dd MMM yyyy hh:mm tt")</div>
+            </div>
+            <div class="actions">
+                <button type="button" onclick="window.print()">Print</button>
+                <a href="javascript:window.close()">Close</a>
+            </div>
+        </section>
+
+        <section class="consumer">
+            <div><span>Consumer No</span><strong>@Model.Consumer?.ConsumerNo</strong></div>
+            <div><span>Consumer Name</span><strong>@(Model.Consumer?.ConsumerName ?? "-")</strong></div>
+            <div><span>Mobile</span><strong>@(Model.Consumer?.MobileNo ?? "-")</strong></div>
+            <div><span>Property</span><strong>@(Model.Consumer?.PropertyNo ?? "-")</strong></div>
+            <div><span>Connection</span><strong>@(Model.Consumer?.ConnectionType ?? "-")</strong></div>
+            <div><span>Division</span><strong>@AppConstants.Divisions.FormatDisplay(Model.Consumer?.DevType)</strong></div>
+        </section>
+
+        <section class="summary">
+            <div><span>Opening Balance</span><strong>Rs. @Amount(Model.OpeningBalance)</strong></div>
+            <div><span>Total Debit</span><strong>Rs. @Amount(Model.TotalDebit)</strong></div>
+            <div><span>Total Credit</span><strong>Rs. @Amount(Model.TotalCredit)</strong></div>
+            <div><span>Closing Balance</span><strong>Rs. @Amount(Model.ClosingBalance)</strong></div>
+        </section>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Reference</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th class="num">Debit</th>
+                    <th class="num">Credit</th>
+                    <th class="num">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Rows.Count == 0)
+            {
+                <tr><td colspan="8" class="info">No ledger entries found.</td></tr>
+            }
+            else
+            {
+                foreach (var row in Model.Rows.OrderBy(x => x.Date).ThenBy(x => x.SortOrder))
+                {
+                    <tr>
+                        <td>@DateText(row.Date)</td>
+                        <td>@row.EntryType</td>
+                        <td>
+                            <strong>@row.ReferenceNo</strong>
+                            @if (!string.IsNullOrWhiteSpace(row.LinkedReferenceNo))
+                            {
+                                <div class="info">Linked: @row.LinkedReferenceNo</div>
+                            }
+                        </td>
+                        <td>
+                            @row.Description
+                            @if (!row.AffectsBalance)
+                            {
+                                <div class="info">Informational entry.</div>
+                            }
+                        </td>
+                        <td>@row.Status</td>
+                        <td class="num">@(row.Debit > 0 ? Amount(row.Debit) : "-")</td>
+                        <td class="num">@(row.Credit > 0 ? Amount(row.Credit) : "-")</td>
+                        <td class="num">Rs. @Amount(row.Balance)</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+
+        <section class="footer">
+            <span>This statement is generated from existing bills, challans, payments, and adjustment records.</span>
+            <span>Water.Bill Authority Portal</span>
+        </section>
+    </main>
+</body>
+</html>

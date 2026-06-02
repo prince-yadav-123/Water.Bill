@@ -68,22 +68,6 @@ public class PermissionService : IPermissionService
         return [.. moduleIds];
     }
 
-    public async Task<HashSet<string>> GetMenuVisibleModulesAsync(int roleId, CancellationToken ct = default)
-    {
-        var modules = await _db.Rolepermissions
-            .AsNoTracking()
-            .Include(x => x.PermissionModule)
-            .Where(x => x.RoleId == roleId
-                && x.CanSeeMenu
-                && !x.IsDeleted)
-            .Select(x => x.PermissionModule != null && x.PermissionModule.IsActive && !x.PermissionModule.IsDeleted
-                ? x.PermissionModule.Name
-                : x.Module)
-            .ToListAsync(ct);
-
-        return [.. modules.Where(x => !string.IsNullOrWhiteSpace(x))];
-    }
-
     public async Task<bool> HasPermissionAsync(int roleId, string module, string action, CancellationToken ct = default)
     {
         var normalizedModule = module.Trim().ToLower();
@@ -191,7 +175,6 @@ public class PermissionService : IPermissionService
         Icon = item.Icon,
         Url = item.Url,
         SectionLabel = item.SectionLabel,
-        Module = item.Module,
         ModuleId = item.ModuleId,
         ModuleName = item.PermissionModule?.Name,
         ShowInSidebar = item.ShowInSidebar,

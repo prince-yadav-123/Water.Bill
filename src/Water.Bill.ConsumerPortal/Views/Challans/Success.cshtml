@@ -1,0 +1,36 @@
+@model ConsumerChallanDetailsViewModel
+@{
+    ViewData["Title"] = "Payment Successful";
+
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    var payment = Model.Payments.FirstOrDefault();
+}
+
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">Payment Complete</p>
+        <h1>Challan paid successfully</h1>
+        <p>Your challan has been marked as paid for the current testing phase.</p>
+    </div>
+    <div class="wb-page-actions">
+        <a class="btn btn-outline-primary" asp-action="Index">My Challans</a>
+        <a class="btn btn-primary" asp-action="Print" asp-route-id="@Model.Id" target="_blank">Print Receipt</a>
+    </div>
+</div>
+
+<section class="wb-page-card">
+    <div class="wb-empty-state py-4">
+        <strong>Payment successful</strong>
+        <span>Challan @Model.ChallanNo has been paid.</span>
+    </div>
+
+    <div class="wb-confirm-panel">
+        <div><span>Challan No</span><strong>@Model.ChallanNo</strong></div>
+        <div><span>Consumer No</span><strong>@Model.ConsumerNo</strong></div>
+        <div><span>Purpose</span><strong>@Model.Purpose</strong></div>
+        <div><span>Amount Paid</span><strong>@FormatAmount(Model.Amount)</strong></div>
+        <div><span>Payment Date</span><strong>@FormatDate(payment?.PaymentDate ?? Model.PaidDate)</strong></div>
+        <div><span>Reference No</span><strong>@(payment?.TransactionReferenceNo ?? "-")</strong></div>
+    </div>
+</section>

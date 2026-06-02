@@ -145,6 +145,19 @@
         });
     });
 
+    document.querySelectorAll("[data-section-toggle]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const sectionId = button.getAttribute("aria-controls");
+            const section = sectionId ? document.getElementById(sectionId) : null;
+            if (!section) return;
+
+            const isOpen = section.classList.contains("open");
+            section.classList.toggle("open", !isOpen);
+            button.classList.toggle("open", !isOpen);
+            button.setAttribute("aria-expanded", String(!isOpen));
+        });
+    });
+
     document.querySelectorAll("[data-sidebar-toggle]").forEach((button) => {
         button.addEventListener("click", () => {
             if (isMobile()) {

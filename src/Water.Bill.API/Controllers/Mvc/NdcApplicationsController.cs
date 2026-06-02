@@ -165,6 +165,19 @@ public class NdcApplicationsController : Controller
         var hasNdcWorkflow = await _db.WorkflowMasters
             .AsNoTracking()
             .AnyAsync(x => x.ApplicationType == WorkflowService.ApplicationTypeNdc && x.IsActive && !x.IsDeleted, ct);
+        var userId = ResolveUserId() ?? 0;
+        var roleId = ResolveRoleId() ?? 0;
+        var departmentIds = await _db.AuthorityUserDepartments
+            .AsNoTracking()
+            .Where(x => x.UserId == userId && x.IsActive && !x.IsDeleted)
+            .Select(x => x.DepartmentId)
+            .ToListAsync(ct);
+        var activeTask = tasks.FirstOrDefault(x => workflow is not null
+            && x.IsActive
+            && !x.IsDeleted
+            && x.Status == WorkflowService.TaskStatusPending
+            && x.StageId == workflow.CurrentStageId
+            && IsAssignedToCurrentUser(x, userId, roleId, departmentIds));
 
         return View(new NdcApplicationDetailsViewModel
         {
@@ -173,7 +186,8 @@ public class NdcApplicationsController : Controller
             WorkflowInstance = workflow,
             WorkflowTasks = tasks,
             WorkflowHistory = history,
-            CanStartWorkflow = workflow is null && hasNdcWorkflow
+            CanStartWorkflow = workflow is null && hasNdcWorkflow,
+            ActiveWorkflowTaskId = activeTask?.Id
         });
     }
 

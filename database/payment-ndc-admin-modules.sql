@@ -41,7 +41,7 @@ WHERE NOT EXISTS (SELECT 1 FROM `menuitems` WHERE `TenantId` = @tenantId AND `La
 
 INSERT INTO `rolepermissions`
 (`RoleId`, `Module`, `ModuleId`, `CanSeeMenu`, `CanView`, `CanAdd`, `CanEdit`, `CanDelete`, `CanDownload`, `CanExport`, `CanApprove`, `CanForward`, `CanPrint`, `CreatedAt`, `IsDeleted`)
-SELECT @adminRoleId, 'Online Payment History', @paymentModuleId, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, NOW(6), 0
+SELECT @adminRoleId, 'Online Payment History', @paymentModuleId, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, NOW(6), 0
 WHERE @adminRoleId IS NOT NULL
   AND NOT EXISTS (SELECT 1 FROM `rolepermissions` WHERE `RoleId` = @adminRoleId AND `ModuleId` = @paymentModuleId AND `IsDeleted` = 0);
 
@@ -60,6 +60,7 @@ WHERE @adminRoleId IS NOT NULL
 UPDATE `rolepermissions`
 SET `CanSeeMenu` = 1,
     `CanView` = 1,
+    `CanEdit` = CASE WHEN `ModuleId` = @paymentModuleId THEN 1 ELSE `CanEdit` END,
     `CanDownload` = 1,
     `CanExport` = 1,
     `CanPrint` = 1

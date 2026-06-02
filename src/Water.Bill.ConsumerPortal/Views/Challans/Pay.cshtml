@@ -1,0 +1,188 @@
+@model ConsumerChallanPaymentViewModel
+@{
+    ViewData["Title"] = "Pay Challan";
+
+    string FormatAmount(double value) => $"INR {value:N2}";
+    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string StepClass(int step) => Model.Step == step ? "active" : Model.Step > step ? "complete" : "";
+    string MethodLabel(string method) => method switch
+    {
+        "AX" => "Axis Bank / BillDesk",
+        "IC" => "ICICI Bank",
+        "HD" => "HDFC Bank",
+        "PT" => "Paytm",
+        "CARD" => "Debit / Credit Card",
+        "NETBANKING" => "Net Banking",
+        "WALLET" => "Wallets",
+        _ => "UPI"
+    };
+}
+
+<div class="wb-pay-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">Payment Request</p>
+            <h1>Pay challan</h1>
+            <p>@Model.ChallanNo - @Model.Purpose</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+    </div>
+
+    <div class="wb-pay-stepper">
+        <div class="wb-pay-step @StepClass(1)"><span>1</span><strong>Review challan</strong></div>
+        <div class="wb-pay-step @StepClass(2)"><span>2</span><strong>Choose method</strong></div>
+        <div class="wb-pay-step @StepClass(3)"><span>3</span><strong>Confirm & pay</strong></div>
+    </div>
+
+    <div class="wb-pay-layout">
+        <section class="wb-page-card wb-pay-main-card">
+            @if (Model.Step == 1)
+            {
+                <div class="wb-card-title-row">
+                    <div>
+                        <p class="wb-kicker">Review Challan</p>
+                        <h2>Payment request summary</h2>
+                        <p class="text-muted mb-0">Review the challan details before choosing a payment method.</p>
+                    </div>
+                </div>
+
+                <div class="wb-pay-context">
+                    <div><span>Consumer No</span><strong>@Model.ConsumerNo</strong></div>
+                    <div><span>Challan No</span><strong>@Model.ChallanNo</strong></div>
+                    <div><span>Purpose</span><strong>@Model.Purpose</strong></div>
+                    <div><span>Due Date</span><strong>@FormatDate(Model.DueDate)</strong></div>
+                    <div><span>Property</span><strong>@TextOrDash(Model.PropertyNo)</strong></div>
+                    <div><span>Source Bill</span><strong>@TextOrDash(Model.SourceBillNo)</strong></div>
+                </div>
+
+                <div class="wb-pay-breakup">
+                    <div><span>Bill Amount</span><strong>@FormatAmount(Model.BillAmount)</strong></div>
+                    <div><span>Surcharge</span><strong>@FormatAmount(Model.Surcharge)</strong></div>
+                    <div><span>NDC Amount</span><strong>@FormatAmount(Model.NdcAmount)</strong></div>
+                    <div><span>Connection Charge</span><strong>@FormatAmount(Model.ConnectionCharge)</strong></div>
+                    <div><span>Other Charges</span><strong>@FormatAmount(Model.OtherCharge)</strong></div>
+                    <div class="wb-pay-total-row"><span>Total Payable</span><strong>@FormatAmount(Model.Amount)</strong></div>
+                </div>
+
+                <div class="wb-pay-actions">
+                    <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@Model.Id">Back</a>
+                    <a class="btn btn-primary" asp-action="Pay" asp-route-id="@Model.Id" asp-route-step="2">Continue</a>
+                </div>
+            }
+            else if (Model.Step == 2)
+            {
+                <div class="wb-card-title-row">
+                    <div>
+                        <p class="wb-kicker">Choose Method</p>
+                        <h2>Select payment method</h2>
+                        <p class="text-muted mb-0">This phase simulates a successful payment after confirmation.</p>
+                    </div>
+                </div>
+
+                <form method="get" asp-action="Confirm" asp-route-id="@Model.Id" class="wb-pay-form">
+                    <div class="wb-method-list">
+                        <label class="wb-method-card @(Model.PaymentMethod == "UPI" ? "active" : "")">
+                            <input type="radio" name="paymentMethod" value="UPI" checked="@(Model.PaymentMethod == "UPI")" />
+                            <span class="wb-method-icon">UP</span>
+                            <span><strong>UPI</strong><small>Simulated UPI payment for current phase</small></span>
+                        </label>
+                        <label class="wb-method-card @(Model.PaymentMethod == "AX" || Model.PaymentMethod == "CARD" ? "active" : "")">
+                            <input type="radio" name="paymentMethod" value="AX" checked="@(Model.PaymentMethod == "AX" || Model.PaymentMethod == "CARD")" />
+                            <span class="wb-method-icon">AX</span>
+                            <span><strong>Axis Bank / Card</strong><small>Gateway-style payment option</small></span>
+                        </label>
+                        <label class="wb-method-card @(Model.PaymentMethod == "PT" || Model.PaymentMethod == "WALLET" ? "active" : "")">
+                            <input type="radio" name="paymentMethod" value="PT" checked="@(Model.PaymentMethod == "PT" || Model.PaymentMethod == "WALLET")" />
+                            <span class="wb-method-icon">PT</span>
+                            <span><strong>Paytm / Wallet</strong><small>Wallet and payment app style flow</small></span>
+                        </label>
+                        <label class="wb-method-card @(Model.PaymentMethod == "NETBANKING" ? "active" : "")">
+                            <input type="radio" name="paymentMethod" value="NETBANKING" checked="@(Model.PaymentMethod == "NETBANKING")" />
+                            <span class="wb-method-icon">NB</span>
+                            <span><strong>Net Banking</strong><small>Online banking simulation</small></span>
+                        </label>
+                    </div>
+
+                    <div class="wb-method-input">
+                        <label class="form-label">Payment note / identifier</label>
+                        <input class="form-control" name="paymentIdentifier" value="@Model.PaymentIdentifier" placeholder="Optional test reference" />
+                        <small>This is a simulated payment. Real gateway reference will be added later.</small>
+                    </div>
+
+                    <div class="wb-pay-actions">
+                        <a class="btn btn-outline-primary" asp-action="Pay" asp-route-id="@Model.Id" asp-route-step="1">Back</a>
+                        <button class="btn btn-primary" type="submit">Continue</button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="wb-card-title-row">
+                    <div>
+                        <p class="wb-kicker">Confirm & Pay</p>
+                        <h2>Confirm simulated payment</h2>
+                        <p class="text-muted mb-0">For this phase, confirming will mark the challan as paid.</p>
+                    </div>
+                </div>
+
+                <div class="wb-confirm-panel">
+                    <div><span>Consumer No</span><strong>@Model.ConsumerNo</strong></div>
+                    <div><span>Challan No</span><strong>@Model.ChallanNo</strong></div>
+                    <div><span>Purpose</span><strong>@Model.Purpose</strong></div>
+                    <div><span>Payment method</span><strong>@MethodLabel(Model.PaymentMethod) @(!string.IsNullOrWhiteSpace(Model.PaymentIdentifier) ? $"- {Model.PaymentIdentifier}" : "")</strong></div>
+                </div>
+
+                <div class="wb-confirm-amount">
+                    <span>Amount</span>
+                    <strong>@FormatAmount(Model.Amount)</strong>
+                    <small>Convenience fee: @FormatAmount(Model.ConvenienceFee)</small>
+                </div>
+
+                <p class="wb-secure-note">Payment gateway is not connected yet. This button records a simulated successful challan payment for testing.</p>
+
+                <form method="post" asp-action="ConfirmPayment" asp-route-id="@Model.Id" class="wb-pay-actions">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="paymentMethod" value="@Model.PaymentMethod" />
+                    <input type="hidden" name="paymentIdentifier" value="@Model.PaymentIdentifier" />
+                    <a class="btn btn-outline-primary" asp-action="Pay" asp-route-id="@Model.Id" asp-route-step="2" asp-route-paymentMethod="@Model.PaymentMethod" asp-route-paymentIdentifier="@Model.PaymentIdentifier">Back</a>
+                    <button class="btn btn-primary" type="submit">Pay @FormatAmount(Model.FinalPayableAmount)</button>
+                </form>
+            }
+        </section>
+
+        <aside class="wb-page-card wb-order-summary">
+            <h2>Order summary</h2>
+            <div class="wb-order-lines">
+                <div><span>Challan amount</span><strong>@FormatAmount(Model.Amount)</strong></div>
+                <div><span>Convenience fee</span><strong>@FormatAmount(Model.ConvenienceFee)</strong></div>
+                <div class="total"><span>You pay</span><strong>@FormatAmount(Model.FinalPayableAmount)</strong></div>
+            </div>
+            <div class="wb-green-note">After successful payment, this challan will move out of your pending list.</div>
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.wb-method-list').forEach((list) => {
+            const syncSelectedMethod = () => {
+                list.querySelectorAll('.wb-method-card').forEach((card) => {
+                    const radio = card.querySelector('input[type="radio"]');
+                    card.classList.toggle('active', Boolean(radio?.checked));
+                });
+            };
+
+            list.addEventListener('change', syncSelectedMethod);
+            list.addEventListener('click', (event) => {
+                const card = event.target.closest('.wb-method-card');
+                const radio = card?.querySelector('input[type="radio"]');
+                if (radio && !radio.checked) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+            syncSelectedMethod();
+        });
+    </script>
+}
