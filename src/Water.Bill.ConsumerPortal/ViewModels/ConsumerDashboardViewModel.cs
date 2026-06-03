@@ -8,6 +8,11 @@ public class ConsumerDashboardViewModel
     public DashboardMetricViewModel Metrics { get; set; } = new();
     public IReadOnlyList<RecentPaymentViewModel> RecentPayments { get; set; } = [];
     public IReadOnlyList<RecentBillViewModel> RecentBills { get; set; } = [];
+    public IReadOnlyList<ConsumerChallanRowViewModel> LatestChallans { get; set; } = [];
+    public ConsumerQuerySummaryViewModel QuerySummary { get; set; } = new();
+    public IReadOnlyList<BillingYearTrendViewModel> BillingTrend { get; set; } = [];
+    public double TotalUnpaidDue { get; set; }
+    public int UnpaidBillCount { get; set; }
     public IReadOnlyList<DashboardAlertViewModel> Alerts { get; set; } = [];
 }
 
@@ -62,6 +67,32 @@ public class RecentBillViewModel
     public DateTime? DueDate { get; set; }
     public double Amount { get; set; }
     public string Status { get; set; } = string.Empty;
+}
+
+public class ConsumerChallanRowViewModel
+{
+    public long ChallanId { get; set; }
+    public string ChallanNo { get; set; } = string.Empty;
+    public string Purpose { get; set; } = string.Empty;
+    public double Amount { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime? GeneratedOn { get; set; }
+}
+
+public class ConsumerQuerySummaryViewModel
+{
+    public int Open { get; set; }
+    public int InProgress { get; set; }
+    public int Resolved { get; set; }
+    public int Closed { get; set; }
+    public int Total => Open + InProgress + Resolved + Closed;
+}
+
+public class BillingYearTrendViewModel
+{
+    public int Year { get; set; }
+    public double BilledAmount { get; set; }
+    public double PaidAmount { get; set; }
 }
 
 public class DashboardMetricViewModel

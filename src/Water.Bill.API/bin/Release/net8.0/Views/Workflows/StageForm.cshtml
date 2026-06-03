@@ -1,0 +1,138 @@
+@model Water.Bill.Infrastructure.Data.Entities.WorkflowStage
+@{
+    var sendEmail = ViewBag.SendEmail == true;
+    var sendSms = ViewBag.SendSms == true;
+    var sendWhatsApp = ViewBag.SendWhatsApp == true;
+    var sendInAppNotification = ViewBag.SendInAppNotification != false;
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p>Choose role, user, or department assignment for this approval stage.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Stages" asp-route-workflowId="@Model.WorkflowId">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="post" class="wb-form-grid">
+        @Html.AntiForgeryToken()
+        <input asp-for="WorkflowId" type="hidden" />
+        <div asp-validation-summary="All" class="text-danger wb-field-wide"></div>
+        <div class="wb-field">
+            <label asp-for="StageName" class="form-label required">Stage Name</label>
+            <input asp-for="StageName" class="form-control" />
+            <span asp-validation-for="StageName" class="text-danger"></span>
+        </div>
+        <div class="wb-field">
+            <label asp-for="StageOrder" class="form-label required">Stage Order</label>
+            <input asp-for="StageOrder" class="form-control" type="number" />
+            <span asp-validation-for="StageOrder" class="text-danger"></span>
+        </div>
+        <div class="wb-field">
+            <label asp-for="DepartmentId" class="form-label">Department</label>
+            <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-select" data-workflow-department><option value="">Select</option></select>
+        </div>
+        <div class="wb-field">
+            <label asp-for="ApproverRoleId" class="form-label">Approver Role</label>
+            <select asp-for="ApproverRoleId" asp-items="ViewBag.Roles" class="form-select" data-workflow-role><option value="">Select</option></select>
+        </div>
+        <div class="wb-field">
+            <label asp-for="ApproverUserId" class="form-label">Specific User</label>
+            <select asp-for="ApproverUserId" asp-items="ViewBag.Users" class="form-select" data-workflow-user><option value="">Select</option></select>
+            <div class="form-text text-muted" data-workflow-user-message></div>
+        </div>
+        <div class="wb-field">
+            <label asp-for="ApprovalType" class="form-label">Approval Type</label>
+            <select asp-for="ApprovalType" class="form-select">
+                <option value="AnyOne">Any one approver</option>
+                <option value="AllApprovers">All approvers</option>
+                <option value="SpecificUser">Specific user</option>
+                <option value="DepartmentRole">Department role-based</option>
+            </select>
+        </div>
+        <div class="wb-field">
+            <label asp-for="SlaDays" class="form-label">SLA Days</label>
+            <input asp-for="SlaDays" class="form-control" type="number" />
+        </div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label">Allowed Actions</label>
+            <div class="wb-status-choice">
+                <label><input asp-for="CanApprove" /> Approve</label>
+                <label><input asp-for="CanReject" /> Reject</label>
+                <label><input asp-for="CanForward" /> Forward</label>
+                <label><input asp-for="IsFinalStage" /> Final Stage</label>
+                <label><input asp-for="IsActive" /> Active</label>
+            </div>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label">Stage Assigned Notifications</label>
+            <div class="wb-status-choice">
+                <label><input type="checkbox" name="SendEmail" value="true" checked="@sendEmail" /> Email</label>
+                <label><input type="checkbox" name="SendSms" value="true" checked="@sendSms" /> SMS</label>
+                <label><input type="checkbox" name="SendWhatsApp" value="true" checked="@sendWhatsApp" /> WhatsApp</label>
+                <label><input type="checkbox" name="SendInAppNotification" value="true" checked="@sendInAppNotification" /> In-app</label>
+            </div>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <button class="btn btn-primary" type="submit">Save Stage</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var departmentSelect = document.querySelector('[data-workflow-department]');
+            var roleSelect = document.querySelector('[data-workflow-role]');
+            var userSelect = document.querySelector('[data-workflow-user]');
+            var userMessage = document.querySelector('[data-workflow-user-message]');
+
+            if (!departmentSelect || !roleSelect || !userSelect) return;
+
+            async function refreshUsers() {
+                var previousUser = userSelect.value;
+                var params = new URLSearchParams();
+                if (departmentSelect.value) params.append('departmentId', departmentSelect.value);
+                if (roleSelect.value) params.append('roleId', roleSelect.value);
+
+                userSelect.innerHTML = '';
+                userSelect.appendChild(new Option('Select', ''));
+                userSelect.disabled = true;
+                if (userMessage) userMessage.textContent = 'Loading users...';
+
+                try {
+                    var response = await fetch('@Url.Action("FilterUsers", "Workflows")?' + params.toString(), {
+                        cache: 'no-store',
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) throw new Error('Unable to load users.');
+
+                    var users = await response.json();
+                    users.forEach(function (user) {
+                        userSelect.appendChild(new Option(user.name, user.id));
+                    });
+
+                    var matchingPrevious = users.some(function (user) {
+                        return String(user.id) === String(previousUser);
+                    });
+                    userSelect.value = matchingPrevious ? previousUser : '';
+                    userSelect.disabled = false;
+
+                    if (userMessage) {
+                        userMessage.textContent = users.length === 0
+                            ? 'No users available for selected department/role.'
+                            : '';
+                    }
+                } catch {
+                    userSelect.disabled = false;
+                    if (userMessage) userMessage.textContent = 'Unable to load users right now.';
+                }
+            }
+
+            departmentSelect.addEventListener('change', refreshUsers);
+            roleSelect.addEventListener('change', refreshUsers);
+        })();
+    </script>
+}

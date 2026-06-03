@@ -1,0 +1,57 @@
+@model IReadOnlyList<PermissionModule>
+@{
+    ViewData["Title"] = "Permission Modules";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Permission Modules</h1>
+        <p>Create application modules used by menu management and role permissions.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Add Module</a>
+</div>
+
+<section class="wb-page-card">
+    @if (!Model.Any())
+    {
+        <div class="wb-empty">No permission modules found. Add the first module to use it in menus and permissions.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle wb-table">
+                <thead>
+                    <tr>
+                        <th>Module Name</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var module in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@module.Name</td>
+                        <td>
+                            <span class="badge @(module.IsActive ? "text-bg-success" : "text-bg-secondary")">
+                                @(module.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="wb-actions justify-content-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@module.Id">View</a>
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@module.Id">Edit</a>
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this permission module?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@module.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

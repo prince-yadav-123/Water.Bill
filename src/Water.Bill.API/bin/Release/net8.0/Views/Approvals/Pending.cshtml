@@ -1,0 +1,140 @@
+@model Water.Bill.API.Models.Approvals.ApprovalListViewModel
+@{
+    string TabClass(string tab) => Model.ActiveTab == tab ? "btn btn-primary wb-approval-tab active" : "btn btn-outline-primary wb-approval-tab";
+    string StatusClass(string status) => status switch
+    {
+        "Pending" => "text-bg-primary",
+        "Approved" or "FinalConsumerCreated" => "text-bg-success",
+        "Rejected" => "text-bg-danger",
+        "UnderReview" or "Submitted" => "text-bg-info",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Approval Applications</h1>
+        <p>Review workflow applications assigned to your current stage, role, user, or department.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success">@successMessage</div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <div class="wb-approval-tabs">
+        <a class="@TabClass("Pending")" asp-action="Pending" asp-route-tab="Pending">Pending</a>
+        <a class="@TabClass("Approved")" asp-action="Pending" asp-route-tab="Approved">Approved</a>
+        <a class="@TabClass("Rejected")" asp-action="Pending" asp-route-tab="Rejected">Rejected</a>
+        <a class="@TabClass("All")" asp-action="Pending" asp-route-tab="All">All</a>
+    </div>
+
+    <form method="get" class="wb-filter-bar">
+        <input type="hidden" name="tab" value="@Model.ActiveTab" />
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Application no, applicant, mobile" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status">
+                <option value="">All Status</option>
+                <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                <option value="Approved" selected="@(Model.Status == "Approved")">Approved</option>
+                <option value="Rejected" selected="@(Model.Status == "Rejected")">Rejected</option>
+                <option value="Submitted" selected="@(Model.Status == "Submitted")">Submitted</option>
+                <option value="UnderReview" selected="@(Model.Status == "UnderReview")">Under Review</option>
+                <option value="FinalConsumerCreated" selected="@(Model.Status == "FinalConsumerCreated")">Final Consumer Created</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Department</label>
+            <select class="form-select" name="departmentId">
+                <option value="">All Departments</option>
+                @foreach (var department in Model.Departments)
+                {
+                    <option value="@department.Id" selected="@(Model.DepartmentId == department.Id)">@department.DeptName</option>
+                }
+            </select>
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="Pending" asp-route-tab="@Model.ActiveTab">Reset</a>
+        </div>
+    </form>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="wb-empty">No applications found for this filter.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Application No</th>
+                        <th>Applicant</th>
+                        <th>Mobile</th>
+                        <th>Property</th>
+                        <th>Status</th>
+                        <th>Assigned To</th>
+                        <th>Submitted Date</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td><strong>@item.ApplicationNo</strong></td>
+                            <td>@(item.ApplicantName ?? "-")</td>
+                            <td>@(item.MobileNumber ?? "-")</td>
+                            <td>@(item.Property ?? "-")</td>
+                            <td><span class="badge @StatusClass(item.CurrentStatus)">@item.CurrentStatus</span></td>
+                            <td>@item.AssignedTo</td>
+                            <td>@(item.SubmittedOn?.ToString("dd MMM yyyy") ?? item.AssignedOn.ToString("dd MMM yyyy"))</td>
+                            <td class="text-end">
+                                <div class="wb-approval-actions">
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.TaskId">View</a>
+                                    @if (item.CanAct && item.CanApprove)
+                                    {
+                                        <form asp-action="Action" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="taskId" value="@item.TaskId" />
+                                            <input type="hidden" name="actionType" value="Approve" />
+                                            <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                                        </form>
+                                    }
+                                    @if (item.CanAct && item.CanReject)
+                                    {
+                                        <form asp-action="Action" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="taskId" value="@item.TaskId" />
+                                            <input type="hidden" name="actionType" value="Reject" />
+                                            <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

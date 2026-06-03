@@ -4,11 +4,15 @@
 }
 
 <main class="wb-public-auth-shell">
-    <section class="wb-public-auth-card">
-        <div class="wb-public-auth-icon">NO</div>
+    <section class="wb-public-auth-card wb-start-card">
+        <div class="wb-auth-profile-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.029 10 8 10c-2.029 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+            </svg>
+        </div>
         <p class="wb-kicker">Noida Water Connection</p>
         <h1>Apply for New Water Connection</h1>
-        <p class="wb-public-auth-subtitle">Verify your mobile number to start or continue your Noida water connection application.</p>
+        <p class="wb-public-auth-subtitle">Verify your mobile number to start or continue your application.</p>
 
         <form asp-action="Start" method="post" class="wb-public-auth-form">
             @Html.AntiForgeryToken()
@@ -17,7 +21,7 @@
                 <label class="form-label required" for="mobileNumber">Mobile Number</label>
                 <div class="wb-input-shell">
                     <span class="wb-input-icon">+91</span>
-                    <input id="mobileNumber" name="mobileNumber" class="wb-input" maxlength="10" inputmode="numeric" autocomplete="tel" placeholder="Enter 10 digit mobile number" value="@Model" />
+                    <input id="mobileNumber" name="mobileNumber" class="wb-input" maxlength="10" inputmode="numeric" autocomplete="tel" placeholder="Enter 10-digit mobile number" value="@Model" />
                 </div>
                 <span class="text-danger">@Html.ValidationMessage("mobileNumber")</span>
             </div>
@@ -28,3 +32,17 @@
         <p class="wb-public-auth-foot">Your mobile number will be used to track this application and resume pending payment.</p>
     </section>
 </main>
+
+@section Scripts {
+<style>
+    .wb-start-card { gap: 12px; padding: 28px 32px; }
+    .wb-auth-profile-icon {
+        width: 60px; height: 60px;
+        display: grid; place-items: center; justify-self: center;
+        border-radius: 50%;
+        background: #f1f5f9;
+        border: 2px solid #e2e8f0;
+        color: #64748b;
+    }
+</style>
+}

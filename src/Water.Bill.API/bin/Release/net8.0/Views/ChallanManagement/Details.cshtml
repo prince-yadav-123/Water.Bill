@@ -1,0 +1,260 @@
+@model Water.Bill.API.Models.Challans.ChallanDetailsViewModel
+@using Water.Bill.Core.Common
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Amount(double value) => value.ToString("N2");
+    string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string Badge(string status) => status switch
+    {
+        "Paid" => "text-bg-success",
+        "Cancelled" => "text-bg-danger",
+        _ => "text-bg-warning"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Challan Details</h1>
+        <p>Review generated challan and print payment copy.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+        @if (Model.Status != "Cancelled")
+        {
+            <a class="btn btn-primary" asp-action="Print" asp-route-id="@Model.Id" target="_blank">Print Challan</a>
+        }
+        @if (Model.Status == "Paid")
+        {
+            <a class="btn btn-success" asp-action="Receipt" asp-route-id="@Model.Id" target="_blank">Print Receipt</a>
+        }
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] is string success)
+{
+    <div class="alert alert-success wb-alert">@success</div>
+}
+@if (TempData["ErrorMessage"] is string error)
+{
+    <div class="alert alert-danger wb-alert">@error</div>
+}
+
+<section class="wb-page-card wb-admin-card">
+    <div class="row g-3 align-items-stretch">
+        <div class="col-md-3">
+            <div class="border rounded-3 p-3 h-100">
+                <span class="wb-kicker">Challan No</span>
+                <h2 class="h5 mb-0">@Text(Model.ChallanNo)</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="border rounded-3 p-3 h-100">
+                <span class="wb-kicker">Consumer</span>
+                <h2 class="h5 mb-0">@Model.Consumer.ConsumerNo</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="border rounded-3 p-3 h-100">
+                <span class="wb-kicker">Amount</span>
+                <h2 class="h5 mb-0">Rs. @Amount(Model.TotalAmount)</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="border rounded-3 p-3 h-100">
+                <span class="wb-kicker">Status</span>
+                <span class="badge @Badge(Model.Status)">@Model.Status</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+@if (Model.CanPostPayment)
+{
+    <section class="wb-page-card wb-admin-card mt-4">
+        <h2 class="wb-section-title">Post Payment</h2>
+        <p class="text-muted">Mark this generated challan as paid. Bill-linked challans will also update the selected generated bill safely.</p>
+        <form asp-action="PostPayment" asp-route-id="@Model.Id" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PaymentPost.ChallanId" />
+            <div class="col-md-3">
+                <label asp-for="PaymentPost.PaymentDate" class="form-label"></label>
+                <input asp-for="PaymentPost.PaymentDate" class="form-control" type="date" />
+                <span asp-validation-for="PaymentPost.PaymentDate" class="text-danger"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="PaymentPost.Amount" class="form-label"></label>
+                <input asp-for="PaymentPost.Amount" class="form-control" type="number" min="1" step="0.01" />
+                <span asp-validation-for="PaymentPost.Amount" class="text-danger"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="PaymentPost.PaymentMode" class="form-label"></label>
+                <select asp-for="PaymentPost.PaymentMode" asp-items="Model.PaymentPost.PaymentModeOptions" class="form-select"></select>
+                <span asp-validation-for="PaymentPost.PaymentMode" class="text-danger"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="PaymentPost.BankCode" class="form-label"></label>
+                <select asp-for="PaymentPost.BankCode" asp-items="Model.PaymentPost.BankOptions" class="form-select">
+                    <option value="">Select bank / counter</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PaymentPost.TransactionReferenceNo" class="form-label"></label>
+                <input asp-for="PaymentPost.TransactionReferenceNo" class="form-control" placeholder="Receipt / transaction / cheque no" />
+                <span asp-validation-for="PaymentPost.TransactionReferenceNo" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PaymentPost.Remarks" class="form-label"></label>
+                <input asp-for="PaymentPost.Remarks" class="form-control" placeholder="Payment note, if any" />
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+                <button class="btn btn-success" type="submit" onclick="return confirm('Post payment and mark this challan as paid?');">Post Payment</button>
+            </div>
+        </form>
+    </section>
+}
+
+<section class="wb-page-card wb-admin-card mt-4">
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+        <div>
+            <h2 class="wb-section-title">Payment Records</h2>
+            <p class="text-muted mb-0">Payment posting details and receipt references.</p>
+        </div>
+        <a class="btn btn-sm btn-outline-primary" asp-action="PaymentHistory">Payment History</a>
+    </div>
+
+    @if (Model.Payments.Count == 0)
+    {
+        <div class="wb-empty wb-empty-sm">No payment posted yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap mt-3">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Payment Date</th>
+                        <th>Amount</th>
+                        <th>Mode</th>
+                        <th>Bank / Counter</th>
+                        <th>Reference No</th>
+                        <th>Posted By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var payment in Model.Payments)
+                {
+                    <tr>
+                        <td>@DateText(payment.PaymentDate)</td>
+                        <td>Rs. @Amount(payment.Amount)</td>
+                        <td>@Water.Bill.API.Models.Challans.ChallanPaymentModes.Display(payment.PaymentMode)</td>
+                        <td>@Text(payment.BankName)</td>
+                        <td>@Text(payment.TransactionReferenceNo)</td>
+                        <td>@Text(payment.PostedByName)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="wb-page-card wb-admin-card mt-4">
+    <h2 class="wb-section-title">Consumer & Property Details</h2>
+    <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Consumer Name</label><div class="form-control-plaintext">@Text(Model.Consumer.ConsumerName)</div></div>
+        <div class="col-md-6"><label class="form-label">Mobile</label><div class="form-control-plaintext">@Text(Model.Consumer.MobileNo)</div></div>
+        <div class="col-md-6"><label class="form-label">Property</label><div class="form-control-plaintext">@Text(Model.Consumer.PropertyNo)</div></div>
+        <div class="col-md-6"><label class="form-label">Division</label><div class="form-control-plaintext">@AppConstants.Divisions.FormatDisplay(Model.Consumer.DevType)</div></div>
+        <div class="col-md-6"><label class="form-label">Connection Type</label><div class="form-control-plaintext">@Text(Model.Consumer.ConnectionType)</div></div>
+        <div class="col-md-6"><label class="form-label">Address</label><div class="form-control-plaintext">@Text(Model.Consumer.Address)</div></div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card mt-4">
+    <h2 class="wb-section-title">Challan & Payment Details</h2>
+    <div class="table-responsive wb-approval-table-wrap">
+        <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+            <tbody>
+                <tr><th>Purpose</th><td>@Text(Model.Purpose)</td><th>Generated On</th><td>@DateText(Model.GeneratedOn)</td></tr>
+                <tr><th>Source Bill No</th><td>@Text(Model.SourceBillNo)</td><th>Status</th><td><span class="badge @Badge(Model.Status)">@Model.Status</span></td></tr>
+                <tr><th>Bill Period</th><td>@DateText(Model.BillPeriodFrom) to @DateText(Model.BillPeriodTo)</td><th>Due Date</th><td>@DateText(Model.DueDate)</td></tr>
+                <tr><th>Bank / Counter</th><td>@Text(Model.BankName)</td><th>Bank Code</th><td>@Text(Model.BankCode)</td></tr>
+                <tr><th>Generated By</th><td>@Text(Model.GeneratedBy)</td><th>Receipt Ref</th><td>@Text(Model.ReceiptNo)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-responsive wb-approval-table-wrap mt-3">
+        <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Bill / Base Amount</td><td class="text-end">@Amount(Model.BillAmount)</td></tr>
+                <tr><td>Surcharge</td><td class="text-end">@Amount(Model.Surcharge)</td></tr>
+                <tr><td>Arrear</td><td class="text-end">@Amount(Model.Arrear)</td></tr>
+                <tr><td>NDC / No Dues Amount</td><td class="text-end">@Amount(Model.NocAmount)</td></tr>
+                <tr><td>Connection Charge</td><td class="text-end">@Amount(Model.ConnectionCharge)</td></tr>
+                <tr><td>Other / Penalty Charge</td><td class="text-end">@Amount(Model.PenaltyCharge)</td></tr>
+                <tr class="table-light"><th>Total Payable</th><th class="text-end">Rs. @Amount(Model.TotalAmount)</th></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card mt-4">
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+        <div>
+            <h2 class="wb-section-title">Challan Activity</h2>
+            <p class="text-muted mb-0">Generated, payment, and cancellation actions are tracked here.</p>
+        </div>
+        @if (Model.CanCancel)
+        {
+            <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-flex gap-2 align-items-start">
+                @Html.AntiForgeryToken()
+                <input class="form-control form-control-sm" name="cancelReason" maxlength="500" placeholder="Cancellation reason" required style="min-width: 260px;" />
+                <button class="btn btn-sm btn-outline-danger" type="submit" onclick="return confirm('Cancel this challan? This will void it without deleting old data.');">Cancel Challan</button>
+            </form>
+        }
+    </div>
+
+    @if (Model.Histories.Count == 0)
+    {
+        <div class="wb-empty wb-empty-sm">No activity recorded yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap mt-3">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                        <th>By</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Histories)
+                {
+                    <tr>
+                        <td><strong>@item.Action</strong></td>
+                        <td>@Text(item.FromStatus) -> <span class="badge @Badge(item.ToStatus ?? string.Empty)">@Text(item.ToStatus)</span></td>
+                        <td>@Text(item.Remarks)</td>
+                        <td>@Text(item.ActionByName)</td>
+                        <td>@item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

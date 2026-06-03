@@ -18,6 +18,22 @@
     }
 }
 
+<style>
+    /* Full-width layout — sidebar removed */
+    .wb-newconn-layout { grid-template-columns: 1fr !important; }
+
+    /* Compact choice cards — all in one row */
+    .wb-choice-grid { display: flex; flex-wrap: nowrap; gap: 8px; }
+    .wb-choice-grid .wb-choice-card { flex: 1 1 0; min-width: 0; min-height: 68px; padding: 10px 10px; gap: 4px; flex-direction: row; align-items: center; display: flex; }
+    .wb-choice-card input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+    .wb-choice-icon { width: 28px; height: 28px; flex-shrink: 0; font-size: 9px; border-radius: 8px; }
+    .wb-choice-card strong { font-size: 12px; line-height: 1.25; word-break: break-word; }
+    .wb-choice-card small { display: none; }
+
+    @@media (max-width: 767.98px) { .wb-choice-grid { flex-wrap: wrap; } .wb-choice-grid .wb-choice-card { flex: 1 1 calc(50% - 4px); } }
+    @@media (max-width: 479.98px) { .wb-choice-grid .wb-choice-card { flex: 1 1 100%; } }
+</style>
+
 <div class="wb-newconn-wizard" data-newconn-wizard data-blocks-url="@blocksUrl" data-subtypes-url="@subtypesUrl">
     <div class="wb-newconn-stepper" aria-label="New connection application steps">
         <button class="wb-step-pill is-active" type="button" data-step-target="1"><span>1</span> Connection Type</button>
@@ -247,15 +263,7 @@
             </div>
         </div>
 
-        <aside class="wb-newconn-side">
-            <section class="wb-side-card">
-                <h3>Application Progress</h3>
-                <div class="wb-side-row"><span>Mobile verification</span><strong>Done</strong></div>
-                <div class="wb-side-row"><span>Application form</span><strong>In progress</strong></div>
-                <div class="wb-side-row"><span>Fee payment</span><strong>Next step</strong></div>
-                <div class="wb-side-row is-total"><span>Submission</span><strong>After payment</strong></div>
-            </section>
-        </aside>
+        @* Application Progress sidebar hidden - full width for form *@
     </div>
 </div>
 

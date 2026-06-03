@@ -1,32 +1,205 @@
 @model string
 @{
     ViewData["Title"] = "Verify OTP";
+    var maskedMobile = string.IsNullOrWhiteSpace(Model) ? "" : Model.Length >= 4 ? "XXXXXX" + Model[^4..] : Model;
 }
 
 <main class="wb-public-auth-shell">
-    <section class="wb-public-auth-card">
-        <div class="wb-public-auth-icon">OTP</div>
-        <p class="wb-kicker">Mobile Verification</p>
-        <h1>Enter verification code</h1>
-        <p class="wb-public-auth-subtitle">@(TempData["OtpMessage"] ?? "Enter the OTP sent to your mobile number to continue your new connection application.")</p>
+    <section class="wb-public-auth-card wb-otp-card">
 
-        @if (TempData["DevelopmentOtp"] is string otp)
+        <div class="wb-auth-profile-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/>
+                <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+        </div>
+
+        <div class="wb-otp-header">
+            <p class="wb-kicker">Mobile Verification</p>
+            <h1>Enter verification code</h1>
+            <p class="wb-public-auth-subtitle">
+                @(TempData["OtpMessage"] ?? "We sent a 6-digit OTP to your mobile number.")
+            </p>
+        </div>
+
+        @if (TempData["DevelopmentOtp"] is string devOtp)
         {
-            <div class="alert alert-info">Testing OTP: <strong>@otp</strong></div>
+            <div class="wb-dev-otp-box">
+                Development OTP: &nbsp;<strong>@devOtp</strong>
+            </div>
         }
 
-        <form asp-action="VerifyOtp" method="post" class="wb-public-auth-form">
+        <div class="wb-otp-phone-row">
+            <span class="wb-otp-mobile">+91 @maskedMobile</span>
+            <a class="wb-otp-edit" asp-action="Start">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                </svg>
+                Edit
+            </a>
+        </div>
+
+        <form asp-action="VerifyOtp" method="post" id="otpForm">
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
             <input type="hidden" name="mobileNumber" value="@Model" />
-            <div class="wb-field">
-                <label class="form-label required" for="otp">OTP</label>
-                <input id="otp" name="otp" class="form-control wb-otp-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" />
+            <input type="hidden" name="otp" id="otpHiddenInput" />
+
+            <div class="wb-otp-boxes" id="otpBoxes">
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
             </div>
-            <button class="btn btn-primary w-100" type="submit">Verify & Continue</button>
+
+            <button class="btn btn-primary w-100 mt-3" type="submit" id="otpSubmitBtn" disabled>Verify & Continue</button>
         </form>
 
-        <div class="wb-public-auth-divider"><span>did not receive otp?</span></div>
-        <a class="btn btn-outline-primary w-100" asp-action="Start">Change Mobile Number</a>
+        <div class="wb-resend-row">
+            <span>Didn't receive the code?</span>
+            <span id="resendTimer" class="wb-resend-timer">Resend in <strong id="resendSecs">1:00</strong></span>
+            <a id="resendLink" class="wb-resend-link" asp-action="Start" style="display:none">Resend OTP</a>
+        </div>
+
     </section>
 </main>
+
+@section Scripts {
+<style>
+    .wb-otp-card { gap: 14px; padding: 28px 32px; }
+    .wb-auth-profile-icon {
+        width: 56px; height: 56px;
+        display: grid; place-items: center; justify-self: center;
+        border-radius: 50%;
+        background: #eff6ff;
+        border: 2px solid #bfdbfe;
+        color: #2563eb;
+    }
+    .wb-otp-header { text-align: center; }
+    .wb-otp-header h1 { margin: 0; font-size: 1.35rem; font-weight: 800; color: #0f172a; }
+    .wb-otp-header .wb-public-auth-subtitle { margin: 4px 0 0; }
+
+    .wb-dev-otp-box {
+        display: flex; align-items: center; justify-content: center;
+        gap: 4px; padding: 10px 14px; border-radius: 10px;
+        background: #eff6ff; border: 1px solid #bfdbfe;
+        color: #1d4ed8; font-size: 0.9rem;
+    }
+
+    .wb-otp-phone-row {
+        display: flex; align-items: center; justify-content: center;
+        gap: 10px; font-size: 0.9rem;
+    }
+    .wb-otp-mobile { font-weight: 700; color: #1e293b; letter-spacing: 0.03em; }
+    .wb-otp-edit {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 0.8rem; font-weight: 600; color: #2563eb;
+        text-decoration: none; padding: 3px 8px;
+        border: 1px solid #bfdbfe; border-radius: 6px;
+    }
+    .wb-otp-edit:hover { background: #eff6ff; }
+
+    .wb-otp-boxes {
+        display: flex; gap: 10px; justify-content: center;
+    }
+    .wb-otp-box {
+        width: 46px; height: 54px;
+        text-align: center; font-size: 1.5rem; font-weight: 700;
+        color: #0f172a; caret-color: transparent;
+        border: 2px solid #e2e8f0; border-radius: 10px;
+        background: #f8fafc; outline: none;
+        transition: border-color 0.18s, background 0.18s;
+    }
+    .wb-otp-box:focus { border-color: #2563eb; background: #fff; }
+    .wb-otp-box.is-filled { border-color: #64748b; background: #fff; }
+
+    .wb-resend-row {
+        display: flex; align-items: center; justify-content: center;
+        flex-wrap: wrap; gap: 6px;
+        font-size: 0.85rem; color: #64748b;
+    }
+    .wb-resend-timer { color: #475569; font-size: 0.85rem; }
+    .wb-resend-timer strong { color: #0f172a; }
+    .wb-resend-link {
+        font-weight: 700; color: #2563eb; text-decoration: none;
+    }
+    .wb-resend-link:hover { text-decoration: underline; }
+</style>
+<script>
+(function () {
+    var boxes = Array.from(document.querySelectorAll('.wb-otp-box'));
+    var hidden = document.getElementById('otpHiddenInput');
+    var submitBtn = document.getElementById('otpSubmitBtn');
+    var resendTimer = document.getElementById('resendTimer');
+    var resendLink = document.getElementById('resendLink');
+    var resendSecs = document.getElementById('resendSecs');
+
+    // Focus first box on load
+    boxes[0] && boxes[0].focus();
+
+    function collectOtp() {
+        return boxes.map(b => b.value).join('');
+    }
+
+    function updateSubmit() {
+        var val = collectOtp();
+        hidden.value = val;
+        submitBtn.disabled = val.length < 6;
+    }
+
+    boxes.forEach(function (box, i) {
+        box.addEventListener('input', function () {
+            // Allow only digits
+            box.value = box.value.replace(/[^0-9]/g, '').slice(-1);
+            box.classList.toggle('is-filled', box.value !== '');
+            if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+            updateSubmit();
+        });
+
+        box.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace') {
+                if (!box.value && i > 0) { boxes[i - 1].focus(); boxes[i - 1].value = ''; boxes[i - 1].classList.remove('is-filled'); }
+                else { box.value = ''; box.classList.remove('is-filled'); }
+                updateSubmit();
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' && i > 0) { boxes[i - 1].focus(); }
+            else if (e.key === 'ArrowRight' && i < boxes.length - 1) { boxes[i + 1].focus(); }
+        });
+
+        box.addEventListener('paste', function (e) {
+            var data = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+            if (data.length >= 6) {
+                data.slice(0, 6).split('').forEach(function (ch, idx) {
+                    if (boxes[idx]) { boxes[idx].value = ch; boxes[idx].classList.add('is-filled'); }
+                });
+                boxes[Math.min(5, data.length - 1)].focus();
+                updateSubmit();
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Submit: collect OTP then submit
+    document.getElementById('otpForm').addEventListener('submit', function () {
+        hidden.value = collectOtp();
+    });
+
+    // Resend countdown
+    var total = 60;
+    function tick() {
+        if (total <= 0) {
+            resendTimer.style.display = 'none';
+            resendLink.style.display = 'inline';
+            return;
+        }
+        var m = Math.floor(total / 60), s = total % 60;
+        resendSecs.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+        total--;
+        setTimeout(tick, 1000);
+    }
+    tick();
+})();
+</script>
+}

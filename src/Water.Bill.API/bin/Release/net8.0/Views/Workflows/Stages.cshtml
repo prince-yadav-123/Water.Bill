@@ -1,0 +1,121 @@
+@model IReadOnlyList<Water.Bill.Infrastructure.Data.Entities.WorkflowStage>
+@{
+    var workflow = ViewBag.Workflow as Water.Bill.Infrastructure.Data.Entities.WorkflowMaster;
+    var notifications = ViewBag.Notifications as IDictionary<int, Water.Bill.Infrastructure.Data.Entities.WorkflowStageNotification>
+        ?? new Dictionary<int, Water.Bill.Infrastructure.Data.Entities.WorkflowStageNotification>();
+    var roleNames = ViewBag.RoleNames as IDictionary<int, string> ?? new Dictionary<int, string>();
+    var userNames = ViewBag.UserNames as IDictionary<int, string> ?? new Dictionary<int, string>();
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>@workflow?.WorkflowName Builder</h1>
+        <p>Arrange approval stages visually and configure assignments, actions, and notifications for each step.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+        <a class="btn btn-primary" asp-action="CreateStage" asp-route-workflowId="@workflow?.Id">Add Stage</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card wb-workflow-builder">
+    <div class="wb-workflow-summary">
+        <div>
+            <span class="wb-kicker">Application Type</span>
+            <strong>@workflow?.ApplicationType</strong>
+        </div>
+        <div>
+            <span class="wb-kicker">Status</span>
+            <strong>@(workflow?.IsActive == true ? "Active" : "Inactive")</strong>
+        </div>
+        <div>
+            <span class="wb-kicker">Stages</span>
+            <strong>@Model.Count</strong>
+        </div>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="wb-empty-state">
+            <h2>No approval stages configured</h2>
+            <p>Add the first stage to start building this workflow.</p>
+            <a class="btn btn-primary" asp-action="CreateStage" asp-route-workflowId="@workflow?.Id">Add Stage</a>
+        </div>
+    }
+    else
+    {
+        <div class="wb-stage-path" aria-label="Workflow approval path">
+            @for (var i = 0; i < Model.Count; i++)
+            {
+                var item = Model[i];
+                notifications.TryGetValue(item.Id, out var notification);
+                <article class="wb-stage-card">
+                    <div class="wb-stage-order">
+                        <span>@item.StageOrder</span>
+                    </div>
+                    <div class="wb-stage-body">
+                        <div class="wb-stage-head">
+                            <div>
+                                <h2>@item.StageName</h2>
+                                <p>@(item.Department?.DeptName ?? "No department")</p>
+                            </div>
+                            <span class="badge @(item.IsActive ? "text-bg-success" : "text-bg-secondary")">@(item.IsActive ? "Active" : "Inactive")</span>
+                        </div>
+
+                        <div class="wb-stage-meta">
+                            <span>Approval: @item.ApprovalType</span>
+                            <span>Role: @(item.ApproverRoleId.HasValue && roleNames.TryGetValue(item.ApproverRoleId.Value, out var roleName) ? roleName : "Any")</span>
+                            <span>User: @(item.ApproverUserId.HasValue && userNames.TryGetValue(item.ApproverUserId.Value, out var userName) ? userName : "Any")</span>
+                            @if (item.SlaDays.HasValue)
+                            {
+                                <span>SLA: @item.SlaDays days</span>
+                            }
+                            @if (item.IsFinalStage)
+                            {
+                                <span>Final Stage</span>
+                            }
+                        </div>
+
+                        <div class="wb-stage-pills">
+                            @if (item.CanApprove) { <span>Approve</span> }
+                            @if (item.CanReject) { <span>Reject</span> }
+                            @if (item.CanForward) { <span>Forward</span> }
+                        </div>
+
+                        <div class="wb-stage-notifications">
+                            <strong>Notifications</strong>
+                            <span class="@(notification?.SendEmail == true ? "on" : "")">Email</span>
+                            <span class="@(notification?.SendSms == true ? "on" : "")">SMS</span>
+                            <span class="@(notification?.SendWhatsApp == true ? "on" : "")">WhatsApp</span>
+                            <span class="@(notification?.SendInAppNotification == true ? "on" : "")">In-app</span>
+                        </div>
+
+                        <div class="wb-stage-actions">
+                            <form asp-action="MoveStage" method="post" asp-route-id="@item.Id" asp-route-direction="up">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-secondary" type="submit" disabled="@(i == 0)">Move Up</button>
+                            </form>
+                            <form asp-action="MoveStage" method="post" asp-route-id="@item.Id" asp-route-direction="down">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-secondary" type="submit" disabled="@(i == Model.Count - 1)">Move Down</button>
+                            </form>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="EditStage" asp-route-id="@item.Id">Edit Stage</a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+
+        <div class="wb-workflow-preview">
+            <span>Preview</span>
+            <strong>Submit</strong>
+            @foreach (var item in Model)
+            {
+                <em></em>
+                <strong>@item.StageName</strong>
+            }
+            <em></em>
+            <strong>Final Approval</strong>
+        </div>
+    }
+</section>

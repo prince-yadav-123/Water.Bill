@@ -1,0 +1,16 @@
+@model PermissionModule
+@{
+    ViewData["Title"] = "Edit Permission Module";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Edit Permission Module</h1>
+        <p>Update the module name or active status.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<partial name="_PermissionModuleForm" model="Model" />
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

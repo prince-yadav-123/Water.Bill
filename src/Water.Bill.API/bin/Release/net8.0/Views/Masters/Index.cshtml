@@ -1,0 +1,83 @@
+@model Water.Bill.API.ViewModels.MasterListViewModel
+
+<div class="wb-page-head">
+    <div>
+        <h1>@Model.Title</h1>
+        <p>@Model.Description</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-primary" asp-action="Create" asp-route-key="@Model.Key">Add @Model.Title.Replace(" Master", "")</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-admin-toolbar">
+        <div>
+            <h2 class="wb-section-title">@Model.Title</h2>
+            <span>@Model.Rows.Count record@(Model.Rows.Count == 1 ? "" : "s")</span>
+        </div>
+        <input id="masterSearch" class="form-control wb-search" type="search" placeholder="Search code, name, status" oninput="filterMasters()" />
+    </div>
+
+    @if (Model.Rows.Count == 0)
+    {
+        <div class="wb-empty">No records found. Add the first record to make it available for dropdowns.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle wb-table wb-admin-table">
+                <thead>
+                    <tr>
+                        @foreach (var column in Model.Columns)
+                        {
+                            <th>@column.Label</th>
+                        }
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.Rows)
+                    {
+                        var searchText = string.Join(" ", row.Values.Values.Where(x => !string.IsNullOrWhiteSpace(x))).ToLowerInvariant();
+                        <tr class="master-row" data-search="@searchText">
+                            @foreach (var column in Model.Columns)
+                            {
+                                if (column.Key == "Status")
+                                {
+                                    <td><span class="badge @(row.IsActive ? "text-bg-success" : "text-bg-secondary")">@(row.IsActive ? "Active" : "Inactive")</span></td>
+                                }
+                                else
+                                {
+                                    <td>@(row.Values.TryGetValue(column.Key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : "-")</td>
+                                }
+                            }
+                            <td>
+                                <div class="wb-row-actions justify-content-end">
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-key="@Model.Key" asp-route-rowKey="@row.Key">View</a>
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-key="@Model.Key" asp-route-rowKey="@row.Key">Edit</a>
+                                    <form asp-action="ToggleStatus" asp-route-key="@Model.Key" asp-route-rowKey="@row.Key" method="post" onsubmit="return confirm('@(row.IsActive ? "Deactivate" : "Activate") this record?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="Status" value="@(row.IsActive ? "0" : "1")" />
+                                        <button type="submit" class="btn btn-sm @(row.IsActive ? "btn-outline-danger" : "btn-outline-success")">@(row.IsActive ? "Deactivate" : "Activate")</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@section Scripts {
+<script>
+function filterMasters() {
+    var q = (document.getElementById('masterSearch').value || '').toLowerCase();
+    document.querySelectorAll('.master-row').forEach(function(row) {
+        row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+    });
+}
+</script>
+}

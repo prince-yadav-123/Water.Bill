@@ -7,6 +7,7 @@ public class DashboardIndexViewModel
     public bool IsAdminView { get; set; }
     public IReadOnlyList<DashboardStatCardViewModel> SummaryCards { get; set; } = Array.Empty<DashboardStatCardViewModel>();
     public DashboardDonutChartViewModel? PrimaryStatusChart { get; set; }
+    public DashboardDonutChartViewModel? ChallanStatusChart { get; set; }
     public DashboardBarChartViewModel? SecondaryBarChart { get; set; }
     public DashboardTrendChartViewModel? TrendChart { get; set; }
     public DashboardStatusPanelViewModel? ServiceDeskPanel { get; set; }
@@ -23,8 +24,10 @@ public class DashboardStatCardViewModel
     public string Label { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
     public string Caption { get; set; } = string.Empty;
+    public string? SubValue { get; set; }
     public string Tone { get; set; } = "primary";
     public string? Url { get; set; }
+    public string? Icon { get; set; }
 }
 
 public class DashboardDonutChartViewModel
@@ -113,6 +116,7 @@ public class DashboardPendingApprovalViewModel
     public string StageName { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public DateTime AssignedOn { get; set; }
+    public int DaysSinceAssigned { get; set; }
     public string? AssignedTo { get; set; }
     public string? Url { get; set; }
 }

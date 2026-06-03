@@ -60,47 +60,68 @@ public class DashboardController : Controller
         var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         var pendingTaskQuery = PendingWorkflowTasksQuery();
         var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
-        var hasComplaints = await TableExistsAsync("consumercomplaints", ct);
 
         var totalConsumers = await _db.ConsumerDetailsMasters.AsNoTracking().CountAsync(ct);
         var activeConsumers = await _db.ConsumerDetailsMasters.AsNoTracking().CountAsync(x => x.Status == 1, ct);
+
         var newConnections = await _db.NewConnectionApplications.AsNoTracking().CountAsync(x => !x.IsDeleted, ct);
+        var finalConsumersCreated = await _db.NewConnectionApplications.AsNoTracking()
+            .CountAsync(x => !x.IsDeleted && x.ApplicationStatus == "FinalConsumerCreated", ct);
+
         var pendingApprovals = await pendingTaskQuery.CountAsync(ct);
+
+        var totalChallans = await _db.Challans.AsNoTracking().CountAsync(ct);
+        var paidChallans = await _db.Challans.AsNoTracking()
+            .CountAsync(x => x.PayDate.HasValue || (x.PaidAmt != null && x.PaidAmt > 0) || x.Status == "Paid", ct);
         var pendingChallans = await _db.Challans.AsNoTracking().CountAsync(x =>
-            !x.PayDate.HasValue &&
+            !x.PayDate.HasValue && (x.PaidAmt == null || x.PaidAmt <= 0) && x.Status != "Paid" &&
             (x.Status == null || x.Status == "" || x.Status == "Generated" || x.Status == "PendingPayment"), ct);
+
         var collectionThisMonth = await _db.ChallanPaymentHistories.AsNoTracking()
             .Where(x => !x.IsDeleted && x.PaymentDate >= monthStart)
             .SumAsync(x => (double?)x.Amount, ct) ?? 0d;
+
         var openQueries = hasSupportQueries
             ? await _db.ConsumerSupportQueries.AsNoTracking()
-                .CountAsync(x => !x.IsDeleted && (x.Status == "Open" || x.Status == "InProgress"), ct)
-            : 0;
-        var openComplaints = hasComplaints
-            ? await _db.ConsumerComplaints.AsNoTracking()
                 .CountAsync(x => !x.IsDeleted && (x.Status == "Open" || x.Status == "InProgress"), ct)
             : 0;
 
         var summaryCards = new List<DashboardStatCardViewModel>
         {
-            MakeCard("Total Consumers", totalConsumers.ToString("N0"), "Consumer master records", "primary", Url.Action("Index", "ConsumerMasterMaintenance")),
-            MakeCard("Active Consumers", activeConsumers.ToString("N0"), "Live consumer accounts", "success", Url.Action("Index", "ConsumerMasterMaintenance")),
-            MakeCard("New Connection Requests", newConnections.ToString("N0"), "Applications received", "info", "/Approvals?tab=All&applicationType=NewConnection"),
-            MakeCard("Pending Approvals", pendingApprovals.ToString("N0"), "Current workflow queue", "warning", "/Approvals?tab=Pending"),
-            MakeCard("Pending Challans", pendingChallans.ToString("N0"), "Awaiting payment", "warning", "/ChallanManagement?status=PendingPayment"),
-            MakeCard("Collected This Month", $"Rs. {collectionThisMonth:N0}", "Posted challan payments", "success", Url.Action("PaymentHistory", "ChallanManagement")),
-            MakeCard("Open Queries", openQueries.ToString("N0"), "Support queue", "danger", "/ConsumerQueryManagement?status=Open"),
-            MakeCard("Open Complaints", openComplaints.ToString("N0"), "Complaint desk", "danger", "/ComplaintManagement?status=Open")
+            MakeCard("Total Consumers", totalConsumers.ToString("N0"), string.Empty,
+                tone: "primary", url: Url.Action("Index", "ConsumerMasterMaintenance"), icon: "bi-people-fill"),
+
+            MakeCard("Active Consumers", activeConsumers.ToString("N0"), string.Empty,
+                tone: "success", url: Url.Action("Index", "ConsumerMasterMaintenance"), icon: "bi-person-check-fill"),
+
+            MakeCard("New Connections", newConnections.ToString("N0"), string.Empty,
+                tone: "info", url: "/Approvals?tab=All&applicationType=NewConnection", icon: "bi-plug-fill"),
+
+            MakeCard("Consumers Created", finalConsumersCreated.ToString("N0"), string.Empty,
+                tone: "success", url: "/Approvals?tab=All&applicationType=NewConnection", icon: "bi-patch-check-fill"),
+
+            MakeCard("Pending Approvals", pendingApprovals.ToString("N0"), string.Empty,
+                tone: "warning", url: "/Approvals?tab=Pending", icon: "bi-hourglass-split"),
+
+            MakeCard("Pending Challans", pendingChallans.ToString("N0"), string.Empty,
+                tone: "warning", url: "/ChallanManagement?status=PendingPayment", icon: "bi-receipt"),
+
+            MakeCard("Collected This Month", $"Rs. {collectionThisMonth:N0}", string.Empty,
+                tone: "success", url: Url.Action("PaymentHistory", "ChallanManagement"), icon: "bi-currency-rupee"),
+
+            MakeCard("Open Queries", openQueries.ToString("N0"), string.Empty,
+                tone: "danger", url: "/ConsumerQueryManagement?status=Open", icon: "bi-chat-dots-fill")
         };
 
         var applicationStatusChart = await BuildApplicationStatusChartAsync(ct);
+        var challanStatusChart = await BuildChallanStatusChartAsync(paidChallans, pendingChallans, totalChallans - paidChallans - pendingChallans, ct);
         var workloadChart = await BuildDepartmentWorkloadChartAsync(pendingTaskQuery, ct);
         var trendChart = await BuildAdminTrendChartAsync(ct);
-        var serviceDeskPanel = await BuildAdminServiceDeskPanelAsync(hasSupportQueries, hasComplaints, ct);
+        var serviceDeskPanel = await BuildAdminServiceDeskPanelAsync(hasSupportQueries, ct);
         var recentApplications = await BuildRecentApplicationsAsync(ct);
         var pendingApprovalsRows = await BuildPendingApprovalRowsAsync(pendingTaskQuery, ct);
         var recentChallans = await BuildRecentChallansAsync(_db.Challans.AsNoTracking(), ct);
-        var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, hasComplaints, userId: null, ct);
+        var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId: null, ct);
         var recentActivity = await BuildRecentActivityAsync(_db.Auditlogs.AsNoTracking(), ct);
 
         return new DashboardIndexViewModel
@@ -110,6 +131,7 @@ public class DashboardController : Controller
             IsAdminView = true,
             SummaryCards = summaryCards,
             PrimaryStatusChart = applicationStatusChart,
+            ChallanStatusChart = challanStatusChart,
             SecondaryBarChart = workloadChart,
             TrendChart = trendChart,
             ServiceDeskPanel = serviceDeskPanel,
@@ -120,9 +142,10 @@ public class DashboardController : Controller
             RecentActivities = recentActivity,
             QuickLinks = new List<DashboardQuickLinkViewModel>
             {
-                MakeLink("Consumers", Url.Action("Index", "ConsumerMasterMaintenance"), "Master records and profile updates"),
-                MakeLink("Approvals", "/Approvals?tab=Pending", "Current workflow queue"),
-                MakeLink("Challans", Url.Action("Index", "ChallanManagement"), "Demand and collection operations"),
+                MakeLink("Consumers", Url.Action("Index", "ConsumerMasterMaintenance"), "Master records"),
+                MakeLink("Approvals", "/Approvals?tab=Pending", "Workflow queue"),
+                MakeLink("Challans", Url.Action("Index", "ChallanManagement"), "Demand and collection"),
+                MakeLink("Consumer Queries", Url.Action("Index", "ConsumerQueryManagement"), "Support queue"),
                 MakeLink("Reports & MIS", Url.Action("Index", "ReportsMis"), "Operational summaries")
             }
         };
@@ -140,7 +163,6 @@ public class DashboardController : Controller
         var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         var assignedPendingQuery = ApplyWorkflowAssignmentFilter(PendingWorkflowTasksQuery(), userId, roleId, departmentIds);
         var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
-        var hasComplaints = await TableExistsAsync("consumercomplaints", ct);
         var allAssignedQuery = ApplyWorkflowAssignmentFilter(_db.ApplicationWorkflowTasks
             .Include(x => x.Stage)
             .Include(x => x.WorkflowInstance)
@@ -157,29 +179,27 @@ public class DashboardController : Controller
             ? await _db.ConsumerSupportQueries.AsNoTracking()
                 .CountAsync(x => !x.IsDeleted && x.AssignedToUserId == userId && (x.Status == "Open" || x.Status == "InProgress"), ct)
             : 0;
-        var myOpenComplaints = hasComplaints
-            ? await _db.ConsumerComplaints.AsNoTracking()
-                .CountAsync(x => !x.IsDeleted && x.AssignedToUserId == userId && (x.Status == "Open" || x.Status == "InProgress"), ct)
-            : 0;
-        var myRecentActivityCount = await _db.Auditlogs.AsNoTracking()
-            .CountAsync(x => x.UserId == userId && x.Timestamp >= monthStart, ct);
 
         var summaryCards = new List<DashboardStatCardViewModel>
         {
-            MakeCard("My Pending Approvals", myPendingApprovals.ToString("N0"), "Tasks currently assigned", "warning", "/Approvals?tab=Pending"),
-            MakeCard("My Actions This Month", myActionsThisMonth.ToString("N0"), "Workflow actions posted", "success", "/Approvals?tab=All"),
-            MakeCard("My Challans", myChallanCount.ToString("N0"), "Created or posted by you", "info", Url.Action("Index", "ChallanManagement")),
-            MakeCard("My Open Queries", myOpenQueries.ToString("N0"), "Assigned support items", "danger", Url.Action("Index", "ConsumerQueryManagement")),
-            MakeCard("My Open Complaints", myOpenComplaints.ToString("N0"), "Assigned complaint cases", "danger", Url.Action("Index", "ComplaintManagement")),
-            MakeCard("My Activity Events", myRecentActivityCount.ToString("N0"), "This month's audit entries", "primary", Url.Action("Index", "OperatorAudit"))
+            MakeCard("My Pending Approvals", myPendingApprovals.ToString("N0"), string.Empty,
+                tone: "warning", url: "/Approvals?tab=Pending", icon: "bi-hourglass-split"),
+
+            MakeCard("Workflow Actions", myActionsThisMonth.ToString("N0"), string.Empty,
+                tone: "success", url: "/Approvals?tab=All", icon: "bi-check2-all"),
+
+            MakeCard("My Challans", myChallanCount.ToString("N0"), string.Empty,
+                tone: "info", url: Url.Action("Index", "ChallanManagement"), icon: "bi-receipt"),
+
+            MakeCard("My Open Queries", myOpenQueries.ToString("N0"), string.Empty,
+                tone: "danger", url: Url.Action("Index", "ConsumerQueryManagement"), icon: "bi-chat-dots-fill")
         };
 
-        var workloadChart = await BuildStaffWorkloadChartAsync(assignedPendingQuery, ct);
         var trendChart = await BuildStaffTrendChartAsync(userId, username, ct);
         var recentChallans = await BuildRecentChallansAsync(myChallansQuery, ct);
-        var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, hasComplaints, userId, ct);
+        var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId, ct);
         var recentActivity = await BuildRecentActivityAsync(_db.Auditlogs.AsNoTracking().Where(x => x.UserId == userId), ct);
-        var assignedRows = await BuildPendingApprovalRowsAsync(allAssignedQuery.OrderByDescending(x => x.AssignedOn).Take(12), ct);
+        var assignedRows = await BuildPendingApprovalRowsAsync(allAssignedQuery.OrderByDescending(x => x.AssignedOn).Take(8), ct);
 
         return new DashboardIndexViewModel
         {
@@ -187,20 +207,30 @@ public class DashboardController : Controller
             RoleName = roleName,
             IsAdminView = false,
             SummaryCards = summaryCards,
-            SecondaryBarChart = workloadChart,
             TrendChart = trendChart,
             PendingApprovals = assignedRows,
             RecentChallans = recentChallans,
             RecentServiceDeskItems = recentServiceDesk,
             RecentActivities = recentActivity,
-            QuickLinks = new List<DashboardQuickLinkViewModel>
-            {
-                MakeLink("Review & Action", "/Approvals?tab=Pending", "Assigned workflow tasks"),
-                MakeLink("Challan Management", Url.Action("Index", "ChallanManagement"), "Demand and payment posting"),
-                MakeLink("Consumer Queries", Url.Action("Index", "ConsumerQueryManagement"), "Support requests in your queue"),
-                MakeLink("Activity Logs", Url.Action("Index", "OperatorAudit"), "Your recent operations")
-            }
+            QuickLinks = Array.Empty<DashboardQuickLinkViewModel>()
         };
+    }
+
+    private static Task<DashboardDonutChartViewModel> BuildChallanStatusChartAsync(int paid, int pending, int generated, CancellationToken ct)
+    {
+        var items = new List<DashboardChartSliceViewModel>
+        {
+            new() { Label = "Paid", Count = paid, Color = "#16a34a" },
+            new() { Label = "Pending Payment", Count = pending, Color = "#f59e0b" },
+            new() { Label = "Generated / Due", Count = Math.Max(0, generated), Color = "#2563eb" }
+        }.Where(x => x.Count > 0).ToList();
+
+        return Task.FromResult(new DashboardDonutChartViewModel
+        {
+            Title = "Challan Payment Status",
+            Caption = "Payment position across all raised challans",
+            Items = items
+        });
     }
 
     private async Task<DashboardDonutChartViewModel> BuildApplicationStatusChartAsync(CancellationToken ct)
@@ -214,7 +244,7 @@ public class DashboardController : Controller
 
         return new DashboardDonutChartViewModel
         {
-            Title = "Application Status Mix",
+            Title = "Application Status",
             Caption = "New connection lifecycle across all applications",
             Items = new List<DashboardChartSliceViewModel>
             {
@@ -258,6 +288,7 @@ public class DashboardController : Controller
 
     private async Task<DashboardBarChartViewModel> BuildStaffWorkloadChartAsync(IQueryable<ApplicationWorkflowTask> assignedPendingQuery, CancellationToken ct)
     {
+        // Retained for potential future use; currently not shown in staff dashboard
         var rows = await assignedPendingQuery
             .GroupBy(x => x.WorkflowInstance.ApplicationType)
             .Select(x => new { Label = x.Key, Count = x.Count() })
@@ -281,28 +312,34 @@ public class DashboardController : Controller
     private async Task<DashboardTrendChartViewModel> BuildAdminTrendChartAsync(CancellationToken ct)
     {
         var months = LastSixMonths();
-        var newConnectionRows = await _db.NewConnectionApplications.AsNoTracking()
-            .Where(x => !x.IsDeleted && x.CreatedOn >= months.First().Start)
+        var rangeStart = months.First().Start;
+
+        var receivedRows = await _db.NewConnectionApplications.AsNoTracking()
+            .Where(x => !x.IsDeleted && x.CreatedOn >= rangeStart)
             .GroupBy(x => new { x.CreatedOn.Year, x.CreatedOn.Month })
             .Select(x => new { x.Key.Year, x.Key.Month, Count = x.Count() })
             .ToListAsync(ct);
-        var challanRows = await _db.Challans.AsNoTracking()
-            .Where(x => x.EntryDate.HasValue && x.EntryDate.Value >= months.First().Start)
-            .GroupBy(x => new { x.EntryDate!.Value.Year, x.EntryDate!.Value.Month })
+
+        var approvedRows = await _db.NewConnectionApplications.AsNoTracking()
+            .Where(x => !x.IsDeleted
+                && x.ApprovedOn.HasValue
+                && x.ApprovedOn.Value >= rangeStart
+                && (x.ApplicationStatus == "Approved" || x.ApplicationStatus == "FinalConsumerCreated"))
+            .GroupBy(x => new { x.ApprovedOn!.Value.Year, x.ApprovedOn!.Value.Month })
             .Select(x => new { x.Key.Year, x.Key.Month, Count = x.Count() })
             .ToListAsync(ct);
 
         return new DashboardTrendChartViewModel
         {
-            Title = "Monthly Request & Challan Trend",
-            Caption = "Last six months of core activity",
-            PrimaryLabel = "Applications",
-            SecondaryLabel = "Challans",
+            Title = "New Applications Received vs Approved",
+            Caption = "Month-wise comparison for the last 6 months",
+            PrimaryLabel = "Received",
+            SecondaryLabel = "Approved",
             Points = months.Select(month => new DashboardTrendPointViewModel
             {
                 Label = month.Label,
-                PrimaryValue = newConnectionRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0,
-                SecondaryValue = challanRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0
+                PrimaryValue = receivedRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0,
+                SecondaryValue = approvedRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0
             }).ToList()
         };
     }
@@ -338,7 +375,7 @@ public class DashboardController : Controller
         };
     }
 
-    private async Task<DashboardStatusPanelViewModel> BuildAdminServiceDeskPanelAsync(bool hasSupportQueries, bool hasComplaints, CancellationToken ct)
+    private async Task<DashboardStatusPanelViewModel> BuildAdminServiceDeskPanelAsync(bool hasSupportQueries, CancellationToken ct)
     {
         var queryMap = hasSupportQueries
             ? await _db.ConsumerSupportQueries.AsNoTracking()
@@ -347,18 +384,11 @@ public class DashboardController : Controller
                 .Select(x => new { Status = x.Key, Count = x.Count() })
                 .ToDictionaryAsync(x => x.Status ?? string.Empty, x => x.Count, StringComparer.OrdinalIgnoreCase, ct)
             : new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        var complaintMap = hasComplaints
-            ? await _db.ConsumerComplaints.AsNoTracking()
-                .Where(x => !x.IsDeleted)
-                .GroupBy(x => x.Status)
-                .Select(x => new { Status = x.Key, Count = x.Count() })
-                .ToDictionaryAsync(x => x.Status ?? string.Empty, x => x.Count, StringComparer.OrdinalIgnoreCase, ct)
-            : new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         return new DashboardStatusPanelViewModel
         {
-            Title = "Service Desk Snapshot",
-            Caption = "Support queries and complaints at a glance",
+            Title = "Query Status Snapshot",
+            Caption = "Consumer support queue at a glance",
             Groups = new List<DashboardStatusGroupViewModel>
             {
                 new DashboardStatusGroupViewModel
@@ -370,17 +400,6 @@ public class DashboardController : Controller
                         MakeStatus("InProgress", queryMap, "warning", "/ConsumerQueryManagement?status=InProgress"),
                         MakeStatus("Resolved", queryMap, "success", "/ConsumerQueryManagement?status=Resolved"),
                         MakeStatus("Closed", queryMap, "secondary", "/ConsumerQueryManagement?status=Closed")
-                    }
-                },
-                new DashboardStatusGroupViewModel
-                {
-                    Label = "Complaints",
-                    Items = new List<DashboardStatusItemViewModel>
-                    {
-                        MakeStatus("Open", complaintMap, "danger", "/ComplaintManagement?status=Open"),
-                        MakeStatus("InProgress", complaintMap, "warning", "/ComplaintManagement?status=InProgress"),
-                        MakeStatus("Resolved", complaintMap, "success", "/ComplaintManagement?status=Resolved"),
-                        MakeStatus("Closed", complaintMap, "secondary", "/ComplaintManagement?status=Closed")
                     }
                 }
             }
@@ -476,6 +495,7 @@ public class DashboardController : Controller
             .Where(x => roleIds.Contains(x.Id))
             .ToDictionaryAsync(x => x.Id, x => x.Name, ct);
 
+        var today = DateTime.Today;
         return rows.Select(x =>
         {
             apps.TryGetValue(x.ApplicationId, out var app);
@@ -491,6 +511,7 @@ public class DashboardController : Controller
                 StageName = x.Stage.StageName,
                 Status = x.Status,
                 AssignedOn = x.AssignedOn,
+                DaysSinceAssigned = (int)(today - x.AssignedOn.Date).TotalDays,
                 AssignedTo = ResolveAssignedTo(x, users, roles),
                 Url = $"/Approvals/Details/{x.Id}"
             };
@@ -519,48 +540,26 @@ public class DashboardController : Controller
 
     private async Task<List<DashboardServiceDeskItemViewModel>> BuildRecentServiceDeskAsync(
         bool hasSupportQueries,
-        bool hasComplaints,
         int? userId,
         CancellationToken ct)
     {
-        var queries = hasSupportQueries
-            ? await ApplyServiceDeskAssignment(_db.ConsumerSupportQueries.AsNoTracking().Where(x => !x.IsDeleted), userId)
-                .OrderByDescending(x => x.CreatedAt)
-                .Take(4)
-                .Select(x => new DashboardServiceDeskItemViewModel
-                {
-                    Type = "Query",
-                    ReferenceNo = x.QueryNo,
-                    ConsumerName = x.ConsumerName,
-                    Subject = x.Subject,
-                    Status = x.Status,
-                    CreatedOn = x.CreatedAt,
-                    Url = $"/ConsumerQueryManagement/Details/{x.Id}"
-                })
-                .ToListAsync(ct)
-            : new List<DashboardServiceDeskItemViewModel>();
+        if (!hasSupportQueries)
+            return new List<DashboardServiceDeskItemViewModel>();
 
-        var complaints = hasComplaints
-            ? await ApplyServiceDeskAssignment(_db.ConsumerComplaints.AsNoTracking().Where(x => !x.IsDeleted), userId)
-                .OrderByDescending(x => x.CreatedAt)
-                .Take(4)
-                .Select(x => new DashboardServiceDeskItemViewModel
-                {
-                    Type = "Complaint",
-                    ReferenceNo = x.ComplaintNo,
-                    ConsumerName = x.ConsumerName,
-                    Subject = x.Subject,
-                    Status = x.Status,
-                    CreatedOn = x.CreatedAt,
-                    Url = $"/ComplaintManagement/Details/{x.Id}"
-                })
-                .ToListAsync(ct)
-            : new List<DashboardServiceDeskItemViewModel>();
-
-        return queries.Concat(complaints)
-            .OrderByDescending(x => x.CreatedOn)
+        return await ApplyServiceDeskAssignment(_db.ConsumerSupportQueries.AsNoTracking().Where(x => !x.IsDeleted), userId)
+            .OrderByDescending(x => x.CreatedAt)
             .Take(8)
-            .ToList();
+            .Select(x => new DashboardServiceDeskItemViewModel
+            {
+                Type = "Query",
+                ReferenceNo = x.QueryNo,
+                ConsumerName = x.ConsumerName,
+                Subject = x.Subject,
+                Status = x.Status,
+                CreatedOn = x.CreatedAt,
+                Url = $"/ConsumerQueryManagement/Details/{x.Id}"
+            })
+            .ToListAsync(ct);
     }
 
     private static async Task<List<DashboardActivityItemViewModel>> BuildRecentActivityAsync(IQueryable<Auditlog> query, CancellationToken ct)
@@ -583,9 +582,6 @@ public class DashboardController : Controller
     }
 
     private static IQueryable<ConsumerSupportQuery> ApplyServiceDeskAssignment(IQueryable<ConsumerSupportQuery> query, int? userId)
-        => userId.HasValue ? query.Where(x => x.AssignedToUserId == userId.Value) : query;
-
-    private static IQueryable<ConsumerComplaint> ApplyServiceDeskAssignment(IQueryable<ConsumerComplaint> query, int? userId)
         => userId.HasValue ? query.Where(x => x.AssignedToUserId == userId.Value) : query;
 
     private IQueryable<ApplicationWorkflowTask> PendingWorkflowTasksQuery()
@@ -619,14 +615,18 @@ public class DashboardController : Controller
                 && x.AssignedRoleId.HasValue
                 && x.AssignedRoleId == roleId));
 
-    private static DashboardStatCardViewModel MakeCard(string label, string value, string caption, string tone, string? url)
+    private static DashboardStatCardViewModel MakeCard(
+        string label, string value, string caption,
+        string? subValue = null, string tone = "primary", string? url = null, string? icon = null)
         => new()
         {
             Label = label,
             Value = value,
             Caption = caption,
+            SubValue = subValue,
             Tone = tone,
-            Url = url
+            Url = url,
+            Icon = icon
         };
 
     private static DashboardQuickLinkViewModel MakeLink(string label, string? url, string caption)

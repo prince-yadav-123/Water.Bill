@@ -1,70 +1,57 @@
 @model Water.Bill.ConsumerPortal.ViewModels.ConsumerDashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
-
-    string TextOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
-    string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
-    string FormatAmount(double value) => $"INR {value:N0}";
-    var consumerName = Model.Consumer?.Name ?? User.Identity?.Name ?? "Consumer";
+    string Dash(string? v) => string.IsNullOrWhiteSpace(v) ? "-" : v;
+    string FmtDate(DateTime? d) => d.HasValue ? d.Value.ToString("dd MMM yyyy") : "-";
+    string FmtAmt(double v) => v == 0 ? "Rs. 0" : $"Rs. {v:N0}";
+    var name = Model.Consumer?.Name ?? User.Identity?.Name ?? "Consumer";
+    var initials = string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => p[0])).ToUpperInvariant();
+    var hasDue = Model.TotalUnpaidDue > 0;
+    var isOverdue = Model.CurrentBill?.IsOverdue ?? false;
+    var isDueSoon = Model.CurrentBill?.IsDueSoon ?? false;
 }
 
-<div class="wb-dashboard-shell">
-    <div class="wb-dashboard-intro">
-        <div>
-            <p class="wb-kicker">Consumer Dashboard</p>
-            <h1>Good day, @consumerName</h1>
-            <p>Here is a quick look at your water connection, bill, and payment activity.</p>
-        </div>
-    </div>
+<div class="cpd-shell">
 
-    <section class="wb-bill-hero">
-        <div class="wb-bill-hero-main">
-            <span class="wb-hero-pill">@TextOrDash(Model.CurrentBill?.BillNo)</span>
-            <span class="wb-hero-label">Amount payable</span>
-            <strong>@FormatAmount(Model.CurrentBill?.TotalPayableAmount ?? 0)</strong>
-            <span class="wb-hero-meta">
-                Due by @FormatDate(Model.CurrentBill?.DueDate)
+    @* ── HERO ── *@
+    <section class="cpd-hero @(isOverdue ? "cpd-hero-danger" : isDueSoon ? "cpd-hero-warning" : "")">
+        <div class="cpd-hero-left">
+            <span class="cpd-hero-eye">Total Amount Payable</span>
+            <strong class="cpd-hero-amount">@FmtAmt(Model.TotalUnpaidDue)</strong>
+            <div class="cpd-hero-meta">
+                @if (Model.UnpaidBillCount > 1)
+                {
+                    <span>@Model.UnpaidBillCount bills pending</span>
+                    <span class="cpd-sep">·</span>
+                }
+                <span>Due @FmtDate(Model.CurrentBill?.DueDate)</span>
                 @if (!string.IsNullOrWhiteSpace(Model.CurrentBill?.BillPeriod))
                 {
-                    <text> · @Model.CurrentBill.BillPeriod</text>
-                }
-            </span>
-            <div class="wb-hero-actions">
-                @if (Model.CurrentBill is not null)
-                {
-                    <a class="btn btn-light" asp-controller="Bills" asp-action="Pay">Pay Now</a>
-                }
-                else
-                {
-                    <button class="btn btn-light" disabled>Pay Now</button>
-                }
-                @if (Model.CurrentBill is not null)
-                {
-                    <a class="btn btn-outline-light" asp-controller="Bills" asp-action="Print" asp-route-billNo="@Model.CurrentBill.BillNo" target="_blank">Download Bill</a>
-                }
-                else
-                {
-                    <a class="btn btn-outline-light disabled" aria-disabled="true" href="#">Download Bill</a>
+                    <span class="cpd-sep">·</span>
+                    <span>@Model.CurrentBill.BillPeriod</span>
                 }
             </div>
         </div>
-        <div class="wb-bill-hero-side">
-            <span>Connection</span>
-            <strong>@TextOrDash(Model.Consumer?.ConsumerNo ?? Model.ConsumerNo)</strong>
-            <small>@TextOrDash(Model.Consumer?.PropertySummary)</small>
-            <div class="wb-hero-status">
-                <span>@TextOrDash(Model.Consumer?.ConnectionType)</span>
-                <span>@Model.Metrics.ServiceStatus</span>
-            </div>
+        <div class="cpd-hero-right">
+            @if (hasDue)
+            {
+                <a class="btn btn-light btn-sm cpd-pay-btn" asp-controller="Bills" asp-action="Pay">Pay Now</a>
+            }
+            else
+            {
+                <button class="btn btn-light btn-sm cpd-pay-btn" disabled>Pay Now</button>
+            }
+            <a class="btn btn-outline-light btn-sm" asp-controller="Bills" asp-action="History">Bill History</a>
         </div>
     </section>
 
+    @* ── ALERTS ── *@
     @if (Model.Alerts.Count > 0)
     {
-        <div class="wb-alert-grid">
+        <div class="cpd-alerts">
             @foreach (var alert in Model.Alerts)
             {
-                <div class="wb-dashboard-alert wb-alert-@alert.Type">
+                <div class="cpd-alert cpd-alert-@alert.Type">
                     <strong>@alert.Title</strong>
                     <span>@alert.Message</span>
                 </div>
@@ -72,46 +59,57 @@
         </div>
     }
 
-    <div class="wb-metric-grid">
-        <div class="wb-metric-card">
-            <span>Total Due</span>
-            <strong>@FormatAmount(Model.Metrics.TotalDue)</strong>
-            <small>Current payable balance</small>
+    @* ── 4 METRIC CARDS ── *@
+    <div class="cpd-metrics">
+        <div class="cpd-metric @(hasDue ? "cpd-metric-warn" : "")">
+            <span class="cpd-metric-icon"><i class="bi bi-receipt-cutoff"></i></span>
+            <div>
+                <span class="cpd-metric-label">Total Due</span>
+                <strong class="cpd-metric-val">@FmtAmt(Model.TotalUnpaidDue)</strong>
+            </div>
         </div>
-        <div class="wb-metric-card">
-            <span>Last Payment</span>
-            <strong>@FormatAmount(Model.Metrics.LastPaymentAmount)</strong>
-            <small>@FormatDate(Model.Metrics.LastPaymentDate)</small>
+        <div class="cpd-metric">
+            <span class="cpd-metric-icon cpd-icon-green"><i class="bi bi-check-circle"></i></span>
+            <div>
+                <span class="cpd-metric-label">Last Payment</span>
+                <strong class="cpd-metric-val">@FmtAmt(Model.Metrics.LastPaymentAmount)</strong>
+                <small class="cpd-metric-sub">@FmtDate(Model.Metrics.LastPaymentDate)</small>
+            </div>
         </div>
-        <div class="wb-metric-card">
-            <span>Service Status</span>
-            <strong>@Model.Metrics.ServiceStatus</strong>
-            <small>@TextOrDash(Model.Consumer?.Category)</small>
+        <div class="cpd-metric">
+            <span class="cpd-metric-icon cpd-icon-blue"><i class="bi bi-person-badge"></i></span>
+            <div>
+                <span class="cpd-metric-label">Consumer No</span>
+                <strong class="cpd-metric-val cpd-mono">@Dash(Model.Consumer?.ConsumerNo ?? Model.ConsumerNo)</strong>
+            </div>
         </div>
-        <div class="wb-metric-card">
-            <span>Recent Bills</span>
-            <strong>@Model.Metrics.RecentBillCount</strong>
-            <small>Latest records available</small>
+        <div class="cpd-metric">
+            <span class="cpd-metric-icon @(Model.Metrics.ServiceStatus == "Active" ? "cpd-icon-green" : "cpd-icon-red")"><i class="bi bi-activity"></i></span>
+            <div>
+                <span class="cpd-metric-label">Service Status</span>
+                <strong class="cpd-metric-val">@Model.Metrics.ServiceStatus</strong>
+                <small class="cpd-metric-sub">@Dash(Model.Consumer?.Category)</small>
+            </div>
         </div>
     </div>
 
-    <div class="wb-dashboard-panels">
+    @* ── 2-COL INFO: Consumer + Current Bill (original card style) ── *@
+    <div class="wb-dashboard-panels cpd-equal-panels">
         <section class="wb-page-card">
             <div class="wb-card-title-row">
                 <div>
                     <p class="wb-kicker">Consumer Summary</p>
-                    <h2>@consumerName</h2>
+                    <h2>@name</h2>
                 </div>
-                <span class="wb-dashboard-avatar">@consumerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Aggregate("", (a, p) => a + p[0]).ToUpperInvariant()</span>
+                <span class="wb-dashboard-avatar">@initials</span>
             </div>
-
             <dl class="wb-info-grid">
-                <div><dt>Consumer No</dt><dd>@TextOrDash(Model.Consumer?.ConsumerNo ?? Model.ConsumerNo)</dd></div>
-                <div><dt>Mobile</dt><dd>@TextOrDash(Model.Consumer?.MobileNo)</dd></div>
-                <div><dt>Email</dt><dd>@TextOrDash(Model.Consumer?.Email)</dd></div>
-                <div><dt>Sector</dt><dd>@TextOrDash(Model.Consumer?.Sector)</dd></div>
-                <div><dt>Block / Flat</dt><dd>@($"{TextOrDash(Model.Consumer?.Block)} / {TextOrDash(Model.Consumer?.FlatNo)}")</dd></div>
-                <div><dt>Connection Type</dt><dd>@TextOrDash(Model.Consumer?.ConnectionType)</dd></div>
+                <div><dt>Consumer No</dt><dd>@Dash(Model.Consumer?.ConsumerNo ?? Model.ConsumerNo)</dd></div>
+                <div><dt>Mobile</dt><dd>@Dash(Model.Consumer?.MobileNo)</dd></div>
+                <div><dt>Email</dt><dd>@Dash(Model.Consumer?.Email)</dd></div>
+                <div><dt>Sector / Block</dt><dd>@Dash(Model.Consumer?.Sector) / @Dash(Model.Consumer?.Block)</dd></div>
+                <div><dt>Flat / Plot</dt><dd>@Dash(Model.Consumer?.FlatNo)</dd></div>
+                <div><dt>Connection Type</dt><dd>@Dash(Model.Consumer?.ConnectionType)</dd></div>
             </dl>
         </section>
 
@@ -119,13 +117,15 @@
             <div class="wb-card-title-row">
                 <div>
                     <p class="wb-kicker">Current Bill</p>
-                    <h2>@TextOrDash(Model.CurrentBill?.BillNo)</h2>
+                    <h2>@Dash(Model.CurrentBill?.BillNo)</h2>
                 </div>
-                <span class="badge @(Model.CurrentBill?.PaymentStatus == "Paid" ? "text-bg-success" : "text-bg-primary")">
-                    @(Model.CurrentBill?.PaymentStatus ?? "Not available")
-                </span>
+                @if (Model.CurrentBill is not null)
+                {
+                    <span class="badge @(Model.CurrentBill.PaymentStatus == "Paid" ? "text-bg-success" : isOverdue ? "text-bg-danger" : "text-bg-primary")">
+                        @Model.CurrentBill.PaymentStatus
+                    </span>
+                }
             </div>
-
             @if (Model.CurrentBill is null)
             {
                 <div class="wb-empty-state">
@@ -136,117 +136,406 @@
             else
             {
                 <dl class="wb-info-grid">
-                    <div><dt>Bill Period</dt><dd>@TextOrDash(Model.CurrentBill.BillPeriod)</dd></div>
-                    <div><dt>Due Date</dt><dd>@FormatDate(Model.CurrentBill.DueDate)</dd></div>
-                    <div><dt>Current Amount</dt><dd>@FormatAmount(Model.CurrentBill.CurrentAmount)</dd></div>
-                    <div><dt>Arrear</dt><dd>@FormatAmount(Model.CurrentBill.ArrearAmount)</dd></div>
-                    <div><dt>Total Payable</dt><dd>@FormatAmount(Model.CurrentBill.TotalPayableAmount)</dd></div>
-                    <div><dt>Last Paid</dt><dd>@FormatAmount(Model.CurrentBill.LastPaidAmount)</dd></div>
+                    <div><dt>Bill Period</dt><dd>@Dash(Model.CurrentBill.BillPeriod)</dd></div>
+                    <div><dt>Due Date</dt><dd class="@(isOverdue ? "text-danger fw-semibold" : "")">@FmtDate(Model.CurrentBill.DueDate)</dd></div>
+                    <div><dt>Current Amount</dt><dd>@FmtAmt(Model.CurrentBill.CurrentAmount)</dd></div>
+                    <div><dt>Arrear</dt><dd>@FmtAmt(Model.CurrentBill.ArrearAmount)</dd></div>
+                    <div><dt>Total Payable</dt><dd class="fw-bold">@FmtAmt(Model.CurrentBill.TotalPayableAmount)</dd></div>
+                    <div><dt>Last Paid</dt><dd>@FmtAmt(Model.CurrentBill.LastPaidAmount)</dd></div>
                 </dl>
             }
         </section>
     </div>
 
-    <div class="wb-dashboard-panels wb-dashboard-panels-wide">
+    @* ── 2-COL TABLES: Bills + Payments ── *@
+    <div class="wb-dashboard-panels wb-dashboard-panels-wide cpd-equal-panels">
         <section class="wb-page-card">
             <div class="wb-card-title-row">
-                <div>
-                    <p class="wb-kicker">Recent Bills</p>
-                    <h2>Latest bill records</h2>
-                </div>
+                <div><p class="wb-kicker">Bills</p><h2>Latest Bill Records</h2></div>
+                <a class="cpd-viewall" asp-controller="Bills" asp-action="History">View All</a>
             </div>
-
             @if (Model.RecentBills.Count == 0)
             {
-                <div class="wb-empty-state">
-                    <strong>No recent bills found.</strong>
-                    <span>Your bill records will appear here after generation.</span>
-                </div>
+                <p class="cpd-empty">No bill records found.</p>
             }
             else
             {
-                <div class="wb-mini-list">
-                    @foreach (var bill in Model.RecentBills)
-                    {
-                        <div class="wb-mini-row">
-                            <span class="wb-mini-icon">B</span>
-                            <div>
-                                <strong>@bill.BillNo</strong>
-                                <small>@TextOrDash(bill.BillPeriod)</small>
-                            </div>
-                            <div class="text-end">
-                                <strong>@FormatAmount(bill.Amount)</strong>
-                                <small>Due @FormatDate(bill.DueDate)</small>
-                            </div>
-                            <span class="badge text-bg-secondary">@bill.Status</span>
-                        </div>
-                    }
+                <div class="table-responsive">
+                    <table class="table cpd-table mb-0">
+                        <thead><tr><th>Bill No</th><th>Period</th><th>Amount</th><th>Status</th></tr></thead>
+                        <tbody>
+                            @foreach (var b in Model.RecentBills)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@b.BillNo</td>
+                                    <td><small class="text-muted">@Dash(b.BillPeriod)</small></td>
+                                    <td class="fw-semibold">@FmtAmt(b.Amount)</td>
+                                    <td><span class="cpd-badge cpd-badge-@(b.Status == "Paid" ? "green" : b.Status == "Partial" ? "amber" : "red")">@b.Status</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             }
         </section>
 
         <section class="wb-page-card">
             <div class="wb-card-title-row">
-                <div>
-                    <p class="wb-kicker">Recent Payments</p>
-                    <h2>Latest payment activity</h2>
-                </div>
+                <div><p class="wb-kicker">Payments</p><h2>Latest Payment Activity</h2></div>
             </div>
-
             @if (Model.RecentPayments.Count == 0)
             {
-                <div class="wb-empty-state">
-                    <strong>No recent payments found.</strong>
-                    <span>Your latest online or offline payments will appear here.</span>
-                </div>
+                <p class="cpd-empty">No payment records found.</p>
             }
             else
             {
-                <div class="wb-mini-list">
-                    @foreach (var payment in Model.RecentPayments)
-                    {
-                        <div class="wb-mini-row">
-                            <span class="wb-mini-icon">P</span>
-                            <div>
-                                <strong>@payment.ReferenceNo</strong>
-                                <small>@payment.Source @(!string.IsNullOrWhiteSpace(payment.BankName) ? $"via {payment.BankName}" : "")</small>
-                            </div>
-                            <div class="text-end">
-                                <strong>@FormatAmount(payment.Amount)</strong>
-                                <small>@FormatDate(payment.PaymentDate)</small>
-                            </div>
-                            <span class="badge text-bg-secondary">@payment.Status</span>
-                        </div>
-                    }
+                <div class="table-responsive">
+                    <table class="table cpd-table mb-0">
+                        <thead><tr><th>Reference</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+                        <tbody>
+                            @foreach (var p in Model.RecentPayments)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">@p.ReferenceNo</div>
+                                        <small class="text-muted">@p.Source</small>
+                                    </td>
+                                    <td><small>@FmtDate(p.PaymentDate)</small></td>
+                                    <td class="fw-semibold">@FmtAmt(p.Amount)</td>
+                                    <td><span class="cpd-badge cpd-badge-@(p.Status == "Success" || p.Status == "Paid" ? "green" : p.Status == "Pending" ? "amber" : "blue")">@p.Status</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             }
         </section>
     </div>
 
-    <section class="wb-page-card">
-        <div class="wb-card-title-row">
-            <div>
-                <p class="wb-kicker">Quick Actions</p>
-                <h2>Common tasks</h2>
+    @* ── CHART ROW: 5-Year Trend + Query Summary ── *@
+    <div class="cpd-row">
+        <section class="wb-page-card cpd-col-wide">
+            <div class="wb-card-title-row">
+                <div><p class="wb-kicker">Billing Trend</p><h2>5-Year Billed vs Paid</h2></div>
+                <div class="cpd-legend">
+                    <span><i class="cpd-swatch cpd-sw-blue"></i>Billed</span>
+                    <span><i class="cpd-swatch cpd-sw-green"></i>Paid</span>
+                </div>
             </div>
-        </div>
-
-        <div class="wb-action-grid">
-            <a class="wb-action-card" asp-controller="Bills" asp-action="Current"><span class="wb-action-icon">B</span><strong>Current Bill</strong><small>View bill details</small></a>
-            <a class="wb-action-card" asp-controller="Bills" asp-action="History"><span class="wb-action-icon">H</span><strong>Bill History</strong><small>Recent and past bills</small></a>
-            <a class="wb-action-card" asp-controller="Profile" asp-action="Index"><span class="wb-action-icon">P</span><strong>My Profile</strong><small>Account and connection details</small></a>
-            @if (Model.CurrentBill is not null)
+            @if (Model.BillingTrend.All(x => x.BilledAmount == 0 && x.PaidAmount == 0))
             {
-                <a class="wb-action-card" asp-controller="Bills" asp-action="Print" asp-route-billNo="@Model.CurrentBill.BillNo" target="_blank"><span class="wb-action-icon">D</span><strong>Download Bill</strong><small>Print or save latest bill</small></a>
+                <p class="cpd-empty">No billing history available yet.</p>
             }
             else
             {
-                <a class="wb-action-card is-disabled" href="#" aria-disabled="true"><span class="wb-action-icon">D</span><strong>Download Bill</strong><small>Print or save latest bill</small></a>
+                var trendLabels = "[" + string.Join(",", Model.BillingTrend.Select(x => $"\"{x.Year}\"")) + "]";
+                var trendBilled = "[" + string.Join(",", Model.BillingTrend.Select(x => x.BilledAmount.ToString("F0", System.Globalization.CultureInfo.InvariantCulture))) + "]";
+                var trendPaid   = "[" + string.Join(",", Model.BillingTrend.Select(x => x.PaidAmount.ToString("F0", System.Globalization.CultureInfo.InvariantCulture))) + "]";
+                <div class="cpd-chart-box">
+                    <canvas id="billingTrendChart"></canvas>
+                </div>
+                <script>window._billingTrend={ labels:@Html.Raw(trendLabels), billed:@Html.Raw(trendBilled), paid:@Html.Raw(trendPaid) };</script>
             }
-            <a class="wb-action-card" asp-controller="Profile" asp-action="UpdateContact"><span class="wb-action-icon">U</span><strong>Update Mobile/Email</strong><small>Secure OTP update</small></a>
-            <a class="wb-action-card" asp-controller="NewConnection" asp-action="Apply"><span class="wb-action-icon">C</span><strong>New Connection</strong><small>Submit application</small></a>
-            <a class="wb-action-card" asp-controller="Ndc" asp-action="Index"><span class="wb-action-icon">N</span><strong>NDC / No Dues</strong><small>Apply and track certificate</small></a>
-            <a class="wb-action-card" asp-controller="NewConnection" asp-action="MyApplications"><span class="wb-action-icon">A</span><strong>Application Status</strong><small>Track requests</small></a>
+        </section>
+
+        <section class="wb-page-card cpd-col-narrow">
+            <div class="wb-card-title-row">
+                <div><p class="wb-kicker">Support</p><h2>Query Summary</h2></div>
+                <a class="cpd-viewall" asp-controller="SupportQueries" asp-action="Index">View All</a>
+            </div>
+            @if (Model.QuerySummary.Total == 0)
+            {
+                <p class="cpd-empty">No queries raised yet.</p>
+            }
+            else
+            {
+                <div class="d-flex flex-column gap-2 mt-2">
+                    <a class="cpd-qrow cpd-qrow-red" asp-controller="SupportQueries" asp-action="Index" asp-route-status="Open">
+                        <span class="cpd-qrow-label">Open</span>
+                        <strong class="cpd-qrow-count">@Model.QuerySummary.Open</strong>
+                    </a>
+                    <a class="cpd-qrow cpd-qrow-amber" asp-controller="SupportQueries" asp-action="Index" asp-route-status="InProgress">
+                        <span class="cpd-qrow-label">In Progress</span>
+                        <strong class="cpd-qrow-count">@Model.QuerySummary.InProgress</strong>
+                    </a>
+                    <a class="cpd-qrow cpd-qrow-green" asp-controller="SupportQueries" asp-action="Index" asp-route-status="Resolved">
+                        <span class="cpd-qrow-label">Resolved</span>
+                        <strong class="cpd-qrow-count">@Model.QuerySummary.Resolved</strong>
+                    </a>
+                    <a class="cpd-qrow cpd-qrow-slate" asp-controller="SupportQueries" asp-action="Index" asp-route-status="Closed">
+                        <span class="cpd-qrow-label">Closed</span>
+                        <strong class="cpd-qrow-count">@Model.QuerySummary.Closed</strong>
+                    </a>
+                </div>
+            }
+        </section>
+    </div>
+
+    @* ── LATEST CHALLANS ── *@
+    <section class="wb-page-card">
+        <div class="wb-card-title-row">
+            <div><p class="wb-kicker">Challans</p><h2>Latest Challans</h2></div>
+            <a class="cpd-viewall" asp-controller="Challans" asp-action="Index">View All</a>
+        </div>
+        @if (Model.LatestChallans.Count == 0)
+        {
+            <p class="cpd-empty">No challans found.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table cpd-table mb-0">
+                    <thead><tr><th>Challan No</th><th>Purpose</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                    <tbody>
+                        @foreach (var c in Model.LatestChallans)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@c.ChallanNo</td>
+                                <td>@c.Purpose</td>
+                                <td class="fw-semibold">@FmtAmt(c.Amount)</td>
+                                <td><span class="cpd-badge cpd-badge-@(c.Status == "Paid" ? "green" : c.Status == "Generated" ? "blue" : "amber")">@c.Status</span></td>
+                                <td><small>@FmtDate(c.GeneratedOn)</small></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    @* ── QUICK TASKS (bottom) ── *@
+    <section class="wb-page-card">
+        <div class="wb-card-title-row">
+            <div><p class="wb-kicker">Quick Actions</p><h2>Common Tasks</h2></div>
+        </div>
+        <div class="cpd-tasks">
+            <a class="cpd-task" asp-controller="Bills" asp-action="Pay">
+                <span class="cpd-task-icon cpd-ticon-blue"><i class="bi bi-credit-card-2-front"></i></span>
+                <strong>Pay Bill</strong>
+            </a>
+            <a class="cpd-task" asp-controller="Bills" asp-action="History">
+                <span class="cpd-task-icon cpd-ticon-teal"><i class="bi bi-clock-history"></i></span>
+                <strong>Bill History</strong>
+            </a>
+            <a class="cpd-task" asp-controller="Challans" asp-action="Index">
+                <span class="cpd-task-icon cpd-ticon-purple"><i class="bi bi-receipt"></i></span>
+                <strong>My Challans</strong>
+            </a>
+            <a class="cpd-task" asp-controller="SupportQueries" asp-action="Create">
+                <span class="cpd-task-icon cpd-ticon-orange"><i class="bi bi-chat-dots"></i></span>
+                <strong>Raise Query</strong>
+            </a>
+            <a class="cpd-task" asp-controller="NewConnection" asp-action="MyApplications">
+                <span class="cpd-task-icon cpd-ticon-green"><i class="bi bi-list-check"></i></span>
+                <strong>Track Requests</strong>
+            </a>
         </div>
     </section>
+
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        .cpd-shell { display: flex; flex-direction: column; gap: 1.25rem; }
+
+        /* Hero */
+        .cpd-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            color: #fff;
+        }
+        .cpd-hero-danger { background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%); }
+        .cpd-hero-warning { background: linear-gradient(135deg, #78350f 0%, #d97706 100%); }
+        .cpd-hero-eye  { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; opacity: 0.75; margin-bottom: 0.2rem; }
+        .cpd-hero-amount { display: block; font-size: 2rem; font-weight: 800; line-height: 1; }
+        .cpd-hero-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; margin-top: 0.35rem; font-size: 0.84rem; opacity: 0.82; }
+        .cpd-sep { opacity: 0.5; }
+        .cpd-hero-right { display: flex; gap: 0.6rem; align-items: center; flex-shrink: 0; }
+        .cpd-pay-btn { font-weight: 600; }
+
+        /* Alerts */
+        .cpd-alerts { display: flex; flex-direction: column; gap: 0.5rem; }
+        .cpd-alert { display: flex; flex-direction: column; gap: 0.1rem; padding: 0.75rem 1rem; border-radius: 0.65rem; font-size: 0.9rem; border-left: 4px solid; }
+        .cpd-alert-info    { background:#eff6ff; border-color:#3b82f6; color:#1e3a5f; }
+        .cpd-alert-warning { background:#fffbeb; border-color:#f59e0b; color:#78350f; }
+        .cpd-alert-danger  { background:#fef2f2; border-color:#ef4444; color:#7f1d1d; }
+
+        /* Metrics */
+        .cpd-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        @@media (max-width: 991.98px) { .cpd-metrics { grid-template-columns: repeat(2, 1fr); } }
+        @@media (max-width: 575.98px) { .cpd-metrics { grid-template-columns: 1fr 1fr; } }
+        .cpd-metric {
+            display: flex; align-items: center; gap: 0.9rem;
+            padding: 1rem 1.1rem;
+            background: #fff; border: 1px solid #e8edf4; border-radius: 0.9rem;
+        }
+        .cpd-metric-warn { border-color: #fca5a5; background: #fef2f2; }
+        .cpd-metric-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 2.5rem; height: 2.5rem; border-radius: 0.65rem;
+            font-size: 1.15rem; flex-shrink: 0;
+            background: #fee2e2; color: #dc2626;
+        }
+        .cpd-icon-green { background: #dcfce7; color: #16a34a; }
+        .cpd-icon-blue  { background: #dbeafe; color: #2563eb; }
+        .cpd-icon-red   { background: #fee2e2; color: #dc2626; }
+        .cpd-metric-label { display: block; font-size: 0.73rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
+        .cpd-metric-val   { display: block; font-size: 1.2rem; font-weight: 800; color: #0f172a; line-height: 1.1; }
+        .cpd-metric-sub   { display: block; font-size: 0.75rem; color: #94a3b8; }
+        .cpd-mono { font-family: monospace; font-size: 1rem !important; }
+
+        /* 2-col row */
+        .cpd-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        @@media (max-width: 767.98px) { .cpd-row { grid-template-columns: 1fr; } }
+        .cpd-col { min-width: 0; }
+        .cpd-col-wide { min-width: 0; flex: 2; }
+        .cpd-col-narrow { min-width: 0; flex: 1; }
+        .cpd-row .cpd-col-wide,
+        .cpd-row .cpd-col-narrow { display: block; }
+        .cpd-row:has(.cpd-col-wide) {
+            grid-template-columns: 2fr 1fr;
+        }
+        @@media (max-width: 767.98px) {
+            .cpd-row:has(.cpd-col-wide) { grid-template-columns: 1fr; }
+        }
+
+        /* Equal-width bills + payments panels */
+        .cpd-equal-panels { grid-template-columns: 1fr 1fr !important; }
+
+        /* View All link (used across multiple sections) */
+        .cpd-viewall {
+            font-size: 0.8rem; font-weight: 600; color: #2563eb;
+            text-decoration: none; white-space: nowrap; padding: 0.25rem 0.6rem;
+            border: 1px solid #bfdbfe; border-radius: 0.4rem;
+        }
+        .cpd-viewall:hover { background: #eff6ff; }
+
+        /* Tasks */
+        .cpd-tasks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
+        @@media (max-width: 991.98px) { .cpd-tasks { grid-template-columns: repeat(3, 1fr); } }
+        @@media (max-width: 575.98px) { .cpd-tasks { grid-template-columns: repeat(2, 1fr) 1fr; } }
+        .cpd-task {
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            padding: 0.9rem 0.5rem; text-align: center; text-decoration: none;
+            background: #f8fafc; border: 1px solid #e8edf4; border-radius: 0.85rem;
+            color: #1e293b; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+        }
+        .cpd-task:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,23,42,0.08); border-color: #bfdbfe; color: #1e293b; }
+        .cpd-task strong { font-size: 0.82rem; font-weight: 700; line-height: 1.2; }
+        .cpd-task-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 2.4rem; height: 2.4rem; border-radius: 0.65rem; font-size: 1.1rem;
+        }
+        .cpd-ticon-blue   { background: #dbeafe; color: #2563eb; }
+        .cpd-ticon-teal   { background: #ccfbf1; color: #0f766e; }
+        .cpd-ticon-purple { background: #ede9fe; color: #7c3aed; }
+        .cpd-ticon-orange { background: #ffedd5; color: #c2410c; }
+        .cpd-ticon-green  { background: #dcfce7; color: #15803d; }
+
+        /* Table */
+        .cpd-table thead th {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; color: #64748b; border-bottom-color: #e2e8f0; padding-bottom: 0.5rem;
+        }
+        .cpd-table tbody td { padding: 0.6rem 0.5rem; border-bottom-color: #f1f5f9; font-size: 0.88rem; vertical-align: middle; }
+
+        /* Badges */
+        .cpd-badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+        .cpd-badge-green { background: #dcfce7; color: #15803d; }
+        .cpd-badge-amber { background: #fef3c7; color: #92400e; }
+        .cpd-badge-red   { background: #fee2e2; color: #b91c1c; }
+        .cpd-badge-blue  { background: #dbeafe; color: #1d4ed8; }
+
+        /* Chart */
+        .cpd-chart-box { height: 200px; position: relative; }
+        .cpd-legend { display: flex; gap: 0.75rem; font-size: 0.82rem; color: #64748b; }
+        .cpd-swatch { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 0.2rem; margin-right: 0.3rem; vertical-align: middle; }
+        .cpd-sw-blue  { background: #2563eb; }
+        .cpd-sw-green { background: #16a34a; }
+
+        /* Query rows */
+        .cpd-qrow {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 0.9rem; border-radius: 0.65rem;
+            border: 1px solid #e8edf4; background: #f8fafc;
+            text-decoration: none; color: #0f172a; gap: 1rem;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .cpd-qrow:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .cpd-qrow-label  { font-size: 0.88rem; font-weight: 500; color: #334155; }
+        .cpd-qrow-count  { font-size: 1.4rem; font-weight: 800; line-height: 1; min-width: 2rem; text-align: right; }
+        .cpd-qrow-red    .cpd-qrow-count { color: #dc2626; }
+        .cpd-qrow-amber  .cpd-qrow-count { color: #d97706; }
+        .cpd-qrow-green  .cpd-qrow-count { color: #16a34a; }
+        .cpd-qrow-slate  .cpd-qrow-count { color: #475569; }
+        .cpd-qrow-red    { border-left: 3px solid #dc2626; }
+        .cpd-qrow-amber  { border-left: 3px solid #d97706; }
+        .cpd-qrow-green  { border-left: 3px solid #16a34a; }
+        .cpd-qrow-slate  { border-left: 3px solid #94a3b8; }
+
+        .cpd-empty { color: #94a3b8; font-size: 0.9rem; text-align: center; padding: 1.5rem 0; margin: 0; }
+    </style>
+    <script>
+        (function () {
+            document.addEventListener('DOMContentLoaded', function () {
+                var d = window._billingTrend;
+                if (!d) return;
+                var ctx = document.getElementById('billingTrendChart');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: d.labels,
+                        datasets: [
+                            {
+                                label: 'Billed',
+                                data: d.billed,
+                                backgroundColor: 'rgba(37,99,235,0.75)',
+                                borderRadius: 5,
+                                borderSkipped: false
+                            },
+                            {
+                                label: 'Paid',
+                                data: d.paid,
+                                backgroundColor: 'rgba(22,163,74,0.75)',
+                                borderRadius: 5,
+                                borderSkipped: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (ctx) {
+                                        return ' ' + ctx.dataset.label + ': Rs. ' + Number(ctx.parsed.y).toLocaleString('en-IN');
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                            y: {
+                                ticks: {
+                                    font: { size: 11 },
+                                    callback: function (v) { return 'Rs. ' + (v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v); }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        })();
+    </script>
+}

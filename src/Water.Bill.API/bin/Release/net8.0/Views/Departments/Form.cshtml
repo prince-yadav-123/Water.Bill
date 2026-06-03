@@ -1,0 +1,39 @@
+@model Water.Bill.Infrastructure.Data.Entities.MasterDeptDetail
+
+<div class="wb-page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p>Keep department codes short and stable because workflow assignments depend on them.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="post" class="wb-form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger wb-field-wide"></div>
+        <div class="wb-field">
+            <label class="form-label">Code</label>
+            <input class="form-control" value="@(Model.DeptId == 0 ? "Auto generated from DEPT_ID" : Model.DeptId.ToString())" readonly />
+        </div>
+        <div class="wb-field">
+            <label asp-for="DeptName" class="form-label required">Department Name</label>
+            <input asp-for="DeptName" class="form-control" />
+            <span asp-validation-for="DeptName" class="text-danger"></span>
+        </div>
+        <div class="wb-field">
+            <label asp-for="DevType" class="form-label">Division Type</label>
+            <input asp-for="DevType" class="form-control" type="number" />
+        </div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label">Status</label>
+            <div class="wb-status-choice">
+                <label><input asp-for="Status" type="radio" value="1" checked="@(Model.Status != "0")" /> Active</label>
+                <label><input asp-for="Status" type="radio" value="0" checked="@(Model.Status == "0")" /> Inactive</label>
+            </div>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    </form>
+</section>

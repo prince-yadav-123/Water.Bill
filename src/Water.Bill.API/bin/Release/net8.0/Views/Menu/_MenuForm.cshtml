@@ -1,0 +1,79 @@
+@model MenuFormViewModel
+@{
+    var isEdit = Model.Item.Id != 0;
+}
+
+<section class="wb-page-card wb-form-card">
+    <form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@(isEdit ? Model.Item.Id : null)" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input type="hidden" asp-for="Item.Id" />
+        <input type="hidden" asp-for="Item.TenantId" />
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label" asp-for="Item.Label">Label</label>
+                <input class="form-control" asp-for="Item.Label" required placeholder="Dashboard" />
+                <span class="text-danger" asp-validation-for="Item.Label"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Item.ModuleId">Permission Module</label>
+                <select class="form-select" asp-for="Item.ModuleId">
+                    <option value="">No permission restriction</option>
+                    @foreach (var module in Model.PermissionModules)
+                    {
+                        <option value="@module.Id">@module.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Item.Icon">Icon</label>
+                <input class="form-control" asp-for="Item.Icon" placeholder="bi-speedometer2" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" asp-for="Item.Url">URL</label>
+                <input class="form-control" asp-for="Item.Url" placeholder="/Dashboard" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" asp-for="Item.Order">Order</label>
+                <input class="form-control" asp-for="Item.Order" type="number" min="0" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" asp-for="Item.ParentId">Parent Item</label>
+                <select class="form-select" asp-for="Item.ParentId">
+                    <option value="">Top Level</option>
+                    @foreach (var parent in Model.ParentItems)
+                    {
+                        <option value="@parent.Id">@parent.Label</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" asp-for="Item.SectionLabel">Section Label</label>
+                <input class="form-control" asp-for="Item.SectionLabel" placeholder="Administration" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <label class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="Item.IsActive" value="true" checked="@(Model.Item.IsActive != false)" />
+                    <span class="form-check-label">Active</span>
+                </label>
+                <input type="hidden" name="Item.IsActive" value="false" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <label class="form-check mb-2">
+                    <input class="form-check-input" asp-for="Item.ShowInSidebar" />
+                    <span class="form-check-label">Show in sidebar</span>
+                </label>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <label class="form-check mb-2">
+                    <input class="form-check-input" asp-for="Item.OpenInNewTab" />
+                    <span class="form-check-label">New tab</span>
+                </label>
+            </div>
+        </div>
+        <div class="wb-actions mt-4">
+            <button class="btn btn-primary" type="submit">@(isEdit ? "Save Changes" : "Create Menu Item")</button>
+            <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</section>
