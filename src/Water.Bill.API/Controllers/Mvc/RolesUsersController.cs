@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
+using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Application.DTOs.Menu;
 using Water.Bill.Application.Interfaces;
@@ -9,6 +10,7 @@ using Water.Bill.Core.Common;
 using Water.Bill.Core.Enums;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Services;
 
 namespace Water.Bill.API.Controllers.Mvc;
@@ -49,17 +51,27 @@ public class RolesUsersController : Controller
 
     [HttpGet("/Users")]
     [RequirePermission("User Management.view")]
-    public async Task<IActionResult> Users(CancellationToken ct)
+    public async Task<IActionResult> Users(
+        string? search = null,
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = "User Management";
         ViewData["ActiveMenu"] = "User Management";
-        var users = await _db.Appusers
-            .Include(x => x.Role)
-            .Where(x => !x.IsDeleted)
-            .OrderBy(x => x.FullName)
-            .ToListAsync(ct);
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
+        ViewBag.Search = search;
 
-        return View("Users", users);
+        var query = _db.Appusers.Include(x => x.Role).AsNoTracking().Where(x => !x.IsDeleted);
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim();
+            query = query.Where(x => x.FullName.Contains(s) || x.Username.Contains(s) || x.Email.Contains(s));
+        }
+        var paged = await query.OrderBy(x => x.FullName).ToPagedResultAsync(page, pageSize, ct);
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
+        return View("Users", paged.Items.ToList());
     }
 
     [HttpGet("/RolesUsers/Combined")]

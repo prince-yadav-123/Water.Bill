@@ -44,6 +44,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IWhatsAppSender, WhatsAppSender>();
         services.AddScoped<IInAppNotificationSender, InAppNotificationSender>();
         services.AddScoped<ICommunicationService, CommunicationService>();
+        services.AddScoped<INotificationDispatchService, NotificationDispatchService>();
 
         return services;
     }

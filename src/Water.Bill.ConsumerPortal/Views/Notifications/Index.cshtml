@@ -1,0 +1,110 @@
+@using Water.Bill.Infrastructure.Data.Entities
+@model IReadOnlyList<InAppNotification>
+@{
+    ViewData["Title"] = "My Notifications";
+}
+
+<div class="wb-dashboard-intro">
+    <div>
+        <p class="wb-kicker">Consumer Services</p>
+        <h1>My Notifications</h1>
+        <p>Your latest updates from Noida Jal Authority.</p>
+    </div>
+    <form asp-action="MarkAllRead" asp-controller="Notifications" method="post">
+        @Html.AntiForgeryToken()
+        <button class="btn btn-outline-secondary btn-sm" type="submit">Mark all as read</button>
+    </form>
+</div>
+
+<section class="wb-page-card">
+    @if (!Model.Any())
+    {
+        <div class="text-center text-muted py-5">
+            <div style="font-size:2.5rem;margin-bottom:.5rem;">🔔</div>
+            <strong>No notifications yet.</strong>
+            <p class="mt-1" style="font-size:.9rem">You'll see alerts about bills, payments and service updates here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="cpd-notif-list">
+            @foreach (var n in Model)
+            {
+                <div class="cpd-notif-row @(n.IsRead ? "" : "cpd-notif-unread")" data-id="@n.Id">
+                    <div class="cpd-notif-indicator"></div>
+                    <div class="cpd-notif-content">
+                        <div class="cpd-notif-title">@n.Title</div>
+                        <div class="cpd-notif-msg">@n.Message</div>
+                        <div class="cpd-notif-meta">
+                            <small>@n.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
+                            @if (!string.IsNullOrWhiteSpace(n.ReferenceNo))
+                            {
+                                <span class="cpd-notif-type-badge">@n.ReferenceNo</span>
+                            }
+                        </div>
+                    </div>
+                    @if (!n.IsRead)
+                    {
+                        <button class="btn btn-sm btn-outline-secondary cpd-mark-read-btn" data-id="@n.Id">Mark read</button>
+                    }
+                    else
+                    {
+                        <span class="cpd-read-tag">Read</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+@if (TempData["NotificationMessage"] is string message && !string.IsNullOrWhiteSpace(message))
+{
+    <div class="alert alert-@((TempData["NotificationMessageType"] as string) ?? "success") alert-dismissible fade show mt-3" role="alert">
+        @message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<style>
+    .cpd-notif-list { display: flex; flex-direction: column; gap: 0; }
+    .cpd-notif-row {
+        display: flex; align-items: flex-start; gap: 0.75rem;
+        padding: 0.9rem 0; border-bottom: 1px solid #f1f5f9;
+        transition: background .12s;
+    }
+    .cpd-notif-row:last-child { border-bottom: none; }
+    .cpd-notif-unread { background: #eff6ff; border-radius: 0.65rem; padding: 0.9rem 0.75rem; margin-bottom: 4px; }
+    .cpd-notif-indicator {
+        width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        background: #2563eb; margin-top: 6px; opacity: 0;
+    }
+    .cpd-notif-unread .cpd-notif-indicator { opacity: 1; }
+    .cpd-notif-content { flex: 1; min-width: 0; }
+    .cpd-notif-title { font-weight: 700; font-size: .9rem; color: #0f172a; }
+    .cpd-notif-msg { font-size: .85rem; color: #475569; margin-top: 2px; }
+    .cpd-notif-meta { display: flex; align-items: center; gap: .5rem; margin-top: 4px; }
+    .cpd-notif-type-badge {
+        display: inline-block; padding: .15rem .45rem; border-radius: 999px;
+        background: #dbeafe; color: #1d4ed8; font-size: .72rem; font-weight: 700;
+    }
+    .cpd-read-tag { font-size: .75rem; color: #94a3b8; flex-shrink: 0; }
+</style>
+<script>
+(function () {
+    var token = document.querySelector('[name="__RequestVerificationToken"]').value;
+    document.querySelectorAll('.cpd-mark-read-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+            var id = btn.dataset.id;
+            var fd = new FormData(); fd.append('__RequestVerificationToken', token);
+            await fetch('/Notifications/MarkRead/' + id, { method: 'POST', body: fd, credentials: 'same-origin' });
+            var row = btn.closest('.cpd-notif-row');
+            row.classList.remove('cpd-notif-unread');
+            row.querySelector('.cpd-notif-indicator').style.opacity = '0';
+            btn.replaceWith(Object.assign(document.createElement('span'), { className: 'cpd-read-tag', textContent: 'Read' }));
+        });
+    });
+})();
+</script>
+}

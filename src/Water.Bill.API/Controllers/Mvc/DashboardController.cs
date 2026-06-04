@@ -597,21 +597,31 @@ public class DashboardController : Controller
                 && x.WorkflowInstance.IsActive
                 && !x.WorkflowInstance.IsDeleted);
 
+    // ── IMPORTANT: This filter MUST match ApprovalsController.ApplyWorkflowAssignmentFilter exactly.
+    // If they differ the dashboard count and the Approvals list will not match.
+    // Rule: if AssignedUserId is set, ONLY that specific user can see the task (role/dept are ignored).
     private static IQueryable<ApplicationWorkflowTask> ApplyWorkflowAssignmentFilter(
         IQueryable<ApplicationWorkflowTask> query,
         int userId,
         int roleId,
         IReadOnlyCollection<int> departmentIds)
         => query.Where(x =>
+            // 1. Task assigned to this specific user
             (x.AssignedUserId.HasValue && x.AssignedUserId == userId)
-            || (x.AssignedDepartmentId.HasValue
+            // 2. Task assigned by dept+role (no specific user)
+            || (!x.AssignedUserId.HasValue
+                && x.AssignedDepartmentId.HasValue
                 && x.AssignedRoleId.HasValue
                 && x.AssignedRoleId == roleId
                 && departmentIds.Contains(x.AssignedDepartmentId.Value))
-            || (x.AssignedDepartmentId.HasValue
+            // 3. Task assigned by dept only (no specific user, no role)
+            || (!x.AssignedUserId.HasValue
+                && x.AssignedDepartmentId.HasValue
                 && !x.AssignedRoleId.HasValue
                 && departmentIds.Contains(x.AssignedDepartmentId.Value))
-            || (!x.AssignedDepartmentId.HasValue
+            // 4. Task assigned by role only (no specific user, no dept)
+            || (!x.AssignedUserId.HasValue
+                && !x.AssignedDepartmentId.HasValue
                 && x.AssignedRoleId.HasValue
                 && x.AssignedRoleId == roleId));
 

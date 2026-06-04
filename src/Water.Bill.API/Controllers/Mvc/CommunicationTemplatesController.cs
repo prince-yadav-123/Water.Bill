@@ -7,7 +7,9 @@ using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Communication;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -27,10 +29,15 @@ public class CommunicationTemplatesController : Controller
     }
 
     [HttpGet("/CommunicationTemplates")]
-    public async Task<IActionResult> Index(string? search, string? purposeKey, string? channel, string? activeStatus, CancellationToken ct)
+    public async Task<IActionResult> Index(
+        string? search, string? purposeKey, string? channel, string? activeStatus,
+        int page = 1, int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = "Communication Templates";
         ViewData["ActiveMenu"] = AppConstants.Modules.CommunicationTemplates;
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
         var query = _db.CommunicationTemplates.Include(x => x.Purpose).AsNoTracking().Where(x => !x.IsDeleted);
         if (!string.IsNullOrWhiteSpace(search))
@@ -47,6 +54,10 @@ public class CommunicationTemplatesController : Controller
         if (activeStatus == "Inactive")
             query = query.Where(x => !x.IsActive);
 
+        var paged = await query.OrderBy(x => x.PurposeKey).ThenBy(x => x.Channel).ThenByDescending(x => x.IsDefault)
+            .ToPagedResultAsync(page, pageSize, ct);
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
+
         return View(new CommunicationTemplateListViewModel
         {
             Search = search,
@@ -55,7 +66,7 @@ public class CommunicationTemplatesController : Controller
             ActiveStatus = activeStatus,
             Purposes = await BuildPurposeItemsAsync(ct),
             Channels = BuildChannelItems(),
-            Templates = await query.OrderBy(x => x.PurposeKey).ThenBy(x => x.Channel).ThenByDescending(x => x.IsDefault).ToListAsync(ct)
+            Templates = paged.Items.ToList()
         });
     }
 

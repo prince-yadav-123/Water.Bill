@@ -7,6 +7,8 @@ public class OperatorAuditIndexViewModel
     public int? UserId { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 0;
     public IReadOnlyList<OperatorAuditRowViewModel> Rows { get; set; } = [];
 }
 

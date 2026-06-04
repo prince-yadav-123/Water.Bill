@@ -1,0 +1,88 @@
+@model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationFormDto
+@{
+    ViewData["Title"] = "Correct & Resubmit Application";
+    var sentBackRemarks = ViewData["SentBackRemarks"] as string;
+    var sentBackAt = ViewData["SentBackAt"] as DateTime?;
+    var applicationNo = ViewData["ApplicationNo"] as string;
+    var formAction = ViewData["FormAction"]?.ToString() ?? "Resubmit";
+    var formRouteId = ViewData["FormRouteId"];
+    var existingDocumentTypes = ViewData["ExistingDocumentTypes"] as string[] ?? [];
+}
+
+<div class="wb-newconn-page-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">New Connection</p>
+            <h1>Correct &amp; Resubmit Application</h1>
+            <p>Application <strong>@applicationNo</strong> — Update the required fields and resubmit.</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@formRouteId">Back to Application</a>
+    </div>
+
+    @* ── Authority Remarks Banner ── *@
+    @if (!string.IsNullOrWhiteSpace(sentBackRemarks))
+    {
+        <section class="wb-page-card mb-3" style="border-left:4px solid #d97706;background:#fffbeb">
+            <div class="d-flex align-items-start gap-3">
+                <span style="font-size:1.5rem">⚠</span>
+                <div>
+                    <div class="fw-bold mb-1" style="color:#92400e">
+                        Authority Comments — Action Required
+                        @if (sentBackAt.HasValue)
+                        {
+                            <span class="ms-2 fw-normal text-muted" style="font-size:.85rem">
+                                (@sentBackAt.Value.ToString("dd MMM yyyy, hh:mm tt"))
+                            </span>
+                        }
+                    </div>
+                    <p class="mb-0" style="color:#78350f">@sentBackRemarks</p>
+                </div>
+            </div>
+        </section>
+    }
+
+    <div class="alert alert-info mb-3">
+        <strong>Important:</strong> Your application fee has already been paid.
+        Resubmission does <strong>not</strong> require any additional payment.
+        Update the required fields, optionally replace documents, and click <strong>Resubmit Application</strong>.
+    </div>
+
+    <form asp-action="@formAction" asp-route-id="@formRouteId" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <section class="wb-page-card wb-newconn-form mb-3">
+            <h2 style="font-size:1rem;font-weight:700;margin-bottom:1rem">Applicant &amp; Property Details</h2>
+
+            @* Core editable fields — applicant cannot change consumer no or mobile (locked) *@
+            @await Html.PartialAsync("~/Views/NewConnection/_NewConnectionFormFields.cshtml", Model)
+        </section>
+
+        <section class="wb-page-card mb-3">
+            <h2 style="font-size:1rem;font-weight:700;margin-bottom:.5rem">Your Remarks / Explanation</h2>
+            <p class="text-muted" style="font-size:.88rem">Optional — briefly explain the correction you made.</p>
+            <textarea name="applicantRemarks" class="form-control" rows="3" maxlength="500"
+                      placeholder="Describe the changes or corrections you made to the application…"></textarea>
+        </section>
+
+        <section class="wb-page-card mb-3">
+            <h2 style="font-size:1rem;font-weight:700;margin-bottom:.5rem">Submit Corrected Application</h2>
+            <p class="text-muted" style="font-size:.88rem">
+                By resubmitting, you confirm that the information provided is accurate and you accept the declaration.
+            </p>
+            <div class="d-flex gap-3 align-items-center flex-wrap mt-2">
+                <button class="btn btn-success" type="submit"
+                        onclick="return confirm('Resubmit this corrected application to the authority for review?')">
+                    ↩ Resubmit Application
+                </button>
+                <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@formRouteId">
+                    Cancel
+                </a>
+            </div>
+        </section>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

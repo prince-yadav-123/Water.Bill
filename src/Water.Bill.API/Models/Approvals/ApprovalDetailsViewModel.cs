@@ -23,7 +23,15 @@ public class ApprovalDetailsViewModel
     public IReadOnlyList<WorkflowStageProgressViewModel> StageProgress { get; set; } = [];
 
     public bool CanMoveToNextStage { get; set; }
+
+    /// <summary>Whether the current task's stage is the first stage (SendBackToPrevious not available).</summary>
+    public bool IsFirstStage { get; set; }
+
+    /// <summary>All active internal users — for Forward to Specific User dropdown.</summary>
+    public IReadOnlyList<InternalUserSelectItem> InternalUsers { get; set; } = [];
 }
+
+public sealed record InternalUserSelectItem(int Id, string Name, string Email);
 
 public class WorkflowStageProgressViewModel
 {

@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
+using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Services;
 
 namespace Water.Bill.API.Controllers.Mvc;
@@ -23,23 +25,40 @@ public class ConsumerLoginManagementController : Controller
 
     [HttpGet("/ConsumerLoginManagement")]
     [RequirePermission("Consumer Login Management.view")]
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(
+        string? search = null,
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = "Consumer Login Management";
         ViewData["ActiveMenu"] = "Consumer Login Management";
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
-        var users = await _db.ConsumerUsers
-            .AsNoTracking()
-            .Where(x => !x.IsDeleted)
-            .OrderBy(x => x.ConsumerNo)
-            .ThenBy(x => x.Username)
-            .ToListAsync(ct);
-
-        var model = new List<ConsumerLoginUserListItemViewModel>();
-        foreach (var user in users)
+        var query = _db.ConsumerUsers.AsNoTracking().Where(x => !x.IsDeleted);
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            var consumer = await FindConsumerAsync(user.ConsumerNo, ct);
-            model.Add(new ConsumerLoginUserListItemViewModel
+            var s = search.Trim();
+            query = query.Where(x => x.ConsumerNo.Contains(s) || x.Username.Contains(s)
+                || (x.Email != null && x.Email.Contains(s)));
+        }
+        query = query.OrderBy(x => x.ConsumerNo).ThenBy(x => x.Username);
+
+        var pagedUsers = await query.ToPagedResultAsync(page, pageSize, ct);
+        ViewBag.Pagination = PaginationViewModel.Create(pagedUsers);
+        ViewBag.Search = search;
+
+        // Batch-fetch consumers for only the paged users (no N+1)
+        var consumerNos = pagedUsers.Items.Select(x => x.ConsumerNo).Distinct().ToList();
+        var consumerMap = await _db.ConsumerDetailsMasters.AsNoTracking()
+            .Where(x => consumerNos.Contains(x.ConsNo))
+            .ToDictionaryAsync(x => x.ConsNo!, ct);
+
+        var model = pagedUsers.Items.Select(user =>
+        {
+            consumerMap.TryGetValue(user.ConsumerNo, out var consumer);
+            return new ConsumerLoginUserListItemViewModel
             {
                 Id = user.Id,
                 ConsumerNo = user.ConsumerNo,
@@ -50,8 +69,8 @@ public class ConsumerLoginManagementController : Controller
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
                 LastLoginAt = user.LastLoginAt
-            });
-        }
+            };
+        }).ToList();
 
         return View(model);
     }

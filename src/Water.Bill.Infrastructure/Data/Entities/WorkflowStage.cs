@@ -28,6 +28,15 @@ public partial class WorkflowStage
 
     public bool IsFinalStage { get; set; }
 
+    /// <summary>Stage can forward the application to any specific internal user.</summary>
+    public bool CanForwardToUser { get; set; }
+
+    /// <summary>Stage can send the application back to the consumer/applicant for correction and resubmission.</summary>
+    public bool CanSendBackToApplicant { get; set; }
+
+    /// <summary>Stage can return the application to the previous workflow stage for re-review.</summary>
+    public bool CanSendBackToPrevious { get; set; }
+
     public int? SlaDays { get; set; }
 
     public bool IsActive { get; set; } = true;

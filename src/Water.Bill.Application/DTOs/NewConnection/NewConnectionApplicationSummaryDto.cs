@@ -29,4 +29,13 @@ public class NewConnectionApplicationSummaryDto
     public string? PaymentStatus { get; set; }
 
     public bool CanContinue { get; set; }
+
+    /// <summary>True when the application is sent back to the applicant for correction and can be resubmitted.</summary>
+    public bool CanResubmit { get; set; }
+
+    /// <summary>Authority remarks entered when the application was sent back.</summary>
+    public string? SentBackRemarks { get; set; }
+
+    /// <summary>Date/time when the application was sent back.</summary>
+    public DateTime? SentBackAt { get; set; }
 }

@@ -350,6 +350,78 @@ public class PublicNewConnectionController : Controller
         }
     }
 
+    [HttpGet("/NewConnection/Resubmit/{id:long}")]
+    public async Task<IActionResult> Resubmit(long id, CancellationToken ct)
+    {
+        var mobile = GetVerifiedMobile();
+        if (mobile is null)
+            return RedirectToAction(nameof(Start));
+
+        var details = await _applicationService.GetPublicApplicationDetailsAsync(id, mobile, ct);
+        if (details is null || !details.CanResubmit)
+            return NotFound();
+
+        var model = await _applicationService.GetPublicResubmitFormAsync(id, mobile, ct);
+        if (model is null) return NotFound();
+
+        model.MobileNumber = mobile;
+        ViewData["Title"] = "Correct & Resubmit Application";
+        ViewData["FormAction"] = nameof(Resubmit);
+        ViewData["FormRouteId"] = id;
+        ViewData["SentBackRemarks"] = details.SentBackRemarks;
+        ViewData["SentBackAt"] = details.SentBackAt;
+        ViewData["ApplicationNo"] = details.ApplicationNo;
+        ViewData["IsResubmit"] = true;
+        ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
+        await LoadLookupDataAsync(ct);
+        return View("~/Views/NewConnection/Resubmit.cshtml", model);
+    }
+
+    [HttpPost("/NewConnection/Resubmit/{id:long}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Resubmit(long id, NewConnectionApplicationFormDto model, string? applicantRemarks, CancellationToken ct)
+    {
+        var mobile = GetVerifiedMobile();
+        if (mobile is null)
+            return RedirectToAction(nameof(Start));
+
+        var details = await _applicationService.GetPublicApplicationDetailsAsync(id, mobile, ct);
+        if (details is null || !details.CanResubmit)
+            return NotFound();
+
+        model.MobileNumber = mobile;
+        ViewData["Title"] = "Correct & Resubmit Application";
+        ViewData["FormAction"] = nameof(Resubmit);
+        ViewData["FormRouteId"] = id;
+        ViewData["SentBackRemarks"] = details.SentBackRemarks;
+        ViewData["SentBackAt"] = details.SentBackAt;
+        ViewData["ApplicationNo"] = details.ApplicationNo;
+        ViewData["IsResubmit"] = true;
+        ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
+        await LoadLookupDataAsync(ct);
+
+        NormalizeDeclarationFromRequest(model);
+        ValidateDeclaration(model);
+        if (!ModelState.IsValid)
+            return View("~/Views/NewConnection/Resubmit.cshtml", model);
+
+        var newDocuments = await SaveDocumentsAsync(Request.Form.Files, details.ApplicationNo, ct);
+
+        try
+        {
+            var result = await _applicationService.ResubmitPublicApplicationAsync(
+                id, mobile, applicantRemarks, newDocuments, ct);
+
+            TempData["SuccessMessage"] = $"Application {result.ApplicationNo} resubmitted successfully. It has been returned to the authority for review.";
+            return RedirectToAction(nameof(Details), new { id = result.Id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View("~/Views/NewConnection/Resubmit.cshtml", model);
+        }
+    }
+
     [HttpGet("/NewConnection/FeePreview")]
     public async Task<IActionResult> FeePreview([FromQuery] NewConnectionFeeRequestDto request, CancellationToken ct)
     {

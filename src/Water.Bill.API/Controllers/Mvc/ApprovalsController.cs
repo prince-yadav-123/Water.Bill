@@ -2,9 +2,11 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.API.Models;
 using Water.Bill.API.Models.Approvals;
 using Water.Bill.Application.DTOs.Workflow;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -27,7 +29,7 @@ public class ApprovalsController : Controller
     public IActionResult Index() => RedirectToAction(nameof(Pending));
 
     public async Task<IActionResult> Pending(
-        string tab = "Pending",
+        string? tab = null,
         string? search = null,
         string? status = null,
         DateTime? fromDate = null,
@@ -35,11 +37,15 @@ public class ApprovalsController : Controller
         int? departmentId = null,
         int? stageId = null,
         string? applicationType = null,
+        int page = 1,
+        int pageSize = 0,
         CancellationToken ct = default)
     {
         ViewData["Title"] = "Approval Applications";
         ViewData["ActiveMenu"] = "My Pending Applications";
         await _workflowService.RepairSequentialWorkflowTasksAsync(ct);
+
+        var isAdmin = IsAdminUser();
         var roleId = int.TryParse(User.FindFirstValue("RoleId"), out var parsedRoleId) ? parsedRoleId : 0;
         var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId) ? parsedUserId : 0;
         var departmentIds = await _db.AuthorityUserDepartments
@@ -48,7 +54,14 @@ public class ApprovalsController : Controller
             .Select(x => x.DepartmentId)
             .ToListAsync(ct);
 
-        var normalizedTab = NormalizeTab(tab);
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
+
+        // Admin defaults to "All" tab so they see everything; others default to "Pending"
+        var defaultTab = isAdmin ? "All" : "Pending";
+        var normalizedTab = NormalizeTab(tab ?? defaultTab);
+        ViewData["IsAdmin"] = isAdmin;
+
         var query = _db.ApplicationWorkflowTasks
             .Include(x => x.Stage)
                 .ThenInclude(x => x.Department)
@@ -67,10 +80,19 @@ public class ApprovalsController : Controller
                 && x.WorkflowInstance.IsActive)
         };
 
-        query = ApplyWorkflowAssignmentFilter(query, userId, roleId, departmentIds);
+        // Admin sees ALL applications — no assignment filter
+        // Non-admin sees only applications assigned to their user/role/department
+        if (!isAdmin)
+        {
+            query = ApplyWorkflowAssignmentFilter(query, userId, roleId, departmentIds);
+        }
 
         if (!string.IsNullOrWhiteSpace(status))
-            query = query.Where(x => x.Status == status || x.WorkflowInstance.CurrentStatus == status);
+            query = query.Where(x => x.Status == status
+                || x.WorkflowInstance.CurrentStatus == status
+                || (status == "SentBackToApplicant" && x.WorkflowInstance.CurrentStatus == "SentBackToApplicant")
+                || (status == "Forwarded" && x.Status == "Forwarded")
+                || (status == "SentBackToPrevious" && x.Status == "SentBackToPrevious"));
         if (fromDate.HasValue)
             query = query.Where(x => x.AssignedOn.Date >= fromDate.Value.Date);
         if (toDate.HasValue)
@@ -134,12 +156,21 @@ public class ApprovalsController : Controller
             }).ToList();
         }
 
-        var userIds = rows.Where(x => x.AssignedUserId.HasValue).Select(x => x.AssignedUserId!.Value).Distinct().ToList();
-        var roleIds = rows.Where(x => x.AssignedRoleId.HasValue).Select(x => x.AssignedRoleId!.Value).Distinct().ToList();
+        // Total count is after in-memory search (rows already filtered above)
+        var totalCount = rows.Count;
+
+        // Page the filtered rows, then build dictionaries only for the paged subset
+        var pagedRows = rows
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        var userIds = pagedRows.Where(x => x.AssignedUserId.HasValue).Select(x => x.AssignedUserId!.Value).Distinct().ToList();
+        var roleIds = pagedRows.Where(x => x.AssignedRoleId.HasValue).Select(x => x.AssignedRoleId!.Value).Distinct().ToList();
         var users = await _db.Appusers.AsNoTracking().Where(x => userIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x.FullName, ct);
         var roles = await _db.Approles.AsNoTracking().Where(x => roleIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x.Name, ct);
 
-        var items = rows.Select(x =>
+        var items = pagedRows.Select(x =>
         {
             applications.TryGetValue(x.ApplicationId, out var app);
             ndcApplications.TryGetValue((int)x.ApplicationId, out var ndc);
@@ -171,6 +202,11 @@ public class ApprovalsController : Controller
                 CanReject = x.Stage.CanReject
             };
         }).ToList();
+
+        ViewBag.Pagination = PaginationViewModel.Create(new PagedResult<ApprovalListItemViewModel>
+        {
+            Items = items, TotalCount = totalCount, Page = page, PageSize = pageSize
+        });
 
         return View(new ApprovalListViewModel
         {
@@ -294,9 +330,12 @@ public class ApprovalsController : Controller
             };
         }).ToList();
         var canMoveToNextStage = stages.Any(x => x.StageOrder > task.Stage.StageOrder);
+        var isFirstStage = !stages.Any(x => x.StageOrder < task.Stage.StageOrder);
+        // InternalUsers not loaded — Forward to Specific User is disabled for current phase
 
         ViewData["Title"] = "Approval Details";
         ViewData["ActiveMenu"] = "My Pending Applications";
+        ViewData["IsAdmin"] = IsAdminUser();
         return View(new ApprovalDetailsViewModel
         {
             Task = task,
@@ -308,22 +347,16 @@ public class ApprovalsController : Controller
             Fee = fee,
             WorkflowTimeline = timeline,
             StageProgress = stageProgress,
-            CanMoveToNextStage = canMoveToNextStage
+            CanMoveToNextStage = canMoveToNextStage,
+            IsFirstStage = isFirstStage,
+            InternalUsers = []   // Forward to Specific User disabled for current phase
         });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Action(long taskId, string actionType, string? remarks, CancellationToken ct)
+    public async Task<IActionResult> Action(long taskId, string actionType, string? remarks, int? forwardToUserId, CancellationToken ct)
     {
-        if (string.Equals(actionType, "Correction", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(actionType, "SendCorrection", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(actionType, "CorrectionRequired", StringComparison.OrdinalIgnoreCase))
-        {
-            TempData["ErrorMessage"] = "Send for correction is no longer available.";
-            return RedirectToAction(nameof(Details), new { id = taskId });
-        }
-
         var taskExists = await GetAllowedPendingTaskQuery().AnyAsync(x => x.Id == taskId, ct);
         if (!taskExists)
             return NotFound();
@@ -335,11 +368,13 @@ public class ApprovalsController : Controller
                 TaskId = taskId,
                 Action = actionType,
                 Remarks = remarks,
+                ForwardToUserId = forwardToUserId,
                 ActorUserId = ResolveUserId(),
                 ActorRoleId = ResolveRoleId(),
                 ActorName = User.FindFirstValue("FullName") ?? User.Identity?.Name,
                 ActorRole = ResolveRoleName(),
                 ActorDepartmentIds = await ResolveDepartmentIdsAsync(ct),
+                IsAdmin = IsAdminUser(),
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
                 UserAgent = Request.Headers.UserAgent.ToString()
             }, ct);
@@ -383,6 +418,9 @@ public class ApprovalsController : Controller
         query = query.Where(x => x.WorkflowInstance.ApplicationType != "NewConnection"
             || _db.NewConnectionApplications.Any(app => app.Id == x.ApplicationId && !app.IsDeleted));
 
+        // Admin can view any task; other roles limited to assigned tasks
+        if (IsAdminUser()) return query;
+
         var userId = ResolveUserId() ?? 0;
         var roleId = ResolveRoleId() ?? 0;
         var departmentIds = _db.AuthorityUserDepartments
@@ -421,6 +459,14 @@ public class ApprovalsController : Controller
             .Where(x => x.UserId == userId && x.IsActive && !x.IsDeleted)
             .Select(x => x.DepartmentId)
             .ToListAsync(ct);
+    }
+
+    private bool IsAdminUser()
+    {
+        var role = User.FindFirstValue(ClaimTypes.Role)
+                ?? User.FindFirstValue(AppConstants.Claims.RoleName)
+                ?? string.Empty;
+        return role.Contains("admin", StringComparison.OrdinalIgnoreCase);
     }
 
     private int? ResolveUserId()

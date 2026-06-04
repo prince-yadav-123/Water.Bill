@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Ndc;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 using Water.Bill.Infrastructure.Services;
@@ -32,13 +34,17 @@ public class NdcApplicationsController : Controller
         int? divisionType,
         DateTime? fromDate,
         DateTime? toDate,
-        CancellationToken ct)
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = "NDC Applications";
         ViewData["ActiveMenu"] = "NDC Applications";
 
         search = Normalize(search);
         status = Normalize(status);
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
         var userId = ResolveUserId() ?? 0;
         var roleId = ResolveRoleId() ?? 0;
@@ -93,11 +99,12 @@ public class NdcApplicationsController : Controller
         if (toDate.HasValue)
             query = query.Where(x => x.CreatedOn != null && x.CreatedOn.Value.Date <= toDate.Value.Date);
 
-        var rows = await query
+        var pagedNdc = await query
             .OrderByDescending(x => x.CreatedOn)
             .ThenByDescending(x => x.AutoId)
-            .Take(300)
-            .ToListAsync(ct);
+            .ToPagedResultAsync(page, pageSize, ct);
+        ViewBag.Pagination = PaginationViewModel.Create(pagedNdc);
+        var rows = pagedNdc.Items.ToList();
 
         return View(new NdcApplicationIndexViewModel
         {

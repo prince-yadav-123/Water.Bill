@@ -7,6 +7,26 @@ public sealed class NotificationRecipient
     public string? Mobile { get; set; }
     public string? UserType { get; set; }
     public long? UserId { get; set; }
+
+    public NotificationRecipient()
+    {
+    }
+
+    public NotificationRecipient(long userId, string? name, string? email)
+    {
+        UserId = userId;
+        Name = name;
+        Email = email;
+    }
+
+    public NotificationRecipient(long userId, string? name, string? email, string? mobile, string? userType)
+    {
+        UserId = userId;
+        Name = name;
+        Email = email;
+        Mobile = mobile;
+        UserType = userType;
+    }
 }
 
 public sealed class NotificationChannelOptions
@@ -63,4 +83,3 @@ public static class CommunicationPurposes
     public const string NdcSubmitted = "NdcSubmitted";
     public const string NdcApproved = "NdcApproved";
 }
-

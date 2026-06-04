@@ -1743,3 +1743,9 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Preview.cshtml
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\dotnet-tools.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\MyNotifications.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Profile\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_Pagination.cshtml

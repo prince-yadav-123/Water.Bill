@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Disconnections;
+using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -34,10 +36,14 @@ public class DisconnectionManagementController : Controller
         string? status,
         DateTime? fromDate,
         DateTime? toDate,
-        CancellationToken ct)
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = ModuleName;
         ViewData["ActiveMenu"] = ModuleName;
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
         var model = new DisconnectionManagementIndexViewModel
         {
@@ -56,7 +62,12 @@ public class DisconnectionManagementController : Controller
 
         model.HasConsumerSearch = HasAnySearch(model.ConsumerNo, model.ConsumerName, model.MobileNo, model.Sector, model.Block, model.PlotNo);
         model.Consumers = model.HasConsumerSearch ? await SearchConsumersAsync(model, ct) : [];
-        model.Cases = await SearchCasesAsync(model, ct);
+        var (cases, caseTotal) = await SearchCasesPagedAsync(model, page, pageSize, ct);
+        model.Cases = cases;
+        ViewBag.Pagination = PaginationViewModel.Create(new Application.Models.PagedResult<DisconnectionCaseRowViewModel>
+        {
+            Items = cases, TotalCount = caseTotal, Page = page, PageSize = pageSize
+        });
         return View(model);
     }
 
@@ -363,6 +374,42 @@ public class DisconnectionManagementController : Controller
             });
         }
         return rows;
+    }
+
+    private async Task<(IReadOnlyList<DisconnectionCaseRowViewModel> Items, int TotalCount)> SearchCasesPagedAsync(
+        DisconnectionManagementIndexViewModel model, int page, int pageSize, CancellationToken ct)
+    {
+        var q =
+            from row in _db.ConsumerDisconnectionCases.AsNoTracking()
+            join consumer in _db.ConsumerDetailsMasters.AsNoTracking() on row.ConsumerNo equals consumer.ConsNo into cj
+            from consumer in cj.DefaultIfEmpty()
+            where !row.IsDeleted
+            select new { row, consumer };
+        if (!string.IsNullOrWhiteSpace(model.Search)) q = q.Where(x => x.row.CaseNo.Contains(model.Search) || x.row.ConsumerNo.Contains(model.Search) || (x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.Search)));
+        if (!string.IsNullOrWhiteSpace(model.ConsumerNo)) q = q.Where(x => x.row.ConsumerNo.StartsWith(model.ConsumerNo));
+        if (!string.IsNullOrWhiteSpace(model.ConsumerName)) q = q.Where(x => x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.ConsumerName));
+        if (!string.IsNullOrWhiteSpace(model.MobileNo)) q = q.Where(x => x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.MobileNo));
+        if (!string.IsNullOrWhiteSpace(model.Sector)) q = q.Where(x => x.consumer != null && x.consumer.Sector != null && x.consumer.Sector.StartsWith(model.Sector));
+        if (!string.IsNullOrWhiteSpace(model.Block)) q = q.Where(x => x.consumer != null && x.consumer.BlkNo != null && x.consumer.BlkNo.StartsWith(model.Block));
+        if (!string.IsNullOrWhiteSpace(model.PlotNo)) q = q.Where(x => x.consumer != null && x.consumer.FlatNo != null && x.consumer.FlatNo.StartsWith(model.PlotNo));
+        if (!string.IsNullOrWhiteSpace(model.Status)) q = q.Where(x => x.row.Status == model.Status);
+        if (model.FromDate.HasValue) q = q.Where(x => x.row.NoticeDate >= model.FromDate.Value.Date);
+        if (model.ToDate.HasValue) q = q.Where(x => x.row.NoticeDate < model.ToDate.Value.Date.AddDays(1));
+
+        var orderedQ = q.OrderByDescending(x => x.row.NoticeDate).ThenByDescending(x => x.row.Id);
+        var totalCount = await orderedQ.CountAsync(ct);
+        var items = await orderedQ.Skip((page - 1) * pageSize).Take(pageSize)
+            .Select(x => new DisconnectionCaseRowViewModel
+            {
+                Id = x.row.Id, CaseNo = x.row.CaseNo, ConsumerNo = x.row.ConsumerNo,
+                ConsumerName = x.consumer != null ? x.consumer.ConsNm1 : null,
+                MobileNo = x.consumer != null ? x.consumer.MobNo : null,
+                PropertyNo = x.consumer != null ? x.consumer.Sector + "/" + x.consumer.BlkNo + "-" + x.consumer.FlatNo : null,
+                Reason = x.row.Reason, Status = x.row.Status, NoticeDate = x.row.NoticeDate, DueDate = x.row.DueDate,
+                OutstandingAmount = x.row.OutstandingAmount, DisconnectionFee = x.row.DisconnectionFee, ReconnectionFee = x.row.ReconnectionFee
+            })
+            .ToListAsync(ct);
+        return (items, totalCount);
     }
 
     private async Task<IReadOnlyList<DisconnectionCaseRowViewModel>> SearchCasesAsync(DisconnectionManagementIndexViewModel model, CancellationToken ct)

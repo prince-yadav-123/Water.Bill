@@ -235,6 +235,79 @@ public class NewConnectionController : Controller
         }
     }
 
+    [HttpGet("/Consumer/NewConnection/Resubmit/{id:long}")]
+    public async Task<IActionResult> Resubmit(long id, CancellationToken ct)
+    {
+        var consumerNo = ResolveConsumerNo();
+        var consumerUserId = ResolveConsumerUserId();
+
+        var details = await _service.GetConsumerApplicationDetailsAsync(id, consumerNo, consumerUserId, ct);
+        if (details is null || !details.CanResubmit)
+            return NotFound();
+
+        var model = await _service.GetConsumerResubmitFormAsync(id, consumerNo, consumerUserId, ct);
+        if (model is null) return NotFound();
+
+        ViewData["Title"] = "Correct & Resubmit Application";
+        ViewData["ActiveMenu"] = "My Applications";
+        ViewData["FormAction"] = nameof(Resubmit);
+        ViewData["FormRouteId"] = id;
+        ViewData["SentBackRemarks"] = details.SentBackRemarks;
+        ViewData["SentBackAt"] = details.SentBackAt;
+        ViewData["ApplicationNo"] = details.ApplicationNo;
+        ViewData["IsResubmit"] = true;
+        ViewData["LockMobileNumber"] = true;
+        ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
+        await LoadLookupDataAsync(ct);
+        return View("Resubmit", model);
+    }
+
+    [HttpPost("/Consumer/NewConnection/Resubmit/{id:long}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Resubmit(long id, NewConnectionApplicationFormDto model, string? applicantRemarks, CancellationToken ct)
+    {
+        var consumerNo = ResolveConsumerNo();
+        var consumerUserId = ResolveConsumerUserId();
+
+        var details = await _service.GetConsumerApplicationDetailsAsync(id, consumerNo, consumerUserId, ct);
+        if (details is null || !details.CanResubmit)
+            return NotFound();
+
+        ViewData["Title"] = "Correct & Resubmit Application";
+        ViewData["ActiveMenu"] = "My Applications";
+        ViewData["FormAction"] = nameof(Resubmit);
+        ViewData["FormRouteId"] = id;
+        ViewData["SentBackRemarks"] = details.SentBackRemarks;
+        ViewData["SentBackAt"] = details.SentBackAt;
+        ViewData["ApplicationNo"] = details.ApplicationNo;
+        ViewData["IsResubmit"] = true;
+        ViewData["LockMobileNumber"] = true;
+        ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
+        await LoadLookupDataAsync(ct);
+
+        NormalizeDeclarationFromRequest(model);
+        ValidateDeclaration(model);
+        if (!ModelState.IsValid)
+            return View("Resubmit", model);
+
+        // Documents: existing are kept; new uploads supplement/replace
+        var newDocuments = await SaveDocumentsAsync(Request.Form.Files, details.ApplicationNo, ct);
+
+        try
+        {
+            var result = await _service.ResubmitApplicationAsync(
+                id, consumerNo, consumerUserId, applicantRemarks, newDocuments, ct);
+
+            TempData["SuccessMessage"] = $"Application {result.ApplicationNo} resubmitted successfully. It has been returned to the authority for review.";
+            return RedirectToAction(nameof(Details), new { id = result.Id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View("Resubmit", model);
+        }
+    }
+
     private string ResolveConsumerNo()
         => (User.FindFirstValue("ConsumerNo") ?? string.Empty).Trim().ToUpperInvariant();
 

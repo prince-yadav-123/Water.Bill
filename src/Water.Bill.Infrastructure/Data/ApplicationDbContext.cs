@@ -247,6 +247,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<NoDueAmountMst> NoDueAmountMsts { get; set; }
 
     public virtual DbSet<NotificationLog> NotificationLogs { get; set; }
+    public virtual DbSet<NotificationMaster> NotificationMasters { get; set; }
+    public virtual DbSet<NotificationTarget> NotificationTargets { get; set; }
 
     public virtual DbSet<NoticeTemplate> NoticeTemplates { get; set; }
 

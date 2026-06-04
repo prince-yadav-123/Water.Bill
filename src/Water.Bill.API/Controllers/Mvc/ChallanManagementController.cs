@@ -7,7 +7,9 @@ using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Challans;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -38,10 +40,14 @@ public class ChallanManagementController : Controller
         string? status,
         DateTime? fromDate,
         DateTime? toDate,
-        CancellationToken ct)
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = "Challan Management";
         ViewData["ActiveMenu"] = "Challan Management";
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
         var model = new ChallanManagementIndexViewModel
         {
@@ -57,7 +63,15 @@ public class ChallanManagementController : Controller
             ToDate = toDate
         };
 
-        model.Challans = await SearchChallansAsync(model, ct);
+        var (challans, totalCount) = await SearchChallansPagedAsync(model, page, pageSize, ct);
+        model.Challans = challans;
+        ViewBag.Pagination = PaginationViewModel.Create(new Application.Models.PagedResult<ChallanListRowViewModel>
+        {
+            Items = challans,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        });
 
         return View(model);
     }
@@ -548,6 +562,108 @@ public class ChallanManagementController : Controller
         PlotNo = model.PlotNo
     };
 
+    private async Task<(IReadOnlyList<ChallanListRowViewModel> Items, int TotalCount)> SearchChallansPagedAsync(
+        ChallanManagementIndexViewModel model, int page, int pageSize, CancellationToken ct)
+    {
+        var baseQ =
+            from challan in _db.Challans.AsNoTracking()
+            join consumer in _db.ConsumerDetailsMasters.AsNoTracking() on challan.ConsNo equals consumer.ConsNo into cj
+            from consumer in cj.DefaultIfEmpty()
+            where challan.Status != null
+            select new { challan, consumer };
+
+        if (!string.IsNullOrWhiteSpace(model.Search))
+            baseQ = baseQ.Where(x => (x.challan.RecpNo != null && x.challan.RecpNo.Contains(model.Search)) || (x.challan.ConsNo != null && x.challan.ConsNo.Contains(model.Search)) || (x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.Search)) || (x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.Search)));
+        if (!string.IsNullOrWhiteSpace(model.ConsumerNo)) baseQ = baseQ.Where(x => x.challan.ConsNo != null && x.challan.ConsNo.StartsWith(model.ConsumerNo));
+        if (!string.IsNullOrWhiteSpace(model.ConsumerName)) baseQ = baseQ.Where(x => x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.ConsumerName));
+        if (!string.IsNullOrWhiteSpace(model.MobileNo)) baseQ = baseQ.Where(x => x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.MobileNo));
+        if (!string.IsNullOrWhiteSpace(model.Sector)) baseQ = baseQ.Where(x => x.challan.Sec != null && x.challan.Sec.StartsWith(model.Sector));
+        if (!string.IsNullOrWhiteSpace(model.Block)) baseQ = baseQ.Where(x => x.challan.Blk != null && x.challan.Blk.StartsWith(model.Block));
+        if (!string.IsNullOrWhiteSpace(model.PlotNo)) baseQ = baseQ.Where(x => x.challan.FlatNo != null && x.challan.FlatNo.StartsWith(model.PlotNo));
+        if (model.FromDate.HasValue) baseQ = baseQ.Where(x => x.challan.EntryDate >= model.FromDate.Value.Date);
+        if (model.ToDate.HasValue) baseQ = baseQ.Where(x => x.challan.EntryDate < model.ToDate.Value.Date.AddDays(1));
+
+        var orderedQ = baseQ.OrderByDescending(x => x.challan.EntryDate).ThenByDescending(x => x.challan.Id);
+        var totalCount = await orderedQ.CountAsync(ct);
+        var entities = await orderedQ.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+
+        var rows = entities.Select(x => new ChallanListRowViewModel
+        {
+            Id = x.challan.Id, ChallanNo = x.challan.RecpNo ?? x.challan.ReceiptId,
+            ConsumerNo = x.challan.ConsNo, ConsumerName = x.consumer?.ConsNm1, MobileNo = x.consumer?.MobNo,
+            PropertyNo = x.challan.Sec + "/" + x.challan.Blk + "-" + x.challan.FlatNo,
+            Purpose = x.challan.RevBilFr, Amount = ResolvePayableAmount(x.challan),
+            Status = ResolveStatus(x.challan), GeneratedOn = x.challan.EntryDate
+        }).ToList();
+
+        IReadOnlyList<ChallanListRowViewModel> result = string.IsNullOrWhiteSpace(model.Status)
+            ? rows : rows.Where(x => x.Status.Equals(model.Status, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        return (result, totalCount);
+    }
+
+    private IQueryable<dynamic> BuildChallanQuery(ChallanManagementIndexViewModel model)
+    {
+        var query =
+            from challan in _db.Challans.AsNoTracking()
+            join consumer in _db.ConsumerDetailsMasters.AsNoTracking() on challan.ConsNo equals consumer.ConsNo into consumerJoin
+            from consumer in consumerJoin.DefaultIfEmpty()
+            where challan.Status != null
+            select new { challan, consumer };
+
+        if (!string.IsNullOrWhiteSpace(model.Search))
+        {
+            query = query.Where(x =>
+                (x.challan.RecpNo != null && x.challan.RecpNo.Contains(model.Search)) ||
+                (x.challan.ReceiptId != null && x.challan.ReceiptId.Contains(model.Search)) ||
+                (x.challan.ConsNo != null && x.challan.ConsNo.Contains(model.Search)) ||
+                (x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.Search)) ||
+                (x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.Search)));
+        }
+        if (!string.IsNullOrWhiteSpace(model.ConsumerNo))
+            query = query.Where(x => x.challan.ConsNo != null && x.challan.ConsNo.StartsWith(model.ConsumerNo));
+        if (!string.IsNullOrWhiteSpace(model.ConsumerName))
+            query = query.Where(x => x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.ConsumerName));
+        if (!string.IsNullOrWhiteSpace(model.MobileNo))
+            query = query.Where(x => x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.MobileNo));
+        if (!string.IsNullOrWhiteSpace(model.Sector))
+            query = query.Where(x => x.challan.Sec != null && x.challan.Sec.StartsWith(model.Sector));
+        if (!string.IsNullOrWhiteSpace(model.Block))
+            query = query.Where(x => x.challan.Blk != null && x.challan.Blk.StartsWith(model.Block));
+        if (!string.IsNullOrWhiteSpace(model.PlotNo))
+            query = query.Where(x => x.challan.FlatNo != null && x.challan.FlatNo.StartsWith(model.PlotNo));
+        if (model.FromDate.HasValue)
+            query = query.Where(x => x.challan.EntryDate >= model.FromDate.Value.Date);
+        if (model.ToDate.HasValue)
+            query = query.Where(x => x.challan.EntryDate < model.ToDate.Value.Date.AddDays(1));
+
+        return (IQueryable<dynamic>)query;
+    }
+
+    private IReadOnlyList<ChallanListRowViewModel> MapChallanRows(IEnumerable<dynamic> entities, string? statusFilter = null)
+    {
+        var rows = entities
+            .Select(x => new ChallanListRowViewModel
+            {
+                Id = x.challan.Id,
+                ChallanNo = x.challan.RecpNo ?? x.challan.ReceiptId,
+                ConsumerNo = x.challan.ConsNo,
+                ConsumerName = x.consumer != null ? x.consumer.ConsNm1 : null,
+                MobileNo = x.consumer != null ? x.consumer.MobNo : null,
+                PropertyNo = x.challan.Sec + "/" + x.challan.Blk + "-" + x.challan.FlatNo,
+                Purpose = x.challan.RevBilFr,
+                Amount = ResolvePayableAmount(x.challan),
+                Status = ResolveStatus(x.challan),
+                GeneratedOn = x.challan.EntryDate,
+                DevType = null
+            })
+            .ToList();
+
+        if (string.IsNullOrWhiteSpace(statusFilter))
+            return rows;
+        return rows.Where(x => x.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
     private async Task<IReadOnlyList<ChallanListRowViewModel>> SearchChallansAsync(ChallanManagementIndexViewModel model, CancellationToken ct)
     {
         var query =
@@ -566,7 +682,6 @@ public class ChallanManagementController : Controller
                 (x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.Search)) ||
                 (x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.Search)));
         }
-
         if (!string.IsNullOrWhiteSpace(model.ConsumerNo))
             query = query.Where(x => x.challan.ConsNo != null && x.challan.ConsNo.StartsWith(model.ConsumerNo));
         if (!string.IsNullOrWhiteSpace(model.ConsumerName))
@@ -590,29 +705,7 @@ public class ChallanManagementController : Controller
             .Take(100)
             .ToListAsync(ct);
 
-        var rows = entities
-            .Select(x => new ChallanListRowViewModel
-            {
-                Id = x.challan.Id,
-                ChallanNo = x.challan.RecpNo ?? x.challan.ReceiptId,
-                ConsumerNo = x.challan.ConsNo,
-                ConsumerName = x.consumer != null ? x.consumer.ConsNm1 : null,
-                MobileNo = x.consumer != null ? x.consumer.MobNo : null,
-                PropertyNo = x.challan.Sec + "/" + x.challan.Blk + "-" + x.challan.FlatNo,
-                Purpose = x.challan.RevBilFr,
-                Amount = ResolvePayableAmount(x.challan),
-                Status = ResolveStatus(x.challan),
-                GeneratedOn = x.challan.EntryDate,
-                DevType = null
-            })
-            .ToList();
-
-        if (string.IsNullOrWhiteSpace(model.Status))
-            return rows;
-
-        return rows
-            .Where(x => x.Status.Equals(model.Status, StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        return MapChallanRows(entities, model.Status);
     }
 
     private async Task PrepareCreateModelAsync(ChallanCreateViewModel model, ConsumerDetailsMaster? consumer, CancellationToken ct)

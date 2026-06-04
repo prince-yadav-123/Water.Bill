@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Audit;
+using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 
 namespace Water.Bill.API.Controllers.Mvc;
@@ -38,7 +40,10 @@ public class OperatorAuditController : Controller
             query = query.Where(x => x.Timestamp >= model.FromDate.Value.Date);
         if (model.ToDate.HasValue)
             query = query.Where(x => x.Timestamp < model.ToDate.Value.Date.AddDays(1));
-        model.Rows = await query.OrderByDescending(x => x.Timestamp).Take(500).Select(x => new OperatorAuditRowViewModel
+        var page = PagingConstants.ValidatePage(model.Page);
+        var pageSize = PagingConstants.Validate(model.PageSize == 0 ? PagingConstants.DefaultPageSize : model.PageSize);
+
+        var rowQuery = query.OrderByDescending(x => x.Timestamp).Select(x => new OperatorAuditRowViewModel
         {
             Timestamp = x.Timestamp,
             UserId = x.UserId,
@@ -49,7 +54,12 @@ public class OperatorAuditController : Controller
             IpAddress = x.IpAddress,
             Details = x.Details,
             Success = x.Success ?? true
-        }).ToListAsync(ct);
+        });
+        var paged = await rowQuery.ToPagedResultAsync(page, pageSize, ct);
+        model.Rows = paged.Items.ToList();
+        model.Page = page;
+        model.PageSize = pageSize;
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
         return View(model);
     }
 }

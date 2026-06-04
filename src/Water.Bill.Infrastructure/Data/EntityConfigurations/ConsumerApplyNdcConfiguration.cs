@@ -83,7 +83,7 @@ public class ConsumerApplyNdcConfiguration : IEntityTypeConfiguration<ConsumerAp
             .HasColumnType("datetime")
             .HasColumnName("CREATED_ON");
         entity.Property(e => e.CurrentStatus)
-            .HasMaxLength(10)
+            .HasMaxLength(50)
             .HasColumnName("CURRENT_STATUS");
         entity.Property(e => e.DivisionType).HasColumnName("DIVISION_TYPE");
         entity.Property(e => e.DivisionTypeName)
@@ -93,7 +93,7 @@ public class ConsumerApplyNdcConfiguration : IEntityTypeConfiguration<ConsumerAp
             .HasColumnType("text")
             .HasColumnName("EMAIL");
         entity.Property(e => e.FinalStatus)
-            .HasMaxLength(10)
+            .HasMaxLength(50)
             .HasColumnName("FINAL_STATUS");
         entity.Property(e => e.LastUpdatedBy).HasColumnName("LAST_UPDATED_BY");
         entity.Property(e => e.LastUpdatedOn)

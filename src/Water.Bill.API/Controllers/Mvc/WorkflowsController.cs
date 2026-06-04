@@ -165,11 +165,15 @@ public class WorkflowsController : Controller
         entity.CanSendCorrection = false;
         entity.CanForward = model.CanForward;
         entity.IsFinalStage = model.IsFinalStage;
+        entity.CanForwardToUser = model.CanForwardToUser;
+        entity.CanSendBackToApplicant = model.CanSendBackToApplicant;
+        entity.CanSendBackToPrevious = model.CanSendBackToPrevious;
         entity.SlaDays = model.SlaDays;
-        entity.IsActive = model.IsActive;
+        entity.IsActive = true;   // Active is managed internally — always keep stages active
         entity.UpdatedOn = DateTime.Now;
         await _db.SaveChangesAsync(ct);
         await SaveStageNotificationAsync(entity.Id, ct);
+        TempData["SuccessMessage"] = $"Stage '{entity.StageName}' updated successfully.";
         return RedirectToAction(nameof(Stages), new { workflowId = entity.WorkflowId });
     }
 

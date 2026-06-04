@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.API.Models.SupportQueries;
+using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -49,10 +51,14 @@ public class ConsumerQueryManagementController : Controller
         string? priority,
         DateTime? fromDate,
         DateTime? toDate,
-        CancellationToken ct)
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = "Consumer Query Management";
         ViewData["ActiveMenu"] = "Consumer Query Management";
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
         var query = _db.ConsumerSupportQueries
             .Include(x => x.Category)
@@ -79,6 +85,9 @@ public class ConsumerQueryManagementController : Controller
         if (toDate.HasValue)
             query = query.Where(x => x.CreatedAt.Date <= toDate.Value.Date);
 
+        var paged = await query.OrderByDescending(x => x.CreatedAt).ToPagedResultAsync(page, pageSize, ct);
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
+
         return View(new ConsumerQueryManagementListViewModel
         {
             Search = search,
@@ -88,7 +97,7 @@ public class ConsumerQueryManagementController : Controller
             FromDate = fromDate,
             ToDate = toDate,
             Categories = await BuildCategoriesAsync(ct),
-            Queries = await query.OrderByDescending(x => x.CreatedAt).ToListAsync(ct)
+            Queries = paged.Items.ToList()
         });
     }
 

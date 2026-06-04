@@ -18,6 +18,10 @@ public class WorkflowStageConfiguration : IEntityTypeConfiguration<WorkflowStage
         entity.Property(e => e.CreatedOn).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
         entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
 
+        entity.Property(e => e.CanForwardToUser).HasDefaultValue(false);
+        entity.Property(e => e.CanSendBackToApplicant).HasDefaultValue(false);
+        entity.Property(e => e.CanSendBackToPrevious).HasDefaultValue(false);
+
         entity.HasOne(e => e.Workflow).WithMany(e => e.Stages).HasForeignKey(e => e.WorkflowId).OnDelete(DeleteBehavior.Cascade);
         entity.HasOne(e => e.Department).WithMany().HasForeignKey(e => e.DepartmentId).OnDelete(DeleteBehavior.SetNull);
     }

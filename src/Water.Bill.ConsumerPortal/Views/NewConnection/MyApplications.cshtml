@@ -2,7 +2,35 @@
 @{
     ViewData["Title"] = "My Applications";
     var isPublic = ViewData["IsPublicNewConnection"] as bool? == true;
-    bool NeedsPayment(string status) => status is "PendingPayment" or "FeePending" or "PaymentFailed";
+
+    bool NeedsPayment(string s) => s is "PendingPayment" or "FeePending" or "PaymentFailed";
+
+    string StatusBadgeClass(string s) => s switch
+    {
+        "Draft"                 => "text-bg-secondary",
+        "PendingPayment"
+        or "FeePending"         => "text-bg-warning text-dark",
+        "PaymentFailed"         => "text-bg-danger",
+        "Submitted"
+        or "UnderReview"        => "text-bg-primary",
+        "Approved"              => "text-bg-success",
+        "FinalConsumerCreated"  => "text-bg-success",
+        "Rejected"              => "text-bg-danger",
+        "SentBackToApplicant"
+        or "CorrectionRequired" => "text-bg-warning text-dark",
+        _                       => "text-bg-secondary"
+    };
+
+    string FriendlyStatus(string s) => s switch
+    {
+        "PendingPayment"        => "Pending Payment",
+        "PaymentFailed"         => "Payment Failed",
+        "UnderReview"           => "Under Review",
+        "FinalConsumerCreated"  => "Final Consumer Created",
+        "SentBackToApplicant"   => "Action Required",
+        "CorrectionRequired"    => "Correction Required",
+        _ => s
+    };
 }
 
 <div class="wb-newconn-page-shell">
@@ -12,8 +40,42 @@
             <h1>My Applications</h1>
             <p>Track the new connection requests submitted @(isPublic ? "with your verified mobile number" : "from your consumer account").</p>
         </div>
-        <a class="btn btn-primary" asp-action="Apply">@(isPublic ? "Apply for Another New Connection" : "Apply for New Connection")</a>
+        <a class="btn btn-primary" asp-action="Apply">
+            @(isPublic ? "Apply for Another New Connection" : "Apply for New Connection")
+        </a>
     </div>
+
+    @* ── Action Required banners ── *@
+    @foreach (var sentBack in Model.Where(x => x.CanResubmit))
+    {
+        <section class="wb-page-card mb-3" style="border-left:4px solid #d97706;background:#fffbeb">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-start">
+                <div>
+                    <div class="fw-bold mb-1" style="color:#92400e;font-size:.95rem">
+                        ⚠ Action Required — @sentBack.ApplicationNo
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(sentBack.SentBackRemarks))
+                    {
+                        <p class="mb-1" style="color:#78350f;font-size:.9rem">
+                            <strong>Authority comments:</strong> @sentBack.SentBackRemarks
+                        </p>
+                    }
+                    @if (sentBack.SentBackAt.HasValue)
+                    {
+                        <small class="text-muted">Sent back on @sentBack.SentBackAt.Value.ToString("dd MMM yyyy, hh:mm tt")</small>
+                    }
+                </div>
+                <div class="d-flex gap-2 flex-shrink-0">
+                    <a class="btn btn-warning" asp-action="Resubmit" asp-route-id="@sentBack.Id">
+                        ↩ Update &amp; Resubmit
+                    </a>
+                    <a class="btn btn-outline-secondary btn-sm" asp-action="Details" asp-route-id="@sentBack.Id">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </section>
+    }
 
     <section class="wb-page-card">
         @if (Model.Count == 0)
@@ -35,42 +97,55 @@
                             <th>Status</th>
                             <th>Fee</th>
                             <th>Submitted</th>
-                            <th></th>
+                            <th class="text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr>
+                            <tr @(item.CanResubmit ? "style=\"background:#fffbeb\"" : "")>
                                 <td><strong>@item.ApplicationNo</strong></td>
                                 <td>@item.ApplicantName</td>
                                 <td>@item.Sector / @item.Block / @item.FlatNo</td>
-                                <td><span class="badge text-bg-primary">@item.ApplicationStatus</span></td>
+                                <td>
+                                    <span class="badge @StatusBadgeClass(item.ApplicationStatus)">
+                                        @FriendlyStatus(item.ApplicationStatus)
+                                    </span>
+                                    @if (!string.IsNullOrWhiteSpace(item.FinalConsumerNo))
+                                    {
+                                        <div><small class="text-success fw-semibold">@item.FinalConsumerNo</small></div>
+                                    }
+                                </td>
                                 <td>
                                     @if (item.TotalFee.HasValue)
                                     {
                                         <span>@item.TotalFee.Value.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-IN"))</span>
                                         <small class="d-block text-muted">@(!string.IsNullOrWhiteSpace(item.PaymentStatus) ? item.PaymentStatus : "Pending")</small>
                                     }
-                                    else
-                                    {
-                                        <span>-</span>
-                                    }
+                                    else { <span>-</span> }
                                 </td>
                                 <td>@(item.SubmittedOn?.ToString("dd MMM yyyy") ?? "-")</td>
                                 <td class="text-end">
-                                    @if (item.CanContinue)
-                                    {
-                                        if (NeedsPayment(item.ApplicationStatus) && item.TotalFee.HasValue)
+                                    <div class="d-flex gap-1 justify-content-end flex-wrap">
+                                        @if (item.CanResubmit)
                                         {
-                                            <a class="btn btn-sm btn-primary" asp-action="Payment" asp-route-id="@item.Id">Continue Payment</a>
+                                            <a class="btn btn-sm btn-warning" asp-action="Resubmit" asp-route-id="@item.Id">
+                                                ↩ Update &amp; Resubmit
+                                            </a>
                                         }
-                                        else
+                                        else if (item.CanContinue)
                                         {
-                                            <a class="btn btn-sm btn-primary" asp-action="Continue" asp-route-id="@item.Id">Complete Application</a>
+                                            if (NeedsPayment(item.ApplicationStatus) && item.TotalFee.HasValue)
+                                            {
+                                                <a class="btn btn-sm btn-primary" asp-action="Payment" asp-route-id="@item.Id">Continue Payment</a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-sm btn-primary" asp-action="Continue" asp-route-id="@item.Id">Complete Application</a>
+                                            }
                                         }
-                                    }
-                                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">View</a>
+                                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">View</a>
+                                    </div>
                                 </td>
                             </tr>
                         }

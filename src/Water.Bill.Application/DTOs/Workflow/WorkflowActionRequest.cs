@@ -23,4 +23,7 @@ public class WorkflowActionRequest
     public string? IpAddress { get; set; }
 
     public string? UserAgent { get; set; }
+
+    /// <summary>Required when Action = "ForwardToUser". Target internal user's Id.</summary>
+    public int? ForwardToUserId { get; set; }
 }

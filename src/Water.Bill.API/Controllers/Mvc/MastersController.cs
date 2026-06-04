@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Core.Common;
@@ -27,7 +28,7 @@ public class MastersController : Controller
     }
 
     [HttpGet("{key}")]
-    public async Task<IActionResult> Index(string key, CancellationToken ct)
+    public async Task<IActionResult> Index(string key, int page = 1, int pageSize = 0, CancellationToken ct = default)
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
@@ -35,6 +36,16 @@ public class MastersController : Controller
 
         ViewData["Title"] = definition.Title;
         ViewData["ActiveMenu"] = definition.Module;
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
+
+        var allRows = await GetRowsAsync(definition.Key, ct);
+        var totalCount = allRows.Count;
+        var pagedRows = allRows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        ViewBag.Pagination = PaginationViewModel.Create(new Application.Models.PagedResult<MasterRowViewModel>
+        {
+            Items = pagedRows, TotalCount = totalCount, Page = page, PageSize = pageSize
+        });
 
         return View("Index", new MasterListViewModel
         {
@@ -43,7 +54,7 @@ public class MastersController : Controller
             Module = definition.Module,
             Description = definition.Description,
             Columns = definition.Columns.Select(x => new MasterColumnViewModel { Key = x.Key, Label = x.Label }).ToList(),
-            Rows = await GetRowsAsync(definition.Key, ct)
+            Rows = pagedRows
         });
     }
 

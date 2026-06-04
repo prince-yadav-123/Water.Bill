@@ -282,7 +282,29 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                     .Where(f => f.ApplicationId == x.Id)
                     .Select(f => f.PaymentStatus)
                     .FirstOrDefault(),
-                CanContinue = ContinuableStatuses.Contains(x.ApplicationStatus)
+                CanContinue = ContinuableStatuses.Contains(x.ApplicationStatus),
+                CanResubmit = x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                           || x.ApplicationStatus == StatusCorrectionRequired,
+                SentBackRemarks = (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                               || x.ApplicationStatus == StatusCorrectionRequired)
+                    ? _db.NewConnectionApprovalHistories
+                        .Where(h => h.ApplicationId == x.Id
+                            && (h.Action == WorkflowService.ActionSendBackToApplicant
+                                || h.Action == WorkflowService.ActionCorrectionRequired))
+                        .OrderByDescending(h => h.ActionOn)
+                        .Select(h => h.Remarks)
+                        .FirstOrDefault()
+                    : null,
+                SentBackAt = (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                           || x.ApplicationStatus == StatusCorrectionRequired)
+                    ? _db.NewConnectionApprovalHistories
+                        .Where(h => h.ApplicationId == x.Id
+                            && (h.Action == WorkflowService.ActionSendBackToApplicant
+                                || h.Action == WorkflowService.ActionCorrectionRequired))
+                        .OrderByDescending(h => h.ActionOn)
+                        .Select(h => (DateTime?)h.ActionOn)
+                        .FirstOrDefault()
+                    : null
             })
             .ToListAsync(ct);
     }
@@ -315,7 +337,29 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                     .Where(f => f.ApplicationId == x.Id)
                     .Select(f => f.PaymentStatus)
                     .FirstOrDefault(),
-                CanContinue = ContinuableStatuses.Contains(x.ApplicationStatus)
+                CanContinue = ContinuableStatuses.Contains(x.ApplicationStatus),
+                CanResubmit = x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                           || x.ApplicationStatus == StatusCorrectionRequired,
+                SentBackRemarks = (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                               || x.ApplicationStatus == StatusCorrectionRequired)
+                    ? _db.NewConnectionApprovalHistories
+                        .Where(h => h.ApplicationId == x.Id
+                            && (h.Action == WorkflowService.ActionSendBackToApplicant
+                                || h.Action == WorkflowService.ActionCorrectionRequired))
+                        .OrderByDescending(h => h.ActionOn)
+                        .Select(h => h.Remarks)
+                        .FirstOrDefault()
+                    : null,
+                SentBackAt = (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                           || x.ApplicationStatus == StatusCorrectionRequired)
+                    ? _db.NewConnectionApprovalHistories
+                        .Where(h => h.ApplicationId == x.Id
+                            && (h.Action == WorkflowService.ActionSendBackToApplicant
+                                || h.Action == WorkflowService.ActionCorrectionRequired))
+                        .OrderByDescending(h => h.ActionOn)
+                        .Select(h => (DateTime?)h.ActionOn)
+                        .FirstOrDefault()
+                    : null
             })
             .ToListAsync(ct);
     }
@@ -362,6 +406,44 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                 && x.IsPublicApplication
                 && x.MobileNumber == mobile
                 && ContinuableStatuses.Contains(x.ApplicationStatus), ct);
+
+        return application is null ? null : MapToForm(application);
+    }
+
+    /// <summary>
+    /// Loads the application form data for resubmission (SentBackToApplicant status — public applicant).
+    /// Does NOT check ContinuableStatuses since resubmit has its own status requirement.
+    /// </summary>
+    public async Task<NewConnectionApplicationFormDto?> GetPublicResubmitFormAsync(long id, string mobileNumber, CancellationToken ct = default)
+    {
+        var mobile = NormalizeMobile(mobileNumber);
+        var application = await _db.NewConnectionApplications
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id
+                && !x.IsDeleted
+                && x.IsPublicApplication
+                && x.MobileNumber == mobile
+                && (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                    || x.ApplicationStatus == StatusCorrectionRequired), ct);
+
+        return application is null ? null : MapToForm(application);
+    }
+
+    /// <summary>
+    /// Loads the application form data for resubmission (SentBackToApplicant status — consumer portal).
+    /// Does NOT check ContinuableStatuses since resubmit has its own status requirement.
+    /// </summary>
+    public async Task<NewConnectionApplicationFormDto?> GetConsumerResubmitFormAsync(long id, string consumerNo, int? consumerUserId, CancellationToken ct = default)
+    {
+        var normalizedConsumerNo = NormalizeRequired(consumerNo).ToUpperInvariant();
+        var application = await _db.NewConnectionApplications
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id
+                && !x.IsDeleted
+                && (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                    || x.ApplicationStatus == StatusCorrectionRequired)
+                && (x.SubmittedByConsumerNo == normalizedConsumerNo
+                    || (consumerUserId.HasValue && x.SubmittedByConsumerUserId == consumerUserId)), ct);
 
         return application is null ? null : MapToForm(application);
     }
@@ -818,6 +900,28 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                     .Select(f => f.PaymentStatus)
                     .FirstOrDefault(),
                 CanContinue = ContinuableStatuses.Contains(x.ApplicationStatus),
+                CanResubmit = x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                           || x.ApplicationStatus == StatusCorrectionRequired,
+                SentBackRemarks = (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                               || x.ApplicationStatus == StatusCorrectionRequired)
+                    ? _db.NewConnectionApprovalHistories
+                        .Where(h => h.ApplicationId == x.Id
+                            && (h.Action == WorkflowService.ActionSendBackToApplicant
+                                || h.Action == WorkflowService.ActionCorrectionRequired))
+                        .OrderByDescending(h => h.ActionOn)
+                        .Select(h => h.Remarks)
+                        .FirstOrDefault()
+                    : null,
+                SentBackAt = (x.ApplicationStatus == WorkflowService.StatusSentBackToApplicant
+                           || x.ApplicationStatus == StatusCorrectionRequired)
+                    ? _db.NewConnectionApprovalHistories
+                        .Where(h => h.ApplicationId == x.Id
+                            && (h.Action == WorkflowService.ActionSendBackToApplicant
+                                || h.Action == WorkflowService.ActionCorrectionRequired))
+                        .OrderByDescending(h => h.ActionOn)
+                        .Select(h => (DateTime?)h.ActionOn)
+                        .FirstOrDefault()
+                    : null,
                 Documents = x.Documents
                     .Where(d => !d.IsDeleted)
                     .OrderBy(d => d.DocumentType)
@@ -875,6 +979,427 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
         };
 
     private static string GenerateApplicationNo(DateTime now) => $"NC{now:yyyyMMddHHmmssfff}{Random.Shared.Next(100, 999)}";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Resubmit (Send Back to Applicant correction flow)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public async Task<NewConnectionApplicationDetailsDto> ResubmitApplicationAsync(
+        long id,
+        string consumerNo,
+        int? consumerUserId,
+        string? applicantRemarks,
+        IReadOnlyList<NewConnectionDocumentInputDto> newDocuments,
+        CancellationToken ct = default)
+    {
+        var normalizedConsumerNo = NormalizeRequired(consumerNo).ToUpperInvariant();
+
+        var application = await _db.NewConnectionApplications
+            .Include(x => x.Documents.Where(d => !d.IsDeleted))
+            .FirstOrDefaultAsync(x => x.Id == id
+                && !x.IsDeleted
+                && (x.SubmittedByConsumerNo == normalizedConsumerNo
+                    || (consumerUserId.HasValue && x.SubmittedByConsumerUserId == consumerUserId)), ct)
+            ?? throw new InvalidOperationException("Application not found or access denied.");
+
+        // Security: only the original consumer can resubmit
+        if (application.SubmittedByConsumerNo != normalizedConsumerNo
+            && !(consumerUserId.HasValue && application.SubmittedByConsumerUserId == consumerUserId))
+            throw new InvalidOperationException("You do not have permission to resubmit this application.");
+
+        // Only SentBackToApplicant or CorrectionRequired can be resubmitted
+        if (application.ApplicationStatus != WorkflowService.StatusSentBackToApplicant
+            && application.ApplicationStatus != StatusCorrectionRequired)
+            throw new InvalidOperationException("This application cannot be resubmitted in its current status.");
+
+        var now = DateTime.Now;
+
+        // Find the workflow instance and the task that sent it back
+        var instance = await _db.ApplicationWorkflowInstances
+            .FirstOrDefaultAsync(x => x.ApplicationId == id
+                && x.ApplicationType == WorkflowService.ApplicationTypeNewConnection
+                && !x.IsDeleted, ct);
+
+        if (instance is null)
+            throw new InvalidOperationException("Workflow instance not found for this application.");
+
+        // Find the task that sent it back (so we know which stage to return to)
+        var sentBackTask = await _db.ApplicationWorkflowTasks
+            .Include(x => x.Stage)
+            .Where(x => x.WorkflowInstanceId == instance.Id
+                && !x.IsDeleted
+                && (x.Status == WorkflowService.TaskStatusSentBackToApplicant
+                    || x.Status == WorkflowService.TaskStatusCorrectionRequired))
+            .OrderByDescending(x => x.ActionOn)
+            .FirstOrDefaultAsync(ct);
+
+        // Save new/replacement documents
+        foreach (var doc in newDocuments)
+        {
+            var existing = application.Documents
+                .FirstOrDefault(d => string.Equals(d.DocumentType, doc.DocumentType, StringComparison.OrdinalIgnoreCase));
+            if (existing is not null)
+            {
+                existing.FileName = doc.FileName;
+                existing.FilePath = doc.FilePath;
+                existing.ContentType = doc.ContentType;
+                existing.FileSize = doc.FileSize;
+                existing.UploadedOn = now;
+            }
+            else
+            {
+                _db.NewConnectionApplicationDocuments.Add(new NewConnectionApplicationDocument
+                {
+                    ApplicationId = id,
+                    DocumentType = doc.DocumentType,
+                    FileName = doc.FileName,
+                    FilePath = doc.FilePath,
+                    ContentType = doc.ContentType,
+                    FileSize = doc.FileSize,
+                    UploadedOn = now,
+                    IsDeleted = false
+                });
+            }
+        }
+
+        // Update application status
+        var fromStatus = application.ApplicationStatus;
+        application.ApplicationStatus = StatusUnderReview;
+        application.UpdatedOn = now;
+        application.UpdatedBy = consumerUserId;
+        if (!string.IsNullOrWhiteSpace(applicantRemarks))
+            application.Remarks = applicantRemarks;
+
+        // Approval history entry
+        _db.NewConnectionApprovalHistories.Add(new NewConnectionApprovalHistory
+        {
+            ApplicationId = id,
+            ApplicationNo = application.ApplicationNo,
+            FromStatus = fromStatus,
+            ToStatus = StatusUnderReview,
+            Action = "ResubmittedByApplicant",
+            Remarks = string.IsNullOrWhiteSpace(applicantRemarks)
+                ? "Application resubmitted by applicant after correction."
+                : $"Resubmitted by applicant: {applicantRemarks.Trim()}",
+            ActionBy = consumerUserId,
+            ActionByName = normalizedConsumerNo,
+            ActionByRole = AppConstants.Roles.Consumer,
+            ActionOn = now,
+            IsActive = true,
+            IsDeleted = false
+        });
+
+        // Restore workflow — create a new pending task at the stage that sent it back
+        if (sentBackTask is not null)
+        {
+            instance.CurrentStageId = sentBackTask.StageId;
+            instance.CurrentStatus = StatusUnderReview;
+            instance.IsActive = true;
+            instance.CompletedOn = null;
+
+            _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
+            {
+                WorkflowInstanceId = instance.Id,
+                ApplicationId = id,
+                ApplicationNo = application.ApplicationNo,
+                StageId = sentBackTask.StageId,
+                AssignedDepartmentId = sentBackTask.AssignedDepartmentId,
+                AssignedRoleId = sentBackTask.AssignedRoleId,
+                AssignedUserId = sentBackTask.AssignedUserId,
+                Status = WorkflowService.TaskStatusPending,
+                AssignedOn = now,
+                IsActive = true,
+                IsDeleted = false
+            });
+
+            _db.ApplicationWorkflowHistories.Add(new ApplicationWorkflowHistory
+            {
+                WorkflowInstanceId = instance.Id,
+                ApplicationId = id,
+                ApplicationNo = application.ApplicationNo,
+                StageId = sentBackTask.StageId,
+                FromStatus = fromStatus,
+                ToStatus = StatusUnderReview,
+                Action = "ResubmittedByApplicant",
+                Remarks = string.IsNullOrWhiteSpace(applicantRemarks)
+                    ? "Applicant resubmitted after correction. Returned to review stage."
+                    : $"Applicant resubmitted: {applicantRemarks.Trim()}",
+                ActionBy = consumerUserId,
+                ActionByName = normalizedConsumerNo,
+                ActionByRole = AppConstants.Roles.Consumer,
+                ActionOn = now
+            });
+
+            // In-App notification to the authority stage user(s)
+            if (sentBackTask.Stage is not null)
+            {
+                var notifTitle = "Application Resubmitted";
+                var notifMsg = $"Application {application.ApplicationNo} has been corrected and resubmitted by the applicant. Please review.";
+
+                if (sentBackTask.AssignedUserId.HasValue)
+                {
+                    _db.InAppNotifications.Add(new InAppNotification
+                    {
+                        UserType = "Internal",
+                        UserId = sentBackTask.AssignedUserId.Value,
+                        Title = notifTitle,
+                        Message = notifMsg,
+                        PurposeKey = "WorkflowResubmitted",
+                        ReferenceType = "NewConnectionApplication",
+                        ReferenceId = id.ToString(),
+                        ReferenceNo = application.ApplicationNo,
+                        IsRead = false,
+                        CreatedAt = now
+                    });
+                }
+                else if (sentBackTask.AssignedRoleId.HasValue || sentBackTask.AssignedDepartmentId.HasValue)
+                {
+                    var usersQ = _db.Appusers.AsNoTracking()
+                        .Where(u => u.IsActive == true && !u.IsDeleted);
+                    if (sentBackTask.AssignedRoleId.HasValue)
+                        usersQ = usersQ.Where(u => u.RoleId == sentBackTask.AssignedRoleId.Value);
+                    if (sentBackTask.AssignedDepartmentId.HasValue)
+                    {
+                        var deptUids = await _db.AuthorityUserDepartments.AsNoTracking()
+                            .Where(d => d.DepartmentId == sentBackTask.AssignedDepartmentId.Value && d.IsActive && !d.IsDeleted)
+                            .Select(d => d.UserId).ToListAsync(ct);
+                        usersQ = usersQ.Where(u => deptUids.Contains(u.Id));
+                    }
+                    var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
+                    foreach (var uid in uids)
+                    {
+                        _db.InAppNotifications.Add(new InAppNotification
+                        {
+                            UserType = "Internal",
+                            UserId = uid,
+                            Title = notifTitle,
+                            Message = notifMsg,
+                            PurposeKey = "WorkflowResubmitted",
+                            ReferenceType = "NewConnectionApplication",
+                            ReferenceId = id.ToString(),
+                            ReferenceNo = application.ApplicationNo,
+                            IsRead = false,
+                            CreatedAt = now
+                        });
+                    }
+                }
+            }
+        }
+        else
+        {
+            // No sent-back task found — restart from Stage 1
+            instance.CurrentStatus = StatusUnderReview;
+            instance.IsActive = true;
+            instance.CompletedOn = null;
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return await GetConsumerApplicationDetailsAsync(id, consumerNo, consumerUserId, ct)
+            ?? throw new InvalidOperationException("Application not found after resubmission.");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Resubmit — Public applicant (mobile OTP verified, no consumer login)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public async Task<NewConnectionApplicationDetailsDto> ResubmitPublicApplicationAsync(
+        long id,
+        string mobileNumber,
+        string? applicantRemarks,
+        IReadOnlyList<NewConnectionDocumentInputDto> newDocuments,
+        CancellationToken ct = default)
+    {
+        var mobile = NormalizeMobile(mobileNumber);
+
+        // Security: only the original public applicant (matched by mobile) can resubmit
+        var application = await _db.NewConnectionApplications
+            .Include(x => x.Documents.Where(d => !d.IsDeleted))
+            .FirstOrDefaultAsync(x => x.Id == id
+                && !x.IsDeleted
+                && x.IsPublicApplication
+                && x.MobileNumber == mobile, ct)
+            ?? throw new InvalidOperationException("Application not found or access denied.");
+
+        if (application.ApplicationStatus != WorkflowService.StatusSentBackToApplicant
+            && application.ApplicationStatus != StatusCorrectionRequired)
+            throw new InvalidOperationException("This application cannot be resubmitted in its current status.");
+
+        var now = DateTime.Now;
+
+        var instance = await _db.ApplicationWorkflowInstances
+            .FirstOrDefaultAsync(x => x.ApplicationId == id
+                && x.ApplicationType == WorkflowService.ApplicationTypeNewConnection
+                && !x.IsDeleted, ct);
+
+        if (instance is null)
+            throw new InvalidOperationException("Workflow instance not found for this application.");
+
+        var sentBackTask = await _db.ApplicationWorkflowTasks
+            .Include(x => x.Stage)
+            .Where(x => x.WorkflowInstanceId == instance.Id
+                && !x.IsDeleted
+                && (x.Status == WorkflowService.TaskStatusSentBackToApplicant
+                    || x.Status == WorkflowService.TaskStatusCorrectionRequired))
+            .OrderByDescending(x => x.ActionOn)
+            .FirstOrDefaultAsync(ct);
+
+        // Save new/replacement documents
+        foreach (var doc in newDocuments)
+        {
+            var existing = application.Documents
+                .FirstOrDefault(d => string.Equals(d.DocumentType, doc.DocumentType, StringComparison.OrdinalIgnoreCase));
+            if (existing is not null)
+            {
+                existing.FileName = doc.FileName;
+                existing.FilePath = doc.FilePath;
+                existing.ContentType = doc.ContentType;
+                existing.FileSize = doc.FileSize;
+                existing.UploadedOn = now;
+            }
+            else
+            {
+                _db.NewConnectionApplicationDocuments.Add(new NewConnectionApplicationDocument
+                {
+                    ApplicationId = id,
+                    DocumentType = doc.DocumentType,
+                    FileName = doc.FileName,
+                    FilePath = doc.FilePath,
+                    ContentType = doc.ContentType,
+                    FileSize = doc.FileSize,
+                    UploadedOn = now,
+                    IsDeleted = false
+                });
+            }
+        }
+
+        var fromStatus = application.ApplicationStatus;
+        application.ApplicationStatus = StatusUnderReview;
+        application.UpdatedOn = now;
+        if (!string.IsNullOrWhiteSpace(applicantRemarks))
+            application.Remarks = applicantRemarks;
+
+        _db.NewConnectionApprovalHistories.Add(new NewConnectionApprovalHistory
+        {
+            ApplicationId = id,
+            ApplicationNo = application.ApplicationNo,
+            FromStatus = fromStatus,
+            ToStatus = StatusUnderReview,
+            Action = "ResubmittedByApplicant",
+            Remarks = string.IsNullOrWhiteSpace(applicantRemarks)
+                ? "Application resubmitted by public applicant after correction."
+                : $"Resubmitted by applicant: {applicantRemarks.Trim()}",
+            ActionByName = mobile,
+            ActionByRole = "PublicApplicant",
+            ActionOn = now,
+            IsActive = true,
+            IsDeleted = false
+        });
+
+        if (sentBackTask is not null)
+        {
+            instance.CurrentStageId = sentBackTask.StageId;
+            instance.CurrentStatus = StatusUnderReview;
+            instance.IsActive = true;
+            instance.CompletedOn = null;
+
+            _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
+            {
+                WorkflowInstanceId = instance.Id,
+                ApplicationId = id,
+                ApplicationNo = application.ApplicationNo,
+                StageId = sentBackTask.StageId,
+                AssignedDepartmentId = sentBackTask.AssignedDepartmentId,
+                AssignedRoleId = sentBackTask.AssignedRoleId,
+                AssignedUserId = sentBackTask.AssignedUserId,
+                Status = WorkflowService.TaskStatusPending,
+                AssignedOn = now,
+                IsActive = true,
+                IsDeleted = false
+            });
+
+            _db.ApplicationWorkflowHistories.Add(new ApplicationWorkflowHistory
+            {
+                WorkflowInstanceId = instance.Id,
+                ApplicationId = id,
+                ApplicationNo = application.ApplicationNo,
+                StageId = sentBackTask.StageId,
+                FromStatus = fromStatus,
+                ToStatus = StatusUnderReview,
+                Action = "ResubmittedByApplicant",
+                Remarks = string.IsNullOrWhiteSpace(applicantRemarks)
+                    ? "Public applicant resubmitted after correction."
+                    : $"Resubmitted: {applicantRemarks.Trim()}",
+                ActionByName = mobile,
+                ActionByRole = "PublicApplicant",
+                ActionOn = now
+            });
+
+            // InApp notification to authority stage user(s)
+            if (sentBackTask.Stage is not null)
+            {
+                var notifTitle = "Application Resubmitted (Public)";
+                var notifMsg = $"Public application {application.ApplicationNo} has been corrected and resubmitted. Please review.";
+
+                if (sentBackTask.AssignedUserId.HasValue)
+                {
+                    _db.InAppNotifications.Add(new InAppNotification
+                    {
+                        UserType = "Internal",
+                        UserId = sentBackTask.AssignedUserId.Value,
+                        Title = notifTitle,
+                        Message = notifMsg,
+                        PurposeKey = "WorkflowResubmitted",
+                        ReferenceType = "NewConnectionApplication",
+                        ReferenceId = id.ToString(),
+                        ReferenceNo = application.ApplicationNo,
+                        IsRead = false,
+                        CreatedAt = now
+                    });
+                }
+                else if (sentBackTask.AssignedRoleId.HasValue || sentBackTask.AssignedDepartmentId.HasValue)
+                {
+                    var usersQ = _db.Appusers.AsNoTracking()
+                        .Where(u => u.IsActive == true && !u.IsDeleted);
+                    if (sentBackTask.AssignedRoleId.HasValue)
+                        usersQ = usersQ.Where(u => u.RoleId == sentBackTask.AssignedRoleId.Value);
+                    if (sentBackTask.AssignedDepartmentId.HasValue)
+                    {
+                        var deptUids = await _db.AuthorityUserDepartments.AsNoTracking()
+                            .Where(d => d.DepartmentId == sentBackTask.AssignedDepartmentId.Value && d.IsActive && !d.IsDeleted)
+                            .Select(d => d.UserId).ToListAsync(ct);
+                        usersQ = usersQ.Where(u => deptUids.Contains(u.Id));
+                    }
+                    var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
+                    foreach (var uid in uids)
+                    {
+                        _db.InAppNotifications.Add(new InAppNotification
+                        {
+                            UserType = "Internal",
+                            UserId = uid,
+                            Title = notifTitle,
+                            Message = notifMsg,
+                            PurposeKey = "WorkflowResubmitted",
+                            ReferenceType = "NewConnectionApplication",
+                            ReferenceId = id.ToString(),
+                            ReferenceNo = application.ApplicationNo,
+                            IsRead = false,
+                            CreatedAt = now
+                        });
+                    }
+                }
+            }
+        }
+        else
+        {
+            instance.CurrentStatus = StatusUnderReview;
+            instance.IsActive = true;
+            instance.CompletedOn = null;
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return await GetPublicApplicationDetailsAsync(id, mobileNumber, ct)
+            ?? throw new InvalidOperationException("Application not found after resubmission.");
+    }
 
     private static string NormalizeRequired(string? value)
         => Normalize(value) ?? throw new InvalidOperationException("Required value is missing.");

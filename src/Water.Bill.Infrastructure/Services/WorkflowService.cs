@@ -16,14 +16,26 @@ public class WorkflowService : IWorkflowService
     public const string TaskStatusApproved = "Approved";
     public const string TaskStatusRejected = "Rejected";
     public const string TaskStatusCorrectionRequired = "CorrectionRequired";
+    public const string TaskStatusForwarded = "Forwarded";
+    public const string TaskStatusSentBackToApplicant = "SentBackToApplicant";
+    public const string TaskStatusSentBackToPrevious = "SentBackToPrevious";
+
     public const string ActionWorkflowStarted = "WorkflowStarted";
-    public const string ActionApproved = "Approved";
-    public const string ActionMoveNext = "MoveNext";
+    public const string ActionApproved = "Approved";           // legacy compat
+    public const string ActionMoveNext = "MoveNext";           // legacy compat
     public const string ActionRejected = "Rejected";
-    public const string ActionCorrectionRequired = "CorrectionRequired";
+    public const string ActionCorrectionRequired = "CorrectionRequired"; // legacy compat
     public const string ActionStageAssigned = "StageAssigned";
     public const string ActionFinalConsumerCreated = "FinalConsumerCreated";
     public const string StatusFinalConsumerCreated = "FinalConsumerCreated";
+
+    // ── New action constants ──────────────────────────────────────────────────
+    public const string ActionAcceptMoveNext = "AcceptMoveNext";
+    public const string ActionFinalApproval = "FinalApproval";
+    public const string ActionForwardToUser = "ForwardToUser";
+    public const string ActionSendBackToApplicant = "SendBackToApplicant";
+    public const string ActionSendBackToPrevious = "SendBackToPrevious";
+    public const string StatusSentBackToApplicant = "SentBackToApplicant";
 
     private readonly ApplicationDbContext _db;
     private readonly INewConnectionFinalizationService _finalizationService;
@@ -140,6 +152,9 @@ public class WorkflowService : IWorkflowService
             CreatedOn = now
         });
 
+        // In-App notification to Stage 1 assignees
+        await SendStageAssignmentInAppAsync(instance.Id, applicationId, applicationNo, firstStage, now, ct);
+
         await _db.SaveChangesAsync(ct);
         return instance.Id;
     }
@@ -147,6 +162,16 @@ public class WorkflowService : IWorkflowService
     public async Task ProcessActionAsync(WorkflowActionRequest request, CancellationToken ct = default)
     {
         var normalizedAction = NormalizeAction(request.Action);
+
+        // ── Forward to Specific User is disabled for this phase ──────────────
+        if (normalizedAction == ActionForwardToUser)
+            throw new InvalidOperationException("Forward to Specific User is not available in the current phase.");
+
+        // ── Server-side validation (always enforced, not UI-only) ────────────
+        if (string.IsNullOrWhiteSpace(request.Remarks)
+            && normalizedAction is ActionRejected or ActionSendBackToApplicant or ActionSendBackToPrevious
+                                or ActionAcceptMoveNext or ActionFinalApproval)
+            throw new InvalidOperationException("Please enter remarks before taking this action.");
         var strategy = _db.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
         {
@@ -241,49 +266,145 @@ public class WorkflowService : IWorkflowService
             task.IsActive = false;
 
             WorkflowStage? nextStage = null;
-            if (normalizedAction == ActionMoveNext || (normalizedAction == ActionApproved && !task.Stage.IsFinalStage))
+            WorkflowStage? previousStage = null;
+
+            // ── AcceptMoveNext / legacy MoveNext / legacy Approve (non-final) ──
+            var isMovingNext = normalizedAction is ActionAcceptMoveNext or ActionMoveNext
+                || (normalizedAction == ActionApproved && !task.Stage.IsFinalStage);
+
+            // ── FinalApproval / legacy Approve (final) ──
+            var isFinalizing = normalizedAction is ActionFinalApproval
+                || (normalizedAction == ActionApproved && task.Stage.IsFinalStage);
+
+            if (isMovingNext)
             {
                 nextStage = await _db.WorkflowStages
                     .Where(x => x.WorkflowId == task.WorkflowInstance.WorkflowId
-                        && x.IsActive
-                        && !x.IsDeleted
+                        && x.IsActive && !x.IsDeleted
                         && x.StageOrder > task.Stage.StageOrder)
                     .OrderBy(x => x.StageOrder)
                     .FirstOrDefaultAsync(ct);
 
-                if (normalizedAction == ActionMoveNext && nextStage is null)
-                    throw new InvalidOperationException("No next workflow stage is configured.");
+                if (normalizedAction == ActionAcceptMoveNext && nextStage is null)
+                    throw new InvalidOperationException("No next workflow stage is configured. Use 'Final Approval' for the last stage.");
+            }
+            else if (normalizedAction == ActionSendBackToPrevious)
+            {
+                previousStage = await _db.WorkflowStages
+                    .Where(x => x.WorkflowId == task.WorkflowInstance.WorkflowId
+                        && x.IsActive && !x.IsDeleted
+                        && x.StageOrder < task.Stage.StageOrder)
+                    .OrderByDescending(x => x.StageOrder)
+                    .FirstOrDefaultAsync(ct);
+
+                if (previousStage is null)
+                    throw new InvalidOperationException("No previous stage exists. Cannot send back on the first stage.");
             }
 
-            if ((normalizedAction == ActionApproved || normalizedAction == ActionMoveNext) && nextStage is not null)
+            // ── Update instance and create follow-up tasks ────────────────────
+
+            if (isMovingNext && nextStage is not null)
             {
+                // Move to next configured stage
                 nextStatus = "UnderReview";
                 task.WorkflowInstance.CurrentStageId = nextStage.Id;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
                 {
                     WorkflowInstanceId = task.WorkflowInstanceId,
-                    ApplicationId = task.ApplicationId,
-                    ApplicationNo = task.ApplicationNo,
-                    StageId = nextStage.Id,
+                    ApplicationId      = task.ApplicationId,
+                    ApplicationNo      = task.ApplicationNo,
+                    StageId            = nextStage.Id,
                     AssignedDepartmentId = nextStage.DepartmentId,
-                    AssignedRoleId = nextStage.ApproverRoleId,
-                    AssignedUserId = nextStage.ApproverUserId,
-                    Status = TaskStatusPending,
+                    AssignedRoleId     = nextStage.ApproverRoleId,
+                    AssignedUserId     = nextStage.ApproverUserId,
+                    Status    = TaskStatusPending,
                     AssignedOn = now,
-                    IsActive = true,
+                    IsActive  = true,
                     IsDeleted = false
                 });
+
+                // InApp notification to next stage assignees
+                await SendStageAssignmentInAppAsync(
+                    task.WorkflowInstanceId, task.ApplicationId, task.ApplicationNo, nextStage, now, ct);
+            }
+            else if (isMovingNext && nextStage is null)
+            {
+                // No more stages — treat as implicit final approval
+                task.WorkflowInstance.CurrentStatus = nextStatus;
+                task.WorkflowInstance.CompletedOn = now;
+                task.WorkflowInstance.IsActive = false;
+            }
+            else if (isFinalizing)
+            {
+                // Final approval — workflow completes after finalization
+                task.WorkflowInstance.CurrentStatus = nextStatus;
+                task.WorkflowInstance.CompletedOn = now;
+                task.WorkflowInstance.IsActive = false;
+            }
+            else if (normalizedAction == ActionRejected)
+            {
+                task.WorkflowInstance.CurrentStatus = nextStatus;
+                task.WorkflowInstance.CompletedOn = now;
+                task.WorkflowInstance.IsActive = false;
+            }
+            else if (normalizedAction == ActionForwardToUser)
+            {
+                // Forward to a specific user — same stage, different assignee
+                task.WorkflowInstance.CurrentStatus = "UnderReview";
+                _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
+                {
+                    WorkflowInstanceId = task.WorkflowInstanceId,
+                    ApplicationId      = task.ApplicationId,
+                    ApplicationNo      = task.ApplicationNo,
+                    StageId            = task.StageId,        // same stage
+                    AssignedDepartmentId = null,
+                    AssignedRoleId     = null,
+                    AssignedUserId     = request.ForwardToUserId,
+                    Status    = TaskStatusPending,
+                    AssignedOn = now,
+                    IsActive  = true,
+                    IsDeleted = false
+                });
+            }
+            else if (normalizedAction is ActionSendBackToApplicant or ActionCorrectionRequired)
+            {
+                // Return to applicant — workflow stays active, application needs correction
+                task.WorkflowInstance.CurrentStatus = nextStatus;
+                task.WorkflowInstance.IsActive = true;
+                task.WorkflowInstance.CompletedOn = null;
+            }
+            else if (normalizedAction == ActionSendBackToPrevious && previousStage is not null)
+            {
+                // Send back to previous stage
+                task.WorkflowInstance.CurrentStageId = previousStage.Id;
+                task.WorkflowInstance.CurrentStatus = "UnderReview";
+                _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
+                {
+                    WorkflowInstanceId = task.WorkflowInstanceId,
+                    ApplicationId      = task.ApplicationId,
+                    ApplicationNo      = task.ApplicationNo,
+                    StageId            = previousStage.Id,
+                    AssignedDepartmentId = previousStage.DepartmentId,
+                    AssignedRoleId     = previousStage.ApproverRoleId,
+                    AssignedUserId     = previousStage.ApproverUserId,
+                    Status    = TaskStatusPending,
+                    AssignedOn = now,
+                    IsActive  = true,
+                    IsDeleted = false
+                });
+                nextStage = previousStage; // reuse for history/notification below
             }
             else
             {
                 task.WorkflowInstance.CurrentStatus = nextStatus;
-                if (normalizedAction is ActionApproved or ActionRejected or ActionCorrectionRequired)
-                {
-                    task.WorkflowInstance.CompletedOn = normalizedAction == ActionApproved || normalizedAction == ActionRejected ? now : null;
-                    task.WorkflowInstance.IsActive = normalizedAction == ActionCorrectionRequired;
-                }
             }
+
+            var effectiveNextStage = normalizedAction == ActionSendBackToPrevious ? null : nextStage;
+
+            // Compute here (before application status blocks) so it's in scope everywhere below
+            var isFinalApprovalAction = isFinalizing
+                || (normalizedAction is ActionAcceptMoveNext or ActionMoveNext && nextStage is null);
 
             if (application is not null)
             {
@@ -291,7 +412,7 @@ public class WorkflowService : IWorkflowService
                 application.ApplicationStatus = nextStatus;
                 application.UpdatedBy = request.ActorUserId;
                 application.UpdatedOn = now;
-                if (normalizedAction == ActionApproved && nextStage is null)
+                if (isFinalApprovalAction)
                 {
                     application.ApprovedBy = request.ActorUserId;
                     application.ApprovedOn = now;
@@ -337,7 +458,8 @@ public class WorkflowService : IWorkflowService
 
             var workflowActionToStatus = nextStatus;
             string? finalConsumerNo = null;
-            if (application is not null && normalizedAction == ActionApproved && nextStage is null)
+
+            if (application is not null && isFinalApprovalAction)
             {
                 finalConsumerNo = await _finalizationService.CreateFinalConsumerAsync(
                     application.Id,
@@ -353,7 +475,7 @@ public class WorkflowService : IWorkflowService
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
             }
-            else if (ndcApplication is not null && normalizedAction == ActionApproved && nextStage is null)
+            else if (ndcApplication is not null && isFinalApprovalAction)
             {
                 ndcApplication.Status = "A";
                 ndcApplication.FinalStatus = "A";
@@ -367,7 +489,7 @@ public class WorkflowService : IWorkflowService
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
             }
-            else if (legacyApplication is not null && normalizedAction == ActionApproved && nextStage is null)
+            else if (legacyApplication is not null && isFinalApprovalAction)
             {
                 if (task.WorkflowInstance.ApplicationType == ApplicationTypeNameTransfer)
                     await FinalizeNameTransferAsync(legacyApplication, request, now, ct);
@@ -415,18 +537,27 @@ public class WorkflowService : IWorkflowService
                 });
             }
 
-            if (nextStage is not null)
+            // Determine which stage got a new pending task for history/notifications
+            var assignedStage = normalizedAction == ActionForwardToUser
+                ? null   // forwarded to user at same stage — no separate stage history
+                : nextStage ?? (normalizedAction == ActionSendBackToPrevious ? previousStage : null);
+
+            if (assignedStage is not null)
             {
+                var assignedLabel = normalizedAction == ActionSendBackToPrevious
+                    ? $"Sent back to {assignedStage.StageName}."
+                    : $"Assigned to {assignedStage.StageName}.";
+
                 _db.ApplicationWorkflowHistories.Add(new ApplicationWorkflowHistory
                 {
                     WorkflowInstanceId = task.WorkflowInstanceId,
                     ApplicationId = task.ApplicationId,
                     ApplicationNo = task.ApplicationNo,
-                    StageId = nextStage.Id,
+                    StageId = assignedStage.Id,
                     FromStatus = nextStatus,
                     ToStatus = nextStatus,
                     Action = ActionStageAssigned,
-                    Remarks = $"Assigned to {nextStage.StageName}.",
+                    Remarks = assignedLabel,
                     ActionBy = request.ActorUserId,
                     ActionByName = Normalize(request.ActorName),
                     ActionByRole = Normalize(request.ActorRole),
@@ -434,7 +565,87 @@ public class WorkflowService : IWorkflowService
                 });
             }
 
-            await QueueConfiguredNotificationsAsync(task, normalizedAction, nextStage, now, ct);
+            // ForwardToUser — history entry with target user
+            if (normalizedAction == ActionForwardToUser && request.ForwardToUserId.HasValue)
+            {
+                var targetUserName = await _db.Appusers.AsNoTracking()
+                    .Where(x => x.Id == request.ForwardToUserId.Value)
+                    .Select(x => x.FullName)
+                    .FirstOrDefaultAsync(ct) ?? request.ForwardToUserId.ToString();
+
+                _db.ApplicationWorkflowHistories.Add(new ApplicationWorkflowHistory
+                {
+                    WorkflowInstanceId = task.WorkflowInstanceId,
+                    ApplicationId = task.ApplicationId,
+                    ApplicationNo = task.ApplicationNo,
+                    StageId = task.StageId,
+                    FromStatus = nextStatus,
+                    ToStatus = nextStatus,
+                    Action = ActionStageAssigned,
+                    Remarks = $"Forwarded to {targetUserName}.",
+                    ActionBy = request.ActorUserId,
+                    ActionByName = Normalize(request.ActorName),
+                    ActionByRole = Normalize(request.ActorRole),
+                    ActionOn = now
+                });
+
+                // In-App notification to the forwarded-to user
+                _db.InAppNotifications.Add(new InAppNotification
+                {
+                    UserType = "Internal",
+                    UserId = request.ForwardToUserId.Value,
+                    Title = "Application Forwarded to You",
+                    Message = $"Application {task.ApplicationNo} has been forwarded to you for review. Remarks: {Normalize(request.Remarks)}",
+                    PurposeKey = "WorkflowForward",
+                    ReferenceType = "WorkflowTask",
+                    ReferenceId = task.Id.ToString(),
+                    ReferenceNo = task.ApplicationNo,
+                    IsRead = false,
+                    CreatedAt = now
+                });
+            }
+
+            // SendBackToApplicant — In-App notification to the consumer
+            if (normalizedAction is ActionSendBackToApplicant or ActionCorrectionRequired)
+            {
+                var consumerUserId = await ResolveConsumerUserIdAsync(task, ct);
+                if (consumerUserId > 0)
+                {
+                    _db.InAppNotifications.Add(new InAppNotification
+                    {
+                        UserType = "Consumer",
+                        UserId = consumerUserId,
+                        Title = "Application Requires Correction",
+                        Message = $"Your application {task.ApplicationNo} has been returned for correction. Remarks: {Normalize(request.Remarks)}",
+                        PurposeKey = "WorkflowSentBack",
+                        ReferenceType = "WorkflowTask",
+                        ReferenceId = task.Id.ToString(),
+                        ReferenceNo = task.ApplicationNo,
+                        IsRead = false,
+                        CreatedAt = now
+                    });
+                }
+            }
+
+            // SendBackToPrevious — In-App notification to previous stage user
+            if (normalizedAction == ActionSendBackToPrevious && previousStage?.ApproverUserId.HasValue == true)
+            {
+                _db.InAppNotifications.Add(new InAppNotification
+                {
+                    UserType = "Internal",
+                    UserId = previousStage.ApproverUserId.Value,
+                    Title = "Application Sent Back for Re-Review",
+                    Message = $"Application {task.ApplicationNo} has been sent back to your stage ({previousStage.StageName}) for re-review. Remarks: {Normalize(request.Remarks)}",
+                    PurposeKey = "WorkflowSentBackPrevious",
+                    ReferenceType = "WorkflowTask",
+                    ReferenceId = task.Id.ToString(),
+                    ReferenceNo = task.ApplicationNo,
+                    IsRead = false,
+                    CreatedAt = now
+                });
+            }
+
+            await QueueConfiguredNotificationsAsync(task, normalizedAction, effectiveNextStage, now, ct);
             await _db.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
         });
@@ -555,6 +766,9 @@ public class WorkflowService : IWorkflowService
 
     private static bool CanAct(ApplicationWorkflowTask task, WorkflowActionRequest request)
     {
+        // Admin/Super Admin can take action on any pending task
+        if (request.IsAdmin) return true;
+
         if (task.AssignedUserId.HasValue)
             return request.ActorUserId.HasValue && task.AssignedUserId == request.ActorUserId;
 
@@ -578,14 +792,22 @@ public class WorkflowService : IWorkflowService
     {
         var allowed = action switch
         {
-            ActionApproved or ActionMoveNext => stage.CanApprove,
-            ActionRejected => stage.CanReject,
-            ActionCorrectionRequired => stage.CanSendCorrection,
-            _ => false
+            ActionAcceptMoveNext or ActionFinalApproval
+                                => stage.CanApprove,
+            ActionApproved or ActionMoveNext
+                                => stage.CanApprove,   // legacy
+            ActionRejected      => stage.CanReject,
+            ActionForwardToUser => stage.CanForwardToUser,
+            ActionSendBackToApplicant or ActionCorrectionRequired
+                                => stage.CanSendBackToApplicant || stage.CanSendCorrection,
+            ActionSendBackToPrevious
+                                => stage.CanSendBackToPrevious,
+            _                   => false
         };
 
         if (!allowed)
-            throw new InvalidOperationException($"The current workflow stage does not allow {action}.");
+            throw new InvalidOperationException(
+                $"The current workflow stage '{stage.StageName}' does not allow the action '{action}'.");
     }
 
     private static void ValidateApprovalTypeAssignment(WorkflowStage stage)
@@ -606,20 +828,29 @@ public class WorkflowService : IWorkflowService
     private static string ResolveTaskStatus(string action)
         => action switch
         {
-            ActionApproved or ActionMoveNext => TaskStatusApproved,
-            ActionRejected => TaskStatusRejected,
-            ActionCorrectionRequired => TaskStatusCorrectionRequired,
-            _ => throw new InvalidOperationException("Unsupported workflow action.")
+            ActionAcceptMoveNext or ActionFinalApproval
+                or ActionApproved or ActionMoveNext => TaskStatusApproved,
+            ActionRejected                          => TaskStatusRejected,
+            ActionForwardToUser                     => TaskStatusForwarded,
+            ActionSendBackToApplicant
+                or ActionCorrectionRequired         => TaskStatusSentBackToApplicant,
+            ActionSendBackToPrevious                => TaskStatusSentBackToPrevious,
+            _ => throw new InvalidOperationException($"Unsupported workflow action: {action}")
         };
 
     private static string ResolveApplicationStatus(string action, WorkflowStage stage)
         => action switch
         {
+            ActionAcceptMoveNext                    => "UnderReview",
+            ActionFinalApproval                     => "Approved",
             ActionApproved => stage.IsFinalStage ? "Approved" : "UnderReview",
-            ActionMoveNext => "UnderReview",
-            ActionRejected => "Rejected",
-            ActionCorrectionRequired => "CorrectionRequired",
-            _ => throw new InvalidOperationException("Unsupported workflow action.")
+            ActionMoveNext                          => "UnderReview",
+            ActionRejected                          => "Rejected",
+            ActionForwardToUser                     => "UnderReview",
+            ActionSendBackToApplicant
+                or ActionCorrectionRequired         => StatusSentBackToApplicant,
+            ActionSendBackToPrevious                => "UnderReview",
+            _ => throw new InvalidOperationException($"Unsupported workflow action: {action}")
         };
 
     private static string NormalizeAction(string action)
@@ -627,10 +858,26 @@ public class WorkflowService : IWorkflowService
         var normalized = action?.Trim();
         return normalized switch
         {
-            "Approve" or "Approved" => ActionApproved,
+            // ── New canonical action names ─────────────────────────────────────
+            "AcceptMoveNext" or "Accept & Move Next" or "AcceptAndMoveNext"
+                => ActionAcceptMoveNext,
+            "FinalApproval" or "Final Approval" or "FinalApprove"
+                => ActionFinalApproval,
+            "ForwardToUser" or "Forward to Specific User" or "ForwardUser"
+                => ActionForwardToUser,
+            "SendBackToApplicant" or "Send Back to Applicant" or "SendBack"
+                => ActionSendBackToApplicant,
+            "SendBackToPrevious" or "Send Back to Previous Stage" or "SendBackPrevious"
+                => ActionSendBackToPrevious,
+
+            // ── Legacy / backward-compatible names ────────────────────────────
+            "Approve" or "Approved"                       => ActionApproved,
             "MoveNext" or "MoveToNext" or "ForwardToNext" => ActionMoveNext,
-            "Reject" or "Rejected" => ActionRejected,
-            _ => throw new InvalidOperationException("Unsupported workflow action.")
+            "Reject" or "Rejected"                        => ActionRejected,
+            "CorrectionRequired" or "SendCorrection" or "Correction"
+                => ActionSendBackToApplicant,
+
+            _ => throw new InvalidOperationException($"Unsupported workflow action: '{normalized}'.")
         };
     }
 
@@ -838,6 +1085,93 @@ public class WorkflowService : IWorkflowService
             "D" or "DISCONNECTION" or "DISCONNECTED" => "D",
             _ => string.IsNullOrWhiteSpace(value) ? null : value.Trim()[..Math.Min(value.Trim().Length, 10)]
         };
+    }
+
+    private async Task SendStageAssignmentInAppAsync(
+        long instanceId, long applicationId, string applicationNo,
+        WorkflowStage stage, DateTime now, CancellationToken ct)
+    {
+        var title = $"New Application Assigned — {stage.StageName}";
+        var message = $"Application {applicationNo} has been assigned to your stage '{stage.StageName}' for review.";
+        var batch = new List<InAppNotification>();
+
+        // Specific user
+        if (stage.ApproverUserId.HasValue)
+        {
+            batch.Add(MakeStageInApp(stage.ApproverUserId.Value, title, message, instanceId, applicationNo));
+        }
+        // Role-based users
+        else if (stage.ApproverRoleId.HasValue || stage.DepartmentId.HasValue)
+        {
+            var usersQuery = _db.Appusers.AsNoTracking()
+                .Where(x => x.IsActive == true && !x.IsDeleted);
+
+            if (stage.ApproverRoleId.HasValue)
+                usersQuery = usersQuery.Where(x => x.RoleId == stage.ApproverRoleId.Value);
+
+            if (stage.DepartmentId.HasValue)
+            {
+                var deptUserIds = await _db.AuthorityUserDepartments.AsNoTracking()
+                    .Where(x => x.DepartmentId == stage.DepartmentId.Value && x.IsActive && !x.IsDeleted)
+                    .Select(x => x.UserId)
+                    .ToListAsync(ct);
+                usersQuery = usersQuery.Where(x => deptUserIds.Contains(x.Id));
+            }
+
+            var userIds = await usersQuery.Select(x => x.Id).ToListAsync(ct);
+            foreach (var uid in userIds)
+                batch.Add(MakeStageInApp(uid, title, message, instanceId, applicationNo));
+        }
+
+        if (batch.Count > 0)
+            await _db.InAppNotifications.AddRangeAsync(batch, ct);
+    }
+
+    private static InAppNotification MakeStageInApp(
+        long userId, string title, string message, long instanceId, string applicationNo)
+        => new()
+        {
+            UserType      = "Internal",
+            UserId        = userId,
+            Title         = title,
+            Message       = message,
+            PurposeKey    = "WorkflowAssigned",
+            ReferenceType = "WorkflowInstance",
+            ReferenceId   = instanceId.ToString(),
+            ReferenceNo   = applicationNo,
+            IsRead        = false,
+            CreatedAt     = DateTime.UtcNow,
+            IsDeleted     = false
+        };
+
+    private async Task<long> ResolveConsumerUserIdAsync(ApplicationWorkflowTask task, CancellationToken ct)
+    {
+        if (task.WorkflowInstance.ApplicationType == ApplicationTypeNewConnection)
+        {
+            var consumerUserId = await _db.NewConnectionApplications.AsNoTracking()
+                .Where(x => x.Id == task.ApplicationId && !x.IsDeleted && x.SubmittedByConsumerUserId.HasValue)
+                .Select(x => (long?)x.SubmittedByConsumerUserId)
+                .FirstOrDefaultAsync(ct);
+            return consumerUserId ?? 0;
+        }
+
+        if (task.WorkflowInstance.ApplicationType == ApplicationTypeNdc)
+        {
+            var consumerNo = await _db.ConsumerApplyNdcs.AsNoTracking()
+                .Where(x => x.AutoId == task.ApplicationId)
+                .Select(x => x.ConsumerNo)
+                .FirstOrDefaultAsync(ct);
+            if (!string.IsNullOrWhiteSpace(consumerNo))
+            {
+                var uid = await _db.ConsumerUsers.AsNoTracking()
+                    .Where(x => x.ConsumerNo == consumerNo && !x.IsDeleted)
+                    .Select(x => (long?)x.Id)
+                    .FirstOrDefaultAsync(ct);
+                return uid ?? 0;
+            }
+        }
+
+        return 0;
     }
 
     private static string NormalizeToken(string? value)
