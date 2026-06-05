@@ -30,20 +30,20 @@
             <span asp-validation-for="StageOrder" class="text-danger"></span>
         </div>
         <div class="wb-field">
-            <label asp-for="DepartmentId" class="form-label">Department</label>
+            <label asp-for="DepartmentId" class="form-label required">Department</label>
             <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-select" data-workflow-department><option value="">Select</option></select>
         </div>
         <div class="wb-field">
-            <label asp-for="ApproverRoleId" class="form-label">Approver Role</label>
+            <label asp-for="ApproverRoleId" class="form-label required">Approver Role</label>
             <select asp-for="ApproverRoleId" asp-items="ViewBag.Roles" class="form-select" data-workflow-role><option value="">Select</option></select>
         </div>
         <div class="wb-field">
-            <label asp-for="ApproverUserId" class="form-label">Specific User</label>
+            <label asp-for="ApproverUserId" class="form-label required">Specific User</label>
             <select asp-for="ApproverUserId" asp-items="ViewBag.Users" class="form-select" data-workflow-user><option value="">Select</option></select>
             <div class="form-text text-muted" data-workflow-user-message></div>
         </div>
         <div class="wb-field">
-            <label asp-for="ApprovalType" class="form-label">Approval Type</label>
+            <label asp-for="ApprovalType" class="form-label required">Approval Type</label>
             <select asp-for="ApprovalType" class="form-select">
                 <option value="AnyOne">Any one approver</option>
                 <option value="AllApprovers">All approvers</option>

@@ -182,4 +182,5 @@
             * All workflow actions (Accept, Reject, Forward, Send Back) must be taken from the application's detail page. Mandatory remarks and confirmation are required for every action.
         </p>
     }
+    @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
 </section>

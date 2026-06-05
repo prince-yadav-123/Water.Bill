@@ -18,15 +18,15 @@
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <div class="row g-3">
             <div class="col-12">
-                <label class="form-label" asp-for="FullName">Full Name</label>
+                <label class="form-label required" asp-for="FullName">Full Name</label>
                 <input class="form-control" asp-for="FullName" required />
             </div>
             <div class="col-md-6">
-                <label class="form-label" asp-for="Username">Username</label>
+                <label class="form-label required" asp-for="Username">Username</label>
                 <input class="form-control" asp-for="Username" required />
             </div>
             <div class="col-md-6">
-                <label class="form-label" asp-for="Email">Email</label>
+                <label class="form-label required" asp-for="Email">Email</label>
                 <input class="form-control" asp-for="Email" type="email" required />
             </div>
             <div class="col-md-6">
@@ -34,7 +34,7 @@
                 <input class="form-control" asp-for="PhoneNumber" />
             </div>
             <div class="col-md-6">
-                <label class="form-label" asp-for="RoleId">Role</label>
+                <label class="form-label required" asp-for="RoleId">Role</label>
                 <select class="form-select" asp-for="RoleId" required>
                     <option value="">Select Role</option>
                     @foreach (var role in roles)
@@ -44,7 +44,7 @@
                 </select>
             </div>
             <div class="col-12">
-                <label class="form-label" asp-for="Password">Password</label>
+                <label class="form-label required" asp-for="Password">Password</label>
                 <input class="form-control" asp-for="Password" type="password" required autocomplete="new-password" />
             </div>
             <div class="col-12">

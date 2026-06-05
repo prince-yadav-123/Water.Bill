@@ -39,40 +39,40 @@
         <div asp-validation-summary="ModelOnly" class="text-danger" style="grid-column: 1 / -1;"></div>
 
         <div class="wb-form-field">
-            <label asp-for="TemplateId" class="form-label"></label>
+            <label asp-for="TemplateId" class="form-label required"></label>
             <select asp-for="TemplateId" class="form-select" asp-items="Model.TemplateOptions">
                 <option value="">Custom notice</option>
             </select>
             <div class="form-text">Changing template after opening will require selecting Create Notice again from list.</div>
         </div>
         <div class="wb-form-field">
-            <label asp-for="NoticeType" class="form-label"></label>
+            <label asp-for="NoticeType" class="form-label required"></label>
             <select asp-for="NoticeType" class="form-select" asp-items="Model.TypeOptions"></select>
             <span asp-validation-for="NoticeType" class="text-danger"></span>
         </div>
         <div class="wb-form-field">
-            <label asp-for="NoticeDate" class="form-label"></label>
+            <label asp-for="NoticeDate" class="form-label required"></label>
             <input asp-for="NoticeDate" type="date" class="form-control" />
             <span asp-validation-for="NoticeDate" class="text-danger"></span>
         </div>
         <div class="wb-form-field">
-            <label asp-for="DueDate" class="form-label"></label>
+            <label asp-for="DueDate" class="form-label required"></label>
             <input asp-for="DueDate" type="date" class="form-control" />
             <span asp-validation-for="DueDate" class="text-danger"></span>
         </div>
         <div class="wb-form-field" style="grid-column: 1 / -1;">
-            <label asp-for="Subject" class="form-label"></label>
+            <label asp-for="Subject" class="form-label required"></label>
             <input asp-for="Subject" class="form-control" />
             <span asp-validation-for="Subject" class="text-danger"></span>
         </div>
         <div class="wb-form-field" style="grid-column: 1 / -1;">
-            <label asp-for="Body" class="form-label"></label>
+            <label asp-for="Body" class="form-label required"></label>
             <textarea asp-for="Body" class="form-control" rows="8"></textarea>
             <div class="form-text">Supported tokens: {ConsumerNo}, {ConsumerName}, {MobileNo}, {PropertyNo}, {AmountDue}, {DueDate}, {BillNo}, {ChallanNo}</div>
             <span asp-validation-for="Body" class="text-danger"></span>
         </div>
         <div class="wb-form-field">
-            <label asp-for="AmountDue" class="form-label"></label>
+            <label asp-for="AmountDue" class="form-label required"></label>
             <input asp-for="AmountDue" class="form-control" />
             <span asp-validation-for="AmountDue" class="text-danger"></span>
         </div>

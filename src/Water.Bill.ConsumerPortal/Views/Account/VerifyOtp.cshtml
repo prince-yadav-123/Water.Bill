@@ -83,7 +83,7 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
                 <div class="wb-field wb-otp-box-field">
-                    <label class="visually-hidden" asp-for="Otp"></label>
+                    <label class="visually-hidden required" asp-for="Otp"></label>
                     <div class="wb-otp-boxes" role="group" aria-label="Enter 6 digit OTP">
                         @for (var i = 0; i < 6; i++)
                         {

@@ -67,7 +67,7 @@
 
                 <div class="wb-form-grid">
                     <div class="wb-field">
-                        <label asp-for="ConnectionType" class="form-label required">Connection Type</label>
+                <label asp-for="ConnectionType" class="form-label required">Connection Type</label>
                         <select asp-for="ConnectionType" class="form-select" data-review-label="Connection type">
                             <option value="">Select</option>
                             @foreach (var connectionType in lookupData.ConnectionTypes)
@@ -78,7 +78,7 @@
                         <span asp-validation-for="ConnectionType" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
-                        <label asp-for="FlatType" class="form-label required">Flat Type</label>
+                <label asp-for="FlatType" class="form-label required">Flat Type</label>
                         <select asp-for="FlatType" class="form-select" data-review-label="Flat type" data-subtype-select>
                             <option value="">Select</option>
                             @foreach (var subType in lookupData.ConnectionSubTypes)
@@ -89,7 +89,7 @@
                         <span asp-validation-for="FlatType" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
-                        <label asp-for="PipeSize" class="form-label required">Pipe Size</label>
+                <label asp-for="PipeSize" class="form-label required">Pipe Size</label>
                         <select asp-for="PipeSize" class="form-select" data-review-label="Pipe size">
                             <option value="">Select</option>
                             @foreach (var pipeSize in lookupData.PipeSizes)
@@ -124,7 +124,7 @@
                 </div>
                 <div class="wb-form-grid">
                     <div class="wb-field">
-                        <label asp-for="Sector" class="form-label required">Sector</label>
+                <label asp-for="Sector" class="form-label required">Sector</label>
                         <select asp-for="Sector" class="form-select" data-review-label="Sector" data-sector-select>
                             <option value="">Select</option>
                             @foreach (var sector in lookupData.Sectors)
@@ -135,7 +135,7 @@
                         <span asp-validation-for="Sector" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
-                        <label asp-for="Block" class="form-label required">Block</label>
+                <label asp-for="Block" class="form-label required">Block</label>
                         <select asp-for="Block" class="form-select" data-review-label="Block" data-block-select>
                             <option value="">Select sector first</option>
                             @if (!string.IsNullOrWhiteSpace(Model.Block))
@@ -146,17 +146,17 @@
                         <span asp-validation-for="Block" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
-                        <label asp-for="FlatNo" class="form-label required">Flat/Plot No</label>
+                <label asp-for="FlatNo" class="form-label required">Flat/Plot No</label>
                         <input asp-for="FlatNo" class="form-control" data-review-label="Flat/Plot No" />
                         <span asp-validation-for="FlatNo" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
-                        <label asp-for="PlotSize" class="form-label required">Plot Size</label>
+                <label asp-for="PlotSize" class="form-label required">Plot Size</label>
                         <input asp-for="PlotSize" class="form-control" type="number" step="0.01" data-review-label="Plot size" />
                         <span asp-validation-for="PlotSize" class="text-danger"></span>
                     </div>
                     <div class="wb-field wb-field-wide">
-                        <label asp-for="Address" class="form-label required">Property Address</label>
+                <label asp-for="Address" class="form-label required">Property Address</label>
                         <textarea asp-for="Address" class="form-control" rows="3" data-review-label="Property address"></textarea>
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
@@ -185,7 +185,7 @@
                 </div>
                 <div class="wb-form-grid">
                     <div class="wb-field">
-                        <label asp-for="ApplicantName" class="form-label required">Applicant Name</label>
+                <label asp-for="ApplicantName" class="form-label required">Applicant Name</label>
                         <input asp-for="ApplicantName" class="form-control" data-review-label="Applicant name" />
                         <span asp-validation-for="ApplicantName" class="text-danger"></span>
                     </div>
@@ -195,7 +195,7 @@
                         <span asp-validation-for="FatherName" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
-                        <label asp-for="MobileNumber" class="form-label required">Mobile Number</label>
+                <label asp-for="MobileNumber" class="form-label required">Mobile Number</label>
                         @if (ViewData["LockMobileNumber"] as bool? == true)
                         {
                             <input asp-for="MobileNumber" class="form-control" maxlength="10" data-review-label="Mobile number" readonly />

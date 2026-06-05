@@ -123,11 +123,11 @@
                         <td><span class="badge @Badge(row.Status)">@row.Status</span></td>
                         <td>@DateText(row.GeneratedOn)</td>
                         <td class="text-end">
-                            <div class="btn-group btn-group-sm">
-                                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">View</a>
+                            <div class="wb-row-actions justify-content-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">View</a>
                                 @if (row.Status != "Cancelled")
                                 {
-                                    <a class="btn btn-outline-secondary" asp-action="Print" asp-route-id="@row.Id" target="_blank">Print</a>
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Print" asp-route-id="@row.Id" target="_blank">Print</a>
                                 }
                             </div>
                         </td>

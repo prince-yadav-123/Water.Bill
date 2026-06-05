@@ -55,7 +55,7 @@
                 <div asp-validation-summary="ModelOnly" class="wb-admin-login-summary"></div>
 
                 <div class="wb-admin-login-field">
-                    <label asp-for="Username" class="form-label">Username or Email</label>
+                    <label asp-for="Username" class="form-label required">Username or Email</label>
                     <div class="wb-admin-input-shell">
                         @* <span class="wb-admin-input-icon">U</span> *@
                         <input asp-for="Username" class="wb-admin-input" autocomplete="username" autofocus placeholder="admin@noidajal.local" />
@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="wb-admin-login-field">
-                    <label asp-for="Password" class="form-label"></label>
+                    <label asp-for="Password" class="form-label required"></label>
                     <div class="wb-admin-input-shell wb-pw-shell">
                         <input asp-for="Password" id="adminPassword" class="wb-admin-input" autocomplete="current-password" placeholder="Enter password" />
                         <button type="button" class="wb-pw-eye" onclick="togglePw('adminPassword',this)" aria-label="Show password" tabindex="-1">

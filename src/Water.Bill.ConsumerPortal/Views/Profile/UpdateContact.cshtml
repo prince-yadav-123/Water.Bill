@@ -56,12 +56,12 @@
 
             <div class="wb-form-grid">
                 <div>
-                    <label asp-for="NewMobileNo" class="form-label"></label>
+                    <label asp-for="NewMobileNo" class="form-label required"></label>
                     <input asp-for="NewMobileNo" class="form-control" inputmode="numeric" maxlength="10" placeholder="Enter new mobile number" readonly="@Model.IsOtpSent" />
                     <span asp-validation-for="NewMobileNo" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="NewEmail" class="form-label"></label>
+                    <label asp-for="NewEmail" class="form-label required"></label>
                     <input asp-for="NewEmail" class="form-control" maxlength="50" placeholder="Enter new email address" readonly="@Model.IsOtpSent" />
                     <span asp-validation-for="NewEmail" class="text-danger"></span>
                 </div>

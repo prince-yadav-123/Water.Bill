@@ -11,7 +11,7 @@
         <input type="hidden" asp-for="Item.TenantId" />
         <div class="row g-3">
             <div class="col-md-8">
-                <label class="form-label" asp-for="Item.Label">Label</label>
+                <label class="form-label required" asp-for="Item.Label">Label</label>
                 <input class="form-control" asp-for="Item.Label" required placeholder="Dashboard" />
                 <span class="text-danger" asp-validation-for="Item.Label"></span>
             </div>

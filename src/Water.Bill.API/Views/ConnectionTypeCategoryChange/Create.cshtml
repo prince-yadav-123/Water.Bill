@@ -39,46 +39,46 @@
 
         <div class="wb-form-grid">
             <div>
-                <label class="form-label" asp-for="NewConnectionType">New Connection Type</label>
+                <label class="form-label required" asp-for="NewConnectionType">New Connection Type</label>
                 <select class="form-select" asp-for="NewConnectionType" asp-items="Model.ConnectionTypeOptions">
                     <option value="">Keep Existing</option>
                 </select>
                 <span class="text-danger" asp-validation-for="NewConnectionType"></span>
             </div>
             <div>
-                <label class="form-label" asp-for="NewConsumerCategory">New Consumer Category</label>
+                <label class="form-label required" asp-for="NewConsumerCategory">New Consumer Category</label>
                 <select class="form-select" asp-for="NewConsumerCategory" asp-items="Model.ConsumerCategoryOptions">
                     <option value="">Select Category</option>
                 </select>
                 <span class="text-danger" asp-validation-for="NewConsumerCategory"></span>
             </div>
             <div>
-                <label class="form-label" asp-for="TypeChangeDate">Type Change Date</label>
+                <label class="form-label required" asp-for="TypeChangeDate">Type Change Date</label>
                 <input class="form-control" asp-for="TypeChangeDate" type="date" />
                 <span class="text-danger" asp-validation-for="TypeChangeDate"></span>
             </div>
             <div>
-                <label class="form-label" asp-for="EstimationNo">Estimation No</label>
+                <label class="form-label required" asp-for="EstimationNo">Estimation No</label>
                 <input class="form-control" asp-for="EstimationNo" maxlength="10" />
                 <span class="text-danger" asp-validation-for="EstimationNo"></span>
             </div>
             <div>
-                <label class="form-label" asp-for="EstimationAmount">Estimation Amount</label>
+                <label class="form-label required" asp-for="EstimationAmount">Estimation Amount</label>
                 <input class="form-control" asp-for="EstimationAmount" type="number" step="0.01" />
                 <span class="text-danger" asp-validation-for="EstimationAmount"></span>
             </div>
             <div>
-                <label class="form-label" asp-for="SecurityAmount">Security Amount</label>
+                <label class="form-label required" asp-for="SecurityAmount">Security Amount</label>
                 <input class="form-control" asp-for="SecurityAmount" type="number" step="0.01" />
                 <span class="text-danger" asp-validation-for="SecurityAmount"></span>
             </div>
             <div>
-                <label class="form-label" asp-for="MonthlyRate">Monthly Rate</label>
+                <label class="form-label required" asp-for="MonthlyRate">Monthly Rate</label>
                 <input class="form-control" asp-for="MonthlyRate" type="number" step="0.01" />
                 <span class="text-danger" asp-validation-for="MonthlyRate"></span>
             </div>
             <div class="wb-form-span-2">
-                <label class="form-label" asp-for="Remarks">Remarks</label>
+                <label class="form-label required" asp-for="Remarks">Remarks</label>
                 <textarea class="form-control" asp-for="Remarks" rows="3" maxlength="500"></textarea>
                 <span class="text-danger" asp-validation-for="Remarks"></span>
             </div>

@@ -68,7 +68,7 @@
 
                 <div class="wb-auth-pane" id="mobile-login" role="tabpanel" data-login-pane="mobile-otp">
                     <div class="wb-field">
-                        <label asp-for="MobileNumber"></label>
+                        <label asp-for="MobileNumber" class="form-label required"></label>
                         <div class="wb-input-shell">
                             @* <span class="wb-input-icon">M</span> *@
                             <input asp-for="MobileNumber" class="wb-input" inputmode="numeric" autocomplete="tel" placeholder="98765 43210" data-login-input data-login-rule="mobile" />
@@ -81,7 +81,7 @@
 
                 <div class="wb-auth-pane" id="consumer-login" role="tabpanel" data-login-pane="consumer-id">
                     <div class="wb-field">
-                        <label asp-for="ConsumerId"></label>
+                        <label asp-for="ConsumerId" class="form-label required"></label>
                         <div class="wb-input-shell">
                             @* <span class="wb-input-icon">ID</span> *@
                             <input asp-for="ConsumerId" class="wb-input" autocomplete="off" placeholder="WB-XX-XXXXXX" data-login-input data-login-rule="consumer" />
@@ -95,7 +95,7 @@
 
                 <div class="wb-auth-pane" id="credential-login" role="tabpanel" data-login-pane="username-email">
                     <div class="wb-field">
-                        <label asp-for="UsernameOrEmail"></label>
+                        <label asp-for="UsernameOrEmail" class="form-label required"></label>
                         <div class="wb-input-shell">
                             @* <span class="wb-input-icon">U</span> *@
                             <input asp-for="UsernameOrEmail" class="wb-input" autocomplete="username" placeholder="username or email@example.com" data-login-input data-login-rule="username" />
@@ -105,7 +105,7 @@
                     </div>
 
                     <div class="wb-field">
-                        <label asp-for="Password"></label>
+                        <label asp-for="Password" class="form-label required"></label>
                         <div class="wb-input-shell wb-pw-shell">
                             <input asp-for="Password" id="consumerPassword" class="wb-input" autocomplete="current-password" placeholder="Enter password" data-login-input data-login-rule="password" style="padding-right:2.5rem" />
                             <button type="button" class="wb-pw-eye" onclick="togglePw('consumerPassword',this)" aria-label="Show password" tabindex="-1">

@@ -40,22 +40,22 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="wb-form-field">
-            <label asp-for="ReadingDate" class="form-label"></label>
+            <label asp-for="ReadingDate" class="form-label required"></label>
             <input asp-for="ReadingDate" type="date" class="form-control" />
             <span asp-validation-for="ReadingDate" class="text-danger"></span>
         </div>
         <div class="wb-form-field">
-            <label asp-for="MeterStatus" class="form-label"></label>
+            <label asp-for="MeterStatus" class="form-label required"></label>
             <select asp-for="MeterStatus" class="form-select" asp-items="Model.StatusOptions"></select>
             <span asp-validation-for="MeterStatus" class="text-danger"></span>
         </div>
         <div class="wb-form-field">
-            <label asp-for="PeriodFrom" class="form-label"></label>
+            <label asp-for="PeriodFrom" class="form-label required"></label>
             <input asp-for="PeriodFrom" type="date" class="form-control" />
             <span asp-validation-for="PeriodFrom" class="text-danger"></span>
         </div>
         <div class="wb-form-field">
-            <label asp-for="PeriodTo" class="form-label"></label>
+            <label asp-for="PeriodTo" class="form-label required"></label>
             <input asp-for="PeriodTo" type="date" class="form-control" />
             <span asp-validation-for="PeriodTo" class="text-danger"></span>
         </div>
@@ -65,7 +65,7 @@
             <div class="form-text">Auto-filled from latest saved reading where available.</div>
         </div>
         <div class="wb-form-field">
-            <label asp-for="CurrentReading" class="form-label"></label>
+            <label asp-for="CurrentReading" class="form-label required"></label>
             <input asp-for="CurrentReading" class="form-control" />
             <span asp-validation-for="CurrentReading" class="text-danger"></span>
         </div>
@@ -75,12 +75,12 @@
             <div class="form-text">Calculated as current minus previous reading.</div>
         </div>
         <div class="wb-form-field">
-            <label asp-for="MeterNo" class="form-label"></label>
+            <label asp-for="MeterNo" class="form-label required"></label>
             <input asp-for="MeterNo" class="form-control" placeholder="Optional meter number" />
             <span asp-validation-for="MeterNo" class="text-danger"></span>
         </div>
         <div class="wb-form-field" style="grid-column: 1 / -1;">
-            <label asp-for="Remarks" class="form-label"></label>
+            <label asp-for="Remarks" class="form-label required"></label>
             <textarea asp-for="Remarks" class="form-control" rows="3" placeholder="Remarks are required for locked/faulty/no meter cases."></textarea>
             <span asp-validation-for="Remarks" class="text-danger"></span>
         </div>

@@ -69,6 +69,7 @@
             </table>
         </div>
     }
+    @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
 </section>
 
 @section Scripts {

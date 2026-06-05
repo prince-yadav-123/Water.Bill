@@ -10,7 +10,7 @@
         <input type="hidden" asp-for="Id" />
         <div class="row g-3">
             <div class="col-md-8">
-                <label class="form-label" asp-for="Name">Module Name</label>
+                <label class="form-label required" asp-for="Name">Module Name</label>
                 <input class="form-control" asp-for="Name" required maxlength="100" placeholder="Roles &amp; Users" />
                 <span class="text-danger" asp-validation-for="Name"></span>
             </div>

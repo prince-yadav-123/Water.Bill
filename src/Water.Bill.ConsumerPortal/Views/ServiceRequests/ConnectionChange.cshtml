@@ -25,13 +25,13 @@
             </div>
             <div class="wb-form-grid">
                 <div>
-                    <label asp-for="ConsumerNo" class="form-label"></label>
+                    <label asp-for="ConsumerNo" class="form-label required"></label>
                     <select asp-for="ConsumerNo" asp-items="Model.Consumers" class="form-select" onchange="window.location.href='@Url.Action("ConnectionChange", "ServiceRequests")?consumerNo=' + encodeURIComponent(this.value)"></select>
                     <span asp-validation-for="ConsumerNo" class="text-danger"></span>
                     <small class="text-muted">You can choose any active connection linked with your mobile number.</small>
                 </div>
                 <div>
-                    <label asp-for="MobileNo" class="form-label"></label>
+                    <label asp-for="MobileNo" class="form-label required"></label>
                     <input asp-for="MobileNo" class="form-control" maxlength="15" />
                     <span asp-validation-for="MobileNo" class="text-danger"></span>
                 </div>
@@ -67,46 +67,46 @@
             </div>
             <div class="wb-form-grid">
                 <div>
-                    <label asp-for="NewConnectionType" class="form-label"></label>
+                    <label asp-for="NewConnectionType" class="form-label required"></label>
                     <select asp-for="NewConnectionType" asp-items="Model.ConnectionTypeOptions" class="form-select">
                         <option value="">No change</option>
                     </select>
                     <span asp-validation-for="NewConnectionType" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="NewConsumerCategory" class="form-label"></label>
+                    <label asp-for="NewConsumerCategory" class="form-label required"></label>
                     <select asp-for="NewConsumerCategory" asp-items="Model.ConsumerCategoryOptions" class="form-select">
                         <option value="">No change</option>
                     </select>
                     <span asp-validation-for="NewConsumerCategory" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="TypeChangeDate" class="form-label"></label>
+                    <label asp-for="TypeChangeDate" class="form-label required"></label>
                     <input asp-for="TypeChangeDate" class="form-control" type="date" />
                     <span asp-validation-for="TypeChangeDate" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="EstimationNo" class="form-label"></label>
+                    <label asp-for="EstimationNo" class="form-label required"></label>
                     <input asp-for="EstimationNo" class="form-control" maxlength="50" />
                     <span asp-validation-for="EstimationNo" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="EstimationAmount" class="form-label"></label>
+                    <label asp-for="EstimationAmount" class="form-label required"></label>
                     <input asp-for="EstimationAmount" class="form-control" type="number" step="0.01" />
                     <span asp-validation-for="EstimationAmount" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="SecurityAmount" class="form-label"></label>
+                    <label asp-for="SecurityAmount" class="form-label required"></label>
                     <input asp-for="SecurityAmount" class="form-control" type="number" step="0.01" />
                     <span asp-validation-for="SecurityAmount" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="MonthlyRate" class="form-label"></label>
+                    <label asp-for="MonthlyRate" class="form-label required"></label>
                     <input asp-for="MonthlyRate" class="form-control" type="number" step="0.01" />
                     <span asp-validation-for="MonthlyRate" class="text-danger"></span>
                 </div>
                 <div class="wb-span-2">
-                    <label asp-for="Remarks" class="form-label"></label>
+                    <label asp-for="Remarks" class="form-label required"></label>
                     <textarea asp-for="Remarks" class="form-control" rows="3" maxlength="500"></textarea>
                     <span asp-validation-for="Remarks" class="text-danger"></span>
                 </div>

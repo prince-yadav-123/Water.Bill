@@ -15,7 +15,7 @@
 
         <div class="wb-form-grid">
             <div>
-                <label asp-for="CategoryId" class="form-label">Complaint Category</label>
+                <label asp-for="CategoryId" class="form-label required">Complaint Category</label>
                 <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
                     <option value="">Select category</option>
                 </select>
@@ -31,7 +31,7 @@
                 </select>
             </div>
             <div>
-                <label asp-for="ConsumerNo" class="form-label">Related Consumer No</label>
+                <label asp-for="ConsumerNo" class="form-label required">Related Consumer No</label>
                 <input asp-for="ConsumerNo" class="form-control" readonly />
                 <span asp-validation-for="ConsumerNo" class="text-danger"></span>
             </div>
@@ -62,12 +62,12 @@
                 <input asp-for="LocationDetails" class="form-control" placeholder="Optional landmark or exact issue location" />
             </div>
             <div class="wb-detail-span">
-                <label asp-for="Subject" class="form-label">Subject / Title</label>
+                <label asp-for="Subject" class="form-label required">Subject / Title</label>
                 <input asp-for="Subject" class="form-control" />
                 <span asp-validation-for="Subject" class="text-danger"></span>
             </div>
             <div class="wb-detail-span">
-                <label asp-for="Description" class="form-label">Description</label>
+                <label asp-for="Description" class="form-label required">Description</label>
                 <textarea asp-for="Description" class="form-control" rows="5"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>

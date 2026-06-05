@@ -25,13 +25,13 @@
             </div>
             <div class="wb-form-grid">
                 <div>
-                    <label asp-for="ConsumerNo" class="form-label"></label>
+                    <label asp-for="ConsumerNo" class="form-label required"></label>
                     <select asp-for="ConsumerNo" asp-items="Model.Consumers" class="form-select" onchange="window.location.href='@Url.Action("NameTransfer", "ServiceRequests")?consumerNo=' + encodeURIComponent(this.value)"></select>
                     <span asp-validation-for="ConsumerNo" class="text-danger"></span>
                     <small class="text-muted">You can choose any active connection linked with your mobile number.</small>
                 </div>
                 <div>
-                    <label asp-for="MobileNo" class="form-label"></label>
+                    <label asp-for="MobileNo" class="form-label required"></label>
                     <input asp-for="MobileNo" class="form-control" maxlength="15" />
                     <span asp-validation-for="MobileNo" class="text-danger"></span>
                 </div>
@@ -67,37 +67,37 @@
             </div>
             <div class="wb-form-grid">
                 <div>
-                    <label asp-for="NewConsumerName" class="form-label"></label>
+                    <label asp-for="NewConsumerName" class="form-label required"></label>
                     <input asp-for="NewConsumerName" class="form-control" maxlength="100" />
                     <span asp-validation-for="NewConsumerName" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="NewFatherName" class="form-label"></label>
+                    <label asp-for="NewFatherName" class="form-label required"></label>
                     <input asp-for="NewFatherName" class="form-control" maxlength="100" />
                     <span asp-validation-for="NewFatherName" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="TransferFee" class="form-label"></label>
+                    <label asp-for="TransferFee" class="form-label required"></label>
                     <input asp-for="TransferFee" class="form-control" type="number" step="0.01" />
                     <span asp-validation-for="TransferFee" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="SecurityAmount" class="form-label"></label>
+                    <label asp-for="SecurityAmount" class="form-label required"></label>
                     <input asp-for="SecurityAmount" class="form-control" type="number" step="0.01" />
                     <span asp-validation-for="SecurityAmount" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="ChallanNo" class="form-label"></label>
+                    <label asp-for="ChallanNo" class="form-label required"></label>
                     <input asp-for="ChallanNo" class="form-control" maxlength="50" />
                     <span asp-validation-for="ChallanNo" class="text-danger"></span>
                 </div>
                 <div>
-                    <label asp-for="ChallanDate" class="form-label"></label>
+                    <label asp-for="ChallanDate" class="form-label required"></label>
                     <input asp-for="ChallanDate" class="form-control" type="date" />
                     <span asp-validation-for="ChallanDate" class="text-danger"></span>
                 </div>
                 <div class="wb-span-2">
-                    <label asp-for="Remarks" class="form-label"></label>
+                    <label asp-for="Remarks" class="form-label required"></label>
                     <textarea asp-for="Remarks" class="form-control" rows="3" maxlength="500"></textarea>
                     <span asp-validation-for="Remarks" class="text-danger"></span>
                 </div>

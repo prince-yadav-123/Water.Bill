@@ -16,7 +16,7 @@
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <div class="mb-3">
-            <label class="form-label" asp-for="Name">Role Name</label>
+            <label class="form-label required" asp-for="Name">Role Name</label>
             <input class="form-control" asp-for="Name" required placeholder="Admin, Staff, Supervisor" />
             <span class="text-danger" asp-validation-for="Name"></span>
         </div>

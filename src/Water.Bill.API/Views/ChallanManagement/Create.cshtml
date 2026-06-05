@@ -134,7 +134,7 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="col-md-6">
-                    <label asp-for="Purpose" class="form-label"></label>
+                    <label asp-for="Purpose" class="form-label required"></label>
                     <select asp-for="Purpose" asp-items="Model.PurposeOptions" class="form-select" id="challanPurpose"></select>
                     <span asp-validation-for="Purpose" class="text-danger"></span>
                 </div>
@@ -142,7 +142,7 @@
                 @if (Model.Purpose == ChallanPurposes.ExistingBillDue)
                 {
                     <div class="col-md-6">
-                        <label asp-for="BillNo" class="form-label"></label>
+                        <label asp-for="BillNo" class="form-label required"></label>
                         <select asp-for="BillNo" asp-items="Model.BillOptions" class="form-select" id="sourceBillNo">
                             <option value="">Latest generated bill</option>
                         </select>
@@ -151,7 +151,7 @@
                 }
 
                 <div class="col-md-6">
-                    <label asp-for="Amount" class="form-label"></label>
+                    <label asp-for="Amount" class="form-label required"></label>
                     <input asp-for="Amount" class="form-control" type="number" min="1" step="0.01" />
                     <span asp-validation-for="Amount" class="text-danger"></span>
                     @if (!string.IsNullOrWhiteSpace(Model.SuggestedAmountNote))
@@ -171,12 +171,12 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label asp-for="DueDate" class="form-label"></label>
+                    <label asp-for="DueDate" class="form-label required"></label>
                     <input asp-for="DueDate" class="form-control" type="date" />
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="BankCode" class="form-label"></label>
+                    <label asp-for="BankCode" class="form-label required"></label>
                     <select asp-for="BankCode" asp-items="Model.BankOptions" class="form-select">
                         <option value="">Select bank / counter</option>
                     </select>

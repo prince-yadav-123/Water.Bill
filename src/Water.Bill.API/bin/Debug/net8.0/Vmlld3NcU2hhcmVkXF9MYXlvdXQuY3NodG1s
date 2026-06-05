@@ -144,7 +144,7 @@
                 }
             </nav>
             <div class="wb-sidebar-bottom">
-                <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+                @* <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">Profile</a> *@
                 <a class="wb-nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
             </div>
         </aside>
@@ -186,7 +186,8 @@
                         </div>
                     </div>
                     <span class="badge text-bg-primary">@roleName</span>
-                    <span class="wb-avatar" title="@userName">@initial</span>
+                    <a class="wb-avatar text-decoration-none" href="/Profile" title="My Profile — @userName"
+                       style="cursor:pointer">@initial</a>
                 </div>
             </header>
         }

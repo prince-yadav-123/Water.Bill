@@ -90,18 +90,7 @@
         </table>
     </div>
 
-    @if (Model.TotalPages > 1)
-    {
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <small class="text-muted">Showing @((Model.Page - 1) * Model.PageSize + 1)–@Math.Min(Model.Page * Model.PageSize, Model.TotalCount) of @Model.TotalCount</small>
-            <div class="d-flex gap-1">
-                @for (var p = 1; p <= Model.TotalPages; p++)
-                {
-                    <a asp-action="Index" asp-route-page="@p" class="btn btn-sm @(p == Model.Page ? "btn-primary" : "btn-outline-secondary")">@p</a>
-                }
-            </div>
-        </div>
-    }
+    @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
 </section>
 
 <style>.btn-xs{padding:.15rem .45rem;font-size:.78rem;}</style>
