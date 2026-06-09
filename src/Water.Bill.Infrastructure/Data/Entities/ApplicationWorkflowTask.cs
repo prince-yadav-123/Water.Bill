@@ -18,6 +18,8 @@ public partial class ApplicationWorkflowTask
 
     public int? AssignedUserId { get; set; }
 
+    public int StatusCode { get; set; } = 1;
+
     public string Status { get; set; } = "Pending";
 
     public DateTime AssignedOn { get; set; }

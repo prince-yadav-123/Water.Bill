@@ -14,6 +14,9 @@ public class ApplicationWorkflowHistoryConfiguration : IEntityTypeConfiguration<
         entity.HasIndex(e => e.ApplicationNo, "IX_WorkflowHistory_ApplicationNo");
         entity.Property(e => e.Id).ValueGeneratedOnAdd();
         entity.Property(e => e.ApplicationNo).HasMaxLength(30);
+        entity.Property(e => e.FromStatusCode);
+        entity.Property(e => e.ToStatusCode);
+        entity.Property(e => e.ActionCode);
         entity.Property(e => e.FromStatus).HasMaxLength(30);
         entity.Property(e => e.ToStatus).HasMaxLength(30);
         entity.Property(e => e.Action).HasMaxLength(50);

@@ -15,6 +15,7 @@ public class ApplicationWorkflowInstanceConfiguration : IEntityTypeConfiguration
         entity.Property(e => e.Id).ValueGeneratedOnAdd();
         entity.Property(e => e.ApplicationNo).HasMaxLength(30);
         entity.Property(e => e.ApplicationType).HasMaxLength(50);
+        entity.Property(e => e.CurrentStatusCode).HasDefaultValue(1);
         entity.Property(e => e.CurrentStatus).HasMaxLength(50);
         entity.Property(e => e.StartedOn).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
         entity.Property(e => e.CompletedOn).HasColumnType("datetime");

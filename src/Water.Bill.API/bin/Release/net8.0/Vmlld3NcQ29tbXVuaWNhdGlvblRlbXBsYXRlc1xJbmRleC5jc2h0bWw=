@@ -1,0 +1,106 @@
+@model Water.Bill.API.Models.Communication.CommunicationTemplateListViewModel
+@using Water.Bill.Application.DTOs.Communication
+
+<div class="wb-page-head">
+    <div>
+        <h1>Communication Templates</h1>
+        <p>Manage message templates for email, SMS, WhatsApp, and in-app notifications.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Add Template</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Template, purpose, subject, body" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Purpose</label>
+            <select class="form-select" name="purposeKey">
+                <option value="">All Purposes</option>
+                @foreach (var purpose in Model.Purposes)
+                {
+                    var key = purpose.Text.Contains('(') ? purpose.Text[(purpose.Text.LastIndexOf('(') + 1)..].TrimEnd(')') : purpose.Value;
+                    <option value="@key" selected="@(Model.PurposeKey == key)">@purpose.Text</option>
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Channel</label>
+            <select class="form-select" name="channel">
+                <option value="">All Channels</option>
+                @foreach (var item in Model.Channels)
+                {
+                    <option value="@item.Value" selected="@(Model.Channel == item.Value)">@item.Text</option>
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="activeStatus">
+                <option value="">All Status</option>
+                <option value="Active" selected="@(Model.ActiveStatus == "Active")">Active</option>
+                <option value="Inactive" selected="@(Model.ActiveStatus == "Inactive")">Inactive</option>
+            </select>
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    @if (Model.Templates.Count == 0)
+    {
+        <div class="wb-empty">No communication templates found.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle wb-table wb-admin-table">
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Channel</th>
+                        <th>Template</th>
+                        <th>Default</th>
+                        <th>Status</th>
+                        <th>Updated</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Templates)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Purpose.DisplayName</strong>
+                                <div class="text-muted small">@item.PurposeKey</div>
+                            </td>
+                            <td><span class="badge text-bg-info">@item.Channel</span></td>
+                            <td>
+                                <strong>@item.TemplateName</strong>
+                                <div class="text-muted small">@(item.Subject ?? "-")</div>
+                            </td>
+                            <td><span class="badge @(item.IsDefault ? "text-bg-primary" : "text-bg-secondary")">@(item.IsDefault ? "Default" : "Alternate")</span></td>
+                            <td><span class="badge @(item.IsActive ? "text-bg-success" : "text-bg-secondary")">@(item.IsActive ? "Active" : "Inactive")</span></td>
+                            <td>@((item.UpdatedAt ?? item.CreatedAt).ToString("dd MMM yyyy"))</td>
+                            <td class="text-end">
+                                <div class="wb-row-actions justify-content-end">
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">View</a>
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Preview" asp-route-id="@item.Id">Preview</a>
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                    <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(item.IsActive ? "Deactivate" : "Activate")</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
+</section>

@@ -11,9 +11,10 @@ public class ApplicationWorkflowTaskConfiguration : IEntityTypeConfiguration<App
         entity.HasKey(e => e.Id).HasName("PRIMARY");
         entity.ToTable("ApplicationWorkflowTasks");
         entity.HasIndex(e => e.WorkflowInstanceId, "IX_WorkflowTasks_Instance");
-        entity.HasIndex(e => new { e.Status, e.AssignedRoleId, e.AssignedUserId, e.AssignedDepartmentId }, "IX_WorkflowTasks_Assignment");
+        entity.HasIndex(e => new { e.StatusCode, e.AssignedRoleId, e.AssignedUserId, e.AssignedDepartmentId }, "IX_WorkflowTasks_AssignmentCode");
         entity.Property(e => e.Id).ValueGeneratedOnAdd();
         entity.Property(e => e.ApplicationNo).HasMaxLength(30);
+        entity.Property(e => e.StatusCode).HasDefaultValue(1);
         entity.Property(e => e.Status).HasMaxLength(30).HasDefaultValue("Pending");
         entity.Property(e => e.AssignedOn).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
         entity.Property(e => e.ActionOn).HasColumnType("datetime");

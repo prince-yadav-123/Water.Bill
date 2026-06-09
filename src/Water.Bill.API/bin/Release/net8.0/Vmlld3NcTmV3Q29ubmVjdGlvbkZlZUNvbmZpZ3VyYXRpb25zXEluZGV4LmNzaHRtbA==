@@ -1,0 +1,40 @@
+@model IReadOnlyList<Water.Bill.Infrastructure.Data.Entities.NewConnectionFeeConfiguration>
+
+<div class="wb-page-head">
+    <div>
+        <h1>New Connection Fee Configuration</h1>
+        <p>Configure payable fee breakdown used on public new connection review.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Add Fee</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="table-responsive">
+        <table class="table align-middle wb-table wb-admin-table">
+            <thead><tr><th>Category</th><th>Type</th><th>Pipe</th><th>Plot Range</th><th>Total</th><th>Effective</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(item.ConnectionCategory ?? "Any")</td>
+                    <td>@(item.ConnectionType ?? "Any")</td>
+                    <td>@(item.PipeSize?.ToString("0.##") ?? "Any")</td>
+                    <td>@(item.PlotSizeFrom?.ToString("0.##") ?? "0") - @(item.PlotSizeTo?.ToString("0.##") ?? "Any")</td>
+                    <td><strong>@item.TotalAmount.ToString("0.00")</strong></td>
+                    <td>@item.EffectiveFrom.ToString("dd MMM yyyy")</td>
+                    <td><span class="badge @(item.IsActive ? "text-bg-success" : "text-bg-secondary")">@(item.IsActive ? "Active" : "Inactive")</span></td>
+                    <td>
+                        <div class="wb-row-actions justify-content-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(item.IsActive ? "Deactivate" : "Activate")</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

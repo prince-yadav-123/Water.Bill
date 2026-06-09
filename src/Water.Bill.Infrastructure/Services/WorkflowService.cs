@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.DTOs.Workflow;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -97,6 +98,7 @@ public class WorkflowService : IWorkflowService
             ApplicationType = applicationType,
             WorkflowId = workflow.Id,
             CurrentStageId = firstStage.Id,
+            CurrentStatusCode = WorkflowCodes.InstanceStatus.UnderReview,
             CurrentStatus = currentStatus,
             StartedOn = now,
             IsActive = true,
@@ -114,6 +116,7 @@ public class WorkflowService : IWorkflowService
             AssignedDepartmentId = firstStage.DepartmentId,
             AssignedRoleId = firstStage.ApproverRoleId,
             AssignedUserId = firstStage.ApproverUserId,
+            StatusCode = WorkflowCodes.TaskStatus.Pending,
             Status = TaskStatusPending,
             AssignedOn = now,
             IsActive = true,
@@ -126,8 +129,11 @@ public class WorkflowService : IWorkflowService
             ApplicationId = applicationId,
             ApplicationNo = applicationNo,
             StageId = firstStage.Id,
+            FromStatusCode = null,
+            ToStatusCode = WorkflowCodes.InstanceStatus.UnderReview,
             FromStatus = null,
             ToStatus = currentStatus,
+            ActionCode = WorkflowCodes.ActionCode.WorkflowStarted,
             Action = ActionWorkflowStarted,
             Remarks = $"Assigned to {firstStage.StageName}.",
             ActionBy = actorUserId,
@@ -185,7 +191,7 @@ public class WorkflowService : IWorkflowService
                 .FirstOrDefaultAsync(x => x.Id == request.TaskId
                     && !x.IsDeleted
                     && x.IsActive
-                    && x.Status == TaskStatusPending
+                    && (x.StatusCode == WorkflowCodes.TaskStatus.Pending || x.Status == TaskStatusPending)
                     && x.WorkflowInstance.IsActive
                     && !x.WorkflowInstance.IsDeleted
                     && x.WorkflowInstance.CurrentStageId == x.StageId, ct)
@@ -234,10 +240,10 @@ public class WorkflowService : IWorkflowService
             {
                 var completedPreviousStageIds = await _db.ApplicationWorkflowTasks
                     .AsNoTracking()
-                    .Where(x => x.WorkflowInstanceId == task.WorkflowInstanceId
+                .Where(x => x.WorkflowInstanceId == task.WorkflowInstanceId
                         && previousStageIds.Contains(x.StageId)
                         && !x.IsDeleted
-                        && x.Status == TaskStatusApproved)
+                        && (x.StatusCode == WorkflowCodes.TaskStatus.Approved || x.Status == TaskStatusApproved))
                     .Select(x => x.StageId)
                     .Distinct()
                     .ToListAsync(ct);
@@ -250,16 +256,18 @@ public class WorkflowService : IWorkflowService
                 .Where(x => x.WorkflowInstanceId == task.WorkflowInstanceId
                     && x.Id != task.Id
                     && !x.IsDeleted
-                    && x.Status == TaskStatusPending)
+                    && (x.StatusCode == WorkflowCodes.TaskStatus.Pending || x.Status == TaskStatusPending))
                 .ToListAsync(ct);
             foreach (var staleTask in stalePendingTasks)
             {
                 staleTask.IsActive = false;
+                staleTask.StatusCode = WorkflowCodes.TaskStatus.Skipped;
                 staleTask.Status = "Skipped";
                 staleTask.ActionOn = now;
                 staleTask.Remarks = "Closed automatically because workflow is sequential and only the current stage can remain pending.";
             }
 
+            task.StatusCode = ResolveTaskStatusCode(normalizedAction);
             task.Status = ResolveTaskStatus(normalizedAction);
             task.ActionOn = now;
             task.Remarks = Normalize(request.Remarks);
@@ -308,6 +316,7 @@ public class WorkflowService : IWorkflowService
                 // Move to next configured stage
                 nextStatus = "UnderReview";
                 task.WorkflowInstance.CurrentStageId = nextStage.Id;
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.UnderReview;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
                 {
@@ -318,6 +327,7 @@ public class WorkflowService : IWorkflowService
                     AssignedDepartmentId = nextStage.DepartmentId,
                     AssignedRoleId     = nextStage.ApproverRoleId,
                     AssignedUserId     = nextStage.ApproverUserId,
+                    StatusCode = WorkflowCodes.TaskStatus.Pending,
                     Status    = TaskStatusPending,
                     AssignedOn = now,
                     IsActive  = true,
@@ -331,6 +341,7 @@ public class WorkflowService : IWorkflowService
             else if (isMovingNext && nextStage is null)
             {
                 // No more stages — treat as implicit final approval
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.Completed;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
@@ -338,12 +349,14 @@ public class WorkflowService : IWorkflowService
             else if (isFinalizing)
             {
                 // Final approval — workflow completes after finalization
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.Approved;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
             }
             else if (normalizedAction == ActionRejected)
             {
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.Rejected;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
@@ -351,6 +364,7 @@ public class WorkflowService : IWorkflowService
             else if (normalizedAction == ActionForwardToUser)
             {
                 // Forward to a specific user — same stage, different assignee
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.UnderReview;
                 task.WorkflowInstance.CurrentStatus = "UnderReview";
                 _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
                 {
@@ -361,6 +375,7 @@ public class WorkflowService : IWorkflowService
                     AssignedDepartmentId = null,
                     AssignedRoleId     = null,
                     AssignedUserId     = request.ForwardToUserId,
+                    StatusCode = WorkflowCodes.TaskStatus.Pending,
                     Status    = TaskStatusPending,
                     AssignedOn = now,
                     IsActive  = true,
@@ -370,6 +385,7 @@ public class WorkflowService : IWorkflowService
             else if (normalizedAction is ActionSendBackToApplicant or ActionCorrectionRequired)
             {
                 // Return to applicant — workflow stays active, application needs correction
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.SentBackToApplicant;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.IsActive = true;
                 task.WorkflowInstance.CompletedOn = null;
@@ -378,6 +394,7 @@ public class WorkflowService : IWorkflowService
             {
                 // Send back to previous stage
                 task.WorkflowInstance.CurrentStageId = previousStage.Id;
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.SentBackToPreviousStage;
                 task.WorkflowInstance.CurrentStatus = "UnderReview";
                 _db.ApplicationWorkflowTasks.Add(new ApplicationWorkflowTask
                 {
@@ -388,6 +405,7 @@ public class WorkflowService : IWorkflowService
                     AssignedDepartmentId = previousStage.DepartmentId,
                     AssignedRoleId     = previousStage.ApproverRoleId,
                     AssignedUserId     = previousStage.ApproverUserId,
+                    StatusCode = WorkflowCodes.TaskStatus.Pending,
                     Status    = TaskStatusPending,
                     AssignedOn = now,
                     IsActive  = true,
@@ -471,6 +489,7 @@ public class WorkflowService : IWorkflowService
                     ct);
 
                 nextStatus = StatusFinalConsumerCreated;
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.FinalConsumerCreated;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
@@ -485,6 +504,7 @@ public class WorkflowService : IWorkflowService
                 ndcApplication.LastUpdatedOn = now;
                 ndcApplication.CertificateUrl = $"/NdcCertificates/Print/{ndcApplication.AutoId}";
                 nextStatus = "Approved";
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.Approved;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
@@ -497,6 +517,7 @@ public class WorkflowService : IWorkflowService
                     await FinalizeConnectionChangeAsync(legacyApplication, request, now, ct);
 
                 nextStatus = "Approved";
+                task.WorkflowInstance.CurrentStatusCode = WorkflowCodes.InstanceStatus.Approved;
                 task.WorkflowInstance.CurrentStatus = nextStatus;
                 task.WorkflowInstance.CompletedOn = now;
                 task.WorkflowInstance.IsActive = false;
@@ -508,8 +529,11 @@ public class WorkflowService : IWorkflowService
                 ApplicationId = task.ApplicationId,
                 ApplicationNo = task.ApplicationNo,
                 StageId = task.StageId,
+                FromStatusCode = ResolveInstanceStatusCode(fromStatus),
                 FromStatus = fromStatus,
+                ToStatusCode = ResolveInstanceStatusCode(workflowActionToStatus),
                 ToStatus = workflowActionToStatus,
+                ActionCode = ResolveActionCode(normalizedAction),
                 Action = historyAction,
                 Remarks = Normalize(request.Remarks),
                 ActionBy = request.ActorUserId,
@@ -526,8 +550,11 @@ public class WorkflowService : IWorkflowService
                     ApplicationId = task.ApplicationId,
                     ApplicationNo = task.ApplicationNo,
                     StageId = task.StageId,
+                    FromStatusCode = WorkflowCodes.InstanceStatus.Approved,
                     FromStatus = "Approved",
+                    ToStatusCode = WorkflowCodes.InstanceStatus.FinalConsumerCreated,
                     ToStatus = StatusFinalConsumerCreated,
+                    ActionCode = WorkflowCodes.ActionCode.FinalConsumerCreated,
                     Action = ActionFinalConsumerCreated,
                     Remarks = $"Consumer number generated: {finalConsumerNo}",
                     ActionBy = request.ActorUserId,
@@ -554,8 +581,11 @@ public class WorkflowService : IWorkflowService
                     ApplicationId = task.ApplicationId,
                     ApplicationNo = task.ApplicationNo,
                     StageId = assignedStage.Id,
+                    FromStatusCode = ResolveInstanceStatusCode(nextStatus),
+                    ToStatusCode = ResolveInstanceStatusCode(nextStatus),
                     FromStatus = nextStatus,
                     ToStatus = nextStatus,
+                    ActionCode = WorkflowCodes.ActionCode.StageAssigned,
                     Action = ActionStageAssigned,
                     Remarks = assignedLabel,
                     ActionBy = request.ActorUserId,
@@ -579,8 +609,11 @@ public class WorkflowService : IWorkflowService
                     ApplicationId = task.ApplicationId,
                     ApplicationNo = task.ApplicationNo,
                     StageId = task.StageId,
+                    FromStatusCode = ResolveInstanceStatusCode(nextStatus),
+                    ToStatusCode = ResolveInstanceStatusCode(nextStatus),
                     FromStatus = nextStatus,
                     ToStatus = nextStatus,
+                    ActionCode = WorkflowCodes.ActionCode.StageAssigned,
                     Action = ActionStageAssigned,
                     Remarks = $"Forwarded to {targetUserName}.",
                     ActionBy = request.ActorUserId,
@@ -655,7 +688,7 @@ public class WorkflowService : IWorkflowService
     {
         var instanceIds = await _db.ApplicationWorkflowTasks
             .AsNoTracking()
-            .Where(x => !x.IsDeleted && x.Status == TaskStatusPending)
+            .Where(x => !x.IsDeleted && (x.StatusCode == WorkflowCodes.TaskStatus.Pending || x.Status == TaskStatusPending))
             .GroupBy(x => x.WorkflowInstanceId)
             .Where(x => x.Count() > 1)
             .Select(x => x.Key)
@@ -729,11 +762,11 @@ public class WorkflowService : IWorkflowService
 
     private async Task EnsureSingleCurrentPendingTaskAsync(ApplicationWorkflowInstance instance, CancellationToken ct)
     {
-        var pendingTasks = await _db.ApplicationWorkflowTasks
+            var pendingTasks = await _db.ApplicationWorkflowTasks
             .Include(x => x.Stage)
             .Where(x => x.WorkflowInstanceId == instance.Id
                 && !x.IsDeleted
-                && x.Status == TaskStatusPending)
+                && (x.StatusCode == WorkflowCodes.TaskStatus.Pending || x.Status == TaskStatusPending))
             .OrderBy(x => x.Stage.StageOrder)
             .ThenBy(x => x.AssignedOn)
             .ThenBy(x => x.Id)
@@ -756,6 +789,7 @@ public class WorkflowService : IWorkflowService
             }
 
             pendingTask.IsActive = false;
+            pendingTask.StatusCode = WorkflowCodes.TaskStatus.Skipped;
             pendingTask.Status = "Skipped";
             pendingTask.ActionOn ??= DateTime.Now;
             pendingTask.Remarks ??= "Closed automatically because workflow is sequential and only the current stage can remain pending.";
@@ -851,6 +885,48 @@ public class WorkflowService : IWorkflowService
                 or ActionCorrectionRequired         => StatusSentBackToApplicant,
             ActionSendBackToPrevious                => "UnderReview",
             _ => throw new InvalidOperationException($"Unsupported workflow action: {action}")
+        };
+
+    private static int ResolveTaskStatusCode(string action)
+        => action switch
+        {
+            ActionAcceptMoveNext or ActionFinalApproval
+                or ActionApproved or ActionMoveNext => WorkflowCodes.TaskStatus.Approved,
+            ActionRejected                          => WorkflowCodes.TaskStatus.Rejected,
+            ActionForwardToUser                     => WorkflowCodes.TaskStatus.Forwarded,
+            ActionSendBackToApplicant
+                or ActionCorrectionRequired         => WorkflowCodes.TaskStatus.SentBackToApplicant,
+            ActionSendBackToPrevious                => WorkflowCodes.TaskStatus.SentBackToPreviousStage,
+            _ => throw new InvalidOperationException($"Unsupported workflow action: {action}")
+        };
+
+    private static int ResolveInstanceStatusCode(string? status)
+        => status switch
+        {
+            "UnderReview" => WorkflowCodes.InstanceStatus.UnderReview,
+            "Approved" => WorkflowCodes.InstanceStatus.Approved,
+            "Rejected" => WorkflowCodes.InstanceStatus.Rejected,
+            StatusSentBackToApplicant => WorkflowCodes.InstanceStatus.SentBackToApplicant,
+            "FinalConsumerCreated" => WorkflowCodes.InstanceStatus.FinalConsumerCreated,
+            "Completed" => WorkflowCodes.InstanceStatus.Completed,
+            "Pending" => WorkflowCodes.InstanceStatus.Pending,
+            null => WorkflowCodes.InstanceStatus.Pending,
+            _ => WorkflowCodes.InstanceStatus.Pending
+        };
+
+    private static int ResolveActionCode(string action)
+        => action switch
+        {
+            ActionWorkflowStarted => WorkflowCodes.ActionCode.WorkflowStarted,
+            ActionAcceptMoveNext  => WorkflowCodes.ActionCode.AcceptMoveNext,
+            ActionFinalApproval   => WorkflowCodes.ActionCode.FinalApproval,
+            ActionRejected        => WorkflowCodes.ActionCode.Reject,
+            ActionSendBackToApplicant or ActionCorrectionRequired => WorkflowCodes.ActionCode.SendBackToApplicant,
+            ActionSendBackToPrevious => WorkflowCodes.ActionCode.SendBackToPreviousStage,
+            ActionForwardToUser   => WorkflowCodes.ActionCode.ForwardToUser,
+            ActionStageAssigned   => WorkflowCodes.ActionCode.StageAssigned,
+            ActionFinalConsumerCreated => WorkflowCodes.ActionCode.FinalConsumerCreated,
+            _ => WorkflowCodes.ActionCode.StageAssigned
         };
 
     private static string NormalizeAction(string action)

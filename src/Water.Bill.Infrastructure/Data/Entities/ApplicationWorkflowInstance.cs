@@ -14,6 +14,8 @@ public partial class ApplicationWorkflowInstance
 
     public int? CurrentStageId { get; set; }
 
+    public int CurrentStatusCode { get; set; } = 1;
+
     public string CurrentStatus { get; set; } = null!;
 
     public DateTime StartedOn { get; set; }

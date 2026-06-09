@@ -12,9 +12,15 @@ public partial class ApplicationWorkflowHistory
 
     public int? StageId { get; set; }
 
+    public int? FromStatusCode { get; set; }
+
     public string? FromStatus { get; set; }
 
+    public int ToStatusCode { get; set; }
+
     public string ToStatus { get; set; } = null!;
+
+    public int ActionCode { get; set; }
 
     public string Action { get; set; } = null!;
 

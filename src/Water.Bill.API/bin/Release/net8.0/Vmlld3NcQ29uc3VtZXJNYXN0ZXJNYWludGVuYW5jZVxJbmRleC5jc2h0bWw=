@@ -1,0 +1,112 @@
+@model Water.Bill.API.Models.Consumers.ConsumerMasterMaintenanceIndexViewModel
+@using Water.Bill.Core.Common
+@{
+    ViewData["Title"] = "Consumer Master Maintenance";
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Consumer Master Maintenance</h1>
+        <p>Search and maintain existing live consumer records from the old-compatible consumer master.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-controller="BillSearchPrint" asp-action="Index">Bill Search & Print</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Consumer / name / mobile / property" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Division</label>
+            <select class="form-select" name="devType" asp-items="Model.DivisionOptions">
+                <option value="">All Divisions</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status">
+                <option value="-1" selected="@(Model.Status == -1)">All</option>
+                <option value="1" selected="@(Model.Status == 1)">Active</option>
+                <option value="0" selected="@(Model.Status == 0)">Inactive</option>
+            </select>
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mt-3 mb-3">
+        <div>
+            <h2 class="wb-section-title mb-1">Consumers</h2>
+            <p class="text-muted mb-0">Showing up to 300 records. Use filters for precise lookup.</p>
+        </div>
+        <span class="badge text-bg-secondary">@Model.Consumers.Count record@(Model.Consumers.Count == 1 ? "" : "s")</span>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string success)
+    {
+        <div class="alert alert-success wb-alert">@success</div>
+    }
+
+    @if (Model.Consumers.Count == 0)
+    {
+        <div class="wb-empty">No consumers found for selected filters.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Consumer</th>
+                        <th>Mobile / Email</th>
+                        <th>Property</th>
+                        <th>Connection</th>
+                        <th>Division</th>
+                        <th>Status</th>
+                        <th>Connection Date</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Consumers)
+                {
+                    <tr>
+                        <td>
+                            <strong>@row.ConsumerNo</strong>
+                            <small class="d-block text-muted">@Text(row.ConsumerName)</small>
+                            @if (!string.IsNullOrWhiteSpace(row.FatherName))
+                            {
+                                <small class="d-block text-muted">@row.FatherName</small>
+                            }
+                        </td>
+                        <td>
+                            <div>@Text(row.MobileNo)</div>
+                            <small class="text-muted">@Text(row.Email)</small>
+                        </td>
+                        <td>@Text(row.PropertyNo)</td>
+                        <td>
+                            <div>@Text(row.ConnectionType)</div>
+                            <small class="text-muted">@Text(row.Category)</small>
+                        </td>
+                        <td>@AppConstants.Divisions.FormatDisplay(row.DevType)</td>
+                        <td><span class="badge @(row.Status == 1 ? "text-bg-success" : "text-bg-secondary")">@(row.Status == 1 ? "Active" : "Inactive")</span></td>
+                        <td>@DateText(row.ConnectionDate)</td>
+                        <td class="text-end">
+                            <div class="wb-approval-actions">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-consumerNo="@row.ConsumerNo">View</a>
+                                <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-consumerNo="@row.ConsumerNo">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

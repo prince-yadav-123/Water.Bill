@@ -263,3 +263,4 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\complaints-consumer\Water.Bill.ConsumerPortal.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\build-check\complaints-consumer\Water.Bill.ConsumerPortal.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\dotnet-tools.json

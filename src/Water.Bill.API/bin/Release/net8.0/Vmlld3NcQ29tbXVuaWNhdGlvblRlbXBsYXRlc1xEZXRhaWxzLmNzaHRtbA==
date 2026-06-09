@@ -1,0 +1,28 @@
+@model Water.Bill.Infrastructure.Data.Entities.CommunicationTemplate
+
+<div class="wb-page-head">
+    <div>
+        <h1>@Model.TemplateName</h1>
+        <p>@Model.Purpose.DisplayName - @Model.Channel</p>
+    </div>
+    <div class="wb-row-actions">
+        <a class="btn btn-outline-secondary" asp-action="Preview" asp-route-id="@Model.Id">Preview</a>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-detail-grid">
+        <div><span>Purpose</span><strong>@Model.PurposeKey</strong></div>
+        <div><span>Channel</span><strong>@Model.Channel</strong></div>
+        <div><span>Status</span><strong>@(Model.IsActive ? "Active" : "Inactive")</strong></div>
+        <div><span>Default</span><strong>@(Model.IsDefault ? "Yes" : "No")</strong></div>
+        <div><span>External Template Id</span><strong>@(Model.ExternalTemplateId ?? "-")</strong></div>
+    </div>
+    <hr />
+    <h2 class="wb-section-title">Subject</h2>
+    <p>@(Model.Subject ?? "-")</p>
+    <h2 class="wb-section-title">Body</h2>
+    <pre class="wb-code-box">@Model.Body</pre>
+</section>

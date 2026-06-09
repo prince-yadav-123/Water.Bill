@@ -1,0 +1,133 @@
+@model Water.Bill.API.Models.PaginationViewModel
+@{
+    if (Model is null || Model.TotalCount == 0) { return; }
+    var maxButtons = 7;
+}
+
+<div class="wb-pagination d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 pt-2 border-top">
+
+    @* ── Left: record info ── *@
+    <div class="wb-pagination-info text-muted" style="font-size:.85rem">
+        Showing <strong>@Model.From</strong>–<strong>@Model.To</strong> of
+        <strong>@Model.TotalCount</strong> record(s)
+    </div>
+
+    @* ── Right: page size + buttons ── *@
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+
+        @* Page size dropdown *@
+        <div class="d-flex align-items-center gap-1" style="font-size:.85rem">
+            <label class="text-muted mb-0">Rows:</label>
+            <select class="form-select form-select-sm wb-page-size-select" style="width:auto"
+                    onchange="wbGoPageSize(this.value)">
+                @foreach (var s in Model.AllowedPageSizes)
+                {
+                    <option value="@s" selected="@(s == Model.PageSize)">@s</option>
+                }
+            </select>
+        </div>
+
+        @* Pagination buttons *@
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm mb-0">
+
+                @* Previous *@
+                <li class="page-item @(!Model.HasPrev ? "disabled" : "")">
+                    <button class="page-link" @(Model.HasPrev ? $"onclick=\"wbGoPage({Model.Page - 1})\"" : "disabled")
+                            aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </button>
+                </li>
+
+                @* Page numbers with ellipsis *@
+                @{
+                    int startPage, endPage;
+                    if (Model.TotalPages <= maxButtons)
+                    {
+                        startPage = 1;
+                        endPage = Model.TotalPages;
+                    }
+                    else
+                    {
+                        int half = maxButtons / 2;
+                        startPage = Math.Max(1, Model.Page - half);
+                        endPage = startPage + maxButtons - 1;
+                        if (endPage > Model.TotalPages)
+                        {
+                            endPage = Model.TotalPages;
+                            startPage = Math.Max(1, endPage - maxButtons + 1);
+                        }
+                    }
+                }
+
+                @if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <button class="page-link" onclick="wbGoPage(1)">1</button>
+                    </li>
+                    if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    }
+                }
+
+                @for (var p = startPage; p <= endPage; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        @if (p == Model.Page)
+                        {
+                            <span class="page-link">@p</span>
+                        }
+                        else
+                        {
+                            var pCopy = p;
+                            <button class="page-link" onclick="wbGoPage(@pCopy)">@pCopy</button>
+                        }
+                    </li>
+                }
+
+                @if (endPage < Model.TotalPages)
+                {
+                    if (endPage < Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    }
+                    <li class="page-item">
+                        <button class="page-link" onclick="wbGoPage(@Model.TotalPages)">@Model.TotalPages</button>
+                    </li>
+                }
+
+                @* Next *@
+                <li class="page-item @(!Model.HasNext ? "disabled" : "")">
+                    <button class="page-link" @(Model.HasNext ? $"onclick=\"wbGoPage({Model.Page + 1})\"" : "disabled")
+                            aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </button>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@* Shared JS — injected once per page (idempotent guard) *@
+<script>
+if (typeof wbGoPage === 'undefined') {
+    function wbGoPage(page) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        window.location.href = url.toString();
+    }
+    function wbGoPageSize(size) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('pageSize', size);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
+}
+</script>
+<style>
+    .wb-pagination .pagination { --bs-pagination-font-size: .82rem; }
+    .wb-pagination .page-link { min-width: 32px; text-align: center; padding: .3rem .6rem; }
+    .wb-pagination-info { white-space: nowrap; }
+</style>
