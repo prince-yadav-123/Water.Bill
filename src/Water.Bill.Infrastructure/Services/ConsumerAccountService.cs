@@ -8,7 +8,6 @@ namespace Water.Bill.Infrastructure.Services;
 
 public class ConsumerAccountService : IConsumerAccountService
 {
-    private const string ConsumerNoCollation = "utf8mb4_0900_ai_ci";
     private readonly ApplicationDbContext _db;
 
     public ConsumerAccountService(ApplicationDbContext db) => _db = db;
@@ -42,9 +41,10 @@ public class ConsumerAccountService : IConsumerAccountService
             throw new UnauthorizedAccessException("Invalid username/email or password.");
         }
 
+        var consumerNo = (user.ConsumerNo ?? string.Empty).Trim().ToUpperInvariant();
         var consumer = await _db.ConsumerDetailsMasters
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => EF.Functions.Collate(x.ConsNo, ConsumerNoCollation) == user.ConsumerNo, ct);
+            .FirstOrDefaultAsync(x => x.ConsNo != null && x.ConsNo.ToUpper() == consumerNo, ct);
 
         if (consumer is null)
             throw new UnauthorizedAccessException("Linked consumer number was not found. Please contact support.");

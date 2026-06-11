@@ -17,7 +17,7 @@ entity.ToTable("securitysettings");
 
         entity.Property(e => e.CreatedAt)
             .HasMaxLength(6)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+            .HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.SessionTimeoutMinutes).HasDefaultValue(480);
         entity.Property(e => e.IdleTimeoutMinutes).HasDefaultValue(30);
         entity.Property(e => e.PasswordMinLength).HasDefaultValue(8);
@@ -32,3 +32,4 @@ entity.ToTable("securitysettings");
         entity.Property(e => e.CaptchaAfterAttempts).HasDefaultValue(3);
     }
 }
+

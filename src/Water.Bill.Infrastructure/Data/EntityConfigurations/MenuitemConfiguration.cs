@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.Infrastructure.Data.EntityConfigurations;
@@ -14,7 +13,7 @@ public class MenuitemConfiguration : IEntityTypeConfiguration<Menuitem>
         
 entity
             .ToTable("menuitems")
-            .UseCollation("utf8mb4_0900_ai_ci");
+            ;
         
         entity.HasIndex(e => e.ParentId, "FK_MenuItems_MenuItems_ParentId");
         
@@ -23,7 +22,7 @@ entity
         
         entity.Property(e => e.CreatedAt)
             .HasMaxLength(6)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+            .HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.Icon).HasMaxLength(100);
         entity.Property(e => e.IsActive)
             .IsRequired()
@@ -45,3 +44,4 @@ entity
         
     }
 }
+

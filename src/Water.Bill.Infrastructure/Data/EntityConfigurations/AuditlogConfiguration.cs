@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.Infrastructure.Data.EntityConfigurations;
@@ -14,7 +13,7 @@ public class AuditlogConfiguration : IEntityTypeConfiguration<Auditlog>
         
 entity
             .ToTable("auditlogs")
-            .UseCollation("utf8mb4_0900_ai_ci");
+            ;
         
         entity.HasIndex(e => e.Timestamp, "IX_AuditLogs_Timestamp");
         
@@ -29,9 +28,10 @@ entity
             .HasDefaultValueSql("'1'");
         entity.Property(e => e.Timestamp)
             .HasMaxLength(6)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+            .HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.UserAgent).HasMaxLength(500);
         entity.Property(e => e.Username).HasMaxLength(100);
         
     }
 }
+

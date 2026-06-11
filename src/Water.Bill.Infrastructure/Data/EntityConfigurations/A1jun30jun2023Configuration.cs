@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.Infrastructure.Data.EntityConfigurations;
@@ -155,3 +154,4 @@ public class A1jun30jun2023Configuration : IEntityTypeConfiguration<A1jun30jun20
         
     }
 }
+

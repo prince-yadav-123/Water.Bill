@@ -1,4 +1,7 @@
 @model IReadOnlyList<Water.Bill.Infrastructure.Data.Entities.NewConnectionFeeConfiguration>
+@{
+    var pagination = ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel;
+}
 
 <div class="wb-page-head">
     <div>
@@ -37,4 +40,5 @@
             </tbody>
         </table>
     </div>
+    @await Html.PartialAsync("_Pagination", pagination)
 </section>

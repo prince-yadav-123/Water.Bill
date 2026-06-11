@@ -583,7 +583,7 @@ public class ChallanManagementController : Controller
         if (model.FromDate.HasValue) baseQ = baseQ.Where(x => x.challan.EntryDate >= model.FromDate.Value.Date);
         if (model.ToDate.HasValue) baseQ = baseQ.Where(x => x.challan.EntryDate < model.ToDate.Value.Date.AddDays(1));
 
-        var orderedQ = baseQ.OrderByDescending(x => x.challan.EntryDate).ThenByDescending(x => x.challan.Id);
+        var orderedQ = baseQ.OrderByDescending(x => x.challan.Id);
         var totalCount = await orderedQ.CountAsync(ct);
         var entities = await orderedQ.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
 
@@ -924,15 +924,15 @@ public class ChallanManagementController : Controller
         var bankCode = payment.BankCode;
 
         await _db.Database.ExecuteSqlInterpolatedAsync($@"
-UPDATE `jal_print_bill_master`
-SET `paid_date` = {payment.PaymentDate},
-    `paid_amt` = {amount},
-    `PAID_STATUS` = 'Y',
-    `CHALLAN_NO` = {challanNo},
-    `BANK_CODE` = {bankCode}
-WHERE `CONS_NO` = {consumerNo}
-  AND `BILL_NO` = {billNo}
-  AND `STATUS` = '1';", ct);
+UPDATE [jal_print_bill_master]
+SET [paid_date] = {payment.PaymentDate},
+    [paid_amt] = {amount},
+    [PAID_STATUS] = 'Y',
+    [CHALLAN_NO] = {challanNo},
+    [BANK_CODE] = {bankCode}
+WHERE [CONS_NO] = {consumerNo}
+  AND [BILL_NO] = {billNo}
+  AND [STATUS] = '1';", ct);
     }
 
     private async Task<string> GenerateChallanNoAsync(int? devType, CancellationToken ct)

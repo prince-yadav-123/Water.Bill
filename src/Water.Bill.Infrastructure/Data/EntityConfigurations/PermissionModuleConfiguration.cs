@@ -26,3 +26,4 @@ entity.ToTable("PermissionModules");
             .HasDefaultValueSql("'0'");
     }
 }
+

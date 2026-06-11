@@ -21,3 +21,4 @@ public class SupportQueryCategoryConfiguration : IEntityTypeConfiguration<Suppor
         entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
     }
 }
+

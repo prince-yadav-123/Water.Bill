@@ -1186,13 +1186,7 @@ public class WorkflowService : IWorkflowService
                 usersQuery = usersQuery.Where(x => x.RoleId == stage.ApproverRoleId.Value);
 
             if (stage.DepartmentId.HasValue)
-            {
-                var deptUserIds = await _db.AuthorityUserDepartments.AsNoTracking()
-                    .Where(x => x.DepartmentId == stage.DepartmentId.Value && x.IsActive && !x.IsDeleted)
-                    .Select(x => x.UserId)
-                    .ToListAsync(ct);
-                usersQuery = usersQuery.Where(x => deptUserIds.Contains(x.Id));
-            }
+                usersQuery = usersQuery.Where(x => x.DeptId == stage.DepartmentId.Value);
 
             var userIds = await usersQuery.Select(x => x.Id).ToListAsync(ct);
             foreach (var uid in userIds)

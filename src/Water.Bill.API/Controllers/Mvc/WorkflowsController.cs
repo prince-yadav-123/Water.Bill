@@ -256,12 +256,7 @@ public class WorkflowsController : Controller
             query = query.Where(x => x.RoleId == roleId.Value);
 
         if (departmentId.HasValue)
-        {
-            var departmentUserIds = _db.AuthorityUserDepartments
-                .Where(x => x.DepartmentId == departmentId.Value && x.IsActive && !x.IsDeleted)
-                .Select(x => x.UserId);
-            query = query.Where(x => departmentUserIds.Contains(x.Id));
-        }
+            query = query.Where(x => x.DeptId == departmentId.Value);
 
         return query;
     }

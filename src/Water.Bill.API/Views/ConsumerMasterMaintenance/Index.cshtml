@@ -2,6 +2,7 @@
 @using Water.Bill.Core.Common
 @{
     ViewData["Title"] = "Consumer Master Maintenance";
+    var pagination = ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel;
     string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
     string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
 }
@@ -43,9 +44,9 @@
     <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mt-3 mb-3">
         <div>
             <h2 class="wb-section-title mb-1">Consumers</h2>
-            <p class="text-muted mb-0">Showing up to 300 records. Use filters for precise lookup.</p>
+            <p class="text-muted mb-0">Use filters for precise lookup and browse records page by page.</p>
         </div>
-        <span class="badge text-bg-secondary">@Model.Consumers.Count record@(Model.Consumers.Count == 1 ? "" : "s")</span>
+        <span class="badge text-bg-secondary">@(pagination?.TotalCount ?? Model.Consumers.Count) record@((pagination?.TotalCount ?? Model.Consumers.Count) == 1 ? "" : "s")</span>
     </div>
 
     @if (TempData["SuccessMessage"] is string success)
@@ -108,5 +109,6 @@
                 </tbody>
             </table>
         </div>
+        @await Html.PartialAsync("_Pagination", pagination)
     }
 </section>

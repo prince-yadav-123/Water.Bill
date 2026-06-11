@@ -24,3 +24,4 @@ public class ApplicationWorkflowInstanceConfiguration : IEntityTypeConfiguration
         entity.HasOne(e => e.CurrentStage).WithMany().HasForeignKey(e => e.CurrentStageId).OnDelete(DeleteBehavior.SetNull);
     }
 }
+

@@ -99,16 +99,16 @@ public class BulkBillGenerationController : Controller
                 int? nullInt = null;
 
                 await _db.Database.ExecuteSqlInterpolatedAsync($@"
-INSERT INTO `jal_print_bill_master`
-(`BILL_NO`, `CONS_NO`, `BILL_DATE`, `BILL_DUE_DATE`, `BILL_DATE_FROM`, `BILL_DATE_TO`,
- `MIN_RATE`, `MIN_TOTAL_AMT`, `BILL_REBATE_PER`, `BILL_REBATE_AMT`, `CESS_AMT`,
- `AREAR`, `AREAR_TEXT`, `AREAR_INT`, `AREAR_INT_TEXT`, `LAST_BILL_EXTRA`,
- `TOTAL_BILL_AMT`, `BEFORE_DATE`, `AFTER_DATE`, `AFTER_DATE_AMT`, `Div_type`,
- `STATUS`, `ENTRY_DATE`, `Due_date`, `due_amt`, `paid_date`, `paid_amt`, `diff`,
- `PAID_STATUS`, `new_record`, `update_record`, `bill_after_sep_amt`, `adv_amt`,
- `PRINT_STATUS`, `OLD_RATE`, `BILL_TYPE`, `LAST_PAID_AMT`, `BILL_COUNT`,
- `SCHEME_ID`, `BILL_PERCENTAGE`, `USERID`, `DEV_TYPE`, `PAYMENT_TYPE`, `CHALLAN_NO`,
- `BANK_CODE`, `Challan_Content`, `Rid`, `Part_Amt`)
+INSERT INTO [jal_print_bill_master]
+([BILL_NO], [CONS_NO], [BILL_DATE], [BILL_DUE_DATE], [BILL_DATE_FROM], [BILL_DATE_TO],
+ [MIN_RATE], [MIN_TOTAL_AMT], [BILL_REBATE_PER], [BILL_REBATE_AMT], [CESS_AMT],
+ [AREAR], [AREAR_TEXT], [AREAR_INT], [AREAR_INT_TEXT], [LAST_BILL_EXTRA],
+ [TOTAL_BILL_AMT], [BEFORE_DATE], [AFTER_DATE], [AFTER_DATE_AMT], [Div_type],
+ [STATUS], [ENTRY_DATE], [Due_date], [due_amt], [paid_date], [paid_amt], [diff],
+ [PAID_STATUS], [new_record], [update_record], [bill_after_sep_amt], [adv_amt],
+ [PRINT_STATUS], [OLD_RATE], [BILL_TYPE], [LAST_PAID_AMT], [BILL_COUNT],
+ [SCHEME_ID], [BILL_PERCENTAGE], [USERID], [DEV_TYPE], [PAYMENT_TYPE], [CHALLAN_NO],
+ [BANK_CODE], [Challan_Content], [Rid], [Part_Amt])
 VALUES
 ({billNo}, {consumer.ConsNo}, {request.BillDate}, {request.BillDueDate}, {request.BillDateFrom}, {request.BillDateTo},
  {row.MonthlyRate}, {row.MinimumTotalAmount}, {row.AppliedRebatePercent}, {row.RebateAmount}, {row.CessAmount},

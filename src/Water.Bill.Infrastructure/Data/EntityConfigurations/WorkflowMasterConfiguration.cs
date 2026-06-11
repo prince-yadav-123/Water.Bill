@@ -19,3 +19,4 @@ public class WorkflowMasterConfiguration : IEntityTypeConfiguration<WorkflowMast
         entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
     }
 }
+

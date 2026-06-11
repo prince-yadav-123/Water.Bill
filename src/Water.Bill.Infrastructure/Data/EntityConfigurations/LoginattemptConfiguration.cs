@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.Infrastructure.Data.EntityConfigurations;
@@ -14,7 +13,7 @@ public class LoginattemptConfiguration : IEntityTypeConfiguration<Loginattempt>
         
 entity
             .ToTable("loginattempts")
-            .UseCollation("utf8mb4_0900_ai_ci");
+            ;
         
         entity.HasIndex(e => e.UserId, "FK_LoginAttempts_AppUsers_UserId");
         
@@ -22,7 +21,7 @@ entity
         
         entity.Property(e => e.CreatedAt)
             .HasMaxLength(6)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+            .HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.FailureReason).HasMaxLength(100);
         entity.Property(e => e.IpAddress).HasMaxLength(64);
         entity.Property(e => e.UpdatedAt).HasMaxLength(6);
@@ -35,3 +34,4 @@ entity
         
     }
 }
+

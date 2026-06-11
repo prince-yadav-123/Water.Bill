@@ -22,3 +22,4 @@ public class ConsumerNoticeHistoryConfiguration : IEntityTypeConfiguration<Consu
         entity.Property(e => e.IsDeleted).HasDefaultValue(false);
     }
 }
+

@@ -2,6 +2,7 @@
 @using Water.Bill.Core.Common
 @{
     ViewData["Title"] = "Consumer Master Maintenance";
+    var pagination = ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel;
     string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
     string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
 }
@@ -19,30 +20,6 @@
         <div class="wb-filter-field wb-filter-search">
             <label class="form-label">Search</label>
             <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Consumer / name / mobile / property" />
-        </div>
-        <div class="wb-filter-field">
-            <label class="form-label">Consumer No</label>
-            <input class="form-control" type="search" name="consumerNo" value="@Model.ConsumerNo" placeholder="Consumer No" />
-        </div>
-        <div class="wb-filter-field">
-            <label class="form-label">Name</label>
-            <input class="form-control" type="search" name="consumerName" value="@Model.ConsumerName" placeholder="Name" />
-        </div>
-        <div class="wb-filter-field">
-            <label class="form-label">Mobile</label>
-            <input class="form-control" type="search" name="mobileNo" value="@Model.MobileNo" placeholder="Mobile" />
-        </div>
-        <div class="wb-filter-field">
-            <label class="form-label">Sector</label>
-            <input class="form-control" type="search" name="sector" value="@Model.Sector" placeholder="Sector" />
-        </div>
-        <div class="wb-filter-field">
-            <label class="form-label">Block</label>
-            <input class="form-control" type="search" name="block" value="@Model.Block" placeholder="Block" />
-        </div>
-        <div class="wb-filter-field">
-            <label class="form-label">Plot / Flat</label>
-            <input class="form-control" type="search" name="plotNo" value="@Model.PlotNo" placeholder="Plot" />
         </div>
         <div class="wb-filter-field">
             <label class="form-label">Division</label>
@@ -67,9 +44,9 @@
     <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mt-3 mb-3">
         <div>
             <h2 class="wb-section-title mb-1">Consumers</h2>
-            <p class="text-muted mb-0">Showing up to 300 records. Use filters for precise lookup.</p>
+            <p class="text-muted mb-0">Use filters for precise lookup and browse records page by page.</p>
         </div>
-        <span class="badge text-bg-secondary">@Model.Consumers.Count record@(Model.Consumers.Count == 1 ? "" : "s")</span>
+        <span class="badge text-bg-secondary">@(pagination?.TotalCount ?? Model.Consumers.Count) record@((pagination?.TotalCount ?? Model.Consumers.Count) == 1 ? "" : "s")</span>
     </div>
 
     @if (TempData["SuccessMessage"] is string success)
@@ -132,5 +109,6 @@
                 </tbody>
             </table>
         </div>
+        @await Html.PartialAsync("_Pagination", pagination)
     }
 </section>

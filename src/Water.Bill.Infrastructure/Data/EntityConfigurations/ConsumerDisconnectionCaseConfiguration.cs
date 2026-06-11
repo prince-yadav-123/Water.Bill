@@ -44,3 +44,4 @@ public class ConsumerDisconnectionCaseConfiguration : IEntityTypeConfiguration<C
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
+

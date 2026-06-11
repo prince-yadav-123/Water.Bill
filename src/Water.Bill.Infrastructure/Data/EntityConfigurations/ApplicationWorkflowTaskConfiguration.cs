@@ -24,3 +24,4 @@ public class ApplicationWorkflowTaskConfiguration : IEntityTypeConfiguration<App
         entity.HasOne(e => e.Stage).WithMany().HasForeignKey(e => e.StageId).OnDelete(DeleteBehavior.Restrict);
     }
 }
+

@@ -71,7 +71,7 @@ public class NewConnectionLookupService : INewConnectionLookupService
             .AsNoTracking()
             .Where(x => (x.Status == null || x.Status == 1)
                 && x.DocumentName != null
-                && (x.DocFor == null || x.DocFor == "NCH"))
+                && (x.DocFor == null || x.DocFor == "NCH" || x.DocFor == "NC"))
             .OrderBy(x => x.DocumentId)
             .Select(x => new NewConnectionLookupOptionDto
             {

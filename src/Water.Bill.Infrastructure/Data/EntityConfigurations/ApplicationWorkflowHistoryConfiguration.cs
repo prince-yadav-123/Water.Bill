@@ -26,3 +26,4 @@ public class ApplicationWorkflowHistoryConfiguration : IEntityTypeConfiguration<
         entity.Property(e => e.ActionOn).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }
+

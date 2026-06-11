@@ -34,3 +34,4 @@ public class ConsumerMeterReadingConfiguration : IEntityTypeConfiguration<Consum
         entity.Property(e => e.IsDeleted).HasDefaultValue(false);
     }
 }
+

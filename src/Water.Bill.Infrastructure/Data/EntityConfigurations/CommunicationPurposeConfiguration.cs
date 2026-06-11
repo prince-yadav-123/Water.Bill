@@ -18,8 +18,9 @@ public class CommunicationPurposeConfiguration : IEntityTypeConfiguration<Commun
         entity.Property(e => e.AllowedPlaceholders).HasColumnType("json").IsRequired();
         entity.Property(e => e.IsSystem).HasDefaultValueSql("'1'");
         entity.Property(e => e.IsActive).HasDefaultValueSql("'1'");
-        entity.Property(e => e.CreatedAt).HasMaxLength(6).HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+        entity.Property(e => e.CreatedAt).HasMaxLength(6).HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.UpdatedAt).HasMaxLength(6);
     }
 }
+
 

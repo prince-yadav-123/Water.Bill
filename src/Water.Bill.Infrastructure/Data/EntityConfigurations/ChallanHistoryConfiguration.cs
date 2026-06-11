@@ -26,3 +26,4 @@ public class ChallanHistoryConfiguration : IEntityTypeConfiguration<ChallanHisto
         entity.HasIndex(e => e.ChallanNo, "IX_ChallanHistories_ChallanNo");
     }
 }
+

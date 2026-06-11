@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
+using Water.Bill.API.Models;
 using Water.Bill.API.Models.Consumers;
+using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Extensions;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
@@ -34,10 +37,14 @@ public class ConsumerMasterMaintenanceController : Controller
         string? plotNo,
         int? devType,
         int? status,
-        CancellationToken ct)
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = ModuleName;
         ViewData["ActiveMenu"] = ModuleName;
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
         var model = new ConsumerMasterMaintenanceIndexViewModel
         {
@@ -53,7 +60,9 @@ public class ConsumerMasterMaintenanceController : Controller
             DivisionOptions = BuildDivisionOptions(devType)
         };
 
-        model.Consumers = await SearchConsumersAsync(model, ct);
+        var paged = await SearchConsumersAsync(model, page, pageSize, ct);
+        model.Consumers = paged.Items;
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
         return View(model);
     }
 
@@ -219,7 +228,11 @@ public class ConsumerMasterMaintenanceController : Controller
         return RedirectToAction(nameof(Details), new { consumerNo });
     }
 
-    private async Task<IReadOnlyList<ConsumerMasterMaintenanceListItemViewModel>> SearchConsumersAsync(ConsumerMasterMaintenanceIndexViewModel model, CancellationToken ct)
+    private async Task<PagedResult<ConsumerMasterMaintenanceListItemViewModel>> SearchConsumersAsync(
+        ConsumerMasterMaintenanceIndexViewModel model,
+        int page,
+        int pageSize,
+        CancellationToken ct)
     {
         var query = _db.ConsumerDetailsMasters.AsNoTracking().AsQueryable();
 
@@ -253,29 +266,51 @@ public class ConsumerMasterMaintenanceController : Controller
         if (model.DevType.HasValue && model.DevType.Value != AppConstants.Divisions.AllDivision.DevType)
             query = query.Where(x => x.DevType == model.DevType.Value);
 
-        var rows = await query
+        var paged = await query
             .OrderBy(x => x.DevType)
             .ThenBy(x => x.Sector)
             .ThenBy(x => x.BlkNo)
             .ThenBy(x => x.FlatNo)
-            .Take(300)
-            .ToListAsync(ct);
+            .Select(x => new
+            {
+                x.ConsNo,
+                x.ConsNm1,
+                x.ConsNm2,
+                x.MobNo,
+                x.EmailId,
+                x.Sector,
+                x.BlkNo,
+                x.FlatNo,
+                x.ConTp,
+                x.ConsCtg,
+                x.DevType,
+                x.Status,
+                x.ConnDt,
+                x.ModifyDate
+            })
+            .ToPagedResultAsync(page, pageSize, ct);
 
-        return rows.Select(x => new ConsumerMasterMaintenanceListItemViewModel
+        return new PagedResult<ConsumerMasterMaintenanceListItemViewModel>
         {
-            ConsumerNo = x.ConsNo,
-            ConsumerName = x.ConsNm1,
-            FatherName = x.ConsNm2,
-            MobileNo = x.MobNo,
-            Email = x.EmailId,
-            PropertyNo = BuildPropertyNo(x.Sector, x.BlkNo, x.FlatNo),
-            ConnectionType = x.ConTp,
-            Category = x.ConsCtg,
-            DevType = x.DevType,
-            Status = x.Status,
-            ConnectionDate = x.ConnDt,
-            ModifiedOn = x.ModifyDate
-        }).ToList();
+            Items = paged.Items.Select(x => new ConsumerMasterMaintenanceListItemViewModel
+            {
+                ConsumerNo = x.ConsNo,
+                ConsumerName = x.ConsNm1,
+                FatherName = x.ConsNm2,
+                MobileNo = x.MobNo,
+                Email = x.EmailId,
+                PropertyNo = BuildPropertyNo(x.Sector, x.BlkNo, x.FlatNo),
+                ConnectionType = x.ConTp,
+                Category = x.ConsCtg,
+                DevType = x.DevType,
+                Status = x.Status,
+                ConnectionDate = x.ConnDt,
+                ModifiedOn = x.ModifyDate
+            }).ToList(),
+            TotalCount = paged.TotalCount,
+            Page = paged.Page,
+            PageSize = paged.PageSize
+        };
     }
 
     private async Task PrepareFormOptionsAsync(ConsumerMasterMaintenanceFormViewModel model, CancellationToken ct)

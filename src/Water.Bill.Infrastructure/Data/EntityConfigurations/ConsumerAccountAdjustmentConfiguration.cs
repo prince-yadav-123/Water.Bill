@@ -36,3 +36,4 @@ public class ConsumerAccountAdjustmentConfiguration : IEntityTypeConfiguration<C
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
+

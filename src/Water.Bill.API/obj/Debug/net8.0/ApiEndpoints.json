@@ -2003,6 +2003,16 @@
         "Name": "entryType",
         "Type": "System.String",
         "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -2290,6 +2300,16 @@
       {
         "Name": "status",
         "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
         "IsRequired": false
       }
     ],
@@ -4738,7 +4758,23 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -5012,8 +5048,18 @@
         "IsRequired": false
       },
       {
+        "Name": "ConfirmPassword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "RoleId",
         "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeptId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       },
       {
@@ -5116,8 +5162,18 @@
         "IsRequired": false
       },
       {
+        "Name": "ConfirmPassword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "RoleId",
         "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeptId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       },
       {

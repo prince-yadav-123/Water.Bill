@@ -31,3 +31,4 @@ public class NotificationMasterConfiguration : IEntityTypeConfiguration<Notifica
         builder.HasIndex(x => new { x.CreatedAt, x.IsDeleted });
     }
 }
+

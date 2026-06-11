@@ -36,3 +36,4 @@ public class NewConnectionApplicationFeeConfiguration : IEntityTypeConfiguration
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
+

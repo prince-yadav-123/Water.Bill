@@ -28,3 +28,4 @@ public class ConsumerSupportQueryHistoryConfiguration : IEntityTypeConfiguration
             .HasConstraintName("FK_ConsumerSupportQueryHistories_Query");
     }
 }
+

@@ -72,11 +72,13 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                 VillageName = Normalize(form.VillageName),
                 VillageId = form.VillageId,
                 ConnectionCategory = NormalizeRequired(form.ConnectionCategory),
-                ConnectionType = NormalizeRequired(form.ConnectionType),
+                ConnectionType = Normalize(form.ConnectionType),
                 FlatType = NormalizeRequired(form.FlatType),
                 PurposeOfConnection = Normalize(form.PurposeOfConnection),
                 PreviousConnectionYesNo = string.IsNullOrWhiteSpace(form.PreviousConnectionYesNo) ? "N" : form.PreviousConnectionYesNo.Trim().ToUpperInvariant(),
-                OtherConnection = Normalize(form.OtherConnection),
+                OtherConnection = string.Equals(form.PreviousConnectionYesNo?.Trim(), "Y", StringComparison.OrdinalIgnoreCase)
+                    ? Normalize(form.OtherConnection)
+                    : null,
                 Rid = Normalize(form.Rid),
                 DevType = form.DevType,
                 Remarks = Normalize(form.Remarks),
@@ -586,11 +588,13 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             entity.VillageName = Normalize(form.VillageName);
             entity.VillageId = form.VillageId;
             entity.ConnectionCategory = NormalizeRequired(form.ConnectionCategory);
-            entity.ConnectionType = NormalizeRequired(form.ConnectionType);
+            entity.ConnectionType = Normalize(form.ConnectionType);
             entity.FlatType = NormalizeRequired(form.FlatType);
             entity.PurposeOfConnection = Normalize(form.PurposeOfConnection);
             entity.PreviousConnectionYesNo = string.IsNullOrWhiteSpace(form.PreviousConnectionYesNo) ? "N" : form.PreviousConnectionYesNo.Trim().ToUpperInvariant();
-            entity.OtherConnection = Normalize(form.OtherConnection);
+            entity.OtherConnection = string.Equals(form.PreviousConnectionYesNo?.Trim(), "Y", StringComparison.OrdinalIgnoreCase)
+                ? Normalize(form.OtherConnection)
+                : null;
             entity.Rid = Normalize(form.Rid);
             entity.DevType = form.DevType;
             entity.Remarks = Normalize(form.Remarks);
@@ -1159,12 +1163,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                     if (sentBackTask.AssignedRoleId.HasValue)
                         usersQ = usersQ.Where(u => u.RoleId == sentBackTask.AssignedRoleId.Value);
                     if (sentBackTask.AssignedDepartmentId.HasValue)
-                    {
-                        var deptUids = await _db.AuthorityUserDepartments.AsNoTracking()
-                            .Where(d => d.DepartmentId == sentBackTask.AssignedDepartmentId.Value && d.IsActive && !d.IsDeleted)
-                            .Select(d => d.UserId).ToListAsync(ct);
-                        usersQ = usersQ.Where(u => deptUids.Contains(u.Id));
-                    }
+                        usersQ = usersQ.Where(u => u.DeptId == sentBackTask.AssignedDepartmentId.Value);
                     var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
                     foreach (var uid in uids)
                     {
@@ -1363,12 +1362,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                     if (sentBackTask.AssignedRoleId.HasValue)
                         usersQ = usersQ.Where(u => u.RoleId == sentBackTask.AssignedRoleId.Value);
                     if (sentBackTask.AssignedDepartmentId.HasValue)
-                    {
-                        var deptUids = await _db.AuthorityUserDepartments.AsNoTracking()
-                            .Where(d => d.DepartmentId == sentBackTask.AssignedDepartmentId.Value && d.IsActive && !d.IsDeleted)
-                            .Select(d => d.UserId).ToListAsync(ct);
-                        usersQ = usersQ.Where(u => deptUids.Contains(u.Id));
-                    }
+                        usersQ = usersQ.Where(u => u.DeptId == sentBackTask.AssignedDepartmentId.Value);
                     var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
                     foreach (var uid in uids)
                     {

@@ -26,3 +26,4 @@ public class WorkflowStageConfiguration : IEntityTypeConfiguration<WorkflowStage
         entity.HasOne(e => e.Department).WithMany().HasForeignKey(e => e.DepartmentId).OnDelete(DeleteBehavior.SetNull);
     }
 }
+

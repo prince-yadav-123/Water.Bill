@@ -242,6 +242,26 @@ a:hover { color: var(--wb-primary-dark); }
   font-weight: 700;
 }
 
+.wb-password-group .form-control {
+  border-right: 0;
+}
+
+.wb-password-toggle {
+  min-width: 44px;
+  padding-inline: 10px;
+}
+
+.wb-password-toggle span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.wb-password-toggle.active {
+  color: var(--wb-primary-dark);
+  background: var(--wb-primary-soft);
+  border-color: var(--wb-border-strong);
+}
+
 body.wb-sidebar-collapsed .wb-sidebar { width: 74px; }
 body.wb-sidebar-collapsed .wb-main { margin-left: 74px; }
 body.wb-sidebar-collapsed .wb-brand { padding-inline: 14px; }

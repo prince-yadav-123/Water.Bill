@@ -28,3 +28,4 @@ public class ConsumerComplaintHistoryConfiguration : IEntityTypeConfiguration<Co
             .HasConstraintName("FK_ConsumerComplaintHistories_Complaint");
     }
 }
+

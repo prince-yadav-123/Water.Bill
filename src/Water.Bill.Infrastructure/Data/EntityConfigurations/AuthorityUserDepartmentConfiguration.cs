@@ -16,3 +16,4 @@ public class AuthorityUserDepartmentConfiguration : IEntityTypeConfiguration<Aut
         entity.Property(e => e.CreatedOn).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }
+

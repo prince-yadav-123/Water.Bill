@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.Infrastructure.Data.EntityConfigurations;
@@ -10,8 +9,7 @@ public class BlockDetailConfiguration : IEntityTypeConfiguration<BlockDetail>
     public void Configure(EntityTypeBuilder<BlockDetail> entity)
     {
         entity.HasKey(e => new { e.SectorId, e.Block })
-            .HasName("PRIMARY")
-            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+            .HasName("PRIMARY");
         
         entity.ToTable("block_detail");
         
@@ -26,3 +24,4 @@ public class BlockDetailConfiguration : IEntityTypeConfiguration<BlockDetail>
         
     }
 }
+

@@ -50,7 +50,12 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label @(isEdit ? "" : "required")" asp-for="Password">@(isEdit ? "New Password" : "Password")</label>
-                <input class="form-control" asp-for="Password" type="password" autocomplete="new-password" />
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="Password" type="password" autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
                 <span class="text-danger small" asp-validation-for="Password"></span>
                 @if (isEdit)
                 {
@@ -59,7 +64,12 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label @(isEdit ? "" : "required")" asp-for="ConfirmPassword">Confirm Password</label>
-                <input class="form-control" asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show confirm password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
                 <span class="text-danger small" asp-validation-for="ConfirmPassword"></span>
             </div>
         </div>
@@ -70,3 +80,24 @@
         </div>
     </form>
 </section>
+
+<script>
+    (() => {
+        document.querySelectorAll('[data-password-toggle]').forEach(button => {
+            if (button.dataset.bound === 'true') return;
+            button.dataset.bound = 'true';
+
+            button.addEventListener('click', () => {
+                const group = button.closest('.wb-password-group');
+                const input = group?.querySelector('input');
+                if (!input) return;
+
+                const showing = input.type === 'text';
+                input.type = showing ? 'password' : 'text';
+                button.setAttribute('aria-pressed', (!showing).toString());
+                button.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                button.classList.toggle('active', !showing);
+            });
+        });
+    })();
+</script>

@@ -228,9 +228,9 @@ public sealed class NotificationDispatchService : INotificationDispatchService
                     break;
 
                 case "Department" when int.TryParse(target.TargetId, out var deptId):
-                    var byDept = await _db.AuthorityUserDepartments.AsNoTracking()
-                        .Where(x => x.DepartmentId == deptId && x.IsActive && !x.IsDeleted)
-                        .Select(x => (long)x.UserId)
+                    var byDept = await _db.Appusers.AsNoTracking()
+                        .Where(x => x.DeptId == deptId && x.IsActive == true && !x.IsDeleted)
+                        .Select(x => (long)x.Id)
                         .ToListAsync(ct);
                     foreach (var id in byDept) userIdSet.Add(id);
                     break;

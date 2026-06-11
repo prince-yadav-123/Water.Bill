@@ -2,11 +2,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
+using Water.Bill.API.Models;
 using Water.Bill.API.Models.Adjustments;
 using Water.Bill.API.Models.Ledger;
+using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Extensions;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
@@ -29,10 +32,14 @@ public class ConsumerLedgerController : Controller
         DateTime? fromDate,
         DateTime? toDate,
         string? entryType,
-        CancellationToken ct)
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = ModuleName;
         ViewData["ActiveMenu"] = ModuleName;
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
 
         var model = new ConsumerLedgerIndexViewModel
         {
@@ -49,13 +56,22 @@ public class ConsumerLedgerController : Controller
         var selectedConsumer = await ResolveConsumerAsync(model, ct);
         if (selectedConsumer is null)
         {
-            model.Consumers = model.HasSearched ? await SearchConsumersAsync(model.Search ?? model.ConsumerNo, ct) : [];
+            if (model.HasSearched)
+            {
+                var consumerPaged = await SearchConsumersAsync(model.Search ?? model.ConsumerNo, page, pageSize, ct);
+                model.Consumers = consumerPaged.Items;
+                ViewBag.Pagination = PaginationViewModel.Create(consumerPaged);
+            }
+            else
+            {
+                model.Consumers = [];
+            }
             return View(model);
         }
 
         model.ConsumerNo = selectedConsumer.ConsNo;
         model.Consumer = ToConsumerModel(selectedConsumer);
-        await PopulateLedgerAsync(model, ct);
+        await PopulateLedgerAsync(model, page, pageSize, ct);
         return View(model);
     }
 
@@ -89,7 +105,7 @@ public class ConsumerLedgerController : Controller
             EntryTypeOptions = ConsumerLedgerEntryTypes.Options(entryType).ToList()
         };
 
-        await PopulateLedgerAsync(model, ct);
+        await PopulateLedgerAsync(model, 1, int.MaxValue, ct);
         return View(model);
     }
 
@@ -120,11 +136,15 @@ public class ConsumerLedgerController : Controller
         return matches.Count == 1 ? matches[0] : null;
     }
 
-    private async Task<IReadOnlyList<ConsumerLedgerConsumerSearchRowViewModel>> SearchConsumersAsync(string? search, CancellationToken ct)
+    private async Task<PagedResult<ConsumerLedgerConsumerSearchRowViewModel>> SearchConsumersAsync(
+        string? search,
+        int page,
+        int pageSize,
+        CancellationToken ct)
     {
         search = Normalize(search);
         if (string.IsNullOrWhiteSpace(search))
-            return [];
+            return PagedResult<ConsumerLedgerConsumerSearchRowViewModel>.Empty(page, pageSize);
 
         return await _db.ConsumerDetailsMasters
             .AsNoTracking()
@@ -145,10 +165,10 @@ public class ConsumerLedgerController : Controller
                 ConnectionType = x.ConTp,
                 DevType = x.DevType
             })
-            .ToListAsync(ct);
+            .ToPagedResultAsync(page, pageSize, ct);
     }
 
-    private async Task PopulateLedgerAsync(ConsumerLedgerIndexViewModel model, CancellationToken ct)
+    private async Task PopulateLedgerAsync(ConsumerLedgerIndexViewModel model, int page, int pageSize, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(model.ConsumerNo))
             return;
@@ -192,11 +212,22 @@ public class ConsumerLedgerController : Controller
             row.Balance = balance;
         }
 
-        model.Rows = displayRows
+        var orderedRows = displayRows
             .OrderByDescending(x => x.Date)
             .ThenByDescending(x => x.SortOrder)
             .ThenByDescending(x => x.ReferenceNo)
             .ToList();
+
+        var paged = new PagedResult<ConsumerLedgerRowViewModel>
+        {
+            Items = orderedRows.Skip((page - 1) * pageSize).Take(pageSize).ToList(),
+            TotalCount = orderedRows.Count,
+            Page = page,
+            PageSize = pageSize
+        };
+
+        model.Rows = paged.Items;
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
 
         model.TotalDebit = displayRows.Where(x => x.AffectsBalance).Sum(x => x.Debit);
         model.TotalCredit = displayRows.Where(x => x.AffectsBalance).Sum(x => x.Credit);

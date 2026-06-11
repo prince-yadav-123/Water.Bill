@@ -34,11 +34,30 @@ public class RolesUsersController : Controller
 
     [HttpGet("/Roles")]
     [RequirePermission("Role Management.view")]
-    public async Task<IActionResult> Roles(CancellationToken ct)
+    public async Task<IActionResult> Roles(
+        string? search = null,
+        int page = 1,
+        int pageSize = 0,
+        CancellationToken ct = default)
     {
         ViewData["Title"] = "Role Management";
         ViewData["ActiveMenu"] = "Role Management";
-        var roles = await _db.Approles.Where(x => !x.IsDeleted).OrderBy(x => x.Name).ToListAsync(ct);
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
+        ViewBag.Search = search;
+
+        var query = _db.Approles.AsNoTracking().Where(x => !x.IsDeleted);
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            query = query.Where(x =>
+                x.Name.Contains(term) ||
+                (x.Description != null && x.Description.Contains(term)));
+        }
+
+        var paged = await query
+            .OrderBy(x => x.Name)
+            .ToPagedResultAsync(page, pageSize, ct);
         var userCounts = await _db.Appusers
             .Where(x => !x.IsDeleted)
             .GroupBy(x => x.RoleId)
@@ -46,7 +65,8 @@ public class RolesUsersController : Controller
             .ToDictionaryAsync(x => x.RoleId, x => x.Count, ct);
 
         ViewBag.UserCounts = userCounts;
-        return View("Roles", roles);
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
+        return View("Roles", paged.Items);
     }
 
     [HttpGet("/Users")]
@@ -63,11 +83,18 @@ public class RolesUsersController : Controller
         page = PagingConstants.ValidatePage(page);
         ViewBag.Search = search;
 
-        var query = _db.Appusers.Include(x => x.Role).AsNoTracking().Where(x => !x.IsDeleted);
+        var query = _db.Appusers
+            .Include(x => x.Role)
+            .Include(x => x.Department)
+            .AsNoTracking()
+            .Where(x => !x.IsDeleted);
         if (!string.IsNullOrWhiteSpace(search))
         {
             var s = search.Trim();
-            query = query.Where(x => x.FullName.Contains(s) || x.Username.Contains(s) || x.Email.Contains(s));
+            query = query.Where(x => x.FullName.Contains(s)
+                || x.Username.Contains(s)
+                || x.Email.Contains(s)
+                || (x.Department != null && x.Department.DeptName != null && x.Department.DeptName.Contains(s)));
         }
         var paged = await query.OrderBy(x => x.FullName).ToPagedResultAsync(page, pageSize, ct);
         ViewBag.Pagination = PaginationViewModel.Create(paged);
@@ -167,6 +194,7 @@ public class RolesUsersController : Controller
         ViewData["Title"] = "Create User";
         ViewData["ActiveMenu"] = "User Management";
         await PopulateRoles(ct);
+        await PopulateDepartments(ct);
         return View(new UserFormViewModel());
     }
 
@@ -176,11 +204,14 @@ public class RolesUsersController : Controller
         ViewData["ActiveMenu"] = "User Management";
         if (string.IsNullOrWhiteSpace(model.Password))
             ModelState.AddModelError(nameof(model.Password), "Password is required.");
+        if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != model.ConfirmPassword)
+            ModelState.AddModelError(nameof(model.ConfirmPassword), "Password and confirm password do not match.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
+            await PopulateDepartments(ct);
             return View(model);
         }
 
@@ -191,6 +222,7 @@ public class RolesUsersController : Controller
             Username = model.Username,
             PasswordHash = AuthService.HashPassword(model.Password!),
             RoleId = model.RoleId,
+            DeptId = model.DeptId,
             PhoneNumber = model.PhoneNumber,
             IsActive = model.IsActive,
             PasswordChangedAt = DateTime.UtcNow,
@@ -210,6 +242,7 @@ public class RolesUsersController : Controller
         var user = await _db.Appusers.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (user is null) return NotFound();
         await PopulateRoles(ct);
+        await PopulateDepartments(ct);
         return View(new UserFormViewModel
         {
             Id = user.Id,
@@ -217,6 +250,7 @@ public class RolesUsersController : Controller
             Email = user.Email,
             Username = user.Username,
             RoleId = user.RoleId,
+            DeptId = user.DeptId,
             PhoneNumber = user.PhoneNumber,
             IsActive = user.IsActive == true
         });
@@ -228,17 +262,21 @@ public class RolesUsersController : Controller
         ViewData["ActiveMenu"] = "User Management";
         var user = await _db.Appusers.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (user is null) return NotFound();
+        if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != model.ConfirmPassword)
+            ModelState.AddModelError(nameof(model.ConfirmPassword), "Password and confirm password do not match.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
+            await PopulateDepartments(ct);
             return View(model);
         }
         user.FullName = model.FullName;
         user.Email = model.Email;
         user.Username = model.Username;
         user.RoleId = model.RoleId;
+        user.DeptId = model.DeptId;
         user.PhoneNumber = model.PhoneNumber;
         user.IsActive = model.IsActive;
         user.UpdatedAt = DateTime.UtcNow;
@@ -257,7 +295,10 @@ public class RolesUsersController : Controller
     {
         ViewData["Title"] = "User Details";
         ViewData["ActiveMenu"] = "User Management";
-        var user = await _db.Appusers.Include(x => x.Role).FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var user = await _db.Appusers
+            .Include(x => x.Role)
+            .Include(x => x.Department)
+            .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         return user is null ? NotFound() : View("UserDetails", user);
     }
 
@@ -341,6 +382,13 @@ public class RolesUsersController : Controller
         => ViewBag.Roles = await _db.Approles
             .Where(x => !x.IsDeleted && x.Name != AppConstants.Roles.Consumer)
             .OrderBy(x => x.Name)
+            .ToListAsync(ct);
+
+    private async Task PopulateDepartments(CancellationToken ct)
+        => ViewBag.Departments = await _db.MasterDeptDetails
+            .AsNoTracking()
+            .Where(x => x.Status == "1")
+            .OrderBy(x => x.DeptName)
             .ToListAsync(ct);
 
     private async Task<bool> IsConsumerRoleAsync(int roleId, CancellationToken ct)

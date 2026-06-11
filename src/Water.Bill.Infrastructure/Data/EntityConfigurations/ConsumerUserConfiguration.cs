@@ -37,3 +37,4 @@ entity.ToTable("ConsumerUsers");
             .HasConstraintName("FK_ConsumerUsers_ConsumerDetailsMaster_ConsumerNo");
     }
 }
+

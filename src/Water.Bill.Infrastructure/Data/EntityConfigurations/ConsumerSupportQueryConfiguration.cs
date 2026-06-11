@@ -43,3 +43,4 @@ public class ConsumerSupportQueryConfiguration : IEntityTypeConfiguration<Consum
             .HasConstraintName("FK_ConsumerSupportQueries_Category");
     }
 }
+

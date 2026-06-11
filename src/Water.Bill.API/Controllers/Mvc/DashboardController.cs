@@ -40,17 +40,17 @@ public class DashboardController : Controller
             ?? User.FindFirstValue(ClaimTypes.Role)
             ?? AppConstants.Roles.Staff;
         var isAdminView = roleName.Contains("admin", StringComparison.OrdinalIgnoreCase);
-        var departmentIds = userId > 0
-            ? await _db.AuthorityUserDepartments
+        var departmentId = userId > 0
+            ? await _db.Appusers
                 .AsNoTracking()
-                .Where(x => x.UserId == userId && x.IsActive && !x.IsDeleted)
-                .Select(x => x.DepartmentId)
-                .ToListAsync(ct)
-            : new List<int>();
+                .Where(x => x.Id == userId && !x.IsDeleted)
+                .Select(x => x.DeptId)
+                .FirstOrDefaultAsync(ct)
+            : null;
 
         var vm = isAdminView
             ? await BuildAdminDashboardAsync(user?.FullName ?? username, roleName, ct)
-            : await BuildStaffDashboardAsync(userId, roleId, username, user?.FullName ?? username, roleName, departmentIds, ct);
+            : await BuildStaffDashboardAsync(userId, roleId, username, user?.FullName ?? username, roleName, departmentId, ct);
 
         return View(vm);
     }
@@ -157,17 +157,17 @@ public class DashboardController : Controller
         string username,
         string userName,
         string roleName,
-        IReadOnlyCollection<int> departmentIds,
+        int? departmentId,
         CancellationToken ct)
     {
         var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-        var assignedPendingQuery = ApplyWorkflowAssignmentFilter(PendingWorkflowTasksQuery(), userId, roleId, departmentIds);
+        var assignedPendingQuery = ApplyWorkflowAssignmentFilter(PendingWorkflowTasksQuery(), userId, roleId, departmentId);
         var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
         var allAssignedQuery = ApplyWorkflowAssignmentFilter(_db.ApplicationWorkflowTasks
             .Include(x => x.Stage)
             .Include(x => x.WorkflowInstance)
             .AsNoTracking()
-            .Where(x => !x.IsDeleted && !x.WorkflowInstance.IsDeleted), userId, roleId, departmentIds);
+            .Where(x => !x.IsDeleted && !x.WorkflowInstance.IsDeleted), userId, roleId, departmentId);
 
         var myPendingApprovals = await assignedPendingQuery.CountAsync(ct);
         var myActionsThisMonth = await _db.ApplicationWorkflowHistories.AsNoTracking()
@@ -521,7 +521,7 @@ public class DashboardController : Controller
     private async Task<List<DashboardRecentChallanViewModel>> BuildRecentChallansAsync(IQueryable<Challan> query, CancellationToken ct)
     {
         var rows = await query
-            .OrderByDescending(x => x.EntryDate)
+            .OrderByDescending(x => x.Id)
             .Take(8)
             .ToListAsync(ct);
 
@@ -604,7 +604,7 @@ public class DashboardController : Controller
         IQueryable<ApplicationWorkflowTask> query,
         int userId,
         int roleId,
-        IReadOnlyCollection<int> departmentIds)
+        int? departmentId)
         => query.Where(x =>
             // 1. Task assigned to this specific user
             (x.AssignedUserId.HasValue && x.AssignedUserId == userId)
@@ -613,12 +613,14 @@ public class DashboardController : Controller
                 && x.AssignedDepartmentId.HasValue
                 && x.AssignedRoleId.HasValue
                 && x.AssignedRoleId == roleId
-                && departmentIds.Contains(x.AssignedDepartmentId.Value))
+                && departmentId.HasValue
+                && x.AssignedDepartmentId == departmentId.Value)
             // 3. Task assigned by dept only (no specific user, no role)
             || (!x.AssignedUserId.HasValue
                 && x.AssignedDepartmentId.HasValue
                 && !x.AssignedRoleId.HasValue
-                && departmentIds.Contains(x.AssignedDepartmentId.Value))
+                && departmentId.HasValue
+                && x.AssignedDepartmentId == departmentId.Value)
             // 4. Task assigned by role only (no specific user, no dept)
             || (!x.AssignedUserId.HasValue
                 && !x.AssignedDepartmentId.HasValue
@@ -754,9 +756,9 @@ public class DashboardController : Controller
             await using var command = connection.CreateCommand();
             command.CommandText = @"
 SELECT COUNT(*)
-FROM information_schema.tables
-WHERE table_schema = DATABASE()
-  AND LOWER(table_name) = LOWER(@tableName);";
+FROM sys.tables t
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+WHERE LOWER(t.name) = LOWER(@tableName);";
 
             var parameter = command.CreateParameter();
             parameter.ParameterName = "@tableName";

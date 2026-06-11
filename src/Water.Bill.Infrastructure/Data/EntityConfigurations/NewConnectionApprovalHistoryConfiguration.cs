@@ -40,3 +40,4 @@ entity.ToTable("NewConnectionApprovalHistory");
             .HasConstraintName("FK_NewConnectionApprovalHistory_Applications");
     }
 }
+

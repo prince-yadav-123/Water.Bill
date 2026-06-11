@@ -14,4 +14,6 @@ public partial class MasterDeptDetail
     public string? Status { get; set; }
 
     public int? DevType { get; set; }
+
+    public virtual ICollection<Appuser> Appusers { get; set; } = new List<Appuser>();
 }

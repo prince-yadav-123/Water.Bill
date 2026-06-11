@@ -22,3 +22,4 @@ public class NoticeTemplateConfiguration : IEntityTypeConfiguration<NoticeTempla
         entity.Property(e => e.IsDeleted).HasDefaultValue(false);
     }
 }
+

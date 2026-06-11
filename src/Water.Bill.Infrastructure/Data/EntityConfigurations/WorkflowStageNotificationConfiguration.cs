@@ -17,3 +17,4 @@ public class WorkflowStageNotificationConfiguration : IEntityTypeConfiguration<W
         entity.HasOne(e => e.WorkflowStage).WithMany().HasForeignKey(e => e.WorkflowStageId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+

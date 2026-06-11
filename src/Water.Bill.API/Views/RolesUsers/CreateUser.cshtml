@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Create User";
     var roles = ViewBag.Roles as IEnumerable<Approle> ?? Enumerable.Empty<Approle>();
+    var departments = ViewBag.Departments as IEnumerable<MasterDeptDetail> ?? Enumerable.Empty<MasterDeptDetail>();
 }
 
 <div class="wb-page-head">
@@ -17,21 +18,25 @@
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <div class="row g-3">
-            <div class="col-12">
+            <div class="col-md-6">
                 <label class="form-label required" asp-for="FullName">Full Name</label>
                 <input class="form-control" asp-for="FullName" required />
+                <span class="text-danger small" asp-validation-for="FullName"></span>
             </div>
             <div class="col-md-6">
                 <label class="form-label required" asp-for="Username">Username</label>
                 <input class="form-control" asp-for="Username" required />
+                <span class="text-danger small" asp-validation-for="Username"></span>
             </div>
             <div class="col-md-6">
                 <label class="form-label required" asp-for="Email">Email</label>
                 <input class="form-control" asp-for="Email" type="email" required />
+                <span class="text-danger small" asp-validation-for="Email"></span>
             </div>
             <div class="col-md-6">
                 <label class="form-label" asp-for="PhoneNumber">Mobile Number</label>
                 <input class="form-control" asp-for="PhoneNumber" />
+                <span class="text-danger small" asp-validation-for="PhoneNumber"></span>
             </div>
             <div class="col-md-6">
                 <label class="form-label required" asp-for="RoleId">Role</label>
@@ -42,10 +47,38 @@
                         <option value="@role.Id">@role.Name</option>
                     }
                 </select>
+                <span class="text-danger small" asp-validation-for="RoleId"></span>
             </div>
-            <div class="col-12">
+            <div class="col-md-6">
+                <label class="form-label" asp-for="DeptId">Department</label>
+                <select class="form-select" asp-for="DeptId">
+                    <option value="">Select Department</option>
+                    @foreach (var department in departments)
+                    {
+                        <option value="@department.Id">@department.DeptName</option>
+                    }
+                </select>
+                <span class="text-danger small" asp-validation-for="DeptId"></span>
+            </div>
+            <div class="col-md-6">
                 <label class="form-label required" asp-for="Password">Password</label>
-                <input class="form-control" asp-for="Password" type="password" required autocomplete="new-password" />
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="Password" type="password" required autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
+                <span class="text-danger small" asp-validation-for="Password"></span>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label required" asp-for="ConfirmPassword">Confirm Password</label>
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="ConfirmPassword" type="password" required autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show confirm password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
+                <span class="text-danger small" asp-validation-for="ConfirmPassword"></span>
             </div>
             <div class="col-12">
                 <label class="form-check">
@@ -61,4 +94,23 @@
     </form>
 </section>
 
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            document.querySelectorAll('[data-password-toggle]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const group = button.closest('.wb-password-group');
+                    const input = group?.querySelector('input');
+                    if (!input) return;
+
+                    const showing = input.type === 'text';
+                    input.type = showing ? 'password' : 'text';
+                    button.setAttribute('aria-pressed', (!showing).toString());
+                    button.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                    button.classList.toggle('active', !showing);
+                });
+            });
+        })();
+    </script>
+}

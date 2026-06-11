@@ -76,3 +76,4 @@ public class NewConnectionApplicationConfiguration : IEntityTypeConfiguration<Ne
         entity.Property(e => e.IsDeleted).HasColumnName("IsDeleted");
     }
 }
+

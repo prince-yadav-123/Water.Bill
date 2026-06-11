@@ -22,3 +22,4 @@ public class NotificationLogConfiguration : IEntityTypeConfiguration<Notificatio
         entity.Property(e => e.CreatedOn).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }
+

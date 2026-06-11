@@ -25,3 +25,4 @@ public class NotificationTargetConfiguration : IEntityTypeConfiguration<Notifica
         builder.HasIndex(x => new { x.TargetType, x.TargetId });
     }
 }
+

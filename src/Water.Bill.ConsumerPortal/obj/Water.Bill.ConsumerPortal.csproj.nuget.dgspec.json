@@ -179,10 +179,6 @@
               "target": "Package",
               "version": "[7.5.2, )"
             },
-            "Pomelo.EntityFrameworkCore.MySql": {
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
               "version": "[7.5.2, )"
@@ -343,6 +339,10 @@
               "target": "Package",
               "version": "[8.0.2, )"
             },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -360,10 +360,6 @@
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",
               "version": "[7.5.2, )"
-            },
-            "Pomelo.EntityFrameworkCore.MySql": {
-              "target": "Package",
-              "version": "[8.0.2, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",

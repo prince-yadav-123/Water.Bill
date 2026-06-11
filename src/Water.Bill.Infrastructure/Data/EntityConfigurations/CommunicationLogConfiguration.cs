@@ -24,10 +24,11 @@ public class CommunicationLogConfiguration : IEntityTypeConfiguration<Communicat
         entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValueSql("'Pending'");
         entity.Property(e => e.ErrorMessage).HasMaxLength(1000);
         entity.Property(e => e.SentAt).HasMaxLength(6);
-        entity.Property(e => e.CreatedAt).HasMaxLength(6).HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+        entity.Property(e => e.CreatedAt).HasMaxLength(6).HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.ReferenceType).HasMaxLength(100);
         entity.Property(e => e.ReferenceId).HasMaxLength(100);
         entity.Property(e => e.ReferenceNo).HasMaxLength(100);
     }
 }
+
 

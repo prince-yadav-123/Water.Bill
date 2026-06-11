@@ -15,7 +15,6 @@ namespace Water.Bill.API.Controllers.Mvc;
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
 public class ConsumerLoginManagementController : Controller
 {
-    private const string ConsumerNoCollation = "utf8mb4_0900_ai_ci";
     private readonly ApplicationDbContext _db;
 
     public ConsumerLoginManagementController(ApplicationDbContext db)
@@ -281,7 +280,7 @@ public class ConsumerLoginManagementController : Controller
 
         return await _db.ConsumerDetailsMasters
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => EF.Functions.Collate(x.ConsNo, ConsumerNoCollation) == normalizedConsumerNo, ct);
+            .FirstOrDefaultAsync(x => x.ConsNo == normalizedConsumerNo, ct);
     }
 
     private static string NormalizeConsumerNo(string? value)

@@ -23,3 +23,4 @@ public class ConsumerDisconnectionCaseHistoryConfiguration : IEntityTypeConfigur
         entity.Property(e => e.IsDeleted).HasDefaultValue(false);
     }
 }
+

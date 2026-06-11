@@ -93,17 +93,17 @@ public class BillRevisionController : Controller
             await using var tx = await _db.Database.BeginTransactionAsync(ct);
             await InsertBillLogSnapshotAsync(bill, $"REV:{Trim(model.Reason, 16)}", user, ct);
             await _db.Database.ExecuteSqlInterpolatedAsync($@"
-UPDATE `jal_print_bill_master`
-SET `STATUS` = '0',
-    `BILL_COUNT` = 0,
-    `PRINT_STATUS` = 0,
-    `update_record` = 'R',
-    `USERID` = {user},
-    `Challan_Content` = CONCAT(COALESCE(`Challan_Content`, ''), ' | Reversed: ', {Trim(model.Reason, 120)})
-WHERE `BILL_NO` = {model.BillNo}
-  AND (`paid_date` IS NULL)
-  AND (COALESCE(`PAID_STATUS`, 'N') <> 'Y')
-  AND `STATUS` = '1';", ct);
+UPDATE [jal_print_bill_master]
+SET [STATUS] = '0',
+    [BILL_COUNT] = 0,
+    [PRINT_STATUS] = 0,
+    [update_record] = 'R',
+    [USERID] = {user},
+    [Challan_Content] = CONCAT(COALESCE([Challan_Content], ''), ' | Reversed: ', {Trim(model.Reason, 120)})
+WHERE [BILL_NO] = {model.BillNo}
+  AND ([paid_date] IS NULL)
+  AND (COALESCE([PAID_STATUS], 'N') <> 'Y')
+  AND [STATUS] = '1';", ct);
             _db.Auditlogs.Add(BuildAudit("Advanced Bill Revision / Reversal", model.BillNo, 3, $"Bill reversed. Reason: {model.Reason}", true));
             await _db.SaveChangesAsync(ct);
             await tx.CommitAsync(ct);
@@ -116,13 +116,13 @@ WHERE `BILL_NO` = {model.BillNo}
     private async Task InsertBillLogSnapshotAsync(JalPrintBillMaster b, string updateRecord, string user, CancellationToken ct)
     {
         await _db.Database.ExecuteSqlInterpolatedAsync($@"
-INSERT INTO `jal_print_bill_master_log`
-(`BILL_NO`, `CONS_NO`, `BILL_DATE`, `BILL_DUE_DATE`, `BILL_DATE_FROM`, `BILL_DATE_TO`, `MIN_RATE`, `MIN_TOTAL_AMT`,
- `BILL_REBATE_PER`, `BILL_REBATE_AMT`, `CESS_AMT`, `AREAR`, `AREAR_TEXT`, `AREAR_INT`, `AREAR_INT_TEXT`, `LAST_BILL_EXTRA`,
- `TOTAL_BILL_AMT`, `BEFORE_DATE`, `AFTER_DATE`, `AFTER_DATE_AMT`, `Div_type`, `STATUS`, `ENTRY_DATE`, `Due_date`,
- `due_amt`, `paid_date`, `paid_amt`, `diff`, `PAID_STATUS`, `new_record`, `update_record`, `bill_after_sep_amt`, `adv_amt`,
- `PRINT_STATUS`, `OLD_RATE`, `BILL_TYPE`, `LAST_PAID_AMT`, `BILL_COUNT`, `SCHEME_ID`, `BILL_PERCENTAGE`, `USERID`, `DEV_TYPE`,
- `PAYMENT_TYPE`, `CHALLAN_NO`, `BANK_CODE`, `Challan_Content`, `Rid`, `PaymentMode`, `Part_Amt`)
+INSERT INTO [jal_print_bill_master_log]
+([BILL_NO], [CONS_NO], [BILL_DATE], [BILL_DUE_DATE], [BILL_DATE_FROM], [BILL_DATE_TO], [MIN_RATE], [MIN_TOTAL_AMT],
+ [BILL_REBATE_PER], [BILL_REBATE_AMT], [CESS_AMT], [AREAR], [AREAR_TEXT], [AREAR_INT], [AREAR_INT_TEXT], [LAST_BILL_EXTRA],
+ [TOTAL_BILL_AMT], [BEFORE_DATE], [AFTER_DATE], [AFTER_DATE_AMT], [Div_type], [STATUS], [ENTRY_DATE], [Due_date],
+ [due_amt], [paid_date], [paid_amt], [diff], [PAID_STATUS], [new_record], [update_record], [bill_after_sep_amt], [adv_amt],
+ [PRINT_STATUS], [OLD_RATE], [BILL_TYPE], [LAST_PAID_AMT], [BILL_COUNT], [SCHEME_ID], [BILL_PERCENTAGE], [USERID], [DEV_TYPE],
+ [PAYMENT_TYPE], [CHALLAN_NO], [BANK_CODE], [Challan_Content], [Rid], [PaymentMode], [Part_Amt])
 VALUES
 ({b.BillNo}, {b.ConsNo}, {b.BillDate}, {b.BillDueDate}, {b.BillDateFrom}, {b.BillDateTo}, {b.MinRate}, {b.MinTotalAmt},
  {b.BillRebatePer}, {b.BillRebateAmt}, {b.CessAmt}, {b.Arear}, {b.ArearText}, {b.ArearInt}, {b.ArearIntText}, {b.LastBillExtra},

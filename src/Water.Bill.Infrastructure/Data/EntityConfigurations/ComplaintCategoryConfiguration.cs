@@ -20,3 +20,4 @@ public class ComplaintCategoryConfiguration : IEntityTypeConfiguration<Complaint
         entity.Property(e => e.IsActive).HasDefaultValue(true);
     }
 }
+

@@ -26,3 +26,4 @@ public class ConsumerSupportQueryDocumentConfiguration : IEntityTypeConfiguratio
             .HasConstraintName("FK_ConsumerSupportQueryDocuments_Query");
     }
 }
+

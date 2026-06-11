@@ -31,3 +31,4 @@ public class ChallanPaymentHistoryConfiguration : IEntityTypeConfiguration<Chall
         entity.HasIndex(e => e.PaymentDate, "IX_ChallanPaymentHistories_PaymentDate");
     }
 }
+

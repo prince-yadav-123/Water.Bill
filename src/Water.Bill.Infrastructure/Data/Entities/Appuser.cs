@@ -19,6 +19,8 @@ public partial class Appuser
 
     public int RoleId { get; set; }
 
+    public int? DeptId { get; set; }
+
     public string? PhoneNumber { get; set; }
 
     public int FailedLoginCount { get; set; }
@@ -38,6 +40,8 @@ public partial class Appuser
     public bool IsDeleted { get; set; }
 
     public virtual ICollection<Loginattempt> Loginattempts { get; set; } = new List<Loginattempt>();
+
+    public virtual MasterDeptDetail? Department { get; set; }
 
     public virtual Approle Role { get; set; } = null!;
 

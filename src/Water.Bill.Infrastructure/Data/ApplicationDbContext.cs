@@ -328,10 +328,6 @@ public partial class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .UseCollation("utf8mb4_unicode_ci")
-            .HasCharSet("utf8mb4");
-
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         OnModelCreatingPartial(modelBuilder);

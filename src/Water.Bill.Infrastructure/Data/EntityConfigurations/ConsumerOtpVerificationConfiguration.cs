@@ -38,7 +38,7 @@ entity.ToTable("ConsumerOtpVerifications");
             .HasDefaultValue("ConsumerLogin");
 
         entity.Property(e => e.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+            .HasDefaultValueSql("SYSDATETIME()");
 
         entity.Property(e => e.IsActive)
             .HasDefaultValueSql("'1'");
@@ -54,3 +54,4 @@ entity.ToTable("ConsumerOtpVerifications");
             .HasConstraintName("FK_ConsumerOtpVerifications_ConsumerDetailsMaster_ConsumerNo");
     }
 }
+

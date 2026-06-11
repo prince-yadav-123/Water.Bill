@@ -37,3 +37,4 @@ entity.ToTable("new_connection_application_documents");
             .HasConstraintName("FK_NewConnectionApplicationDocuments_Applications");
     }
 }
+

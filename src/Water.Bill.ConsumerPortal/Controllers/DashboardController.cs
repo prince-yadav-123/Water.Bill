@@ -137,11 +137,25 @@ public class DashboardController : Controller
             .Take(8)
             .ToListAsync(ct);
 
-        var refs = onlineMasters.Select(x => x.Jalrefid).ToList();
-        var onlineTransactions = await _db.JalnoidaBankpayTrans
-            .AsNoTracking()
-            .Where(x => x.Jalrefid != null && refs.Contains(x.Jalrefid))
-            .ToListAsync(ct);
+        var refs = onlineMasters
+            .Select(x => x.Jalrefid)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToList();
+
+        List<JalnoidaBankpayTran> onlineTransactions;
+        try
+        {
+            onlineTransactions = refs.Count == 0
+                ? []
+                : await _db.JalnoidaBankpayTrans
+                    .AsNoTracking()
+                    .Where(x => x.Jalrefid != null && refs.Contains(x.Jalrefid))
+                    .ToListAsync(ct);
+        }
+        catch
+        {
+            onlineTransactions = [];
+        }
 
         var onlinePayments = onlineMasters.Select(master =>
         {
@@ -287,7 +301,7 @@ public class DashboardController : Controller
         try
         {
             await using var command = connection.CreateCommand();
-            command.CommandText = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND LOWER(table_name) = LOWER(@tableName);";
+            command.CommandText = "SELECT COUNT(*) FROM sys.tables WHERE LOWER(name) = LOWER(@tableName);";
             var parameter = command.CreateParameter();
             parameter.ParameterName = "@tableName";
             parameter.Value = tableName;

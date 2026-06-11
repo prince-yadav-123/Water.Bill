@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Extensions;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
@@ -14,12 +16,21 @@ public class NewConnectionFeeConfigurationsController : Controller
 
     public NewConnectionFeeConfigurationsController(ApplicationDbContext db) => _db = db;
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 0, CancellationToken ct = default)
     {
         ViewData["Title"] = "New Connection Fee Configuration";
         ViewData["ActiveMenu"] = "New Connection Fee Configuration";
-        var rows = await _db.NewConnectionFeeConfigurations.AsNoTracking().Where(x => !x.IsDeleted).OrderByDescending(x => x.EffectiveFrom).ToListAsync(ct);
-        return View(rows);
+        pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
+        page = PagingConstants.ValidatePage(page);
+
+        var paged = await _db.NewConnectionFeeConfigurations
+            .AsNoTracking()
+            .Where(x => !x.IsDeleted)
+            .OrderByDescending(x => x.EffectiveFrom)
+            .ToPagedResultAsync(page, pageSize, ct);
+
+        ViewBag.Pagination = PaginationViewModel.Create(paged);
+        return View(paged.Items);
     }
 
     public IActionResult Create()

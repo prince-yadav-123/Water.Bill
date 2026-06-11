@@ -22,3 +22,4 @@ public class ConsumerAccountAdjustmentHistoryConfiguration : IEntityTypeConfigur
         entity.Property(e => e.IsDeleted).HasDefaultValue(false);
     }
 }
+

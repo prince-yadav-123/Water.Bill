@@ -44,3 +44,4 @@ public class ConsumerComplaintConfiguration : IEntityTypeConfiguration<ConsumerC
             .HasConstraintName("FK_ConsumerComplaints_Category");
     }
 }
+

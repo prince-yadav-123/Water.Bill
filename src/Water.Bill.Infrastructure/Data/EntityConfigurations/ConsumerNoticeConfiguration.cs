@@ -43,3 +43,4 @@ public class ConsumerNoticeConfiguration : IEntityTypeConfiguration<ConsumerNoti
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
+

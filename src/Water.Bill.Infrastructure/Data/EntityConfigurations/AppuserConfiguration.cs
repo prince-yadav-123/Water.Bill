@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.Infrastructure.Data.EntityConfigurations;
@@ -14,9 +13,11 @@ public class AppuserConfiguration : IEntityTypeConfiguration<Appuser>
         
 entity
             .ToTable("appusers")
-            .UseCollation("utf8mb4_0900_ai_ci");
+            ;
         
         entity.HasIndex(e => e.RoleId, "FK_AppUsers_AppRoles_RoleId");
+
+        entity.HasIndex(e => e.DeptId, "IX_AppUsers_DeptId");
         
         entity.HasIndex(e => e.Email, "UX_AppUsers_Email").IsUnique();
         
@@ -24,7 +25,7 @@ entity
         
         entity.Property(e => e.CreatedAt)
             .HasMaxLength(6)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+            .HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.Email).HasMaxLength(150);
         entity.Property(e => e.FullName).HasMaxLength(150);
         entity.Property(e => e.IsActive)
@@ -43,6 +44,12 @@ entity
             .HasForeignKey(d => d.RoleId)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("FK_AppUsers_AppRoles_RoleId");
+
+        entity.HasOne(d => d.Department).WithMany(p => p.Appusers)
+            .HasForeignKey(d => d.DeptId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .HasConstraintName("FK_AppUsers_MasterDeptDetails_DeptId");
         
     }
 }
+

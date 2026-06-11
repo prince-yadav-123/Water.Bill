@@ -48,11 +48,7 @@ public class ApprovalsController : Controller
         var isAdmin = IsAdminUser();
         var roleId = int.TryParse(User.FindFirstValue("RoleId"), out var parsedRoleId) ? parsedRoleId : 0;
         var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId) ? parsedUserId : 0;
-        var departmentIds = await _db.AuthorityUserDepartments
-            .AsNoTracking()
-            .Where(x => x.UserId == userId && x.IsActive && !x.IsDeleted)
-            .Select(x => x.DepartmentId)
-            .ToListAsync(ct);
+        var currentDepartmentId = await ResolveDepartmentIdAsync(ct);
 
         pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
         page = PagingConstants.ValidatePage(page);
@@ -84,7 +80,7 @@ public class ApprovalsController : Controller
         // Non-admin sees only applications assigned to their user/role/department
         if (!isAdmin)
         {
-            query = ApplyWorkflowAssignmentFilter(query, userId, roleId, departmentIds);
+            query = ApplyWorkflowAssignmentFilter(query, userId, roleId, currentDepartmentId);
         }
 
         if (!string.IsNullOrWhiteSpace(status))
@@ -373,7 +369,7 @@ public class ApprovalsController : Controller
                 ActorRoleId = ResolveRoleId(),
                 ActorName = User.FindFirstValue("FullName") ?? User.Identity?.Name,
                 ActorRole = ResolveRoleName(),
-                ActorDepartmentIds = await ResolveDepartmentIdsAsync(ct),
+                ActorDepartmentIds = BuildDepartmentSet(await ResolveDepartmentIdAsync(ct)),
                 IsAdmin = IsAdminUser(),
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
                 UserAgent = Request.Headers.UserAgent.ToString()
@@ -423,43 +419,49 @@ public class ApprovalsController : Controller
 
         var userId = ResolveUserId() ?? 0;
         var roleId = ResolveRoleId() ?? 0;
-        var departmentIds = _db.AuthorityUserDepartments
-            .Where(x => x.UserId == userId && x.IsActive && !x.IsDeleted)
-            .Select(x => x.DepartmentId);
+        var currentDepartmentId = _db.Appusers
+            .Where(x => x.Id == userId && !x.IsDeleted)
+            .Select(x => x.DeptId)
+            .FirstOrDefault();
 
-        return ApplyWorkflowAssignmentFilter(query, userId, roleId, departmentIds);
+        return ApplyWorkflowAssignmentFilter(query, userId, roleId, currentDepartmentId);
     }
 
     private static IQueryable<ApplicationWorkflowTask> ApplyWorkflowAssignmentFilter(
         IQueryable<ApplicationWorkflowTask> query,
         int userId,
         int roleId,
-        IEnumerable<int> departmentIds)
+        int? departmentId)
         => query.Where(x =>
             (x.AssignedUserId.HasValue && x.AssignedUserId == userId)
             || (!x.AssignedUserId.HasValue
                 && x.AssignedDepartmentId.HasValue
                 && x.AssignedRoleId.HasValue
                 && x.AssignedRoleId == roleId
-                && departmentIds.Contains(x.AssignedDepartmentId.Value))
+                && departmentId.HasValue
+                && x.AssignedDepartmentId == departmentId.Value)
             || (!x.AssignedUserId.HasValue
                 && x.AssignedDepartmentId.HasValue
                 && !x.AssignedRoleId.HasValue
-                && departmentIds.Contains(x.AssignedDepartmentId.Value))
+                && departmentId.HasValue
+                && x.AssignedDepartmentId == departmentId.Value)
             || (!x.AssignedUserId.HasValue
                 && !x.AssignedDepartmentId.HasValue
                 && x.AssignedRoleId.HasValue
                 && x.AssignedRoleId == roleId));
 
-    private async Task<IReadOnlyList<int>> ResolveDepartmentIdsAsync(CancellationToken ct)
+    private async Task<int?> ResolveDepartmentIdAsync(CancellationToken ct)
     {
         var userId = ResolveUserId() ?? 0;
-        return await _db.AuthorityUserDepartments
+        return await _db.Appusers
             .AsNoTracking()
-            .Where(x => x.UserId == userId && x.IsActive && !x.IsDeleted)
-            .Select(x => x.DepartmentId)
-            .ToListAsync(ct);
+            .Where(x => x.Id == userId && !x.IsDeleted)
+            .Select(x => x.DeptId)
+            .FirstOrDefaultAsync(ct);
     }
+
+    private static IReadOnlyCollection<int> BuildDepartmentSet(int? departmentId)
+        => departmentId.HasValue ? [departmentId.Value] : [];
 
     private bool IsAdminUser()
     {

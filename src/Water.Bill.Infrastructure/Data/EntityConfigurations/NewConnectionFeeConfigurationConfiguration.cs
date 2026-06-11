@@ -31,3 +31,4 @@ public class NewConnectionFeeConfigurationConfiguration : IEntityTypeConfigurati
         entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
     }
 }
+

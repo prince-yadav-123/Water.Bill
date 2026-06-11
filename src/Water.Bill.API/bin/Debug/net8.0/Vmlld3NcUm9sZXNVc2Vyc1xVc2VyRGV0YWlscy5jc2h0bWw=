@@ -41,6 +41,10 @@
             <dd>@(Model.Role?.Name ?? "Unassigned")</dd>
         </div>
         <div>
+            <dt>Department</dt>
+            <dd>@(Model.Department?.DeptName ?? "-")</dd>
+        </div>
+        <div>
             <dt>Created</dt>
             <dd>@Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</dd>
         </div>

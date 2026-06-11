@@ -26,3 +26,4 @@ public class ConsumerComplaintDocumentConfiguration : IEntityTypeConfiguration<C
             .HasConstraintName("FK_ConsumerComplaintDocuments_Complaint");
     }
 }
+

@@ -37,6 +37,7 @@
                     <th>User</th>
                     <th>Username</th>
                     <th>Role</th>
+                    <th>Department</th>
                     <th>Mobile</th>
                     <th>Status</th>
                     <th class="text-end">Actions</th>
@@ -46,13 +47,14 @@
             @foreach (var user in Model)
             {
                 var roleName = user.Role?.Name ?? "Unassigned";
-                <tr class="user-row" data-search="@($"{user.FullName} {user.Username} {user.Email} {user.PhoneNumber} {roleName}".ToLowerInvariant())">
+                <tr class="user-row" data-search="@($"{user.FullName} {user.Username} {user.Email} {user.PhoneNumber} {roleName} {user.Department?.DeptName}".ToLowerInvariant())">
                     <td>
                         <div class="fw-semibold">@user.FullName</div>
                         <div class="text-muted small">@user.Email</div>
                     </td>
                     <td>@user.Username</td>
                     <td><span class="badge text-bg-secondary">@roleName</span></td>
+                    <td>@(user.Department?.DeptName ?? "-")</td>
                     <td>@(string.IsNullOrWhiteSpace(user.PhoneNumber) ? "-" : user.PhoneNumber)</td>
                     <td><span class="badge @(user.IsActive == true ? "text-bg-success" : "text-bg-secondary")">@(user.IsActive == true ? "Active" : "Inactive")</span></td>
                     <td>
@@ -69,7 +71,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="6" class="text-center text-muted py-4">No users found.</td></tr>
+                <tr><td colspan="7" class="text-center text-muted py-4">No users found.</td></tr>
             }
             </tbody>
         </table>

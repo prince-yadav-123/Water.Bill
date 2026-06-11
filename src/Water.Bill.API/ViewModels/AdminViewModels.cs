@@ -18,7 +18,9 @@ public class UserFormViewModel
     public string Email { get; set; } = string.Empty;
     public string Username { get; set; } = string.Empty;
     public string? Password { get; set; }
+    public string? ConfirmPassword { get; set; }
     public int RoleId { get; set; }
+    public int? DeptId { get; set; }
     public string? PhoneNumber { get; set; }
     public bool IsActive { get; set; } = true;
 }

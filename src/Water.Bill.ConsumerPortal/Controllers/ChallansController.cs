@@ -307,15 +307,15 @@ public class ChallansController : Controller
         var bankCode = challan.BnkCd;
 
         await _db.Database.ExecuteSqlInterpolatedAsync($@"
-UPDATE `jal_print_bill_master`
-SET `paid_date` = {paymentDate},
-    `paid_amt` = {amount},
-    `PAID_STATUS` = 'Y',
-    `CHALLAN_NO` = {challanNo},
-    `BANK_CODE` = {bankCode}
-WHERE `CONS_NO` = {consumerNo}
-  AND `BILL_NO` = {billNo}
-  AND `STATUS` = '1';", ct);
+UPDATE [jal_print_bill_master]
+SET [paid_date] = {paymentDate},
+    [paid_amt] = {amount},
+    [PAID_STATUS] = 'Y',
+    [CHALLAN_NO] = {challanNo},
+    [BANK_CODE] = {bankCode}
+WHERE [CONS_NO] = {consumerNo}
+  AND [BILL_NO] = {billNo}
+  AND [STATUS] = '1';", ct);
     }
 
     private static ConsumerChallanListItemViewModel MapListItem(Challan challan)

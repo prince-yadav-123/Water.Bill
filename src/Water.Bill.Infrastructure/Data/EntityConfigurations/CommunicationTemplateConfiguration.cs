@@ -23,7 +23,7 @@ public class CommunicationTemplateConfiguration : IEntityTypeConfiguration<Commu
         entity.Property(e => e.IsDefault).HasDefaultValueSql("'1'");
         entity.Property(e => e.IsActive).HasDefaultValueSql("'1'");
         entity.Property(e => e.IsDeleted).HasDefaultValueSql("'0'");
-        entity.Property(e => e.CreatedAt).HasMaxLength(6).HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+        entity.Property(e => e.CreatedAt).HasMaxLength(6).HasDefaultValueSql("SYSDATETIME()");
         entity.Property(e => e.UpdatedAt).HasMaxLength(6);
         entity.HasOne(e => e.Purpose)
             .WithMany(e => e.Templates)
@@ -32,3 +32,4 @@ public class CommunicationTemplateConfiguration : IEntityTypeConfiguration<Commu
             .HasConstraintName("FK_CommunicationTemplates_CommunicationPurposes_PurposeId");
     }
 }
+

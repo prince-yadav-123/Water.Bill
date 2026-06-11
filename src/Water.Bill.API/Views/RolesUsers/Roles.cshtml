@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Role Management";
     var userCounts = ViewBag.UserCounts as IReadOnlyDictionary<int, int> ?? new Dictionary<int, int>();
+    var pagination = ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel;
+    var search = ViewBag.Search as string;
 }
 
 <div class="wb-page-head">
@@ -19,9 +21,13 @@
     <div class="wb-admin-toolbar">
         <div>
             <h2 class="wb-section-title">Roles</h2>
-            <span>@Model.Count active role@(Model.Count == 1 ? "" : "s")</span>
+            <span>@(pagination?.TotalCount ?? Model.Count) active role@((pagination?.TotalCount ?? Model.Count) == 1 ? "" : "s")</span>
         </div>
-        <input id="roleSearch" class="form-control wb-search" type="search" placeholder="Search role name or description" oninput="filterRoles()" />
+        <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
+            <input class="form-control wb-search" type="search" name="search" value="@search" placeholder="Search role name or description" />
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-outline-secondary" asp-action="Roles">Reset</a>
+        </form>
     </div>
 
     @if (!Model.Any())
@@ -44,7 +50,7 @@
                 @foreach (var role in Model)
                 {
                     userCounts.TryGetValue(role.Id, out var userCount);
-                    <tr class="role-row" data-search="@($"{role.Name} {role.Description}".ToLowerInvariant())">
+                    <tr>
                         <td>
                             <div class="fw-semibold">@role.Name</div>
                             <div class="text-muted small">Created @role.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</div>
@@ -66,16 +72,6 @@
                 </tbody>
             </table>
         </div>
+        @await Html.PartialAsync("_Pagination", pagination)
     }
 </section>
-
-@section Scripts {
-<script>
-function filterRoles() {
-    var q = (document.getElementById('roleSearch').value || '').toLowerCase();
-    document.querySelectorAll('.role-row').forEach(function(row) {
-        row.style.display = row.dataset.search.includes(q) ? '' : 'none';
-    });
-}
-</script>
-}
