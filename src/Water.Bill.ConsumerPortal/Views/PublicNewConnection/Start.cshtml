@@ -1,6 +1,7 @@
 @model string
 @{
     ViewData["Title"] = "Verify Mobile";
+    var isTrackOnly = ViewData["IsTrackOnly"] as bool? == true;
 }
 
 <main class="wb-public-auth-shell">
@@ -11,11 +12,16 @@
             </svg>
         </div>
         <p class="wb-kicker">Noida Water Connection</p>
-        <h1>Apply for New Water Connection</h1>
-        <p class="wb-public-auth-subtitle">Verify your mobile number to start or continue your application.</p>
+        <h1>@(isTrackOnly ? "Track Your Application" : "Apply for New Water Connection")</h1>
+        <p class="wb-public-auth-subtitle">
+            @(isTrackOnly
+                ? "Verify your mobile number to view submitted applications and continue correction-required cases."
+                : "Verify your mobile number to start or continue your application.")
+        </p>
 
         <form asp-action="Start" method="post" class="wb-public-auth-form">
             @Html.AntiForgeryToken()
+            <input type="hidden" name="mode" value="@(isTrackOnly ? "track" : "apply")" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="wb-field">
                 <label class="form-label required" for="mobileNumber">Mobile Number</label>
@@ -29,7 +35,11 @@
         </form>
 
         <div class="wb-public-auth-divider"><span>secure verification</span></div>
-        <p class="wb-public-auth-foot">Your mobile number will be used to track this application and resume pending payment.</p>
+        <p class="wb-public-auth-foot">
+            @(isTrackOnly
+                ? "Your mobile number will be used only to fetch existing applications linked with it."
+                : "Your mobile number will be used to track this application and resume pending payment.")
+        </p>
     </section>
 </main>
 

@@ -1,0 +1,231 @@
+@model Water.Bill.ConsumerPortal.ViewModels.PublicConsumerMobileRegistrationViewModel
+@{
+    ViewData["Title"] = "Register Mobile Number";
+}
+
+<main class="wb-public-auth-shell wb-mobile-reg-shell">
+    <section class="wb-public-auth-card wb-mobile-reg-card">
+        <div class="wb-auth-profile-icon wb-auth-profile-icon-mobile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/>
+                <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+        </div>
+
+        <div class="wb-otp-header">
+            <p class="wb-kicker">Consumer Verification</p>
+            <h1>Register mobile number</h1>
+            <p class="wb-public-auth-subtitle">
+                Verify Consumer Number and confirm your new mobile number with OTP before saving it.
+            </p>
+        </div>
+
+        <div class="wb-mobile-reg-banner">
+            <div class="wb-mobile-reg-banner-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+                <strong>Secure public update</strong>
+                <span>Your mobile number will be saved only after OTP verification for this consumer number.</span>
+            </div>
+        </div>
+
+        <form asp-action="SendOtp" method="post" class="wb-public-auth-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger wb-mobile-reg-validation"></div>
+
+            <div class="wb-mobile-reg-grid">
+                <div class="wb-field">
+                    <label asp-for="ConsumerNo" class="form-label required"></label>
+                    <div class="wb-input-shell">
+                        <input asp-for="ConsumerNo" class="wb-input" autocomplete="off" placeholder="Enter consumer number" />
+                    </div>
+                    <span asp-validation-for="ConsumerNo" class="text-danger"></span>
+                </div>
+
+                <div class="wb-field">
+                    <label asp-for="MobileNo" class="form-label required"></label>
+                    <div class="wb-input-shell">
+                        <span class="wb-input-icon">+91</span>
+                        <input asp-for="MobileNo" class="wb-input" maxlength="10" inputmode="numeric" autocomplete="tel" placeholder="Enter 10-digit mobile number" />
+                    </div>
+                    <span asp-validation-for="MobileNo" class="text-danger"></span>
+                </div>
+            </div>
+
+            @if (!Model.IsOtpSent)
+            {
+                <button class="btn btn-primary w-100" type="submit">Send OTP</button>
+            }
+            else
+            {
+                <div class="wb-dev-otp-box">
+                    @if (!string.IsNullOrWhiteSpace(Model.MaskedMobileNo))
+                    {
+                        <span>OTP sent to <strong>@Model.MaskedMobileNo</strong></span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.DevelopmentOtp))
+                    {
+                        <span>Development OTP: <strong>@Model.DevelopmentOtp</strong></span>
+                    }
+                </div>
+
+                <div class="wb-field">
+                    <label asp-for="Otp" class="form-label required"></label>
+                    <div class="wb-input-shell">
+                        <input asp-for="Otp" class="wb-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6-digit OTP" />
+                    </div>
+                    <span asp-validation-for="Otp" class="text-danger"></span>
+                </div>
+
+                <div class="wb-otp-action-row">
+                    <button class="btn btn-outline-primary" type="submit" formaction="@Url.Action("SendOtp", "PublicConsumerMobileRegistration")">Resend OTP</button>
+                    <button class="btn btn-primary" type="submit" formaction="@Url.Action("Verify", "PublicConsumerMobileRegistration")">Verify & Update</button>
+                </div>
+            }
+        </form>
+
+        <div class="wb-public-auth-divider"><span>secure update</span></div>
+        <p class="wb-public-auth-foot">
+            Mobile number will be updated only after successful OTP verification for the entered consumer number.
+        </p>
+    </section>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <style>
+        .wb-mobile-reg-shell {
+            min-height: 100vh;
+            padding: 36px 20px;
+            background:
+                radial-gradient(circle at top left, rgba(16,152,173,.08), transparent 28%),
+                radial-gradient(circle at top right, rgba(37,99,235,.06), transparent 24%),
+                #f4f8fc;
+        }
+        .wb-mobile-reg-card {
+            width: min(100%, 620px);
+            gap: 18px;
+            padding: 34px 38px;
+            border: 1px solid #dbe5ef;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 24px 48px rgba(8,47,73,.10);
+        }
+        .wb-auth-profile-icon-mobile {
+            width: 62px; height: 62px;
+            display: grid; place-items: center; justify-self: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #eff6ff, #ecfeff);
+            border: 2px solid #cfe3ff;
+            color: #1d4ed8;
+        }
+        .wb-mobile-reg-banner {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: start;
+            padding: 14px 16px;
+            border: 1px solid #d9ecf2;
+            border-radius: 14px;
+            background: #f8fcff;
+        }
+        .wb-mobile-reg-banner-icon {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #e0f2fe;
+            color: #0f7f94;
+            font-size: 1rem;
+        }
+        .wb-mobile-reg-banner strong {
+            display: block;
+            margin-bottom: 2px;
+            color: #0f172a;
+            font-size: .95rem;
+        }
+        .wb-mobile-reg-banner span {
+            color: #64748b;
+            font-size: .86rem;
+            line-height: 1.5;
+        }
+        .wb-mobile-reg-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+        .wb-mobile-reg-validation {
+            margin-bottom: -2px;
+            font-size: .92rem;
+        }
+        .wb-mobile-reg-card .wb-public-auth-subtitle {
+            max-width: 520px;
+            margin: 2px auto 0;
+        }
+        .wb-mobile-reg-card .wb-input-shell {
+            min-height: 46px;
+            border: 1px solid #c7d5e2;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, .03);
+            transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+        }
+        .wb-mobile-reg-card .wb-input-shell:hover {
+            border-color: #a9bfd3;
+        }
+        .wb-mobile-reg-card .wb-input-shell:focus-within {
+            border-color: #1098ad;
+            box-shadow: 0 0 0 3px rgba(16, 152, 173, .14);
+            background: #fff;
+        }
+        .wb-mobile-reg-card .wb-input-shell:has(.wb-input.input-validation-error) {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, .12);
+        }
+        .wb-mobile-reg-card .wb-input {
+            color: #0f172a;
+            background: transparent;
+        }
+        .wb-mobile-reg-card .wb-input::placeholder {
+            color: #94a3b8;
+        }
+        .wb-mobile-reg-card .wb-input:not(:placeholder-shown) {
+            font-weight: 600;
+        }
+        .wb-mobile-reg-card .wb-input:focus {
+            outline: none;
+        }
+        .wb-mobile-reg-card .text-danger.field-validation-error,
+        .wb-mobile-reg-card .text-danger.validation-summary-errors {
+            font-size: .82rem;
+            font-weight: 600;
+        }
+        .wb-mobile-reg-card .wb-dev-otp-box {
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+        }
+        .wb-otp-action-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        @@media (max-width: 767.98px) {
+            .wb-mobile-reg-grid { grid-template-columns: 1fr; }
+        }
+        @@media (max-width: 575.98px) {
+            .wb-mobile-reg-shell { padding: 16px 12px; background: #f4f8fc; }
+            .wb-mobile-reg-card {
+                width: 100%;
+                min-height: auto;
+                padding: 24px 18px;
+                border-radius: 16px;
+            }
+            .wb-otp-action-row { grid-template-columns: 1fr; }
+        }
+    </style>
+}

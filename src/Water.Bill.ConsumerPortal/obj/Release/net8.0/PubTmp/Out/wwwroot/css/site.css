@@ -821,7 +821,7 @@ textarea.form-control:focus,
 }
 
 .wb-public-auth-shell {
-    min-height: calc(100vh - 32px);
+    min-height: calc(100vh);
     display: grid;
     place-items: center;
     padding: 42px 18px;

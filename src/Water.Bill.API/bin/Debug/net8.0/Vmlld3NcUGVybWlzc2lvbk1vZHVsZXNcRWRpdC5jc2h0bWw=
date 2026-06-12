@@ -1,4 +1,4 @@
-@model PermissionModule
+@model PermissionModuleFormViewModel
 @{
     ViewData["Title"] = "Edit Permission Module";
 }

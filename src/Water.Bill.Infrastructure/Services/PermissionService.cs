@@ -101,7 +101,11 @@ public class PermissionService : IPermissionService
         };
     }
 
-    public async Task SavePermissionsAsync(int roleId, IEnumerable<RolePermissionDto> permissions, CancellationToken ct = default)
+    public async Task SavePermissionsAsync(
+        int roleId,
+        IEnumerable<RolePermissionDto> permissions,
+        IReadOnlyCollection<int>? scopedModuleIds = null,
+        CancellationToken ct = default)
     {
         var incoming = permissions.ToList();
         var existing = await _db.Rolepermissions
@@ -113,6 +117,7 @@ public class PermissionService : IPermissionService
             var normalizedModule = item.Module.Trim();
             var record = item.ModuleId.HasValue
                 ? existing.FirstOrDefault(x => x.ModuleId == item.ModuleId.Value)
+                    ?? existing.FirstOrDefault(x => x.Module == normalizedModule)
                 : existing.FirstOrDefault(x => x.Module == normalizedModule);
             if (record is null)
             {
@@ -154,10 +159,13 @@ public class PermissionService : IPermissionService
         }
 
         var incomingModuleIds = incoming.Where(x => x.ModuleId.HasValue).Select(x => x.ModuleId!.Value).ToHashSet();
-        var incomingModules = incoming.Where(x => !x.ModuleId.HasValue).Select(x => x.Module.Trim()).ToHashSet();
+        var incomingModules = incoming.Where(x => !string.IsNullOrWhiteSpace(x.Module)).Select(x => x.Module.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var scopedIds = scopedModuleIds?.ToHashSet() ?? incomingModuleIds;
+
         foreach (var orphan in existing.Where(x =>
-            (x.ModuleId.HasValue && !incomingModuleIds.Contains(x.ModuleId.Value))
-            || (!x.ModuleId.HasValue && !incomingModules.Contains(x.Module))))
+            ((x.ModuleId.HasValue && scopedIds.Contains(x.ModuleId.Value)) || (!x.ModuleId.HasValue && incomingModules.Contains(x.Module)))
+            && ((x.ModuleId.HasValue && !incomingModuleIds.Contains(x.ModuleId.Value))
+                || (!x.ModuleId.HasValue && !incomingModules.Contains(x.Module)))))
         {
             orphan.IsDeleted = true;
             orphan.UpdatedAt = DateTime.UtcNow;

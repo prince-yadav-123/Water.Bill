@@ -1,4 +1,5 @@
 @using Water.Bill.Infrastructure.Data.Entities
+@using Water.Bill.Core.Common
 @model IReadOnlyList<InAppNotification>
 @{
     ViewData["Title"] = "My Notifications";
@@ -30,12 +31,27 @@
         <div class="wb-notif-list-page">
             @foreach (var n in Model)
             {
-                <div class="wb-notif-item @(n.IsRead ? "" : "wb-notif-unread")" data-id="@n.Id">
+                var nav = NotificationNavigationHelper.ResolveForInternal(n.RedirectUrl, n.ReferenceType, n.ReferenceId, n.ReferenceNo);
+                <div class="wb-notif-item @(n.IsRead ? "" : "wb-notif-unread") @(nav.HasTarget ? "wb-notif-openable" : "")" data-id="@n.Id">
                     <div class="wb-notif-dot"></div>
                     <div class="wb-notif-body">
-                        <div class="fw-semibold">@n.Title</div>
-                        <div class="text-muted" style="font-size:.88rem">@n.Message</div>
-                        <small class="text-muted">@n.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                        @if (nav.HasTarget)
+                        {
+                            <a class="wb-notif-link"
+                               href="@Url.Action("Open", "NotificationManagement", new { id = n.Id })"
+                               target="@(nav.OpenInNewTab ? "_blank" : null)"
+                               rel="@(nav.OpenInNewTab ? "noopener noreferrer" : null)">
+                                <div class="fw-semibold">@n.Title</div>
+                                <div class="text-muted" style="font-size:.88rem">@n.Message</div>
+                                <small class="text-muted">@n.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="fw-semibold">@n.Title</div>
+                            <div class="text-muted" style="font-size:.88rem">@n.Message</div>
+                            <small class="text-muted">@n.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                        }
                     </div>
                     @if (!n.IsRead)
                     {
@@ -55,6 +71,8 @@
     .wb-notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #2563eb; flex-shrink: 0; margin-top: 6px; opacity: 0; }
     .wb-notif-unread .wb-notif-dot { opacity: 1; }
     .wb-notif-body { flex: 1; }
+    .wb-notif-link { display: block; color: inherit; text-decoration: none; }
+    .wb-notif-link:hover .fw-semibold { color: #0d6efd; }
     .btn-xs { padding: .15rem .45rem; font-size: .78rem; flex-shrink: 0; }
 </style>
 

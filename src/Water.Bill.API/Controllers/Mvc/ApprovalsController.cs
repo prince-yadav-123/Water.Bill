@@ -65,16 +65,19 @@ public class ApprovalsController : Controller
             .AsNoTracking()
             .Where(x => !x.IsDeleted && !x.WorkflowInstance.IsDeleted);
 
-        query = normalizedTab switch
+        if (!isAdmin)
         {
-            "Approved" => query.Where(x => x.Status == "Approved"),
-            "Rejected" => query.Where(x => x.Status == "Rejected"),
-            "All" => query,
-            _ => query.Where(x => x.IsActive
-                && x.Status == "Pending"
-                && x.WorkflowInstance.CurrentStageId == x.StageId
-                && x.WorkflowInstance.IsActive)
-        };
+            query = normalizedTab switch
+            {
+                "Approved" => query.Where(x => x.Status == "Approved"),
+                "Rejected" => query.Where(x => x.Status == "Rejected"),
+                "All" => query,
+                _ => query.Where(x => x.IsActive
+                    && x.Status == "Pending"
+                    && x.WorkflowInstance.CurrentStageId == x.StageId
+                    && x.WorkflowInstance.IsActive)
+            };
+        }
 
         // Admin sees ALL applications — no assignment filter
         // Non-admin sees only applications assigned to their user/role/department
@@ -83,19 +86,19 @@ public class ApprovalsController : Controller
             query = ApplyWorkflowAssignmentFilter(query, userId, roleId, currentDepartmentId);
         }
 
-        if (!string.IsNullOrWhiteSpace(status))
+        if (!string.IsNullOrWhiteSpace(status) && !isAdmin)
             query = query.Where(x => x.Status == status
                 || x.WorkflowInstance.CurrentStatus == status
                 || (status == "SentBackToApplicant" && x.WorkflowInstance.CurrentStatus == "SentBackToApplicant")
                 || (status == "Forwarded" && x.Status == "Forwarded")
                 || (status == "SentBackToPrevious" && x.Status == "SentBackToPrevious"));
-        if (fromDate.HasValue)
+        if (fromDate.HasValue && !isAdmin)
             query = query.Where(x => x.AssignedOn.Date >= fromDate.Value.Date);
-        if (toDate.HasValue)
+        if (toDate.HasValue && !isAdmin)
             query = query.Where(x => x.AssignedOn.Date <= toDate.Value.Date);
-        if (departmentId.HasValue)
+        if (departmentId.HasValue && !isAdmin)
             query = query.Where(x => x.AssignedDepartmentId == departmentId.Value);
-        if (stageId.HasValue)
+        if (stageId.HasValue && !isAdmin)
             query = query.Where(x => x.StageId == stageId.Value);
         if (!string.IsNullOrWhiteSpace(applicationType))
             query = query.Where(x => x.WorkflowInstance.ApplicationType == applicationType);
@@ -103,6 +106,87 @@ public class ApprovalsController : Controller
         var rows = await query
             .OrderByDescending(x => x.AssignedOn)
             .ToListAsync(ct);
+
+        Dictionary<long, ApplicationWorkflowHistory> latestHistoryByInstance = [];
+        if (rows.Count > 0)
+        {
+            var workflowInstanceIds = rows.Select(x => x.WorkflowInstanceId).Distinct().ToList();
+            var histories = await _db.ApplicationWorkflowHistories
+                .AsNoTracking()
+                .Where(x => workflowInstanceIds.Contains(x.WorkflowInstanceId))
+                .OrderByDescending(x => x.ActionOn)
+                .ThenByDescending(x => x.Id)
+                .ToListAsync(ct);
+
+            latestHistoryByInstance = histories
+                .GroupBy(x => x.WorkflowInstanceId)
+                .ToDictionary(x => x.Key, x => x.First());
+        }
+
+        if (isAdmin)
+        {
+            rows = rows
+                .GroupBy(x => x.WorkflowInstanceId)
+                .Select(group =>
+                {
+                    var currentTask = group.FirstOrDefault(x =>
+                        x.WorkflowInstance.CurrentStageId == x.StageId
+                        && x.WorkflowInstance.IsActive
+                        && x.IsActive
+                        && string.Equals(x.Status, "Pending", StringComparison.OrdinalIgnoreCase));
+
+                    return currentTask
+                        ?? group.OrderByDescending(x => x.ActionOn ?? x.AssignedOn)
+                            .ThenByDescending(x => x.Id)
+                            .First();
+                })
+                .ToList();
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                rows = rows.Where(x =>
+                    string.Equals(x.WorkflowInstance.CurrentStatus, status, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(x.Status, status, StringComparison.OrdinalIgnoreCase)
+                    || (status == "SentBackToPrevious" && string.Equals(x.WorkflowInstance.CurrentStatus, "SentBackToPreviousStage", StringComparison.OrdinalIgnoreCase))
+                    || (status == "SentBackToApplicant" && string.Equals(x.WorkflowInstance.CurrentStatus, "SentBackToApplicant", StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+
+            if (departmentId.HasValue)
+                rows = rows.Where(x => x.AssignedDepartmentId == departmentId.Value).ToList();
+
+            if (stageId.HasValue)
+                rows = rows.Where(x => x.StageId == stageId.Value).ToList();
+
+            if (fromDate.HasValue)
+            {
+                rows = rows.Where(x =>
+                {
+                    var lastUpdatedOn = latestHistoryByInstance.TryGetValue(x.WorkflowInstanceId, out var history)
+                        ? history.ActionOn
+                        : x.ActionOn ?? x.AssignedOn;
+                    return lastUpdatedOn.Date >= fromDate.Value.Date;
+                }).ToList();
+            }
+
+            if (toDate.HasValue)
+            {
+                rows = rows.Where(x =>
+                {
+                    var lastUpdatedOn = latestHistoryByInstance.TryGetValue(x.WorkflowInstanceId, out var history)
+                        ? history.ActionOn
+                        : x.ActionOn ?? x.AssignedOn;
+                    return lastUpdatedOn.Date <= toDate.Value.Date;
+                }).ToList();
+            }
+
+            rows = rows
+                .OrderByDescending(x => latestHistoryByInstance.TryGetValue(x.WorkflowInstanceId, out var history)
+                    ? history.ActionOn
+                    : x.ActionOn ?? x.AssignedOn)
+                .ThenByDescending(x => x.Id)
+                .ToList();
+        }
 
         var applicationIds = rows
             .Where(x => x.WorkflowInstance.ApplicationType == "NewConnection")
@@ -171,9 +255,11 @@ public class ApprovalsController : Controller
             applications.TryGetValue(x.ApplicationId, out var app);
             ndcApplications.TryGetValue((int)x.ApplicationId, out var ndc);
             legacyApplications.TryGetValue(x.ApplicationNo, out var legacy);
+            latestHistoryByInstance.TryGetValue(x.WorkflowInstanceId, out var latestHistory);
             return new ApprovalListItemViewModel
             {
                 TaskId = x.Id,
+                WorkflowInstanceId = x.WorkflowInstanceId,
                 ApplicationNo = x.ApplicationNo,
                 ApplicationType = x.WorkflowInstance.ApplicationType,
                 ApplicantName = app?.ApplicantName ?? ndc?.ConsName ?? legacy?.ConName,
@@ -188,6 +274,8 @@ public class ApprovalsController : Controller
                 CurrentStatus = app?.ApplicationStatus ?? ndc?.CurrentStatus ?? ndc?.FinalStatus ?? ndc?.Status ?? legacy?.ApplicationStatus ?? x.WorkflowInstance.CurrentStatus,
                 CurrentStage = x.Stage.StageName,
                 AssignedTo = ResolveAssignedTo(x, users, roles),
+                LastAction = latestHistory?.Action,
+                LastUpdatedOn = latestHistory?.ActionOn ?? x.ActionOn ?? x.AssignedOn,
                 SubmittedOn = app?.SubmittedOn ?? ndc?.CreatedOn ?? legacy?.EnterDate?.ToDateTime(TimeOnly.MinValue),
                 AssignedOn = x.AssignedOn,
                 CanAct = x.IsActive
@@ -347,6 +435,23 @@ public class ApprovalsController : Controller
             IsFirstStage = isFirstStage,
             InternalUsers = []   // Forward to Specific User disabled for current phase
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OpenCurrent(long id, CancellationToken ct)
+    {
+        var task = await GetAllowedTaskQuery(pendingOnly: false)
+            .Include(x => x.WorkflowInstance)
+            .Where(x => x.WorkflowInstanceId == id)
+            .OrderByDescending(x => x.WorkflowInstance.CurrentStageId == x.StageId && x.IsActive && x.Status == "Pending" ? 1 : 0)
+            .ThenByDescending(x => x.ActionOn ?? x.AssignedOn)
+            .ThenByDescending(x => x.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (task is null)
+            return RedirectToAction(nameof(Pending));
+
+        return RedirectToAction(nameof(Details), new { id = task.Id });
     }
 
     [HttpPost]

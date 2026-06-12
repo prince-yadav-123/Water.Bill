@@ -3,6 +3,15 @@
     ViewData["Title"] = "Menu Management";
     var roots = Model.Items.Where(x => x.ParentId == null).OrderBy(x => x.Order).ThenBy(x => x.Label).ToList();
     var children = Model.Items.Where(x => x.ParentId != null).GroupBy(x => x.ParentId!.Value).ToDictionary(x => x.Key, x => x.OrderBy(c => c.Order).ThenBy(c => c.Label).ToList());
+    bool IsBootstrapIcon(string? icon) => !string.IsNullOrWhiteSpace(icon) && icon.StartsWith("bi-", StringComparison.OrdinalIgnoreCase);
+    string GetMenuIconFallback(string? icon, string? label)
+    {
+        if (!string.IsNullOrWhiteSpace(icon))
+            return icon;
+
+        var firstVisibleChar = (label ?? string.Empty).Trim().FirstOrDefault(char.IsLetterOrDigit);
+        return firstVisibleChar == default ? "M" : char.ToUpperInvariant(firstVisibleChar).ToString();
+    }
 }
 
 @Html.AntiForgeryToken()
@@ -35,10 +44,25 @@
             {
                 var itemChildren = children.TryGetValue(item.Id, out var childList) ? childList : [];
                 var itemModuleName = item.PermissionModule?.Name;
+                var hasChildren = itemChildren.Any();
                 <article class="wb-menu-node root-item" data-id="@item.Id" data-search="@($"{item.Label} {item.Url} {itemModuleName} {item.SectionLabel}".ToLowerInvariant())">
                     <div class="wb-menu-node-main">
-                        <span class="wb-drag" title="Drag to reorder">::</span>
-                        <span class="wb-menu-icon">@(string.IsNullOrWhiteSpace(item.Icon) ? "[]" : item.Icon)</span>
+                        <button class="wb-drag @(hasChildren ? "wb-drag-toggle is-open" : "")"
+                                type="button"
+                                title="@(hasChildren ? "Click to collapse or drag to reorder" : "Drag to reorder")"
+                                @(hasChildren ? Html.Raw("data-menu-drag-toggle aria-expanded=\"true\"") : null)>
+                            <i class="bi @(hasChildren ? "bi-grip-vertical" : "bi-grip-vertical")"></i>
+                        </button>
+                        <span class="wb-menu-icon">
+                            @if (IsBootstrapIcon(item.Icon))
+                            {
+                                <i class="bi @item.Icon"></i>
+                            }
+                            else
+                            {
+                                @GetMenuIconFallback(item.Icon, item.Label)
+                            }
+                        </span>
                         <div class="wb-menu-copy">
                             <strong>@item.Label</strong>
                             <span>@(string.IsNullOrWhiteSpace(item.Url) ? "No URL" : item.Url)</span>
@@ -50,7 +74,7 @@
                         <div class="wb-row-actions">
                             <span class="badge @(item.ShowInSidebar ? "text-bg-info" : "text-bg-light")">@(item.ShowInSidebar ? "Sidebar" : "Hidden")</span>
                             <span class="badge @(item.IsActive == true ? "text-bg-success" : "text-bg-secondary")">@(item.IsActive == true ? "Active" : "Inactive")</span>
-                            @if (itemChildren.Any())
+                            @if (hasChildren)
                             {
                                 <span class="badge text-bg-secondary">@itemChildren.Count children</span>
                             }
@@ -62,14 +86,25 @@
                             </form>
                         </div>
                     </div>
-                    <div class="wb-menu-children">
+                    <div class="wb-menu-children @(hasChildren ? "is-open" : "")">
                         @foreach (var child in itemChildren)
                         {
                             var childModuleName = child.PermissionModule?.Name;
                             <div class="wb-menu-node child-item" data-id="@child.Id" data-parent="@item.Id" data-search="@($"{child.Label} {child.Url} {childModuleName} {child.SectionLabel}".ToLowerInvariant())">
                                 <div class="wb-menu-node-main">
-                                    <span class="wb-drag" title="Drag to reorder">::</span>
-                                    <span class="wb-menu-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
+                                    <button class="wb-drag" type="button" title="Drag to reorder">
+                                        <i class="bi bi-grip-vertical"></i>
+                                    </button>
+                                    <span class="wb-menu-icon">
+                                        @if (IsBootstrapIcon(child.Icon))
+                                        {
+                                            <i class="bi @child.Icon"></i>
+                                        }
+                                        else
+                                        {
+                                            @GetMenuIconFallback(child.Icon, child.Label)
+                                        }
+                                    </span>
                                     <div class="wb-menu-copy">
                                         <strong>@child.Label</strong>
                                         <span>@(string.IsNullOrWhiteSpace(child.Url) ? "No URL" : child.Url)</span>
@@ -107,6 +142,18 @@ function filterMenu() {
         row.style.display = !q || (row.dataset.search || '').includes(q) ? '' : 'none';
     });
 }
+
+document.querySelectorAll('[data-menu-drag-toggle]').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var article = button.closest('.root-item');
+        var container = article ? article.querySelector(':scope > .wb-menu-children') : null;
+        if (!container) return;
+
+        var isOpen = container.classList.toggle('is-open');
+        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        button.classList.toggle('is-open', isOpen);
+    });
+});
 
 function collectOrders() {
     var items = [];

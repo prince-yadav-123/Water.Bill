@@ -12,6 +12,7 @@ public interface ICommunicationService
         string? referenceType = null,
         string? referenceId = null,
         string? referenceNo = null,
+        string? redirectUrl = null,
         CancellationToken ct = default);
 }
 
@@ -39,7 +40,7 @@ public interface IWhatsAppSender
 
 public interface IInAppNotificationSender
 {
-    Task<CommunicationSendResult> SendAsync(NotificationRecipient recipient, string title, string message, string purposeKey, string? referenceType, string? referenceId, string? referenceNo, CancellationToken ct = default);
+    Task<CommunicationSendResult> SendAsync(NotificationRecipient recipient, string title, string message, string purposeKey, string? referenceType, string? referenceId, string? referenceNo, string? redirectUrl = null, CancellationToken ct = default);
 }
 
 public sealed record CommunicationSendResult(string Status, string? ErrorMessage = null)
@@ -50,4 +51,3 @@ public sealed record CommunicationSendResult(string Status, string? ErrorMessage
 
     public static CommunicationSendResult Failed(string error) => new("Failed", error);
 }
-

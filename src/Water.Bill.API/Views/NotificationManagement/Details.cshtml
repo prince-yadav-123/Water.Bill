@@ -42,6 +42,7 @@
                 <div class="col-6 col-md-3"><small class="text-muted d-block">Channels</small><strong>@Model.Channels</strong></div>
                 <div class="col-6 col-md-3"><small class="text-muted d-block">Valid From</small><strong>@(Model.ValidFrom.HasValue ? Model.ValidFrom.Value.ToString("dd MMM yyyy") : "-")</strong></div>
                 <div class="col-6 col-md-3"><small class="text-muted d-block">Valid To</small><strong>@(Model.ValidTo.HasValue ? Model.ValidTo.Value.ToString("dd MMM yyyy") : "-")</strong></div>
+                <div class="col-12 col-md-6"><small class="text-muted d-block">Notification Link</small><strong>@(string.IsNullOrWhiteSpace(Model.RedirectUrl) ? "-" : Model.RedirectUrl)</strong></div>
                 <div class="col-6 col-md-3"><small class="text-muted d-block">Created By</small><strong>@(Model.CreatedByName ?? "-")</strong></div>
                 <div class="col-6 col-md-3"><small class="text-muted d-block">Created At</small><strong>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</strong></div>
                 @if (Model.SentAt.HasValue)

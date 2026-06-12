@@ -17,7 +17,7 @@ public class InAppNotificationSender : IInAppNotificationSender
         _configuration = configuration;
     }
 
-    public async Task<CommunicationSendResult> SendAsync(NotificationRecipient recipient, string title, string message, string purposeKey, string? referenceType, string? referenceId, string? referenceNo, CancellationToken ct = default)
+    public async Task<CommunicationSendResult> SendAsync(NotificationRecipient recipient, string title, string message, string purposeKey, string? referenceType, string? referenceId, string? referenceNo, string? redirectUrl = null, CancellationToken ct = default)
     {
         if (!(_configuration.GetValue<bool?>("Communication:InApp:Enabled") ?? true))
             return CommunicationSendResult.Skipped("In-app notifications are disabled.");
@@ -35,10 +35,10 @@ public class InAppNotificationSender : IInAppNotificationSender
             ReferenceType = referenceType,
             ReferenceId = referenceId,
             ReferenceNo = referenceNo,
+            RedirectUrl = redirectUrl,
             CreatedAt = DateTime.Now
         });
         await _db.SaveChangesAsync(ct);
         return CommunicationSendResult.Sent();
     }
 }
-

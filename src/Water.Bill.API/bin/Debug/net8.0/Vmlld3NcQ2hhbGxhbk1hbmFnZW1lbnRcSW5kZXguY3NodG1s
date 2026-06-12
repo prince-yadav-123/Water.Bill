@@ -11,12 +11,6 @@
         "OTHER" => ChallanPurposes.Display(ChallanPurposes.OtherServiceCharge),
         _ => ChallanPurposes.Display(ChallanPurposes.ExistingBillDue)
     };
-    string Badge(string status) => status switch
-    {
-        "Paid" => "text-bg-success",
-        "Cancelled" => "text-bg-danger",
-        _ => "text-bg-warning"
-    };
 }
 
 <div class="wb-page-head">
@@ -120,14 +114,14 @@
                         <td>@(row.PropertyNo ?? "-")</td>
                         <td>@PurposeText(row.Purpose)</td>
                         <td>@Amount(row.Amount)</td>
-                        <td><span class="badge @Badge(row.Status)">@row.Status</span></td>
+                        <td><span class="badge @AdminStatusBadgeHelper.CssClass(row.Status)">@AdminStatusBadgeHelper.Label(row.Status)</span></td>
                         <td>@DateText(row.GeneratedOn)</td>
                         <td class="text-end">
-                            <div class="btn-group btn-group-sm">
-                                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">View</a>
+                            <div class="wb-row-actions justify-content-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">View</a>
                                 @if (row.Status != "Cancelled")
                                 {
-                                    <a class="btn btn-outline-secondary" asp-action="Print" asp-route-id="@row.Id" target="_blank">Print</a>
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Print" asp-route-id="@row.Id" target="_blank">Print</a>
                                 }
                             </div>
                         </td>

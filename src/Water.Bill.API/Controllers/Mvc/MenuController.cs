@@ -11,10 +11,11 @@ using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
-[Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
-public class MenuController : Controller
-{
-    private const int DefaultTenantId = AppConstants.DefaultTenantId;
+    [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
+    public class MenuController : Controller
+    {
+        private const int DefaultTenantId = AppConstants.DefaultTenantId;
+        private const int ConsumerTenantId = AppConstants.ConsumerTenantId;
 
     private readonly ApplicationDbContext _db;
     private readonly IPermissionService _permissionService;
@@ -52,12 +53,12 @@ public class MenuController : Controller
     {
         ViewData["Title"] = "Create Menu Item";
         ViewData["ActiveMenu"] = "Menu Management";
-        return View(new MenuFormViewModel
+        return View(await BuildMenuFormViewModelAsync(new Menuitem
         {
-            Item = new Menuitem { TenantId = DefaultTenantId, IsActive = true, ShowInSidebar = true },
-            ParentItems = await GetParentItemsAsync(ct),
-            PermissionModules = await GetPermissionModulesAsync(ct)
-        });
+            TenantId = DefaultTenantId,
+            IsActive = true,
+            ShowInSidebar = true
+        }, ct));
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Menu Management.add")]
@@ -67,12 +68,11 @@ public class MenuController : Controller
         ValidateMenuItem(model.Item);
         if (!ModelState.IsValid)
         {
-            model.ParentItems = await GetParentItemsAsync(ct);
-            model.PermissionModules = await GetPermissionModulesAsync(ct);
-            return View(model);
+            return View(await BuildMenuFormViewModelAsync(model.Item, ct));
         }
 
         model.Item.TenantId = model.Item.TenantId == 0 ? DefaultTenantId : model.Item.TenantId;
+        model.Item.Icon = NormalizeMenuIcon(model.Item.Label, model.Item.Icon);
         model.Item.CreatedAt = DateTime.UtcNow;
         model.Item.IsDeleted = false;
         _db.Menuitems.Add(model.Item);
@@ -91,12 +91,7 @@ public class MenuController : Controller
         var item = await _db.Menuitems.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (item is null) return NotFound();
 
-        return View(new MenuFormViewModel
-        {
-            Item = item,
-            ParentItems = await GetParentItemsAsync(ct, id),
-            PermissionModules = await GetPermissionModulesAsync(ct)
-        });
+        return View(await BuildMenuFormViewModelAsync(item, ct, id));
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Menu Management.edit")]
@@ -106,17 +101,16 @@ public class MenuController : Controller
         ValidateMenuItem(model.Item);
         if (!ModelState.IsValid)
         {
-            model.ParentItems = await GetParentItemsAsync(ct, id);
-            model.PermissionModules = await GetPermissionModulesAsync(ct);
-            return View(model);
+            return View(await BuildMenuFormViewModelAsync(model.Item, ct, id));
         }
 
         var item = await _db.Menuitems.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (item is null) return NotFound();
 
         item.ParentId = model.Item.ParentId == 0 ? null : model.Item.ParentId;
+        item.TenantId = model.Item.TenantId == 0 ? DefaultTenantId : model.Item.TenantId;
         item.Label = model.Item.Label;
-        item.Icon = model.Item.Icon;
+        item.Icon = NormalizeMenuIcon(model.Item.Label, model.Item.Icon);
         item.Url = model.Item.Url;
         item.SectionLabel = model.Item.SectionLabel;
         item.ModuleId = model.Item.ModuleId;
@@ -174,18 +168,24 @@ public class MenuController : Controller
     public async Task<IActionResult> Tree(CancellationToken ct)
         => Json(await _permissionService.GetMenuTreeAsync(DefaultTenantId, ct));
 
-    private async Task<IReadOnlyList<Menuitem>> GetParentItemsAsync(CancellationToken ct, int? excludeId = null)
+    private async Task<IReadOnlyList<Menuitem>> GetParentItemsAsync(int tenantId, CancellationToken ct, int? excludeId = null)
         => await _db.Menuitems
-            .Where(x => !x.IsDeleted && (!excludeId.HasValue || x.Id != excludeId.Value))
+            .Where(x => !x.IsDeleted && x.TenantId == tenantId && (!excludeId.HasValue || x.Id != excludeId.Value))
             .OrderBy(x => x.Order)
             .ThenBy(x => x.Label)
             .ToListAsync(ct);
 
-    private async Task<IReadOnlyList<PermissionModule>> GetPermissionModulesAsync(CancellationToken ct)
-        => await _db.PermissionModules
-            .Where(x => x.IsActive && !x.IsDeleted)
+    private async Task<IReadOnlyList<PermissionModule>> GetPermissionModulesAsync(int tenantId, CancellationToken ct)
+    {
+        var portalScope = tenantId == ConsumerTenantId
+            ? AppConstants.PortalScopes.Consumer
+            : AppConstants.PortalScopes.Authority;
+
+        return await _db.PermissionModules
+            .Where(x => x.IsActive && !x.IsDeleted && EF.Property<string>(x, "PortalScope") == portalScope)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
+    }
 
     private void ValidateMenuItem(Menuitem item)
     {
@@ -194,4 +194,139 @@ public class MenuController : Controller
         if (item.ParentId == item.Id && item.Id != 0)
             ModelState.AddModelError("Item.ParentId", "A menu item cannot be its own parent.");
     }
+
+    private static string NormalizeMenuIcon(string? label, string? icon)
+    {
+        if (!string.IsNullOrWhiteSpace(icon))
+            return icon.Trim();
+
+        var firstVisibleChar = (label ?? string.Empty)
+            .Trim()
+            .FirstOrDefault(char.IsLetterOrDigit);
+
+        return firstVisibleChar == default
+            ? "M"
+            : char.ToUpperInvariant(firstVisibleChar).ToString();
+    }
+
+    private async Task<MenuFormViewModel> BuildMenuFormViewModelAsync(Menuitem item, CancellationToken ct, int? excludeId = null)
+    {
+        item.TenantId = item.TenantId == 0 ? DefaultTenantId : item.TenantId;
+        var parentItems = await GetParentItemsAsync(item.TenantId, ct, excludeId);
+        var permissionModules = await GetPermissionModulesAsync(item.TenantId, ct);
+        var allParentOptions = await _db.Menuitems
+            .Where(x => !x.IsDeleted && (!excludeId.HasValue || x.Id != excludeId.Value))
+            .OrderBy(x => x.TenantId)
+            .ThenBy(x => x.Order)
+            .ThenBy(x => x.Label)
+            .Select(x => new MenuParentOptionViewModel
+            {
+                Id = x.Id,
+                Label = x.Label,
+                TenantId = x.TenantId
+            })
+            .ToListAsync(ct);
+
+        return new MenuFormViewModel
+        {
+            Item = item,
+            ParentItems = parentItems,
+            PermissionModules = permissionModules,
+            PortalOptions = GetPortalOptions(),
+            ParentOptions = allParentOptions,
+            PermissionModuleOptions = await _db.PermissionModules
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .OrderBy(x => x.Name)
+                .Select(x => new MenuPermissionModuleOptionViewModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    PortalScope = EF.Property<string>(x, "PortalScope")
+                })
+                .ToListAsync(ct),
+            IconCategories = GetIconCategories()
+        };
+    }
+
+    private static IReadOnlyList<SelectOptionViewModel> GetPortalOptions()
+        =>
+        [
+            new() { Value = DefaultTenantId.ToString(), Text = "Authority / Admin Portal" },
+            new() { Value = ConsumerTenantId.ToString(), Text = "Consumer Portal" }
+        ];
+
+    private static IReadOnlyList<MenuIconCategoryViewModel> GetIconCategories()
+        =>
+        [
+            new()
+            {
+                Key = "navigation",
+                Label = "Navigation",
+                Icons =
+                [
+                    new() { Value = "bi-grid-1x2", Label = "Dashboard" },
+                    new() { Value = "bi-list", Label = "Menu" },
+                    new() { Value = "bi-diagram-3", Label = "Hierarchy" },
+                    new() { Value = "bi-collection", Label = "Modules" },
+                    new() { Value = "bi-card-list", Label = "Listing" },
+                    new() { Value = "bi-kanban", Label = "Boards" }
+                ]
+            },
+            new()
+            {
+                Key = "users",
+                Label = "Users & Roles",
+                Icons =
+                [
+                    new() { Value = "bi-people", Label = "Users" },
+                    new() { Value = "bi-person-badge", Label = "Authority User" },
+                    new() { Value = "bi-person-gear", Label = "User Settings" },
+                    new() { Value = "bi-shield-lock", Label = "Permissions" },
+                    new() { Value = "bi-shield-check", Label = "Security" },
+                    new() { Value = "bi-person-vcard", Label = "Profile" }
+                ]
+            },
+            new()
+            {
+                Key = "billing",
+                Label = "Billing & Payments",
+                Icons =
+                [
+                    new() { Value = "bi-receipt", Label = "Bill" },
+                    new() { Value = "bi-printer", Label = "Print" },
+                    new() { Value = "bi-credit-card", Label = "Payment" },
+                    new() { Value = "bi-cash-coin", Label = "Cash" },
+                    new() { Value = "bi-wallet2", Label = "Challan" },
+                    new() { Value = "bi-bar-chart", Label = "Reports" }
+                ]
+            },
+            new()
+            {
+                Key = "consumer",
+                Label = "Consumers & Requests",
+                Icons =
+                [
+                    new() { Value = "bi-house-door", Label = "Connection" },
+                    new() { Value = "bi-droplet", Label = "Water" },
+                    new() { Value = "bi-building", Label = "Department" },
+                    new() { Value = "bi-file-earmark-text", Label = "Application" },
+                    new() { Value = "bi-chat-dots", Label = "Support" },
+                    new() { Value = "bi-bell", Label = "Notification" }
+                ]
+            },
+            new()
+            {
+                Key = "workflow",
+                Label = "Workflow & Actions",
+                Icons =
+                [
+                    new() { Value = "bi-diagram-2", Label = "Workflow" },
+                    new() { Value = "bi-arrow-left-right", Label = "Transitions" },
+                    new() { Value = "bi-check2-square", Label = "Approval" },
+                    new() { Value = "bi-exclamation-triangle", Label = "Alert" },
+                    new() { Value = "bi-clock-history", Label = "History" },
+                    new() { Value = "bi-gear-wide-connected", Label = "Settings" }
+                ]
+            }
+        ];
 }

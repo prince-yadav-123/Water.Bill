@@ -8,6 +8,9 @@ public class DashboardIndexViewModel
     public IReadOnlyList<DashboardStatCardViewModel> SummaryCards { get; set; } = Array.Empty<DashboardStatCardViewModel>();
     public DashboardDonutChartViewModel? PrimaryStatusChart { get; set; }
     public DashboardDonutChartViewModel? ChallanStatusChart { get; set; }
+    public DashboardDistributionChartViewModel? DivisionConsumerChart { get; set; }
+    public DashboardAmountDistributionChartViewModel? PaymentCollectionChart { get; set; }
+    public DashboardDefaulterWidgetViewModel? DefaulterWidget { get; set; }
     public DashboardBarChartViewModel? SecondaryBarChart { get; set; }
     public DashboardTrendChartViewModel? TrendChart { get; set; }
     public DashboardStatusPanelViewModel? ServiceDeskPanel { get; set; }
@@ -42,6 +45,49 @@ public class DashboardChartSliceViewModel
     public string Label { get; set; } = string.Empty;
     public int Count { get; set; }
     public string Color { get; set; } = "#2563eb";
+}
+
+public class DashboardDistributionChartViewModel
+{
+    public string Title { get; set; } = string.Empty;
+    public string Caption { get; set; } = string.Empty;
+    public IReadOnlyList<DashboardDistributionSliceViewModel> Items { get; set; } = Array.Empty<DashboardDistributionSliceViewModel>();
+}
+
+public class DashboardDistributionSliceViewModel
+{
+    public string Label { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public decimal Percentage { get; set; }
+    public string Color { get; set; } = "#2563eb";
+}
+
+public class DashboardAmountDistributionChartViewModel
+{
+    public string Title { get; set; } = string.Empty;
+    public string Caption { get; set; } = string.Empty;
+    public IReadOnlyList<DashboardAmountDistributionSliceViewModel> Items { get; set; } = Array.Empty<DashboardAmountDistributionSliceViewModel>();
+}
+
+public class DashboardAmountDistributionSliceViewModel
+{
+    public string Label { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public decimal Percentage { get; set; }
+    public string Color { get; set; } = "#2563eb";
+}
+
+public class DashboardDefaulterWidgetViewModel
+{
+    public string Title { get; set; } = string.Empty;
+    public string Caption { get; set; } = string.Empty;
+    public int TotalConsumers { get; set; }
+    public int ConsumerCount { get; set; }
+    public int NonDefaulterCount { get; set; }
+    public decimal TotalOutstandingAmount { get; set; }
+    public decimal ThresholdAmount { get; set; }
+    public decimal ConfiguredThresholdAmount { get; set; }
+    public string? Url { get; set; }
 }
 
 public class DashboardBarChartViewModel

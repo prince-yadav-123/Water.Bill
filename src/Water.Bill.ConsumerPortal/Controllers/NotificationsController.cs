@@ -79,11 +79,29 @@ public class NotificationsController : Controller
                 x.Message,
                 x.IsRead,
                 x.CreatedAt,
-                x.ReferenceNo      // used as type badge in dropdown
+                x.ReferenceNo,
+                x.RedirectUrl,
+                x.ReferenceType,
+                x.ReferenceId
             })
             .ToListAsync(ct);
 
-        return Json(items);
+        return Json(items.Select(x =>
+        {
+            var nav = NotificationNavigationHelper.ResolveForConsumer(x.RedirectUrl, x.ReferenceType, x.ReferenceId, x.ReferenceNo);
+            return new
+            {
+                x.Id,
+                x.Title,
+                x.Message,
+                x.IsRead,
+                x.CreatedAt,
+                x.ReferenceNo,
+                HasUrl = nav.HasTarget,
+                OpenUrl = nav.HasTarget ? Url.Action(nameof(Open), new { id = x.Id }) : null,
+                OpenInNewTab = nav.OpenInNewTab
+            };
+        }));
     }
 
     // ── Mark single notification as read ─────────────────────────────────────
@@ -109,6 +127,35 @@ public class NotificationsController : Controller
         }
 
         return Json(new { ok = true });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Open(long id, CancellationToken ct)
+    {
+        var userId = await ResolveConsumerUserIdAsync(ct);
+        if (userId == 0) return RedirectToAction(nameof(Index));
+
+        var notif = await _db.InAppNotifications
+            .FirstOrDefaultAsync(x => x.Id == id
+                                   && x.UserId == userId
+                                   && x.UserType == "Consumer"
+                                   && !x.IsDeleted, ct);
+
+        if (notif is null)
+            return RedirectToAction(nameof(Index));
+
+        if (!notif.IsRead)
+        {
+            notif.IsRead = true;
+            notif.ReadAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync(ct);
+        }
+
+        var nav = NotificationNavigationHelper.ResolveForConsumer(notif.RedirectUrl, notif.ReferenceType, notif.ReferenceId, notif.ReferenceNo);
+        if (!nav.HasTarget || string.IsNullOrWhiteSpace(nav.Url))
+            return RedirectToAction(nameof(Index));
+
+        return Redirect(nav.Url);
     }
 
     // ── Mark all as read ─────────────────────────────────────────────────────

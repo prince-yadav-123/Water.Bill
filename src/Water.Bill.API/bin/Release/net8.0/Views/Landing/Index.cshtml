@@ -3,6 +3,7 @@
     var authorityLoginUrl = ViewData["AuthorityLoginUrl"]?.ToString() ?? "/Account/Login";
     var consumerLoginUrl = ViewData["ConsumerLoginUrl"]?.ToString() ?? "https://localhost:7040/Account/Login";
     var publicNewConnectionStartUrl = ViewData["PublicNewConnectionStartUrl"]?.ToString() ?? "/NewConnection/Start";
+    var publicTrackApplicationUrl = ViewData["PublicTrackApplicationUrl"]?.ToString() ?? "/NewConnection/Start?mode=track";
 }
 
 <!DOCTYPE html>
@@ -55,7 +56,6 @@
                 </nav>
 
                 <div class="wb-landing-actions wb-landing-actions-header">
-                    <a class="wb-landing-button wb-landing-button-primary" href="@publicNewConnectionStartUrl">Apply New Connection</a>
                     <a class="wb-landing-button wb-landing-button-light" href="@authorityLoginUrl">Authority Login</a>
                     <a class="wb-landing-button wb-landing-button-primary" href="@consumerLoginUrl">Consumer Login</a>
                 </div>
@@ -74,8 +74,7 @@
 
                         <div class="wb-landing-actions" aria-label="Login choices">
                             <a class="wb-landing-button wb-landing-button-primary" href="@publicNewConnectionStartUrl">Apply for New Connection</a>
-                            <a class="wb-landing-button wb-landing-button-primary" href="@consumerLoginUrl">Consumer Login</a>
-                            <a class="wb-landing-button wb-landing-button-light" href="@authorityLoginUrl">Authority Login</a>
+                            <a class="wb-landing-button wb-landing-button-light" href="@publicTrackApplicationUrl">Track Application</a>
                         </div>
                     </div>
 
@@ -184,7 +183,7 @@
                     <div class="wb-landing-track-card">
                         <strong>Already applied?</strong>
                         <span>Track your application status and approval timeline.</span>
-                        <a class="wb-landing-button wb-landing-button-light" href="/NewConnection/Track">Track Application</a>
+                        <a class="wb-landing-button wb-landing-button-light" href="@publicTrackApplicationUrl">Track Application</a>
                     </div>
                 </div>
             </section>

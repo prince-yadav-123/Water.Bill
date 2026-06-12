@@ -26,13 +26,13 @@
 
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label" asp-for="ConsumerNo">Consumer Number <span class="text-danger">*</span></label>
+                <label class="form-label required" asp-for="ConsumerNo">Consumer Number</label>
                 <input class="form-control" asp-for="ConsumerNo" required maxlength="10" placeholder="Enter consumer number" />
                 <span class="text-danger small" asp-validation-for="ConsumerNo"></span>
                 <div class="form-text">Consumer number must exist in consumer master data.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label" asp-for="Username">Username <span class="text-danger">*</span></label>
+                <label class="form-label required" asp-for="Username">Username</label>
                 <input class="form-control" asp-for="Username" required maxlength="100" autocomplete="username" />
                 <span class="text-danger small" asp-validation-for="Username"></span>
             </div>
@@ -49,14 +49,13 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label" asp-for="Password">
-                    @(isEdit ? "New Password" : "Password")
-                    @if (!isEdit)
-                    {
-                        <span class="text-danger">*</span>
-                    }
-                </label>
-                <input class="form-control" asp-for="Password" type="password" autocomplete="new-password" />
+                <label class="form-label @(isEdit ? "" : "required")" asp-for="Password">@(isEdit ? "New Password" : "Password")</label>
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="Password" type="password" autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
                 <span class="text-danger small" asp-validation-for="Password"></span>
                 @if (isEdit)
                 {
@@ -64,8 +63,13 @@
                 }
             </div>
             <div class="col-md-6">
-                <label class="form-label" asp-for="ConfirmPassword">Confirm Password</label>
-                <input class="form-control" asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+                <label class="form-label @(isEdit ? "" : "required")" asp-for="ConfirmPassword">Confirm Password</label>
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show confirm password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
                 <span class="text-danger small" asp-validation-for="ConfirmPassword"></span>
             </div>
         </div>
@@ -76,3 +80,24 @@
         </div>
     </form>
 </section>
+
+<script>
+    (() => {
+        document.querySelectorAll('[data-password-toggle]').forEach(button => {
+            if (button.dataset.bound === 'true') return;
+            button.dataset.bound = 'true';
+
+            button.addEventListener('click', () => {
+                const group = button.closest('.wb-password-group');
+                const input = group?.querySelector('input');
+                if (!input) return;
+
+                const showing = input.type === 'text';
+                input.type = showing ? 'password' : 'text';
+                button.setAttribute('aria-pressed', (!showing).toString());
+                button.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                button.classList.toggle('active', !showing);
+            });
+        });
+    })();
+</script>

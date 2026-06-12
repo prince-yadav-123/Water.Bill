@@ -1,4 +1,5 @@
 @using Water.Bill.Infrastructure.Data.Entities
+@using Water.Bill.Core.Common
 @model IReadOnlyList<InAppNotification>
 @{
     ViewData["Title"] = "My Notifications";
@@ -30,18 +31,39 @@
         <div class="cpd-notif-list">
             @foreach (var n in Model)
             {
+                var nav = NotificationNavigationHelper.ResolveForConsumer(n.RedirectUrl, n.ReferenceType, n.ReferenceId, n.ReferenceNo);
                 <div class="cpd-notif-row @(n.IsRead ? "" : "cpd-notif-unread")" data-id="@n.Id">
                     <div class="cpd-notif-indicator"></div>
                     <div class="cpd-notif-content">
-                        <div class="cpd-notif-title">@n.Title</div>
-                        <div class="cpd-notif-msg">@n.Message</div>
-                        <div class="cpd-notif-meta">
-                            <small>@n.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
-                            @if (!string.IsNullOrWhiteSpace(n.ReferenceNo))
-                            {
-                                <span class="cpd-notif-type-badge">@n.ReferenceNo</span>
-                            }
-                        </div>
+                        @if (nav.HasTarget)
+                        {
+                            <a class="cpd-notif-link"
+                               href="@Url.Action("Open", "Notifications", new { id = n.Id })"
+                               target="@(nav.OpenInNewTab ? "_blank" : null)"
+                               rel="@(nav.OpenInNewTab ? "noopener noreferrer" : null)">
+                                <div class="cpd-notif-title">@n.Title</div>
+                                <div class="cpd-notif-msg">@n.Message</div>
+                                <div class="cpd-notif-meta">
+                                    <small>@n.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
+                                    @if (!string.IsNullOrWhiteSpace(n.ReferenceNo))
+                                    {
+                                        <span class="cpd-notif-type-badge">@n.ReferenceNo</span>
+                                    }
+                                </div>
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="cpd-notif-title">@n.Title</div>
+                            <div class="cpd-notif-msg">@n.Message</div>
+                            <div class="cpd-notif-meta">
+                                <small>@n.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
+                                @if (!string.IsNullOrWhiteSpace(n.ReferenceNo))
+                                {
+                                    <span class="cpd-notif-type-badge">@n.ReferenceNo</span>
+                                }
+                            </div>
+                        }
                     </div>
                     @if (!n.IsRead)
                     {
@@ -82,6 +104,8 @@
     }
     .cpd-notif-unread .cpd-notif-indicator { opacity: 1; }
     .cpd-notif-content { flex: 1; min-width: 0; }
+    .cpd-notif-link { display: block; color: inherit; text-decoration: none; }
+    .cpd-notif-link:hover .cpd-notif-title { color: #1d4ed8; }
     .cpd-notif-title { font-weight: 700; font-size: .9rem; color: #0f172a; }
     .cpd-notif-msg { font-size: .85rem; color: #475569; margin-top: 2px; }
     .cpd-notif-meta { display: flex; align-items: center; gap: .5rem; margin-top: 4px; }

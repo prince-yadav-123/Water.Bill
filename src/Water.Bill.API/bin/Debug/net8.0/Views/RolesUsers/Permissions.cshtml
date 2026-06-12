@@ -43,9 +43,10 @@ else
         <div class="wb-admin-toolbar">
             <div>
                 <h2 class="wb-section-title">@selectedRole.Name Permissions</h2>
-                <span>See Menu controls sidebar visibility; View and other actions protect pages and commands.</span>
+                <span>@Model.SelectedPortalLabel modules only. See Menu controls sidebar visibility; View and other actions protect pages and commands.</span>
             </div>
             <div class="wb-actions">
+                <span class="badge @(Model.SelectedPortalScope == "Consumer" ? "text-bg-info" : "text-bg-primary")">@Model.SelectedPortalLabel</span>
                 <button class="btn btn-sm btn-outline-primary" type="button" onclick="setAllPermissions(true)">Grant All</button>
                 <button class="btn btn-sm btn-outline-primary" type="button" onclick="setAllPermissions(false)">Revoke All</button>
             </div>
@@ -68,37 +69,48 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach (var module in Model.Modules)
+                    @if (!Model.Modules.Any())
                     {
-                        permissionMap.TryGetValue(module.Id, out var permission);
-                        bool IsChecked(string action) => action switch
-                        {
-                            "SeeMenu" => permission?.CanSeeMenu ?? false,
-                            "View" => permission?.CanView ?? false,
-                            "Add" => permission?.CanAdd ?? false,
-                            "Edit" => permission?.CanEdit ?? false,
-                            "Delete" => permission?.CanDelete ?? false,
-                            "Download" => permission?.CanDownload ?? false,
-                            "Export" => permission?.CanExport ?? false,
-                            "Approve" => permission?.CanApprove ?? false,
-                            "Forward" => permission?.CanForward ?? false,
-                            "Print" => permission?.CanPrint ?? false,
-                            _ => false
-                        };
                         <tr>
-                            <td class="fw-semibold">
-                                <label class="wb-row-check">
-                                    <input class="form-check-input module-row-cb" type="checkbox" data-module="@module.Id" onchange="toggleModuleRow('@module.Id', this.checked)" />
-                                    <span>@module.Name</span>
-                                </label>
+                            <td colspan="@(actions.Length + 1)" class="text-center text-muted py-4">
+                                No modules are mapped to @Model.SelectedPortalLabel yet.
                             </td>
-                            @foreach (var action in actions)
-                            {
-                                <td class="text-center">
-                                    <input class="form-check-input perm-cb" type="checkbox" name="@Key(module.Id, action)" data-module="@module.Id" data-action="@action" checked="@IsChecked(action)" onchange="syncModuleRow('@module.Id')" />
-                                </td>
-                            }
                         </tr>
+                    }
+                    else
+                    {
+                        @foreach (var module in Model.Modules)
+                        {
+                            permissionMap.TryGetValue(module.Id, out var permission);
+                            bool IsChecked(string action) => action switch
+                            {
+                                "SeeMenu" => permission?.CanSeeMenu ?? false,
+                                "View" => permission?.CanView ?? false,
+                                "Add" => permission?.CanAdd ?? false,
+                                "Edit" => permission?.CanEdit ?? false,
+                                "Delete" => permission?.CanDelete ?? false,
+                                "Download" => permission?.CanDownload ?? false,
+                                "Export" => permission?.CanExport ?? false,
+                                "Approve" => permission?.CanApprove ?? false,
+                                "Forward" => permission?.CanForward ?? false,
+                                "Print" => permission?.CanPrint ?? false,
+                                _ => false
+                            };
+                            <tr>
+                                <td class="fw-semibold">
+                                    <label class="wb-row-check">
+                                        <input class="form-check-input module-row-cb" type="checkbox" data-module="@module.Id" onchange="toggleModuleRow('@module.Id', this.checked)" />
+                                        <span>@module.Name</span>
+                                    </label>
+                                </td>
+                                @foreach (var action in actions)
+                                {
+                                    <td class="text-center">
+                                        <input class="form-check-input perm-cb" type="checkbox" name="@Key(module.Id, action)" data-module="@module.Id" data-action="@action" checked="@IsChecked(action)" onchange="syncModuleRow('@module.Id')" />
+                                    </td>
+                                }
+                            </tr>
+                        }
                     }
                     </tbody>
                 </table>

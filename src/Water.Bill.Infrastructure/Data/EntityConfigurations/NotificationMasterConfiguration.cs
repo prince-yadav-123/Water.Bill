@@ -20,6 +20,7 @@ public class NotificationMasterConfiguration : IEntityTypeConfiguration<Notifica
         builder.Property(x => x.Status).HasMaxLength(20).HasDefaultValue("Draft");
         builder.Property(x => x.ValidFrom).IsRequired(false);
         builder.Property(x => x.ValidTo).IsRequired(false);
+        builder.Property(x => x.RedirectUrl).HasMaxLength(1000).IsRequired(false);
         builder.Property(x => x.CreatedByName).HasMaxLength(200).IsRequired(false);
         builder.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         builder.Property(x => x.SentAt).IsRequired(false);

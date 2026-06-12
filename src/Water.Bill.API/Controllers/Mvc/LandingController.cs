@@ -23,8 +23,12 @@ public class LandingController : Controller
         ViewData["AuthorityLoginUrl"] = _configuration["PortalUrls:AuthorityLogin"] ?? "/Account/Login";
         var consumerLoginUrl = _configuration["PortalUrls:ConsumerLogin"] ?? "https://localhost:7040/Account/Login";
         ViewData["ConsumerLoginUrl"] = consumerLoginUrl;
-        ViewData["PublicNewConnectionStartUrl"] = _configuration["PortalUrls:PublicNewConnectionStart"]
+        var publicNewConnectionStartUrl = _configuration["PortalUrls:PublicNewConnectionStart"]
             ?? consumerLoginUrl.Replace("/Account/Login", "/NewConnection/Start", StringComparison.OrdinalIgnoreCase);
+        ViewData["PublicNewConnectionStartUrl"] = publicNewConnectionStartUrl;
+        ViewData["PublicTrackApplicationUrl"] = publicNewConnectionStartUrl.Contains('?', StringComparison.Ordinal)
+            ? $"{publicNewConnectionStartUrl}&mode=track"
+            : $"{publicNewConnectionStartUrl}?mode=track";
         return View();
     }
 }

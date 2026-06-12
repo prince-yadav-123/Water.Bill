@@ -75,6 +75,8 @@ public class ApprovalListItemViewModel
 {
     public long TaskId { get; set; }
 
+    public long WorkflowInstanceId { get; set; }
+
     public string ApplicationNo { get; set; } = string.Empty;
 
     public string ApplicationType { get; set; } = string.Empty;
@@ -90,6 +92,10 @@ public class ApprovalListItemViewModel
     public string CurrentStage { get; set; } = string.Empty;
 
     public string AssignedTo { get; set; } = string.Empty;
+
+    public string? LastAction { get; set; }
+
+    public DateTime? LastUpdatedOn { get; set; }
 
     public DateTime? SubmittedOn { get; set; }
 

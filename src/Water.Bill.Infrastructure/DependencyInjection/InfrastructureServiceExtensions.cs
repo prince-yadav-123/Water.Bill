@@ -29,6 +29,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<ISecuritySettingsService, SecuritySettingsService>();
         services.AddScoped<IConsumerOtpService, ConsumerOtpService>();
+        services.AddScoped<IConsumerMobileRegistrationService, ConsumerMobileRegistrationService>();
         services.AddScoped<IPublicNewConnectionOtpService, PublicNewConnectionOtpService>();
         services.AddScoped<IConsumerSmsSender, LoggingConsumerSmsSender>();
         services.AddScoped<IConsumerAccountService, ConsumerAccountService>();

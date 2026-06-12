@@ -41,7 +41,7 @@
                     <td>@(row.Module ?? "-")</td>
                     <td>@(row.EntityId ?? "-")</td>
                     <td>@row.Action</td>
-                    <td><span class="badge @(row.Success ? "text-bg-success" : "text-bg-danger")">@(row.Success ? "Success" : "Failed")</span></td>
+                    <td><span class="badge @AdminStatusBadgeHelper.CssClass(row.Success ? "Success" : "Failed")">@AdminStatusBadgeHelper.Label(row.Success ? "Success" : "Failed")</span></td>
                     <td>@(row.Details ?? "-")</td>
                 </tr>
             }

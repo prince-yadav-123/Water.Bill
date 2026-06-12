@@ -267,7 +267,7 @@ public class ChallanManagementController : Controller
             "Challan",
             challan.Id.ToString(),
             challanNo,
-            ct);
+            ct: ct);
 
         TempData["SuccessMessage"] = $"Challan {challanNo} generated successfully.";
         return RedirectToAction(nameof(Details), new { id = challan.Id });

@@ -41,6 +41,14 @@
 
     private static string FormatDate(DateTime? value) => value?.ToString("dd MMM yy, hh:mm tt") ?? "-";
     private static string ShortDate(DateTime? value) => value?.ToString("dd MMM yy") ?? "-";
+    private static string FormatCurrency(decimal value) => $"Rs. {value:N0}";
+    private static string FormatCompactCurrency(decimal value)
+    {
+        var abs = Math.Abs(value);
+        if (abs >= 10000000m)
+            return $"₹{value / 10000000m:N2} Cr";
+        return $"₹{value / 100000m:N2} Lakh";
+    }
 }
 
 <div class="d-flex flex-column gap-4 wb-dashboard">
@@ -153,7 +161,7 @@
                                 </div>
                             </div>
                         </div>
-                        <script>window._appStatusData = { labels: @Html.Raw(pcLabels), values: @Html.Raw(pcValues), colors: @Html.Raw(pcColors) };</script>
+                        <script>window._appStatusData = { labels: @Html.Raw(pcLabels), values: @Html.Raw(pcValues), colors: @Html.Raw(pcColors), chartType: 'doughnut', cutout: '70%' };</script>
                     }
                     else { <div class="wb-empty">No application data yet.</div> }
                 </section>
@@ -189,7 +197,7 @@
                                 </div>
                             </div>
                         </div>
-                        <script>window._challanStatusData = { labels: @Html.Raw(ccLabels), values: @Html.Raw(ccValues), colors: @Html.Raw(ccColors) };</script>
+                        <script>window._challanStatusData = { labels: @Html.Raw(ccLabels), values: @Html.Raw(ccValues), colors: @Html.Raw(ccColors), chartType: 'doughnut', cutout: '70%' };</script>
                     }
                     else { <div class="wb-empty">No challan data yet.</div> }
                 </section>
@@ -219,6 +227,187 @@
                         </div>
                     }
                     else { <div class="wb-empty">No query data yet.</div> }
+                </section>
+            </div>
+        </div>
+
+        @* â”€â”€ Row 1B: Division / Collection / Defaulters â”€â”€ *@
+        <div class="row g-3">
+            <div class="col-12 col-xl-4">
+                <section class="wb-card h-100 d-flex flex-column">
+                    <div class="wb-section-hdr">
+                        <div><h2>@Model.DivisionConsumerChart?.Title</h2><p>@Model.DivisionConsumerChart?.Caption</p></div>
+                    </div>
+                    @if (Model.DivisionConsumerChart is { Items.Count: > 0 } divisionChart)
+                    {
+                        var total = divisionChart.Items.Sum(x => x.Count);
+                        var max = Math.Max(1, divisionChart.Items.Max(x => x.Count));
+                        <div class="d-flex flex-column gap-3 flex-grow-1">
+                            <div class="wb-mini-summary">
+                                <strong>@total.ToString("N0")</strong>
+                                <span>Total Consumers</span>
+                            </div>
+                            <div class="wb-dept-grid">
+                                @foreach (var item in divisionChart.Items)
+                                {
+                                    <div class="wb-bar-row">
+                                        <div class="wb-bar-copy">
+                                            <span>@item.Label</span>
+                                            <strong>@item.Percentage%</strong>
+                                        </div>
+                                        <div class="wb-bar-track">
+                                            <div class="wb-bar-fill" style="width:@(item.Count * 100m / max)%;background:@item.Color"></div>
+                                        </div>
+                                        <div class="wb-bar-meta">@item.Count.ToString("N0") consumers</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else { <div class="wb-empty">No consumer division data available.</div> }
+                </section>
+            </div>
+            <div class="col-12 col-xl-4">
+                <section class="wb-card h-100 d-flex flex-column">
+                    <div class="wb-section-hdr">
+                        <div><h2>@Model.PaymentCollectionChart?.Title</h2><p>@Model.PaymentCollectionChart?.Caption</p></div>
+                    </div>
+                    @if (Model.PaymentCollectionChart is { Items.Count: > 0 } paymentChart)
+                    {
+                        var total = paymentChart.Items.Sum(x => x.Amount);
+                        var labels = "[" + string.Join(",", paymentChart.Items.Select(x => $"\"{x.Label}\"")) + "]";
+                        var values = "[" + string.Join(",", paymentChart.Items.Select(x => x.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture))) + "]";
+                        var colors = "[" + string.Join(",", paymentChart.Items.Select(x => $"\"{x.Color}\"")) + "]";
+                        <div class="d-flex flex-column gap-3 flex-grow-1">
+                            <div class="wb-donut-wrap">
+                                <div class="wb-donut-inner">
+                                    <div class="wb-chart-wrap wb-chart-wrap-no-center">
+                                        <canvas id="paymentCollectionChart"></canvas>
+                                    </div>
+                                    <div class="wb-donut-legend w-100">
+                                        @foreach (var item in paymentChart.Items)
+                                        {
+                                            <div class="wb-donut-row">
+                                                <span class="wb-dot" style="background:@item.Color"></span>
+                                                <div>
+                                                    <div class="wb-donut-lbl">@item.Label</div>
+                                                    <small class="text-muted">@FormatCompactCurrency(item.Amount) (@item.Percentage%)</small>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <div class="wb-summary-tile">
+                                        <span>Total Collection</span>
+                                        <strong>@FormatCompactCurrency(total)</strong>
+                                    </div>
+                                </div>
+                                @foreach (var item in paymentChart.Items)
+                                {
+                                    <div class="col-12 col-sm-6">
+                                        <div class="wb-summary-tile">
+                                            <span>@item.Label</span>
+                                            <strong>@FormatCompactCurrency(item.Amount)</strong>
+                                            <small>@item.Percentage%</small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <script>window._paymentCollectionData = { labels: @Html.Raw(labels), values: @Html.Raw(values), colors: @Html.Raw(colors), type: 'amount', chartType: 'pie' };</script>
+                    }
+                    else { <div class="wb-empty">No collection data available.</div> }
+                </section>
+            </div>
+            <div class="col-12 col-xl-4">
+                <section class="wb-card h-100">
+                    <div class="wb-section-hdr">
+                        <div><h2>@Model.DefaulterWidget?.Title</h2><p>@Model.DefaulterWidget?.Caption</p></div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="wb-inline-chip">Default: @FormatCompactCurrency(Model.DefaulterWidget?.ConfiguredThresholdAmount ?? 0)</span>
+                            @if (!string.IsNullOrWhiteSpace(Model.DefaulterWidget?.Url))
+                            {
+                                <a class="btn btn-outline-primary btn-sm" href="@Model.DefaulterWidget.Url">View Dues</a>
+                            }
+                        </div>
+                    </div>
+                    @if (Model.DefaulterWidget is { } defaulter)
+                    {
+                        var defaulterLabels = "[\"Defaulters\",\"Non-Defaulters\"]";
+                        var defaulterValues = $"[{defaulter.ConsumerCount},{defaulter.NonDefaulterCount}]";
+                        var defaulterColors = "[\"#dc2626\",\"#16a34a\"]";
+                        var defPct = defaulter.TotalConsumers == 0 ? 0 : Math.Round(defaulter.ConsumerCount * 100m / defaulter.TotalConsumers, 1);
+                        var nonDefPct = defaulter.TotalConsumers == 0 ? 0 : Math.Round(defaulter.NonDefaulterCount * 100m / defaulter.TotalConsumers, 1);
+                        <div class="d-flex flex-column gap-3">
+                            <form method="get" class="wb-inline-filter">
+                                <label for="defaulterThreshold" class="form-label mb-1">One-time threshold</label>
+                                <div class="d-flex gap-2">
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="defaulterThreshold" name="defaulterThreshold" value="@defaulter.ThresholdAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                                    <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                                </div>
+                            </form>
+                            <div class="wb-donut-wrap">
+                                <div class="wb-donut-inner">
+                                    <div class="wb-chart-wrap">
+                                        <canvas id="defaulterChart"></canvas>
+                                        <div class="wb-chart-center">
+                                            <strong>@defPct%</strong>
+                                            <span>Defaulter Share</span>
+                                        </div>
+                                    </div>
+                                    <div class="wb-donut-legend w-100">
+                                        <div class="wb-donut-row">
+                                            <span class="wb-dot" style="background:#dc2626"></span>
+                                            <div>
+                                                <div class="wb-donut-lbl">Defaulters</div>
+                                                <small class="text-muted">@defaulter.ConsumerCount.ToString("N0") (@defPct%)</small>
+                                            </div>
+                                        </div>
+                                        <div class="wb-donut-row">
+                                            <span class="wb-dot" style="background:#16a34a"></span>
+                                            <div>
+                                                <div class="wb-donut-lbl">Non-Defaulters</div>
+                                                <small class="text-muted">@defaulter.NonDefaulterCount.ToString("N0") (@nonDefPct%)</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-12 col-sm-6">
+                                    <div class="wb-summary-tile">
+                                        <span>Total Defaulters</span>
+                                        <strong>@defaulter.ConsumerCount.ToString("N0")</strong>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="wb-summary-tile">
+                                        <span>Total Non-Defaulters</span>
+                                        <strong>@defaulter.NonDefaulterCount.ToString("N0")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start border rounded-3 px-3 py-2">
+                                <div>
+                                    <div class="fw-semibold">Total Outstanding</div>
+                                    <small class="text-muted">Across all consumers above threshold</small>
+                                </div>
+                                <strong>@FormatCompactCurrency(defaulter.TotalOutstandingAmount)</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start border rounded-3 px-3 py-2">
+                                <div>
+                                    <div class="fw-semibold">Threshold Used</div>
+                                    <small class="text-muted">Temporary dashboard view value</small>
+                                </div>
+                                <strong>@FormatCompactCurrency(defaulter.ThresholdAmount)</strong>
+                            </div>
+                        </div>
+                        <script>window._defaulterData = { labels: @Html.Raw(defaulterLabels), values: @Html.Raw(defaulterValues), colors: @Html.Raw(defaulterColors), chartType: 'doughnut', cutout: '72%', rotation: -90, circumference: 180 };</script>
+                    }
+                    else { <div class="wb-empty">No defaulter data available.</div> }
                 </section>
             </div>
         </div>
@@ -474,33 +663,36 @@
     @* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• *@
     else
     {
-        @* â”€â”€ Row 1: My Monthly Output (50%) + My Challans (50%) â”€â”€ *@
+        @* â”€â”€ Row 1: My Pending Work by Type (50%) + My Challans (50%) â”€â”€ *@
         <div class="row g-3">
             <div class="col-12 col-xl-6">
-                @if (Model.TrendChart is { Points.Count: > 0 } stc)
+                @if (Model.SecondaryBarChart is { Items.Count: > 0 } staffChart)
                 {
-                    var mx = Math.Max(1m, stc.Points.Max(x => Math.Max(x.PrimaryValue, x.SecondaryValue)));
                     <section class="wb-card h-100">
                         <div class="wb-section-hdr">
-                            <div><h2>@stc.Title</h2><p>@stc.Caption</p></div>
-                            <div class="wb-trend-legend">
-                                <span><i class="wb-swatch wb-p"></i>@stc.PrimaryLabel</span>
-                                <span><i class="wb-swatch wb-s"></i>@stc.SecondaryLabel</span>
-                            </div>
+                            <div><h2>@staffChart.Title</h2><p>@staffChart.Caption</p></div>
+                            <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View Queue</a>
                         </div>
-                        <div class="wb-trend-chart">
-                            @foreach (var pt in stc.Points)
+                        @{ var sMax = Math.Max(1, staffChart.Items.Max(x => x.Value)); }
+                        <div class="wb-dept-grid">
+                            @foreach (var item in staffChart.Items)
                             {
-                                <div class="wb-trend-col">
-                                    <div class="wb-trend-bars">
-                                        <div class="wb-trend-bar wb-p" style="height:@(pt.PrimaryValue * 100m / mx)%"></div>
-                                        <div class="wb-trend-bar wb-s" style="height:@(pt.SecondaryValue * 100m / mx)%"></div>
-                                    </div>
-                                    <div class="wb-trend-vals"><span>@pt.PrimaryValue</span><span>@pt.SecondaryValue</span></div>
-                                    <div class="wb-trend-lbl">@pt.Label</div>
-                                </div>
+                                <a class="wb-bar-row text-decoration-none" href="@(item.Url ?? "#")">
+                                    <div class="wb-bar-copy"><span>@item.Label</span><strong>@item.Value</strong></div>
+                                    <div class="wb-bar-track"><div class="wb-bar-fill" style="width:@(item.Value * 100m / sMax)%;background:@item.Color"></div></div>
+                                </a>
                             }
                         </div>
+                    </section>
+                }
+                else
+                {
+                    <section class="wb-card h-100">
+                        <div class="wb-section-hdr">
+                            <div><h2>My Pending Work by Type</h2><p>Only items currently assigned to you.</p></div>
+                            <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View Queue</a>
+                        </div>
+                        <div class="wb-empty">No pending workflow items are assigned to you right now.</div>
                     </section>
                 }
             </div>
@@ -827,6 +1019,7 @@
             height: 11rem;
             flex-shrink: 0;
         }
+        .wb-chart-wrap-no-center { width: 10.5rem; height: 10.5rem; }
         .wb-chart-wrap canvas {
             width: 100% !important;
             height: 100% !important;
@@ -846,6 +1039,17 @@
         .wb-donut-legend        { display: flex; flex-direction: column; gap: 0.75rem; }
         .wb-donut-row           { display: flex; align-items: flex-start; gap: 0.65rem; }
         .wb-donut-lbl           { font-size: 0.88rem; font-weight: 600; color: #1e293b; }
+        .wb-mini-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            padding: 0.85rem 1rem;
+            border: 1px solid #e8edf4;
+            border-radius: 0.85rem;
+            background: #f8fafc;
+        }
+        .wb-mini-summary strong { font-size: 1.35rem; font-weight: 800; color: #0f172a; }
+        .wb-mini-summary span { font-size: 0.8rem; color: #64748b; }
         .wb-dot {
             width: 0.7rem;
             height: 0.7rem;
@@ -909,6 +1113,42 @@
         .wb-bar-copy   { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: #0f172a; }
         .wb-bar-track  { height: 0.6rem; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
         .wb-bar-fill   { height: 100%; border-radius: 999px; }
+        .wb-bar-meta   { font-size: 0.78rem; color: #64748b; }
+        .wb-summary-tile {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            height: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid #e8edf4;
+            border-radius: 0.85rem;
+            background: #f8fafc;
+        }
+        .wb-summary-tile span  { font-size: 0.8rem; color: #64748b; }
+        .wb-summary-tile strong { font-size: 1rem; font-weight: 700; color: #0f172a; }
+        .wb-summary-tile small { font-size: 0.78rem; color: #475569; }
+        .wb-inline-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .wb-inline-filter {
+            padding: 0.75rem;
+            border: 1px solid #e8edf4;
+            border-radius: 0.85rem;
+            background: #f8fafc;
+        }
+        .wb-inline-filter label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #475569;
+        }
 
         /* â”€â”€â”€ Trend chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .wb-trend-legend {
@@ -1023,11 +1263,17 @@
     </style>
     <script>
         (function () {
-            function initDoughnut(canvasId, data) {
+            function formatCompactCurrency(value) {
+                var abs = Math.abs(value);
+                if (abs >= 10000000) return '₹' + (value / 10000000).toFixed(2) + ' Cr';
+                return '₹' + (value / 100000).toFixed(2) + ' Lakh';
+            }
+
+            function initChart(canvasId, data) {
                 var el = document.getElementById(canvasId);
                 if (!el || !data) return;
                 new Chart(el, {
-                    type: 'doughnut',
+                    type: data.chartType || 'doughnut',
                     data: {
                         labels: data.labels,
                         datasets: [{
@@ -1039,7 +1285,9 @@
                         }]
                     },
                     options: {
-                        cutout: '70%',
+                        cutout: data.cutout || '70%',
+                        rotation: data.rotation,
+                        circumference: data.circumference,
                         responsive: true,
                         maintainAspectRatio: true,
                         plugins: {
@@ -1048,7 +1296,10 @@
                                 callbacks: {
                                     label: function (ctx) {
                                         var total = ctx.dataset.data.reduce(function (a, b) { return a + b; }, 0);
-                                        var pct = total > 0 ? Math.round(ctx.parsed / total * 100) : 0;
+                                        var pct = total > 0 ? Math.round((ctx.parsed / total) * 1000) / 10 : 0;
+                                        if (data.type === 'amount') {
+                                            return ' ' + ctx.label + ': ' + formatCompactCurrency(ctx.parsed) + ' (' + pct + '%)';
+                                        }
                                         return ' ' + ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
                                     }
                                 }
@@ -1059,8 +1310,10 @@
                 });
             }
             document.addEventListener('DOMContentLoaded', function () {
-                initDoughnut('appStatusChart',    window._appStatusData);
-                initDoughnut('challanStatusChart', window._challanStatusData);
+                initChart('appStatusChart', window._appStatusData);
+                initChart('challanStatusChart', window._challanStatusData);
+                initChart('paymentCollectionChart', window._paymentCollectionData);
+                initChart('defaulterChart', window._defaulterData);
             });
         })();
     </script>

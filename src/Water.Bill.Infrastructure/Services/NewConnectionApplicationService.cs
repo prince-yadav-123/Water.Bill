@@ -193,7 +193,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                 "NewConnectionApplication",
                 entity.Id.ToString(),
                 entity.ApplicationNo,
-                ct);
+                ct: ct);
 
             return await EnrichWorkflowProgressAsync(
                 (await GetDetailsQuery().FirstAsync(x => x.Id == entity.Id, ct))!,
@@ -1152,6 +1152,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                         ReferenceType = "NewConnectionApplication",
                         ReferenceId = id.ToString(),
                         ReferenceNo = application.ApplicationNo,
+                        RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
                         IsRead = false,
                         CreatedAt = now
                     });
@@ -1177,6 +1178,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                             ReferenceType = "NewConnectionApplication",
                             ReferenceId = id.ToString(),
                             ReferenceNo = application.ApplicationNo,
+                            RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
                             IsRead = false,
                             CreatedAt = now
                         });
@@ -1351,6 +1353,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                         ReferenceType = "NewConnectionApplication",
                         ReferenceId = id.ToString(),
                         ReferenceNo = application.ApplicationNo,
+                        RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
                         IsRead = false,
                         CreatedAt = now
                     });
@@ -1376,6 +1379,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                             ReferenceType = "NewConnectionApplication",
                             ReferenceId = id.ToString(),
                             ReferenceNo = application.ApplicationNo,
+                            RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
                             IsRead = false,
                             CreatedAt = now
                         });

@@ -9,6 +9,8 @@ public class PublicNewConnectionController : Controller
 {
     private const string SessionMobileKey = "PublicNewConnection.VerifiedMobile";
     private const string SessionVerifiedAtKey = "PublicNewConnection.VerifiedAt";
+    private const string SessionModeKey = "PublicNewConnection.Mode";
+    private const string PublicFlowViewDataKey = "IsPublicNewConnectionFlow";
     private static readonly string[] RequiredDocumentTypes = ["ID Proof", "Address Proof", "Property Document"];
 
     private readonly IConfiguration _configuration;
@@ -32,17 +34,21 @@ public class PublicNewConnectionController : Controller
     }
 
     [HttpGet("/NewConnection/Start")]
-    public IActionResult Start()
+    public IActionResult Start(string? mode = null)
     {
         ViewData["Title"] = "Verify Mobile";
+        ViewData["IsTrackOnly"] = IsTrackOnly(mode);
+        MarkPublicVerificationFlow();
         return View();
     }
 
     [HttpPost("/NewConnection/Start")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Start(string mobileNumber, CancellationToken ct)
+    public async Task<IActionResult> Start(string mobileNumber, string? mode, CancellationToken ct)
     {
         ViewData["Title"] = "Verify Mobile";
+        ViewData["IsTrackOnly"] = IsTrackOnly(mode);
+        MarkPublicVerificationFlow();
         try
         {
             var result = await _otpService.RequestOtpAsync(mobileNumber, ct);
@@ -50,7 +56,7 @@ public class PublicNewConnectionController : Controller
             if (!string.IsNullOrWhiteSpace(result.DevelopmentOtp))
                 TempData["DevelopmentOtp"] = result.DevelopmentOtp;
 
-            return RedirectToAction(nameof(VerifyOtp), new { mobileNumber = result.MobileNumber });
+            return RedirectToAction(nameof(VerifyOtp), new { mobileNumber = result.MobileNumber, mode = NormalizeMode(mode) });
         }
         catch (InvalidOperationException ex)
         {
@@ -60,25 +66,40 @@ public class PublicNewConnectionController : Controller
     }
 
     [HttpGet("/NewConnection/VerifyOtp")]
-    public IActionResult VerifyOtp(string mobileNumber)
+    public IActionResult VerifyOtp(string mobileNumber, string? mode = null)
     {
         ViewData["Title"] = "Verify OTP";
+        ViewData["FlowMode"] = NormalizeMode(mode);
+        ViewData["IsTrackOnly"] = IsTrackOnly(mode);
+        MarkPublicVerificationFlow();
         return View((object?)mobileNumber);
     }
 
     [HttpPost("/NewConnection/VerifyOtp")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> VerifyOtp(string mobileNumber, string otp, CancellationToken ct)
+    public async Task<IActionResult> VerifyOtp(string mobileNumber, string otp, string? mode, CancellationToken ct)
     {
         ViewData["Title"] = "Verify OTP";
+        ViewData["FlowMode"] = NormalizeMode(mode);
+        ViewData["IsTrackOnly"] = IsTrackOnly(mode);
+        MarkPublicVerificationFlow();
         try
         {
             var result = await _otpService.VerifyOtpAsync(mobileNumber, otp, ct);
             HttpContext.Session.SetString(SessionMobileKey, result.MobileNumber);
             HttpContext.Session.SetString(SessionVerifiedAtKey, result.VerifiedAt.ToString("O"));
+            HttpContext.Session.SetString(SessionModeKey, NormalizeMode(mode));
             var applications = await _applicationService.GetPublicApplicationsByMobileAsync(result.MobileNumber, ct);
             if (applications.Count == 0)
+            {
+                if (IsTrackOnly(mode))
+                {
+                    TempData["InfoMessage"] = "No applications were found for this mobile number.";
+                    return RedirectToAction(nameof(MyApplications));
+                }
+
                 return RedirectToAction(nameof(Apply));
+            }
 
             return RedirectToAction(nameof(MyApplications));
         }
@@ -98,6 +119,7 @@ public class PublicNewConnectionController : Controller
 
         ViewData["Title"] = "My Applications";
         ViewData["IsPublicNewConnection"] = true;
+        ViewData["IsTrackOnly"] = IsTrackOnlySession();
         var applications = await _applicationService.GetPublicApplicationsByMobileAsync(mobile, ct);
         return View("~/Views/NewConnection/MyApplications.cshtml", applications);
     }
@@ -443,6 +465,15 @@ public class PublicNewConnectionController : Controller
 
     private string? GetVerifiedMobile() => HttpContext.Session.GetString(SessionMobileKey);
 
+    private bool IsTrackOnlySession()
+        => IsTrackOnly(HttpContext.Session.GetString(SessionModeKey));
+
+    private static bool IsTrackOnly(string? mode)
+        => string.Equals(mode, "track", StringComparison.OrdinalIgnoreCase);
+
+    private static string NormalizeMode(string? mode)
+        => IsTrackOnly(mode) ? "track" : "apply";
+
     private async Task LoadLookupDataAsync(CancellationToken ct)
     {
         var lookups = await _lookupService.GetLookupDataAsync(ResolveDevType(), ct);
@@ -595,4 +626,7 @@ public class PublicNewConnectionController : Controller
         var safe = new string(fileName.Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '-' : ch).ToArray()).Trim('-', ' ');
         return string.IsNullOrWhiteSpace(safe) ? "document" : safe;
     }
+
+    private void MarkPublicVerificationFlow()
+        => ViewData[PublicFlowViewDataKey] = true;
 }

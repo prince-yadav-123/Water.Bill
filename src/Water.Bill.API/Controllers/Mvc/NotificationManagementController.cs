@@ -117,6 +117,17 @@ public class NotificationManagementController : Controller
         if (!HasValidTarget(model))
             ModelState.AddModelError("", "Select at least one target (All Users, specific role, department, user, or consumer).");
 
+        string? normalizedRedirectUrl = null;
+        if (!string.IsNullOrWhiteSpace(model.RedirectUrl))
+        {
+            if (!NotificationNavigationHelper.TryValidateForAudience(model.RedirectUrl, model.TargetAudience, out normalizedRedirectUrl, out _))
+            {
+                ModelState.AddModelError(nameof(model.RedirectUrl), model.TargetAudience == "Internal"
+                    ? "Enter a valid authority portal relative path or a full http/https external URL."
+                    : "Enter a valid consumer portal relative path or a full http/https external URL.");
+            }
+        }
+
         if (!ModelState.IsValid)
             return View(await BuildCreateViewModelAsync(model, ct));
 
@@ -134,6 +145,7 @@ public class NotificationManagementController : Controller
             Status = "Draft",
             ValidFrom = model.ValidFrom,
             ValidTo = model.ValidTo,
+            RedirectUrl = string.IsNullOrWhiteSpace(model.RedirectUrl) ? null : normalizedRedirectUrl,
             CreatedByUserId = userId,
             CreatedByName = userName,
             CreatedAt = DateTime.UtcNow,
@@ -231,6 +243,7 @@ public class NotificationManagementController : Controller
             Status = notif.Status,
             ValidFrom = notif.ValidFrom,
             ValidTo = notif.ValidTo,
+            RedirectUrl = notif.RedirectUrl,
             CreatedByName = notif.CreatedByName,
             CreatedAt = notif.CreatedAt,
             SentAt = notif.SentAt,
@@ -272,9 +285,24 @@ public class NotificationManagementController : Controller
             .Where(x => x.UserId == userId && x.UserType == "Internal" && !x.IsDeleted)
             .OrderByDescending(x => x.CreatedAt)
             .Take(10)
-            .Select(x => new { x.Id, x.Title, x.Message, x.IsRead, x.CreatedAt, x.ReferenceNo })
+            .Select(x => new { x.Id, x.Title, x.Message, x.IsRead, x.CreatedAt, x.ReferenceNo, x.RedirectUrl, x.ReferenceType, x.ReferenceId })
             .ToListAsync(ct);
-        return Json(items);
+        return Json(items.Select(x =>
+        {
+            var nav = NotificationNavigationHelper.ResolveForInternal(x.RedirectUrl, x.ReferenceType, x.ReferenceId, x.ReferenceNo);
+            return new
+            {
+                x.Id,
+                x.Title,
+                x.Message,
+                x.IsRead,
+                x.CreatedAt,
+                x.ReferenceNo,
+                HasUrl = nav.HasTarget,
+                OpenUrl = nav.HasTarget ? Url.Action(nameof(Open), new { id = x.Id }) : null,
+                OpenInNewTab = nav.OpenInNewTab
+            };
+        }));
     }
 
     // ── Bell API: mark read ───────────────────────────────────────────────────
@@ -293,6 +321,33 @@ public class NotificationManagementController : Controller
             await _db.SaveChangesAsync(ct);
         }
         return Json(new { ok = true });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Open(long id, CancellationToken ct)
+    {
+        var userId = ResolveInternalUserId();
+        if (userId == 0)
+            return RedirectToAction(nameof(MyNotifications));
+
+        var notif = await _db.InAppNotifications
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId && x.UserType == "Internal" && !x.IsDeleted, ct);
+
+        if (notif is null)
+            return RedirectToAction(nameof(MyNotifications));
+
+        if (!notif.IsRead)
+        {
+            notif.IsRead = true;
+            notif.ReadAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync(ct);
+        }
+
+        var nav = NotificationNavigationHelper.ResolveForInternal(notif.RedirectUrl, notif.ReferenceType, notif.ReferenceId, notif.ReferenceNo);
+        if (!nav.HasTarget || string.IsNullOrWhiteSpace(nav.Url))
+            return RedirectToAction(nameof(MyNotifications));
+
+        return Redirect(nav.Url);
     }
 
     [HttpPost, ValidateAntiForgeryToken]

@@ -1,3 +1,5 @@
+using Water.Bill.Core.Common;
+
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class PermissionModule
@@ -5,6 +7,8 @@ public partial class PermissionModule
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;
+
+    public string PortalScope { get; set; } = AppConstants.PortalScopes.Authority;
 
     public bool IsActive { get; set; } = true;
 

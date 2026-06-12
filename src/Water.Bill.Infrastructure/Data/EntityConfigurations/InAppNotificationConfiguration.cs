@@ -19,6 +19,7 @@ public class InAppNotificationConfiguration : IEntityTypeConfiguration<InAppNoti
         entity.Property(e => e.ReferenceType).HasMaxLength(100);
         entity.Property(e => e.ReferenceId).HasMaxLength(100);
         entity.Property(e => e.ReferenceNo).HasMaxLength(100);
+        entity.Property(e => e.RedirectUrl).HasMaxLength(1000);
         entity.Property(e => e.IsRead).HasDefaultValueSql("'0'");
         entity.Property(e => e.ReadAt).HasMaxLength(6);
         entity.Property(e => e.CreatedAt).HasMaxLength(6).HasDefaultValueSql("SYSDATETIME()");

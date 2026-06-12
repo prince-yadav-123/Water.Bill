@@ -65,6 +65,9 @@ public class NotificationCreateViewModel
     public DateTime? ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
 
+    [MaxLength(1000)]
+    public string? RedirectUrl { get; set; }
+
     public string Action { get; set; } = "Draft";  // Draft | Send
 
     // ── Targeting ──
@@ -102,6 +105,7 @@ public class NotificationDetailsViewModel
     public string Status { get; set; } = string.Empty;
     public DateTime? ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
+    public string? RedirectUrl { get; set; }
     public string? CreatedByName { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? SentAt { get; set; }

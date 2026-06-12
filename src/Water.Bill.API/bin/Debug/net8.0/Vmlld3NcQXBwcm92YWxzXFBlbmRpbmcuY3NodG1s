@@ -6,33 +6,21 @@
         ? "btn btn-primary wb-approval-tab active"
         : "btn btn-outline-primary wb-approval-tab";
 
-    string StatusClass(string s) => s switch
-    {
-        "Pending"                         => "text-bg-warning text-dark",
-        "Approved" or "FinalConsumerCreated" => "text-bg-success",
-        "Rejected"                        => "text-bg-danger",
-        "UnderReview" or "Submitted"      => "text-bg-primary",
-        "SentBackToApplicant" or "CorrectionRequired" => "text-bg-warning text-dark",
-        "Forwarded"                       => "text-bg-info text-dark",
-        "SentBackToPrevious"              => "text-bg-secondary",
-        _                                 => "text-bg-secondary"
-    };
-
     string FriendlyStatus(string s) => s switch
     {
-        "SentBackToApplicant"    => "Sent Back to Applicant",
-        "SentBackToPrevious"     => "Sent Back to Previous",
-        "CorrectionRequired"     => "Correction Required",
-        "FinalConsumerCreated"   => "Final Consumer Created",
-        "UnderReview"            => "Under Review",
+        "SentBackToApplicant" => "Sent Back to Applicant",
+        "SentBackToPrevious" => "Sent Back to Previous",
+        "CorrectionRequired" => "Correction Required",
+        "FinalConsumerCreated" => "Final Consumer Created",
+        "UnderReview" => "Under Review",
         _ => s
     };
 
     string FriendlyType(string t) => t switch
     {
-        "NewConnection"    => "New Connection",
-        "NDC"              => "NDC / No Dues",
-        "NameTransfer"     => "Name Transfer",
+        "NewConnection" => "New Connection",
+        "NDC" => "NDC / No Dues",
+        "NameTransfer" => "Name Transfer",
         "ConnectionChange" => "Connection Change",
         _ => t
     };
@@ -45,7 +33,7 @@
             @if (isAdmin)
             {
                 <span class="badge text-bg-primary me-2">Admin View</span>
-                <span>All workflow applications across all stages are visible to you.</span>
+                <span>Each application is shown once with its latest workflow state.</span>
             }
             else
             {
@@ -86,14 +74,14 @@
             <label class="form-label">Status</label>
             <select class="form-select" name="status">
                 <option value="">All Statuses</option>
-                <option value="Pending"              selected="@(Model.Status == "Pending")">Pending</option>
-                <option value="Approved"             selected="@(Model.Status == "Approved")">Approved</option>
-                <option value="Rejected"             selected="@(Model.Status == "Rejected")">Rejected</option>
-                <option value="Submitted"            selected="@(Model.Status == "Submitted")">Submitted</option>
-                <option value="UnderReview"          selected="@(Model.Status == "UnderReview")">Under Review</option>
-                <option value="Forwarded"            selected="@(Model.Status == "Forwarded")">Forwarded</option>
-                <option value="SentBackToApplicant"  selected="@(Model.Status == "SentBackToApplicant")">Sent Back to Applicant</option>
-                <option value="SentBackToPrevious"   selected="@(Model.Status == "SentBackToPrevious")">Sent Back to Previous Stage</option>
+                <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                <option value="Approved" selected="@(Model.Status == "Approved")">Approved</option>
+                <option value="Rejected" selected="@(Model.Status == "Rejected")">Rejected</option>
+                <option value="Submitted" selected="@(Model.Status == "Submitted")">Submitted</option>
+                <option value="UnderReview" selected="@(Model.Status == "UnderReview")">Under Review</option>
+                <option value="Forwarded" selected="@(Model.Status == "Forwarded")">Forwarded</option>
+                <option value="SentBackToApplicant" selected="@(Model.Status == "SentBackToApplicant")">Sent Back to Applicant</option>
+                <option value="SentBackToPrevious" selected="@(Model.Status == "SentBackToPrevious")">Sent Back to Previous Stage</option>
                 <option value="FinalConsumerCreated" selected="@(Model.Status == "FinalConsumerCreated")">Final Consumer Created</option>
             </select>
         </div>
@@ -129,20 +117,31 @@
     {
         <p class="text-muted mb-2" style="font-size:.88rem">
             Showing @Model.Items.Count application(s).
-            @if (!isAdmin) { <span>Only applications assigned to you are shown.</span> }
+            @if (!isAdmin)
+            {
+                <span>Only applications assigned to you are shown.</span>
+            }
         </p>
         <div class="table-responsive wb-approval-table-wrap">
             <table class="table align-middle wb-table wb-admin-table wb-approval-table">
                 <thead>
                     <tr>
                         <th>Application No</th>
-                        <th>Type</th>
                         <th>Applicant</th>
-                        <th>Mobile</th>
-                        <th>Current Stage</th>
+                        <th>Type</th>
                         <th>Status</th>
-                        <th>Assigned To</th>
-                        <th>Submitted</th>
+                        <th>Current Stage</th>
+                        <th>Pending With</th>
+                        @if (isAdmin)
+                        {
+                            <th>Last Action</th>
+                            <th>Last Updated</th>
+                        }
+                        else
+                        {
+                            <th>Mobile</th>
+                            <th>Submitted</th>
+                        }
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -151,26 +150,35 @@
                     {
                         <tr>
                             <td><strong>@item.ApplicationNo</strong></td>
-                            <td><small class="text-muted">@FriendlyType(item.ApplicationType)</small></td>
-                            <td>@(item.ApplicantName ?? "-")</td>
-                            <td>@(item.MobileNumber ?? "-")</td>
                             <td>
-                                <small>@item.CurrentStage</small>
+                                <div class="fw-semibold">@(item.ApplicantName ?? "-")</div>
+                                @if (!string.IsNullOrWhiteSpace(item.MobileNumber))
+                                {
+                                    <small class="text-muted">@item.MobileNumber</small>
+                                }
                             </td>
+                            <td><small class="text-muted">@FriendlyType(item.ApplicationType)</small></td>
                             <td>
-                                <span class="badge @StatusClass(item.CurrentStatus)">
+                                <span class="badge @AdminStatusBadgeHelper.CssClass(item.CurrentStatus)">
                                     @FriendlyStatus(item.CurrentStatus)
                                 </span>
                             </td>
+                            <td><small>@item.CurrentStage</small></td>
                             <td><small>@item.AssignedTo</small></td>
-                            <td>
-                                <small>@(item.SubmittedOn?.ToString("dd MMM yyyy") ?? item.AssignedOn.ToString("dd MMM yyyy"))</small>
-                            </td>
+                            @if (isAdmin)
+                            {
+                                <td><small>@(string.IsNullOrWhiteSpace(item.LastAction) ? "-" : item.LastAction)</small></td>
+                                <td><small>@(item.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm tt") ?? item.AssignedOn.ToString("dd MMM yyyy hh:mm tt"))</small></td>
+                            }
+                            else
+                            {
+                                <td>@(item.MobileNumber ?? "-")</td>
+                                <td><small>@(item.SubmittedOn?.ToString("dd MMM yyyy") ?? item.AssignedOn.ToString("dd MMM yyyy"))</small></td>
+                            }
                             <td class="text-center">
-                                @* Only "View & Action" — all actions require remarks + confirmation on the Details page *@
                                 <a class="btn btn-sm btn-outline-primary"
                                    asp-action="Details" asp-route-id="@item.TaskId">
-                                    @(item.CanAct ? "Review & Act" : "View")
+                                    @(item.CanAct ? "Review & Action" : "View")
                                 </a>
                             </td>
                         </tr>
@@ -179,7 +187,7 @@
             </table>
         </div>
         <p class="text-muted mt-2" style="font-size:.8rem">
-            * All workflow actions (Accept, Reject, Forward, Send Back) must be taken from the application's detail page. Mandatory remarks and confirmation are required for every action.
+            * All workflow actions (Accept, Reject, Forward, Send Back) remain available from the application detail page with remarks and confirmation.
         </p>
     }
     @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)

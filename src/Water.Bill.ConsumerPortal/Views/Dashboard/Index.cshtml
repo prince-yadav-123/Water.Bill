@@ -216,15 +216,15 @@
     <div class="cpd-row">
         <section class="wb-page-card cpd-col-wide">
             <div class="wb-card-title-row">
-                <div><p class="wb-kicker">Billing Trend</p><h2>5-Year Billed vs Paid</h2></div>
+                <div><p class="wb-kicker">Challan Trend</p><h2>5-Year Challan Generated vs Paid</h2></div>
                 <div class="cpd-legend">
-                    <span><i class="cpd-swatch cpd-sw-blue"></i>Billed</span>
+                    <span><i class="cpd-swatch cpd-sw-blue"></i>Generated</span>
                     <span><i class="cpd-swatch cpd-sw-green"></i>Paid</span>
                 </div>
             </div>
             @if (Model.BillingTrend.All(x => x.BilledAmount == 0 && x.PaidAmount == 0))
             {
-                <p class="cpd-empty">No billing history available yet.</p>
+                <p class="cpd-empty">No challan history available yet.</p>
             }
             else
             {

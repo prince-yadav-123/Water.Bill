@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Verify OTP";
     var maskedMobile = string.IsNullOrWhiteSpace(Model) ? "" : Model.Length >= 4 ? "XXXXXX" + Model[^4..] : Model;
+    var flowMode = ViewData["FlowMode"]?.ToString() ?? "apply";
+    var isTrackOnly = ViewData["IsTrackOnly"] as bool? == true;
 }
 
 <main class="wb-public-auth-shell">
@@ -18,7 +20,9 @@
             <p class="wb-kicker">Mobile Verification</p>
             <h1>Enter verification code</h1>
             <p class="wb-public-auth-subtitle">
-                @(TempData["OtpMessage"] ?? "We sent a 6-digit OTP to your mobile number.")
+                @(TempData["OtpMessage"] ?? (isTrackOnly
+                    ? "We sent a 6-digit OTP to your mobile number so you can view submitted applications."
+                    : "We sent a 6-digit OTP to your mobile number."))
             </p>
         </div>
 
@@ -31,7 +35,7 @@
 
         <div class="wb-otp-phone-row">
             <span class="wb-otp-mobile">+91 @maskedMobile</span>
-            <a class="wb-otp-edit" asp-action="Start">
+            <a class="wb-otp-edit" asp-action="Start" asp-route-mode="@flowMode">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
                 </svg>
@@ -43,6 +47,7 @@
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
             <input type="hidden" name="mobileNumber" value="@Model" />
+            <input type="hidden" name="mode" value="@flowMode" />
             <input type="hidden" name="otp" id="otpHiddenInput" />
 
             <div class="wb-otp-boxes" id="otpBoxes">
@@ -54,13 +59,15 @@
                 <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
             </div>
 
-            <button class="btn btn-primary w-100 mt-3" type="submit" id="otpSubmitBtn" disabled>Verify & Continue</button>
+            <button class="btn btn-primary w-100 mt-3" type="submit" id="otpSubmitBtn" disabled>
+                @(isTrackOnly ? "Verify & View Applications" : "Verify & Continue")
+            </button>
         </form>
 
         <div class="wb-resend-row">
             <span>Didn't receive the code?</span>
             <span id="resendTimer" class="wb-resend-timer">Resend in <strong id="resendSecs">1:00</strong></span>
-            <a id="resendLink" class="wb-resend-link" asp-action="Start" style="display:none">Resend OTP</a>
+            <a id="resendLink" class="wb-resend-link" asp-action="Start" asp-route-mode="@flowMode" style="display:none">Resend OTP</a>
         </div>
 
     </section>

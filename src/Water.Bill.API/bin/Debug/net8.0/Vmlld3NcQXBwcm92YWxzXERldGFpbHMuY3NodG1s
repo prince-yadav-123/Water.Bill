@@ -82,6 +82,35 @@
         _ => action!
     };
 
+    string FriendlyRole(string? role) => role switch
+    {
+        "PublicApplicant" => "Applicant",
+        null or "" => "",
+        _ => role!
+    };
+
+    string TimelineActorLabel(Water.Bill.Infrastructure.Data.Entities.ApplicationWorkflowHistory item)
+    {
+        if (string.Equals(item.ActionByRole, "PublicApplicant", StringComparison.OrdinalIgnoreCase))
+        {
+            var applicantBits = new[] { applicantName, mobileNo }
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToArray();
+            return applicantBits.Length == 0
+                ? "System (Applicant)"
+                : $"{string.Join(" / ", applicantBits)} (Applicant)";
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.ActionByName))
+        {
+            return string.IsNullOrWhiteSpace(FriendlyRole(item.ActionByRole))
+                ? item.ActionByName
+                : $"{item.ActionByName} ({FriendlyRole(item.ActionByRole)})";
+        }
+
+        return "System";
+    }
+
     string ActionBadgeClass(string? action) => action switch
     {
         "WorkflowStarted" or "StageAssigned"             => "text-bg-primary",
@@ -93,6 +122,11 @@
         "SendBackToPrevious"                              => "text-bg-secondary",
         _                                                 => "text-bg-light text-dark"
     };
+
+    var stageNamesById = Model.StageProgress
+        .Where(x => x.Stage is not null)
+        .GroupBy(x => x.Stage.Id)
+        .ToDictionary(x => x.Key, x => x.First().Stage.StageName);
 }
 
 <div class="wb-page-head">
@@ -437,23 +471,29 @@ else if (legacy is not null)
             {
                 <div class="wb-approval-history-item">
                     <span class="wb-history-dot @ActionBadgeClass(item.Action)"></span>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <strong>@FriendlyAction(item.Action)</strong>
-                            <span class="badge @ActionBadgeClass(item.Action)" style="font-size:.72rem">@item.Action</span>
+                    <div class="wb-history-content">
+                        <div class="wb-history-head">
+                            <div class="wb-history-title-wrap">
+                                <strong>@FriendlyAction(item.Action)</strong>
+                                <span class="badge @ActionBadgeClass(item.Action) wb-history-code">@item.Action</span>
+                            </div>
+                            <small class="wb-history-time">@item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
                         </div>
                         <small class="text-muted">@(item.FromStatus ?? "-") → @item.ToStatus</small>
-                        <small class="text-muted d-block">@item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
-                        @if (!string.IsNullOrWhiteSpace(item.ActionByName))
-                        {
-                            <small class="text-muted">
-                                By <strong>@item.ActionByName</strong>
-                                @if (!string.IsNullOrWhiteSpace(item.ActionByRole)) { <text>(@item.ActionByRole)</text> }
-                            </small>
-                        }
+                        <div class="wb-history-meta">
+                            <small class="text-muted"><strong>By:</strong> @TimelineActorLabel(item)</small>
+                        </div>
                         @if (!string.IsNullOrWhiteSpace(item.Remarks))
                         {
-                            <div class="wb-history-remarks">@item.Remarks</div>
+                            <div class="wb-history-remarks"><strong>Remarks:</strong> @item.Remarks</div>
+                        }
+                        @if (string.Equals(item.Action, "FinalConsumerCreated", StringComparison.OrdinalIgnoreCase)
+                            && !string.IsNullOrWhiteSpace(app?.FinalConsumerNo))
+                        {
+                            <div class="wb-history-extra">
+                                <span>Consumer No:</span>
+                                <strong>@app.FinalConsumerNo</strong>
+                            </div>
                         }
                     </div>
                 </div>
@@ -633,7 +673,68 @@ else if (task.Status == "Pending" && task.WorkflowInstance.IsActive)
     .wb-action-btn-grid { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
     .wb-action-btn-grid .btn { font-size: .88rem; padding: .5rem 1.1rem; font-weight: 600; }
     .wb-history-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; display: inline-block; }
-    .wb-history-remarks { margin-top: 4px; padding: 6px 10px; background: #f8fafc; border-left: 3px solid #e2e8f0; border-radius: 0 4px 4px 0; font-size: .88rem; color: #475569; }
+    .wb-approval-history { display: grid; gap: 10px; }
+    .wb-approval-history-item {
+        display: grid;
+        grid-template-columns: 16px minmax(0, 1fr);
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .wb-approval-history-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .wb-history-content { min-width: 0; }
+    .wb-history-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .wb-history-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+    .wb-history-title-wrap strong { font-size: .94rem; color: #0f172a; }
+    .wb-history-code { font-size: .69rem !important; }
+    .wb-history-time {
+        color: #64748b !important;
+        font-size: .76rem !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .wb-history-content > small.text-muted.d-block { display: none; }
+    .wb-history-meta small,
+    .wb-history-content > small.text-muted {
+        display: block;
+        margin-top: 3px;
+        color: #64748b;
+        font-size: .79rem;
+        line-height: 1.45;
+    }
+    .wb-history-remarks {
+        margin-top: 6px;
+        padding: 7px 10px;
+        background: #f8fafc;
+        border-left: 3px solid #e2e8f0;
+        border-radius: 0 8px 8px 0;
+        font-size: .84rem;
+        color: #475569;
+        line-height: 1.45;
+    }
+    .wb-history-extra {
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ecfdf5;
+        color: #166534;
+        font-size: .8rem;
+    }
     .wf-modal-icon { font-size: 1.3rem; line-height: 1; }
     #wfConfirmModal.is-open {
         display: block;
@@ -655,6 +756,10 @@ else if (task.Status == "Pending" && task.WorkflowInstance.IsActive)
     #wfConfirmModal .modal-header.action-reject  { background: linear-gradient(135deg, #991b1b, #dc2626); color:#fff; }
     #wfConfirmModal .modal-header.action-sendback { background: linear-gradient(135deg, #92400e, #d97706); color:#fff; }
     #wfConfirmModal .modal-header.action-previous { background: linear-gradient(135deg, #1e293b, #475569); color:#fff; }
+    @@media (max-width: 575.98px) {
+        .wb-history-head { flex-direction: column; gap: 2px; }
+        .wb-history-time { white-space: normal; }
+    }
 </style>
 
 <script>

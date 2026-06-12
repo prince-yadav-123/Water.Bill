@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
+using Water.Bill.API.ViewModels;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Core.Common;
 using Water.Bill.Core.Enums;
@@ -29,7 +30,15 @@ public class PermissionModulesController : Controller
         ViewData["ActiveMenu"] = "Permission Modules";
         var modules = await _db.PermissionModules
             .Where(x => !x.IsDeleted)
-            .OrderBy(x => x.Name)
+            .OrderBy(x => EF.Property<string>(x, "PortalScope"))
+            .ThenBy(x => x.Name)
+            .Select(x => new PermissionModuleViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                PortalScope = EF.Property<string>(x, "PortalScope"),
+                IsActive = x.IsActive
+            })
             .ToListAsync(ct);
 
         return View(modules);
@@ -40,7 +49,16 @@ public class PermissionModulesController : Controller
     {
         ViewData["Title"] = "View Permission Module";
         ViewData["ActiveMenu"] = "Permission Modules";
-        var module = await _db.PermissionModules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var module = await _db.PermissionModules
+            .Where(x => x.Id == id && !x.IsDeleted)
+            .Select(x => new PermissionModuleViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                PortalScope = EF.Property<string>(x, "PortalScope"),
+                IsActive = x.IsActive
+            })
+            .FirstOrDefaultAsync(ct);
         return module is null ? NotFound() : View(module);
     }
 
@@ -49,22 +67,31 @@ public class PermissionModulesController : Controller
     {
         ViewData["Title"] = "Create Permission Module";
         ViewData["ActiveMenu"] = "Permission Modules";
-        return View(new PermissionModule());
+        return View(new PermissionModuleFormViewModel
+        {
+            PortalScope = AppConstants.PortalScopes.Authority,
+            IsActive = true
+        });
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Permission Modules.add")]
-    public async Task<IActionResult> Create(PermissionModule model, CancellationToken ct)
+    public async Task<IActionResult> Create(PermissionModuleFormViewModel model, CancellationToken ct)
     {
         ViewData["ActiveMenu"] = "Permission Modules";
         await ValidateModuleAsync(model, ct: ct);
         if (!ModelState.IsValid) return View(model);
 
-        model.Name = model.Name.Trim();
-        model.IsDeleted = false;
-        _db.PermissionModules.Add(model);
+        var entity = new PermissionModule
+        {
+            Name = model.Name.Trim(),
+            IsActive = model.IsActive,
+            IsDeleted = false
+        };
+        _db.PermissionModules.Add(entity);
+        _db.Entry(entity).Property("PortalScope").CurrentValue = NormalizePortalScope(model.PortalScope);
         await _db.SaveChangesAsync(ct);
 
-        await _auditLogService.LogAsync(AuditAction.PermissionChanged, AppConstants.Modules.PermissionModules, model.Id.ToString(), "Permission module created.", ct: ct);
+        await _auditLogService.LogAsync(AuditAction.PermissionChanged, AppConstants.Modules.PermissionModules, entity.Id.ToString(), "Permission module created.", ct: ct);
         TempData["SuccessMessage"] = "Permission module created.";
         return RedirectToAction(nameof(Index));
     }
@@ -74,12 +101,21 @@ public class PermissionModulesController : Controller
     {
         ViewData["Title"] = "Edit Permission Module";
         ViewData["ActiveMenu"] = "Permission Modules";
-        var module = await _db.PermissionModules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var module = await _db.PermissionModules
+            .Where(x => x.Id == id && !x.IsDeleted)
+            .Select(x => new PermissionModuleFormViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                PortalScope = EF.Property<string>(x, "PortalScope"),
+                IsActive = x.IsActive
+            })
+            .FirstOrDefaultAsync(ct);
         return module is null ? NotFound() : View(module);
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequirePermission("Permission Modules.edit")]
-    public async Task<IActionResult> Edit(int id, PermissionModule model, CancellationToken ct)
+    public async Task<IActionResult> Edit(int id, PermissionModuleFormViewModel model, CancellationToken ct)
     {
         ViewData["ActiveMenu"] = "Permission Modules";
         var module = await _db.PermissionModules.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
@@ -95,6 +131,7 @@ public class PermissionModulesController : Controller
 
         module.Name = model.Name.Trim();
         module.IsActive = model.IsActive;
+        _db.Entry(module).Property("PortalScope").CurrentValue = NormalizePortalScope(model.PortalScope);
         await _db.SaveChangesAsync(ct);
 
         await _auditLogService.LogAsync(AuditAction.PermissionChanged, AppConstants.Modules.PermissionModules, id.ToString(), "Permission module updated.", ct: ct);
@@ -123,7 +160,7 @@ public class PermissionModulesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task ValidateModuleAsync(PermissionModule model, int? currentId = null, CancellationToken ct = default)
+    private async Task ValidateModuleAsync(PermissionModuleFormViewModel model, int? currentId = null, CancellationToken ct = default)
     {
         var name = model.Name?.Trim();
         if (string.IsNullOrWhiteSpace(name))
@@ -143,6 +180,11 @@ public class PermissionModulesController : Controller
         {
             ModelState.AddModelError(nameof(model.Name), "A permission module with this name already exists.");
         }
+
+        if (!IsValidPortalScope(model.PortalScope))
+        {
+            ModelState.AddModelError(nameof(model.PortalScope), "Please select a valid portal scope.");
+        }
     }
 
     private async Task<bool> IsModuleInUseAsync(int moduleId, CancellationToken ct)
@@ -152,4 +194,12 @@ public class PermissionModulesController : Controller
 
         return await _db.Rolepermissions.AnyAsync(x => x.ModuleId == moduleId && !x.IsDeleted, ct);
     }
+
+    private static bool IsValidPortalScope(string? portalScope)
+        => portalScope == AppConstants.PortalScopes.Authority || portalScope == AppConstants.PortalScopes.Consumer;
+
+    private static string NormalizePortalScope(string? portalScope)
+        => portalScope == AppConstants.PortalScopes.Consumer
+            ? AppConstants.PortalScopes.Consumer
+            : AppConstants.PortalScopes.Authority;
 }

@@ -96,6 +96,7 @@ public sealed class NotificationDispatchService : INotificationDispatchService
                     ReferenceType = RefType,
                     ReferenceId   = notificationId.ToString(),
                     ReferenceNo   = notif.NotificationType,
+                    RedirectUrl   = notif.RedirectUrl,
                     IsRead    = false,
                     CreatedAt = now,
                     IsDeleted = false
@@ -145,7 +146,7 @@ public sealed class NotificationDispatchService : INotificationDispatchService
                     };
 
                     await _comm.SendAsync(EmailPurposeKey, recipient, values, channelOptions,
-                        RefType, notificationId.ToString(), notif.NotificationType, ct);
+                        RefType, notificationId.ToString(), notif.NotificationType, ct: ct);
 
                     emailSent++;
                 }

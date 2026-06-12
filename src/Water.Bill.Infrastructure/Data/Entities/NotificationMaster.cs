@@ -12,6 +12,7 @@ public partial class NotificationMaster
     public string Status { get; set; } = "Draft";              // Draft | Sent | Cancelled
     public DateTime? ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
+    public string? RedirectUrl { get; set; }
     public int CreatedByUserId { get; set; }
     public string? CreatedByName { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -92,6 +92,45 @@ BEGIN
     ON dbo.PermissionModules (Name, IsDeleted);
 END;
 
+IF OBJECT_ID(N'dbo.PermissionModules', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.PermissionModules', N'PortalScope') IS NULL
+BEGIN
+    ALTER TABLE dbo.PermissionModules
+        ADD PortalScope NVARCHAR(20) NOT NULL
+            CONSTRAINT DF_PermissionModules_PortalScope DEFAULT (N'Authority');
+END;
+
+IF OBJECT_ID(N'dbo.PermissionModules', N'U') IS NOT NULL
+BEGIN
+    UPDATE dbo.PermissionModules
+    SET PortalScope = CASE
+        WHEN Name IN (
+            N'Consumer Dashboard',
+            N'Consumer Bills',
+            N'Consumer Profile',
+            N'Consumer New Connection',
+            N'Consumer NDC Applications',
+            N'Consumer Challans',
+            N'Consumer Service Requests',
+            N'Consumer Support Queries',
+            N'Consumer Complaints'
+        ) THEN N'Consumer'
+        ELSE N'Authority'
+    END
+END;
+
+IF OBJECT_ID(N'dbo.PermissionModules', N'U') IS NOT NULL
+   AND NOT EXISTS (
+       SELECT 1
+       FROM sys.indexes
+       WHERE name = N'IX_PermissionModules_PortalScope_IsDeleted_IsActive'
+         AND object_id = OBJECT_ID(N'dbo.PermissionModules')
+   )
+BEGIN
+    CREATE INDEX IX_PermissionModules_PortalScope_IsDeleted_IsActive
+        ON dbo.PermissionModules (PortalScope, IsDeleted, IsActive);
+END;
+
 IF OBJECT_ID(N'dbo.MenuItems', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.MenuItems
@@ -659,11 +698,19 @@ BEGIN
         ReferenceType NVARCHAR(100) NULL,
         ReferenceId   NVARCHAR(100) NULL,
         ReferenceNo   NVARCHAR(100) NULL,
+        RedirectUrl   NVARCHAR(1000) NULL,
         IsRead        BIT NOT NULL CONSTRAINT DF_InAppNotifications_IsRead DEFAULT (0),
         ReadAt        DATETIME2(6) NULL,
         CreatedAt     DATETIME2(6) NOT NULL CONSTRAINT DF_InAppNotifications_CreatedAt DEFAULT (SYSDATETIME()),
         IsDeleted     BIT NOT NULL CONSTRAINT DF_InAppNotifications_IsDeleted DEFAULT (0)
     );
+END;
+
+IF OBJECT_ID(N'dbo.InAppNotifications', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.InAppNotifications', N'RedirectUrl') IS NULL
+BEGIN
+    ALTER TABLE dbo.InAppNotifications
+        ADD RedirectUrl NVARCHAR(1000) NULL;
 END;
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_InAppNotifications_User_Read' AND object_id = OBJECT_ID(N'dbo.InAppNotifications'))
@@ -686,6 +733,7 @@ BEGIN
         Status           NVARCHAR(20) NOT NULL CONSTRAINT DF_NotificationMasters_Status DEFAULT ('Draft'),
         ValidFrom        DATETIME2(6) NULL,
         ValidTo          DATETIME2(6) NULL,
+        RedirectUrl      NVARCHAR(1000) NULL,
         CreatedByUserId  INT NOT NULL CONSTRAINT DF_NotificationMasters_CreatedByUserId DEFAULT (0),
         CreatedByName    NVARCHAR(200) NULL,
         CreatedAt        DATETIME2(6) NOT NULL CONSTRAINT DF_NotificationMasters_CreatedAt DEFAULT (SYSDATETIME()),
@@ -693,6 +741,13 @@ BEGIN
         IsActive         BIT NOT NULL CONSTRAINT DF_NotificationMasters_IsActive DEFAULT (1),
         IsDeleted        BIT NOT NULL CONSTRAINT DF_NotificationMasters_IsDeleted DEFAULT (0)
     );
+END;
+
+IF OBJECT_ID(N'dbo.notification_masters', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.notification_masters', N'RedirectUrl') IS NULL
+BEGIN
+    ALTER TABLE dbo.notification_masters
+        ADD RedirectUrl NVARCHAR(1000) NULL;
 END;
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifMaster_Status' AND object_id = OBJECT_ID(N'dbo.notification_masters'))
@@ -1899,74 +1954,74 @@ WHEN NOT MATCHED BY TARGET THEN
         (N'Billing'),
         (N'Payments'),
         (N'Reports'),
-        (N'Role Management'),
-        (N'User Management'),
-        (N'Role Permission'),
-        (N'Menu Management'),
-        (N'Permission Modules'),
-        (N'Security Settings'),
-        (N'Profile'),
-        (N'Consumer Dashboard'),
-        (N'Consumer Bills'),
-        (N'Consumer Profile'),
-        (N'Consumer New Connection'),
-        (N'Consumer Login Management'),
-        (N'Sector Master'),
-        (N'Block Master'),
-        (N'Pipe Size Master'),
-        (N'Connection Category Master'),
-        (N'Connection Sub-Type Master'),
-        (N'Connection Type Master'),
-        (N'Village Master'),
-        (N'Document Type Master'),
-        (N'Masters'),
-        (N'Payment Mode Master'),
-        (N'Payment Type Master'),
-        (N'Bank Master'),
-        (N'NDC Amount Master'),
-        (N'Application Status Master'),
-        (N'Rate Category Master'),
-        (N'Rate Master'),
-        (N'Department Master'),
-        (N'Workflow Master'),
-        (N'My Pending Applications'),
-        (N'New Connection Fee Configuration'),
-        (N'Consumer Query Management'),
-        (N'Consumer Support Queries'),
-        (N'Bill Search & Print'),
-        (N'Online Payment History'),
-        (N'NDC Applications'),
-        (N'NDC Certificate Management'),
-        (N'Consumer NDC Applications'),
-        (N'Challan Management'),
-        (N'Consumer Challans'),
-        (N'Bulk Bill Generation'),
-        (N'Consumer Master Maintenance'),
-        (N'Consumer Account Adjustments'),
-        (N'Consumer Ledger'),
-        (N'Meter Reading Management'),
-        (N'Disconnection / Reconnection Management'),
-        (N'Notice Management'),
-        (N'Complaint Management'),
-        (N'Consumer Complaints'),
-        (N'Connection Type / Category Change'),
-        (N'Name Transfer / Mutation'),
-        (N'Reports / MIS'),
-        (N'Advanced Bill Revision / Reversal'),
-        (N'Operator Activity Logs'),
-        (N'Communication Templates'),
-        (N'Consumer Service Requests'),
-        (N'NotificationManagement')
-    ) x(Name)
+        (N'Role Management', N'Authority'),
+        (N'User Management', N'Authority'),
+        (N'Role Permission', N'Authority'),
+        (N'Menu Management', N'Authority'),
+        (N'Permission Modules', N'Authority'),
+        (N'Security Settings', N'Authority'),
+        (N'Profile', N'Authority'),
+        (N'Consumer Dashboard', N'Consumer'),
+        (N'Consumer Bills', N'Consumer'),
+        (N'Consumer Profile', N'Consumer'),
+        (N'Consumer New Connection', N'Consumer'),
+        (N'Consumer Login Management', N'Authority'),
+        (N'Sector Master', N'Authority'),
+        (N'Block Master', N'Authority'),
+        (N'Pipe Size Master', N'Authority'),
+        (N'Connection Category Master', N'Authority'),
+        (N'Connection Sub-Type Master', N'Authority'),
+        (N'Connection Type Master', N'Authority'),
+        (N'Village Master', N'Authority'),
+        (N'Document Type Master', N'Authority'),
+        (N'Masters', N'Authority'),
+        (N'Payment Mode Master', N'Authority'),
+        (N'Payment Type Master', N'Authority'),
+        (N'Bank Master', N'Authority'),
+        (N'NDC Amount Master', N'Authority'),
+        (N'Application Status Master', N'Authority'),
+        (N'Rate Category Master', N'Authority'),
+        (N'Rate Master', N'Authority'),
+        (N'Department Master', N'Authority'),
+        (N'Workflow Master', N'Authority'),
+        (N'My Pending Applications', N'Authority'),
+        (N'New Connection Fee Configuration', N'Authority'),
+        (N'Consumer Query Management', N'Authority'),
+        (N'Consumer Support Queries', N'Consumer'),
+        (N'Bill Search & Print', N'Authority'),
+        (N'Online Payment History', N'Authority'),
+        (N'NDC Applications', N'Authority'),
+        (N'NDC Certificate Management', N'Authority'),
+        (N'Consumer NDC Applications', N'Consumer'),
+        (N'Challan Management', N'Authority'),
+        (N'Consumer Challans', N'Consumer'),
+        (N'Bulk Bill Generation', N'Authority'),
+        (N'Consumer Master Maintenance', N'Authority'),
+        (N'Consumer Account Adjustments', N'Authority'),
+        (N'Consumer Ledger', N'Authority'),
+        (N'Meter Reading Management', N'Authority'),
+        (N'Disconnection / Reconnection Management', N'Authority'),
+        (N'Notice Management', N'Authority'),
+        (N'Complaint Management', N'Authority'),
+        (N'Consumer Complaints', N'Consumer'),
+        (N'Connection Type / Category Change', N'Authority'),
+        (N'Name Transfer / Mutation', N'Authority'),
+        (N'Reports / MIS', N'Authority'),
+        (N'Advanced Bill Revision / Reversal', N'Authority'),
+        (N'Operator Activity Logs', N'Authority'),
+        (N'Communication Templates', N'Authority'),
+        (N'Consumer Service Requests', N'Consumer'),
+        (N'NotificationManagement', N'Authority')
+    ) x(Name, PortalScope)
 )
 MERGE dbo.PermissionModules AS tgt
 USING module_seed AS src
 ON tgt.Name = src.Name
 WHEN MATCHED THEN
-    UPDATE SET tgt.IsActive = 1, tgt.IsDeleted = 0
+    UPDATE SET tgt.IsActive = 1, tgt.IsDeleted = 0, tgt.PortalScope = src.PortalScope
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT (Name, IsActive, IsDeleted)
-    VALUES (src.Name, 1, 0);
+    INSERT (Name, PortalScope, IsActive, IsDeleted)
+    VALUES (src.Name, src.PortalScope, 1, 0);
 
 /* Admin gets full access to every module present in PermissionModules. */
 MERGE dbo.RolePermissions AS tgt

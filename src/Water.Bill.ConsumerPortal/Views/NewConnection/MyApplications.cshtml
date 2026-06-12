@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "My Applications";
     var isPublic = ViewData["IsPublicNewConnection"] as bool? == true;
+    var isTrackOnly = ViewData["IsTrackOnly"] as bool? == true;
 
     bool NeedsPayment(string s) => s is "PendingPayment" or "FeePending" or "PaymentFailed";
 
@@ -40,10 +41,18 @@
             <h1>My Applications</h1>
             <p>Track the new connection requests submitted @(isPublic ? "with your verified mobile number" : "from your consumer account").</p>
         </div>
-        <a class="btn btn-primary" asp-action="Apply">
-            @(isPublic ? "Apply for Another New Connection" : "Apply for New Connection")
-        </a>
+        @if (!(isPublic && isTrackOnly))
+        {
+            <a class="btn btn-primary" asp-action="Apply">
+                @(isPublic ? "Apply for Another New Connection" : "Apply for New Connection")
+            </a>
+        }
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(TempData["InfoMessage"]?.ToString()))
+    {
+        <div class="alert alert-info mb-3">@TempData["InfoMessage"]</div>
+    }
 
     @* ── Action Required banners ── *@
     @foreach (var sentBack in Model.Where(x => x.CanResubmit))
@@ -82,7 +91,11 @@
         {
             <div class="wb-empty-state">
                 <strong>No applications found.</strong>
-                <span>Your new connection requests will appear here after submission.</span>
+                <span>
+                    @(isTrackOnly
+                        ? "No new connection application was found for this verified mobile number."
+                        : "Your new connection requests will appear here after submission.")
+                </span>
             </div>
         }
         else

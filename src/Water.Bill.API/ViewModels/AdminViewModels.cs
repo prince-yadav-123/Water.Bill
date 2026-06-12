@@ -74,6 +74,24 @@ public class PermissionMatrixViewModel
     public Approle? SelectedRole { get; set; }
     public IReadOnlyList<Rolepermission> Permissions { get; set; } = [];
     public IReadOnlyList<PermissionModule> Modules { get; set; } = [];
+    public string SelectedPortalScope { get; set; } = string.Empty;
+    public string SelectedPortalLabel { get; set; } = string.Empty;
+}
+
+public class PermissionModuleViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string PortalScope { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+}
+
+public class PermissionModuleFormViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string PortalScope { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
 }
 
 public class MenuIndexViewModel
@@ -86,6 +104,43 @@ public class MenuFormViewModel
     public Menuitem Item { get; set; } = new();
     public IReadOnlyList<Menuitem> ParentItems { get; set; } = [];
     public IReadOnlyList<PermissionModule> PermissionModules { get; set; } = [];
+    public IReadOnlyList<SelectOptionViewModel> PortalOptions { get; set; } = [];
+    public IReadOnlyList<MenuParentOptionViewModel> ParentOptions { get; set; } = [];
+    public IReadOnlyList<MenuPermissionModuleOptionViewModel> PermissionModuleOptions { get; set; } = [];
+    public IReadOnlyList<MenuIconCategoryViewModel> IconCategories { get; set; } = [];
+}
+
+public class SelectOptionViewModel
+{
+    public string Value { get; set; } = string.Empty;
+    public string Text { get; set; } = string.Empty;
+}
+
+public class MenuParentOptionViewModel
+{
+    public int Id { get; set; }
+    public string Label { get; set; } = string.Empty;
+    public int TenantId { get; set; }
+}
+
+public class MenuPermissionModuleOptionViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string PortalScope { get; set; } = string.Empty;
+}
+
+public class MenuIconCategoryViewModel
+{
+    public string Key { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
+    public IReadOnlyList<MenuIconOptionViewModel> Icons { get; set; } = [];
+}
+
+public class MenuIconOptionViewModel
+{
+    public string Value { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
 }
 
 public class MenuReorderViewModel

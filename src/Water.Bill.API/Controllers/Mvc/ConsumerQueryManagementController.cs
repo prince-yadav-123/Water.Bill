@@ -204,7 +204,7 @@ public class ConsumerQueryManagementController : Controller
                 "ConsumerSupportQuery",
                 query.Id.ToString(),
                 query.QueryNo,
-                ct);
+                ct: ct);
         }
 
         TempData["SuccessMessage"] = $"Query marked as {newStatus}.";

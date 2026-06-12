@@ -30,14 +30,14 @@
                 </div>
                 <div class="row g-2">
                     <div class="col-md-4">
-                        <label asp-for="NotificationType" class="form-label">Type</label>
+                        <label asp-for="NotificationType" class="form-label required">Type</label>
                         <select asp-for="NotificationType" class="form-select">
                             @foreach (var t in new[]{"General","Billing","Payment","New Connection","Service Request","Query Support","System","Other"})
                             { <option value="@t">@t</option> }
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="Priority" class="form-label">Priority</label>
+                        <label asp-for="Priority" class="form-label required">Priority</label>
                         <select asp-for="Priority" class="form-select">
                             <option value="Low">Low</option>
                             <option value="Normal" selected>Normal</option>
@@ -46,7 +46,7 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Channels</label>
+                        <label class="form-label required">Channels</label>
                         <div class="d-flex flex-column gap-1 mt-1">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="Channels" value="InApp" id="chInApp"
@@ -70,6 +70,14 @@
                         <label asp-for="ValidTo" class="form-label">Valid To <small class="text-muted">(optional)</small></label>
                         <input asp-for="ValidTo" type="date" class="form-control" />
                     </div>
+                </div>
+                <div class="mt-3">
+                    <label asp-for="RedirectUrl" class="form-label">Notification Link <small class="text-muted">(optional)</small></label>
+                    <input asp-for="RedirectUrl" class="form-control" maxlength="1000" placeholder="/Consumer/NewConnection/Details/1 or https://example.com" />
+                    <span asp-validation-for="RedirectUrl" class="text-danger"></span>
+                    <small class="text-muted">
+                        Use a relative portal path for internal navigation. External links must start with <code>http://</code> or <code>https://</code>.
+                    </small>
                 </div>
             </section>
 

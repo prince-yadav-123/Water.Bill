@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.Infrastructure.Data.EntityConfigurations;
@@ -11,13 +12,18 @@ public class PermissionModuleConfiguration : IEntityTypeConfiguration<Permission
         entity.HasKey(e => e.Id).HasName("PRIMARY");
         entity.Property(e => e.Id).ValueGeneratedOnAdd();
         
-entity.ToTable("PermissionModules");
+        entity.ToTable("PermissionModules");
 
         entity.HasIndex(e => new { e.Name, e.IsDeleted }, "UX_PermissionModules_Name_IsDeleted").IsUnique();
 
         entity.Property(e => e.Name)
             .IsRequired()
             .HasMaxLength(100);
+
+        entity.Property(e => e.PortalScope)
+            .IsRequired()
+            .HasMaxLength(20)
+            .HasDefaultValue(AppConstants.PortalScopes.Authority);
 
         entity.Property(e => e.IsActive)
             .HasDefaultValueSql("'1'");

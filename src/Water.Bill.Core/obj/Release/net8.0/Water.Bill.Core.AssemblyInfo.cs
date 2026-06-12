@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Water Billing core domain models, enums, constants, and shared primitives.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22388486d7e1b623f4dbbba4a3ce865d8a2321e7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+67c234aaeb1ceb0978ebe49b5e153d1ce0deb014")]
 [assembly: System.Reflection.AssemblyProductAttribute("Water.Bill.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Water.Bill.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

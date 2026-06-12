@@ -8,10 +8,18 @@
     var task = Model.Task;
     var fee = Model.Fee;
     var inr = CultureInfo.GetCultureInfo("en-IN");
-    var isCurrentPendingTask = task.IsActive
-        && task.Status == "Pending"
+    var isAdmin = ViewData["IsAdmin"] as bool? == true;
+    // Pending check — admin bypasses IsActive (assignment) constraint but still needs status = Pending
+    var isCurrentPendingTask = task.Status == "Pending"
         && task.WorkflowInstance.CurrentStageId == task.StageId
-        && task.WorkflowInstance.IsActive;
+        && task.WorkflowInstance.IsActive
+        && !task.WorkflowInstance.IsDeleted
+        && (isAdmin || task.IsActive);   // ← admin can act on any pending task
+    var canAcceptMoveNext = task.Stage.CanApprove && Model.CanMoveToNextStage;
+    var canFinalApproval = task.Stage.IsFinalStage && task.Stage.CanApprove;
+    var canReject = task.Stage.CanReject;
+    var canSendBackToApplicant = task.Stage.CanSendBackToApplicant;
+    var canSendBackToPrevious = task.Stage.CanSendBackToPrevious && !Model.IsFirstStage;
     var approveText = task.Stage.IsFinalStage ? "Final Approve" : "Approve & Move Next";
     var submittedOn = app?.SubmittedOn ?? app?.CreatedOn ?? ndc?.CreatedOn ?? legacy?.EnterDate?.ToDateTime(TimeOnly.MinValue);
     var applicantName = app?.ApplicantName ?? ndc?.ConsName ?? legacy?.ConName;
@@ -48,11 +56,77 @@
     };
     string StatusBadgeClass(string? status) => status switch
     {
-        "Pending" or "UnderReview" or "Submitted" => "text-bg-primary",
-        "Approved" or "FinalConsumerCreated" => "text-bg-success",
-        "Rejected" => "text-bg-danger",
-        _ => "text-bg-secondary"
+        "Pending" or "UnderReview" or "Submitted"               => "text-bg-primary",
+        "Approved" or "FinalConsumerCreated"                    => "text-bg-success",
+        "Rejected"                                              => "text-bg-danger",
+        "SentBackToApplicant" or "CorrectionRequired"           => "text-bg-warning text-dark",
+        "Forwarded" or "SentBackToPrevious"                     => "text-bg-info text-dark",
+        _                                                       => "text-bg-secondary"
     };
+
+    string FriendlyAction(string? action) => action switch
+    {
+        "WorkflowStarted"      => "Workflow Started",
+        "AcceptMoveNext"       => "Accept & Move Next",
+        "FinalApproval"        => "Final Approval",
+        "Approved"             => "Approved",
+        "MoveNext"             => "Moved to Next Stage",
+        "Rejected"             => "Rejected",
+        "ForwardToUser"        => "Forwarded to Specific User",
+        "SendBackToApplicant"  => "Sent Back to Applicant",
+        "CorrectionRequired"   => "Sent Back for Correction",
+        "SendBackToPrevious"   => "Sent Back to Previous Stage",
+        "StageAssigned"        => "Stage Assigned",
+        "FinalConsumerCreated" => "Final Consumer Created",
+        null or "" => "-",
+        _ => action!
+    };
+
+    string FriendlyRole(string? role) => role switch
+    {
+        "PublicApplicant" => "Applicant",
+        null or "" => "",
+        _ => role!
+    };
+
+    string TimelineActorLabel(Water.Bill.Infrastructure.Data.Entities.ApplicationWorkflowHistory item)
+    {
+        if (string.Equals(item.ActionByRole, "PublicApplicant", StringComparison.OrdinalIgnoreCase))
+        {
+            var applicantBits = new[] { applicantName, mobileNo }
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToArray();
+            return applicantBits.Length == 0
+                ? "System (Applicant)"
+                : $"{string.Join(" / ", applicantBits)} (Applicant)";
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.ActionByName))
+        {
+            return string.IsNullOrWhiteSpace(FriendlyRole(item.ActionByRole))
+                ? item.ActionByName
+                : $"{item.ActionByName} ({FriendlyRole(item.ActionByRole)})";
+        }
+
+        return "System";
+    }
+
+    string ActionBadgeClass(string? action) => action switch
+    {
+        "WorkflowStarted" or "StageAssigned"             => "text-bg-primary",
+        "AcceptMoveNext" or "MoveNext" or "Approved"     => "text-bg-success",
+        "FinalApproval" or "FinalConsumerCreated"        => "text-bg-success",
+        "Rejected"                                        => "text-bg-danger",
+        "ForwardToUser"                                   => "text-bg-info",
+        "SendBackToApplicant" or "CorrectionRequired"    => "text-bg-warning text-dark",
+        "SendBackToPrevious"                              => "text-bg-secondary",
+        _                                                 => "text-bg-light text-dark"
+    };
+
+    var stageNamesById = Model.StageProgress
+        .Where(x => x.Stage is not null)
+        .GroupBy(x => x.Stage.Id)
+        .ToDictionary(x => x.Key, x => x.First().Stage.StageName);
 }
 
 <div class="wb-page-head">
@@ -396,18 +470,30 @@ else if (legacy is not null)
             @foreach (var item in Model.WorkflowTimeline)
             {
                 <div class="wb-approval-history-item">
-                    <span></span>
-                    <div>
-                        <strong>@item.Action</strong>
-                        <small>@(item.FromStatus ?? "-") -> @item.ToStatus</small>
-                        <small>@item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
-                        @if (!string.IsNullOrWhiteSpace(item.ActionByName))
-                        {
-                            <small>By @item.ActionByName @(string.IsNullOrWhiteSpace(item.ActionByRole) ? "" : $"({item.ActionByRole})")</small>
-                        }
+                    <span class="wb-history-dot @ActionBadgeClass(item.Action)"></span>
+                    <div class="wb-history-content">
+                        <div class="wb-history-head">
+                            <div class="wb-history-title-wrap">
+                                <strong>@FriendlyAction(item.Action)</strong>
+                                <span class="badge @ActionBadgeClass(item.Action) wb-history-code">@item.Action</span>
+                            </div>
+                            <small class="wb-history-time">@item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
+                        </div>
+                        <small class="text-muted">@(item.FromStatus ?? "-") → @item.ToStatus</small>
+                        <div class="wb-history-meta">
+                            <small class="text-muted"><strong>By:</strong> @TimelineActorLabel(item)</small>
+                        </div>
                         @if (!string.IsNullOrWhiteSpace(item.Remarks))
                         {
-                            <p>@item.Remarks</p>
+                            <div class="wb-history-remarks"><strong>Remarks:</strong> @item.Remarks</div>
+                        }
+                        @if (string.Equals(item.Action, "FinalConsumerCreated", StringComparison.OrdinalIgnoreCase)
+                            && !string.IsNullOrWhiteSpace(app?.FinalConsumerNo))
+                        {
+                            <div class="wb-history-extra">
+                                <span>Consumer No:</span>
+                                <strong>@app.FinalConsumerNo</strong>
+                            </div>
                         }
                     </div>
                 </div>
@@ -423,36 +509,389 @@ else if (legacy is not null)
             <div>
                 <p class="wb-kicker">Current Stage Action</p>
                 <h2>@task.Stage.StageName</h2>
+                @if (isAdmin)
+                {
+                    <small class="text-muted">Admin override — you can act on any pending task.</small>
+                }
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                @if (canAcceptMoveNext) { <span class="badge text-bg-success-subtle text-success-emphasis" style="font-size:.72rem">Accept &amp; Move Next</span> }
+                @if (canFinalApproval) { <span class="badge text-bg-success-subtle text-success-emphasis" style="font-size:.72rem">Final Approval</span> }
+                @if (canReject) { <span class="badge text-bg-danger-subtle text-danger-emphasis" style="font-size:.72rem">Reject</span> }
+                @if (canSendBackToApplicant) { <span class="badge text-bg-warning-subtle text-warning-emphasis" style="font-size:.72rem">Send Back to Applicant</span> }
+                @if (canSendBackToPrevious) { <span class="badge text-bg-secondary-subtle text-secondary-emphasis" style="font-size:.72rem">Send Back to Previous</span> }
             </div>
         </div>
-        <form asp-action="Action" method="post" class="wb-current-action-form">
+
+        <form asp-action="Action" method="post" id="wfActionForm">
             @Html.AntiForgeryToken()
             <input type="hidden" name="taskId" value="@task.Id" />
-            <div>
-                <label class="form-label">Remarks / Comments</label>
-                <textarea name="remarks" class="form-control" rows="3" maxlength="500" placeholder="Add review remarks before approving or rejecting this application"></textarea>
+            <input type="hidden" name="actionType" id="wfActionTypeInput" value="" />
+
+            @* Remarks *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    Remarks / Comments <span class="text-danger">*</span>
+                </label>
+                <textarea name="remarks" id="wfRemarks" class="form-control" rows="3" maxlength="500"
+                          placeholder="Remarks are required for every action. Describe your review decision clearly."></textarea>
+                <div class="invalid-feedback" id="remarksError">
+                    Please enter remarks before taking this action.
+                </div>
             </div>
-            <div class="wb-current-action-buttons">
-                @if (task.Stage.CanApprove)
+
+            @* Forward to Specific User: removed for this phase — forwardToUserId always empty *@
+            <input type="hidden" name="forwardToUserId" value="" />
+
+            @* ── Action buttons (5 allowed actions for current phase) ── *@
+            <div class="wb-action-btn-grid">
+
+                @* 1. Accept & Move Next
+                   Condition: CanApprove=true AND there are higher-order stages (CanMoveToNextStage).
+                   BUG FIX: was using !IsFinalStage which hid this button when both CanApprove
+                   and IsFinalStage were checked simultaneously. Now uses CanMoveToNextStage. *@
+                @if (canAcceptMoveNext)
                 {
-                    @if (task.Stage.IsFinalStage)
-                    {
-                        <button class="btn btn-success btn-sm" type="submit" name="actionType" value="Approve">@approveText</button>
-                        @if (Model.CanMoveToNextStage)
-                        {
-                            <button class="btn btn-primary btn-sm" type="submit" name="actionType" value="MoveNext">Move to Next Authority</button>
-                        }
-                    }
-                    else
-                    {
-                        <button class="btn btn-success btn-sm" type="submit" name="actionType" value="Approve">@approveText</button>
-                    }
+                    <button type="button" class="btn btn-success wf-action-btn"
+                            data-action="AcceptMoveNext"
+                            data-label="Accept &amp; Move Next"
+                            data-msg="The application will be accepted and moved to the next workflow stage. The next stage authority will be notified via In-App notification."
+                            data-icon="✓"
+                            data-btn-class="btn-success">
+                        ✓ Accept &amp; Move Next
+                    </button>
                 }
-                @if (task.Stage.CanReject)
+
+                @* 2. Final Approval — shown when stage is marked as IsFinalStage *@
+                @if (canFinalApproval)
                 {
-                    <button class="btn btn-danger btn-sm" type="submit" name="actionType" value="Reject">Reject</button>
+                    <button type="button" class="btn btn-success wf-action-btn"
+                            data-action="FinalApproval"
+                            data-label="Final Approval"
+                            data-msg="This is the final stage. The application will be finally approved, the workflow will be completed, and the consumer number will be generated if applicable."
+                            data-icon="★"
+                            data-btn-class="btn-success">
+                        ★ Final Approval
+                    </button>
+                }
+
+                @* 3. Reject *@
+                @if (canReject)
+                {
+                    <button type="button" class="btn btn-danger wf-action-btn"
+                            data-action="Reject"
+                            data-label="Reject Application"
+                            data-msg="The application will be rejected and the workflow will stop. Remarks are mandatory and will be visible to the applicant."
+                            data-icon="✕"
+                            data-btn-class="btn-danger">
+                        ✕ Reject
+                    </button>
+                }
+
+                @* 4. Send Back to Applicant *@
+                @if (canSendBackToApplicant)
+                {
+                    <button type="button" class="btn btn-warning wf-action-btn"
+                            data-action="SendBackToApplicant"
+                            data-label="Send Back to Applicant"
+                            data-msg="The application will be returned to the consumer/applicant for correction. They will be notified and can resubmit without paying the fee again."
+                            data-icon="↩"
+                            data-btn-class="btn-warning">
+                        ↩ Send Back to Applicant
+                    </button>
+                }
+
+                @* 5. Send Back to Previous Stage — hidden on first stage (no previous stage exists) *@
+                @if (canSendBackToPrevious)
+                {
+                    <button type="button" class="btn btn-secondary wf-action-btn"
+                            data-action="SendBackToPrevious"
+                            data-label="Send Back to Previous Stage"
+                            data-msg="The application will be sent back to the previous workflow stage for re-review. The previous stage authority will be notified via In-App notification."
+                            data-icon="←"
+                            data-btn-class="btn-secondary">
+                        ← Send Back to Previous Stage
+                    </button>
+                }
+
+                @* Debug info for admin when expected buttons are hidden *@
+                @if (isAdmin && !canAcceptMoveNext && !canFinalApproval && !canReject && !canSendBackToApplicant && !canSendBackToPrevious)
+                {
+                    <div class="alert alert-warning mb-0 mt-1 w-100" style="font-size:.85rem">
+                        <strong>Admin Note:</strong> No allowed actions are configured for stage "<strong>@task.Stage.StageName</strong>".
+                        Please edit the workflow stage and enable at least one action.
+                    </div>
                 }
             </div>
         </form>
     </section>
 }
+else if (task.Status == "Pending" && task.WorkflowInstance.IsActive)
+{
+    @* Task is pending but not assigned to current user (non-admin cannot act) *@
+    <section class="wb-page-card wb-admin-card wb-approval-section">
+        <div class="alert alert-info mb-0">
+            <strong>Awaiting your stage:</strong>
+            This application is currently pending at <strong>@task.Stage.StageName</strong>.
+            Action buttons are available only to the assigned user/role/department.
+        </div>
+    </section>
+}
+
+@* ── Custom Workflow Confirmation Modal ── *@
+<div class="modal fade" id="wfConfirmModal" tabindex="-1" aria-labelledby="wfConfirmModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:1.1rem;overflow:hidden">
+            <div class="modal-header border-0 pb-2" id="wfModalHeader" style="padding:1.25rem 1.5rem .75rem">
+                <div class="d-flex align-items-center gap-2">
+                    <span id="wfModalIcon" class="wf-modal-icon"></span>
+                    <h5 class="modal-title fw-bold mb-0" id="wfConfirmModalTitle" style="font-size:1.05rem"></h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding:1rem 1.5rem 1.25rem">
+                <p id="wfModalMsg" class="mb-0" style="color:#475569;font-size:.92rem;line-height:1.55"></p>
+                <div id="wfModalRemarksPreview" class="mt-3 p-3 rounded-2" style="display:none;background:#f8fafc;border-left:3px solid #e2e8f0">
+                    <div class="fw-semibold mb-1" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8">Your Remarks</div>
+                    <p id="wfModalRemarksText" class="mb-0" style="font-size:.88rem;color:#334155"></p>
+                </div>
+                @* Forward preview removed — Forward to Specific User disabled for current phase *@
+            </div>
+            <div class="modal-footer border-0 pt-0" style="padding:.75rem 1.5rem 1.25rem;gap:.5rem">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size:.88rem">
+                    Cancel
+                </button>
+                <button type="button" id="wfModalConfirmBtn" class="btn" style="font-size:.88rem;min-width:130px">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .wb-action-btn-grid { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+    .wb-action-btn-grid .btn { font-size: .88rem; padding: .5rem 1.1rem; font-weight: 600; }
+    .wb-history-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; display: inline-block; }
+    .wb-approval-history { display: grid; gap: 10px; }
+    .wb-approval-history-item {
+        display: grid;
+        grid-template-columns: 16px minmax(0, 1fr);
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .wb-approval-history-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .wb-history-content { min-width: 0; }
+    .wb-history-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .wb-history-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+    .wb-history-title-wrap strong { font-size: .94rem; color: #0f172a; }
+    .wb-history-code { font-size: .69rem !important; }
+    .wb-history-time {
+        color: #64748b !important;
+        font-size: .76rem !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .wb-history-content > small.text-muted.d-block { display: none; }
+    .wb-history-meta small,
+    .wb-history-content > small.text-muted {
+        display: block;
+        margin-top: 3px;
+        color: #64748b;
+        font-size: .79rem;
+        line-height: 1.45;
+    }
+    .wb-history-remarks {
+        margin-top: 6px;
+        padding: 7px 10px;
+        background: #f8fafc;
+        border-left: 3px solid #e2e8f0;
+        border-radius: 0 8px 8px 0;
+        font-size: .84rem;
+        color: #475569;
+        line-height: 1.45;
+    }
+    .wb-history-extra {
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ecfdf5;
+        color: #166534;
+        font-size: .8rem;
+    }
+    .wf-modal-icon { font-size: 1.3rem; line-height: 1; }
+    #wfConfirmModal.is-open {
+        display: block;
+        background: rgba(15, 23, 42, .54);
+        backdrop-filter: blur(2px);
+    }
+    #wfConfirmModal .modal-dialog {
+        margin: 1.75rem auto;
+        min-height: calc(100% - 3.5rem);
+        display: flex;
+        align-items: center;
+    }
+    #wfConfirmModal .btn-close {
+        filter: invert(1);
+        opacity: .92;
+    }
+    #wfConfirmModal .modal-header.action-accept  { background: linear-gradient(135deg, #15803d, #16a34a); color:#fff; }
+    #wfConfirmModal .modal-header.action-final   { background: linear-gradient(135deg, #065f46, #059669); color:#fff; }
+    #wfConfirmModal .modal-header.action-reject  { background: linear-gradient(135deg, #991b1b, #dc2626); color:#fff; }
+    #wfConfirmModal .modal-header.action-sendback { background: linear-gradient(135deg, #92400e, #d97706); color:#fff; }
+    #wfConfirmModal .modal-header.action-previous { background: linear-gradient(135deg, #1e293b, #475569); color:#fff; }
+    @@media (max-width: 575.98px) {
+        .wb-history-head { flex-direction: column; gap: 2px; }
+        .wb-history-time { white-space: normal; }
+    }
+</style>
+
+<script>
+(function () {
+    var remarksEl    = document.getElementById('wfRemarks');
+    var errorEl      = document.getElementById('remarksError');
+    var actionInput  = document.getElementById('wfActionTypeInput');
+    var form         = document.getElementById('wfActionForm');
+
+    var modalEl      = document.getElementById('wfConfirmModal');
+    var modalHeader  = document.getElementById('wfModalHeader');
+    var modalIcon    = document.getElementById('wfModalIcon');
+    var modalTitle   = document.getElementById('wfConfirmModalTitle');
+    var modalMsg     = document.getElementById('wfModalMsg');
+    var modalRemark  = document.getElementById('wfModalRemarksPreview');
+    var modalRemText = document.getElementById('wfModalRemarksText');
+    var confirmBtn   = document.getElementById('wfModalConfirmBtn');
+    var closeEls     = modalEl ? modalEl.querySelectorAll('[data-bs-dismiss="modal"], .btn-close') : [];
+    var activeAction = null;
+
+    // Action config for 5 allowed actions (Forward to Specific User removed for this phase)
+    var actionConfig = {
+        'AcceptMoveNext':     { icon:'✓', cls:'action-accept',   btnCls:'btn-success',   title:'Confirm: Accept & Move Next' },
+        'FinalApproval':      { icon:'★', cls:'action-final',    btnCls:'btn-success',   title:'Confirm: Final Approval' },
+        'Reject':             { icon:'✕', cls:'action-reject',   btnCls:'btn-danger',    title:'Confirm: Reject Application' },
+        'SendBackToApplicant':{ icon:'↩', cls:'action-sendback', btnCls:'btn-warning',   title:'Confirm: Send Back to Applicant' },
+        'SendBackToPrevious': { icon:'←', cls:'action-previous', btnCls:'btn-secondary', title:'Confirm: Send Back to Previous Stage' }
+    };
+
+    function validateRemarks() {
+        var rem = remarksEl ? remarksEl.value.trim() : '';
+        if (!rem) {
+            if (remarksEl) { remarksEl.classList.add('is-invalid'); remarksEl.focus(); }
+            if (errorEl)   { errorEl.style.display = 'block'; }
+            return false;
+        }
+        if (remarksEl) remarksEl.classList.remove('is-invalid');
+        if (errorEl)   errorEl.style.display = 'none';
+        return true;
+    }
+
+    function closeModal() {
+        if (!modalEl) return;
+        modalEl.classList.remove('show', 'is-open');
+        modalEl.style.display = 'none';
+        modalEl.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        activeAction = null;
+    }
+
+    function openModal() {
+        if (!modalEl) return;
+        modalEl.style.display = 'block';
+        modalEl.classList.add('show', 'is-open');
+        modalEl.removeAttribute('aria-hidden');
+        document.body.classList.add('modal-open');
+    }
+
+    function showModal(actionValue, message) {
+        var rem = remarksEl ? remarksEl.value.trim() : '';
+        var cfg = actionConfig[actionValue] || { icon:'?', cls:'', btnCls:'btn-primary', title:'Confirm Action' };
+        activeAction = actionValue;
+
+        modalIcon.textContent = cfg.icon;
+        modalTitle.textContent = cfg.title;
+        modalMsg.textContent = message;
+        modalHeader.className = 'modal-header border-0 pb-2 ' + cfg.cls;
+
+        // Show remarks preview
+        if (rem) {
+            modalRemText.textContent = rem;
+            modalRemark.style.display = 'block';
+        } else {
+            modalRemark.style.display = 'none';
+        }
+
+        // Confirm button
+        confirmBtn.className = 'btn ' + cfg.btnCls;
+        confirmBtn.textContent = cfg.title.replace('Confirm: ', '');
+        openModal();
+    }
+
+    // Wire all action buttons via data-attributes
+    document.querySelectorAll('.wf-action-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (!validateRemarks()) return;
+            showModal(btn.dataset.action, btn.dataset.msg || 'Are you sure?');
+        });
+    });
+
+    closeEls.forEach(function (el) {
+        el.addEventListener('click', closeModal);
+    });
+
+    if (modalEl) {
+        modalEl.addEventListener('click', function (event) {
+            if (event.target === modalEl) {
+                closeModal();
+            }
+        });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+            if (!activeAction || !validateRemarks() || !form || !actionInput) return;
+            actionInput.value = activeAction;
+            confirmBtn.disabled = true;
+            closeModal();
+            form.submit();
+        });
+    }
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modalEl && modalEl.classList.contains('is-open')) {
+            closeModal();
+        }
+    });
+
+    // Live remarks validation clear
+    if (remarksEl) {
+        remarksEl.addEventListener('input', function () {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+                if (errorEl) errorEl.style.display = 'none';
+            }
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function () {
+            if (confirmBtn) confirmBtn.disabled = true;
+        });
+    }
+})();
+</script>

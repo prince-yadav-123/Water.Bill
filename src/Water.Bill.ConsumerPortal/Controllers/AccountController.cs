@@ -15,6 +15,7 @@ public class AccountController : Controller
     private readonly ISessionService _sessionService;
     private readonly IAuditLogService _auditLogService;
     private readonly IConsumerOtpService _consumerOtpService;
+    private readonly IConsumerMobileRegistrationService _consumerMobileRegistrationService;
     private readonly IConsumerAccountService _consumerAccountService;
     private readonly IHostEnvironment _environment;
 
@@ -22,19 +23,21 @@ public class AccountController : Controller
         ISessionService sessionService,
         IAuditLogService auditLogService,
         IConsumerOtpService consumerOtpService,
+        IConsumerMobileRegistrationService consumerMobileRegistrationService,
         IConsumerAccountService consumerAccountService,
         IHostEnvironment environment)
     {
         _sessionService = sessionService;
         _auditLogService = auditLogService;
         _consumerOtpService = consumerOtpService;
+        _consumerMobileRegistrationService = consumerMobileRegistrationService;
         _consumerAccountService = consumerAccountService;
         _environment = environment;
     }
 
     [HttpGet("/Account/Login")]
     [HttpGet("/Consumer/Login")]
-    public async Task<IActionResult> Login(string? returnUrl = null)
+    public async Task<IActionResult> Login(string? returnUrl = null, string? consumerId = null, string? loginMethod = null)
     {
         if (User.Identity?.IsAuthenticated == true)
         {
@@ -44,7 +47,11 @@ public class AccountController : Controller
                 ViewData["Title"] = "Login";
                 ViewData["ReturnUrl"] = returnUrl;
                 ModelState.AddModelError(string.Empty, "You are not allowed to access Consumer Login.");
-                return View(new ConsumerLoginViewModel());
+                return View(new ConsumerLoginViewModel
+                {
+                    ConsumerId = consumerId,
+                    LoginMethod = NormalizeLoginMethod(loginMethod)
+                });
             }
 
             return LocalRedirect("/Consumer/Dashboard");
@@ -52,7 +59,11 @@ public class AccountController : Controller
 
         ViewData["Title"] = "Login";
         ViewData["ReturnUrl"] = returnUrl;
-        return View(new ConsumerLoginViewModel());
+        return View(new ConsumerLoginViewModel
+        {
+            ConsumerId = consumerId,
+            LoginMethod = NormalizeLoginMethod(loginMethod)
+        });
     }
 
     [HttpPost("/Account/Login")]
@@ -71,6 +82,18 @@ public class AccountController : Controller
 
         if (model.LoginMethod == ConsumerLoginMethods.ConsumerId)
         {
+            var eligibility = await _consumerMobileRegistrationService.CheckEligibilityAsync(model.ConsumerId ?? string.Empty);
+            if (eligibility.CanRegisterMobile)
+            {
+                model.ShowMobileRegistrationPrompt = true;
+                model.MobileRegistrationUrl = Url.Action(
+                    "Index",
+                    "PublicConsumerMobileRegistration",
+                    new { consumerNo = eligibility.ConsumerNo });
+
+                return View(model);
+            }
+
             try
             {
                 var otpResult = await _consumerOtpService.RequestOtpAsync(model.ConsumerId ?? string.Empty);
@@ -266,6 +289,16 @@ public class AccountController : Controller
 
     private int TryGetTempInt(string key)
         => int.TryParse(TempData[key] as string, out var value) ? value : 0;
+
+    private static string NormalizeLoginMethod(string? loginMethod)
+    {
+        return loginMethod switch
+        {
+            ConsumerLoginMethods.MobileOtp => ConsumerLoginMethods.MobileOtp,
+            ConsumerLoginMethods.UsernameEmail => ConsumerLoginMethods.UsernameEmail,
+            _ => ConsumerLoginMethods.ConsumerId
+        };
+    }
 
     private string ResolvePostLoginRedirect(string? returnUrl)
     {

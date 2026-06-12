@@ -18,6 +18,8 @@
     var profileImageUrl = User.FindFirstValue("ProfileImageUrl");
     var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
     var displayName = string.IsNullOrWhiteSpace(fullName) ? userName : fullName;
+    var isPublicNewConnectionFlow = ViewData["IsPublicNewConnectionFlow"] as bool? == true;
+    var isPublicCompactFlow = (ViewData["IsPublicCompactFlow"] as bool? == true) || isPublicNewConnectionFlow;
     if (isAuthenticated && !string.IsNullOrWhiteSpace(consumerNo))
     {
         var consumerNameOnly = await Db.ConsumerDetailsMasters
@@ -79,6 +81,16 @@
 
         return item.Children.Any(IsCurrent);
     }
+
+    bool IsBootstrapIcon(string? icon) => !string.IsNullOrWhiteSpace(icon) && icon.StartsWith("bi-", StringComparison.OrdinalIgnoreCase);
+    string GetMenuIconFallback(string? icon, string? label)
+    {
+        if (!string.IsNullOrWhiteSpace(icon))
+            return icon;
+
+        var firstVisibleChar = (label ?? string.Empty).Trim().FirstOrDefault(char.IsLetterOrDigit);
+        return firstVisibleChar == default ? "M" : char.ToUpperInvariant(firstVisibleChar).ToString();
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -87,6 +99,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Noida Jal</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body class="wb-body" data-sidebar-storage-key="water-bill-consumer-sidebar-collapsed">
@@ -120,7 +133,16 @@
                     {
                         <div class="wb-nav-group @(isOpen ? "open" : "")">
                             <button class="wb-nav-link wb-nav-parent @(isOpen ? "active" : "")" type="button" data-menu-toggle aria-expanded="@isOpen.ToString().ToLowerInvariant()" aria-controls="@itemId">
-                                <span class="wb-nav-icon">@item.Icon</span>
+                                <span class="wb-nav-icon">
+                                    @if (IsBootstrapIcon(item.Icon))
+                                    {
+                                        <i class="bi @item.Icon"></i>
+                                    }
+                                    else
+                                    {
+                                        @GetMenuIconFallback(item.Icon, item.Label)
+                                    }
+                                </span>
                                 <span class="wb-nav-text">@item.Label</span>
                                 <span class="wb-nav-arrow"></span>
                             </button>
@@ -128,7 +150,16 @@
                                 @foreach (var child in children)
                                 {
                                     <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
-                                        <span class="wb-nav-icon">@(string.IsNullOrWhiteSpace(child.Icon) ? "[]" : child.Icon)</span>
+                                        <span class="wb-nav-icon">
+                                            @if (IsBootstrapIcon(child.Icon))
+                                            {
+                                                <i class="bi @child.Icon"></i>
+                                            }
+                                            else
+                                            {
+                                                @GetMenuIconFallback(child.Icon, child.Label)
+                                            }
+                                        </span>
                                         <span class="wb-nav-text">@child.Label</span>
                                     </a>
                                 }
@@ -138,7 +169,16 @@
                     else
                     {
                         <a class="wb-nav-link @(IsCurrent(item) ? "active" : "")" href="@(item.Url ?? "#")" target="@(item.OpenInNewTab ? "_blank" : null)">
-                            <span class="wb-nav-icon">@item.Icon</span>
+                            <span class="wb-nav-icon">
+                                @if (IsBootstrapIcon(item.Icon))
+                                {
+                                    <i class="bi @item.Icon"></i>
+                                }
+                                else
+                                {
+                                    @GetMenuIconFallback(item.Icon, item.Label)
+                                }
+                            </span>
                             <span class="wb-nav-text">@item.Label</span>
                         </a>
                     }
@@ -224,7 +264,7 @@
             </header>
         }
 
-        <section class="wb-content">
+        <section class="wb-content @(isPublicCompactFlow ? "wb-content-public-flow" : null)">
             @if (TempData["SuccessMessage"] != null)
             {
                 <div class="wb-toast-stack">
@@ -471,6 +511,10 @@
                                     n.isRead = true;
                                     loadCount();
                                 } catch(e) {}
+                            }
+                            if (n.hasUrl && n.openUrl) {
+                                if (n.openInNewTab) window.open(n.openUrl, '_blank', 'noopener');
+                                else window.location.href = n.openUrl;
                             }
                         });
 

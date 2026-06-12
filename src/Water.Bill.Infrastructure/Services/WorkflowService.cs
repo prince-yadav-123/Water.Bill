@@ -633,6 +633,7 @@ public class WorkflowService : IWorkflowService
                     ReferenceType = "WorkflowTask",
                     ReferenceId = task.Id.ToString(),
                     ReferenceNo = task.ApplicationNo,
+                    RedirectUrl = BuildInternalWorkflowTaskUrl(task.Id),
                     IsRead = false,
                     CreatedAt = now
                 });
@@ -654,6 +655,7 @@ public class WorkflowService : IWorkflowService
                         ReferenceType = "WorkflowTask",
                         ReferenceId = task.Id.ToString(),
                         ReferenceNo = task.ApplicationNo,
+                        RedirectUrl = BuildConsumerApplicationUrl(task.WorkflowInstance.ApplicationType, task.ApplicationId),
                         IsRead = false,
                         CreatedAt = now
                     });
@@ -673,6 +675,7 @@ public class WorkflowService : IWorkflowService
                     ReferenceType = "WorkflowTask",
                     ReferenceId = task.Id.ToString(),
                     ReferenceNo = task.ApplicationNo,
+                    RedirectUrl = BuildInternalWorkflowInstanceUrl(task.WorkflowInstanceId),
                     IsRead = false,
                     CreatedAt = now
                 });
@@ -1209,9 +1212,22 @@ public class WorkflowService : IWorkflowService
             ReferenceType = "WorkflowInstance",
             ReferenceId   = instanceId.ToString(),
             ReferenceNo   = applicationNo,
+            RedirectUrl   = BuildInternalWorkflowInstanceUrl(instanceId),
             IsRead        = false,
             CreatedAt     = DateTime.UtcNow,
             IsDeleted     = false
+        };
+
+    private static string BuildInternalWorkflowTaskUrl(long taskId) => $"/Approvals/Details/{taskId}";
+
+    private static string BuildInternalWorkflowInstanceUrl(long workflowInstanceId) => $"/Approvals/OpenCurrent/{workflowInstanceId}";
+
+    private static string? BuildConsumerApplicationUrl(string? applicationType, long applicationId)
+        => applicationType switch
+        {
+            ApplicationTypeNewConnection => $"/Consumer/NewConnection/Details/{applicationId}",
+            ApplicationTypeNdc => $"/Consumer/Ndc/Details/{applicationId}",
+            _ => null
         };
 
     private async Task<long> ResolveConsumerUserIdAsync(ApplicationWorkflowTask task, CancellationToken ct)

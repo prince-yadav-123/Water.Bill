@@ -1,70 +1,146 @@
 @model MenuFormViewModel
 @{
     var isEdit = Model.Item.Id != 0;
+    var fallbackIcon = string.IsNullOrWhiteSpace(Model.Item.Label)
+        ? "M"
+        : char.ToUpperInvariant(Model.Item.Label.Trim().FirstOrDefault(char.IsLetterOrDigit) == default
+            ? 'M'
+            : Model.Item.Label.Trim().First(char.IsLetterOrDigit)).ToString();
 }
 
-<section class="wb-page-card wb-form-card">
+<section class="wb-page-card wb-form-card wb-form-card-wide">
     <form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@(isEdit ? Model.Item.Id : null)" method="post">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <input type="hidden" asp-for="Item.Id" />
-        <input type="hidden" asp-for="Item.TenantId" />
-        <div class="row g-3">
-            <div class="col-md-8">
-                <label class="form-label" asp-for="Item.Label">Label</label>
+        <div class="row g-3 wb-menu-form">
+            <div class="col-lg-6">
+                <label class="form-label required" asp-for="Item.TenantId">Portal</label>
+                <select class="form-select js-menu-portal" asp-for="Item.TenantId">
+                    @foreach (var option in Model.PortalOptions)
+                    {
+                        <option value="@option.Value">@option.Text</option>
+                    }
+                </select>
+                <small class="text-muted">Parent menu and permission module choices are filtered by selected portal.</small>
+            </div>
+            <div class="col-lg-6">
+                <label class="form-label" asp-for="Item.ModuleId">Permission Module</label>
+                <select class="form-select js-menu-module" asp-for="Item.ModuleId">
+                    <option value="">No permission restriction</option>
+                    @foreach (var module in Model.PermissionModuleOptions)
+                    {
+                        <option value="@module.Id" data-scope="@module.PortalScope">@module.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-6">
+                <label class="form-label required" asp-for="Item.Label">Label</label>
                 <input class="form-control" asp-for="Item.Label" required placeholder="Dashboard" />
                 <span class="text-danger" asp-validation-for="Item.Label"></span>
             </div>
-            <div class="col-md-4">
-                <label class="form-label" asp-for="Item.ModuleId">Permission Module</label>
-                <select class="form-select" asp-for="Item.ModuleId">
-                    <option value="">No permission restriction</option>
-                    @foreach (var module in Model.PermissionModules)
-                    {
-                        <option value="@module.Id">@module.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" asp-for="Item.Icon">Icon</label>
-                <input class="form-control" asp-for="Item.Icon" placeholder="bi-speedometer2" />
-            </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <label class="form-label" asp-for="Item.Url">URL</label>
                 <input class="form-control" asp-for="Item.Url" placeholder="/Dashboard" />
             </div>
-            <div class="col-md-2">
-                <label class="form-label" asp-for="Item.Order">Order</label>
-                <input class="form-control" asp-for="Item.Order" type="number" min="0" />
-            </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <label class="form-label" asp-for="Item.ParentId">Parent Item</label>
-                <select class="form-select" asp-for="Item.ParentId">
+                <select class="form-select js-menu-parent" asp-for="Item.ParentId">
                     <option value="">Top Level</option>
-                    @foreach (var parent in Model.ParentItems)
+                    @foreach (var parent in Model.ParentOptions)
                     {
-                        <option value="@parent.Id">@parent.Label</option>
+                        <option value="@parent.Id" data-tenant="@parent.TenantId">@parent.Label</option>
                     }
                 </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <label class="form-label" asp-for="Item.SectionLabel">Section Label</label>
                 <input class="form-control" asp-for="Item.SectionLabel" placeholder="Administration" />
             </div>
-            <div class="col-md-4 d-flex align-items-end">
+            <div class="col-lg-4">
+                <label class="form-label" asp-for="Item.Order">Order</label>
+                <input class="form-control" asp-for="Item.Order" type="number" min="0" />
+            </div>
+            <div class="col-12">
+                <div class="wb-menu-icon-picker" data-selected-icon="@Model.Item.Icon">
+                    <div class="wb-menu-icon-picker-head">
+                        <div>
+                            <label class="form-label mb-1" asp-for="Item.Icon">Icon</label>
+                            <p class="wb-form-help mb-0">Choose a sidebar icon. Existing short text icons still work, but new items can use the picker for a cleaner look.</p>
+                        </div>
+                        <div class="wb-menu-icon-selected">
+                            <span class="wb-menu-icon-preview js-menu-icon-preview">
+                                @if (!string.IsNullOrWhiteSpace(Model.Item.Icon) && Model.Item.Icon.StartsWith("bi-"))
+                                {
+                                    <i class="bi @Model.Item.Icon"></i>
+                                }
+                                else
+                                {
+                                    @(string.IsNullOrWhiteSpace(Model.Item.Icon) ? fallbackIcon : Model.Item.Icon)
+                                }
+                            </span>
+                            <input class="form-control js-menu-icon-value" asp-for="Item.Icon" placeholder="Select an icon" readonly />
+                            <button class="btn btn-sm btn-outline-danger js-menu-icon-clear" type="button" title="Remove icon" aria-label="Remove icon">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="wb-menu-icon-tabs" role="tablist" aria-label="Icon categories">
+                        @{
+                            var selectedKey = Model.IconCategories.FirstOrDefault(category => category.Icons.Any(icon => string.Equals(icon.Value, Model.Item.Icon, StringComparison.OrdinalIgnoreCase)))?.Key
+                                ?? Model.IconCategories.FirstOrDefault()?.Key
+                                ?? string.Empty;
+                        }
+                        @foreach (var category in Model.IconCategories)
+                        {
+                            var isActive = string.Equals(category.Key, selectedKey, StringComparison.OrdinalIgnoreCase);
+                            <button class="wb-menu-icon-tab @(isActive ? "is-active" : "")"
+                                    type="button"
+                                    role="tab"
+                                    data-icon-tab="@category.Key"
+                                    aria-selected="@(isActive.ToString().ToLowerInvariant())">
+                                @category.Label
+                            </button>
+                        }
+                    </div>
+                    <div class="wb-menu-icon-categories">
+                        @foreach (var category in Model.IconCategories)
+                        {
+                            var isActive = string.Equals(category.Key, selectedKey, StringComparison.OrdinalIgnoreCase);
+                            <section class="wb-menu-icon-category @(isActive ? "is-active" : "")" data-icon-panel="@category.Key">
+                                <div class="wb-menu-icon-grid">
+                                    @foreach (var icon in category.Icons)
+                                    {
+                                        var isSelected = string.Equals(icon.Value, Model.Item.Icon, StringComparison.OrdinalIgnoreCase);
+                                        <button class="wb-menu-icon-option @(isSelected ? "is-selected" : "")"
+                                                type="button"
+                                                data-icon-value="@icon.Value"
+                                                data-icon-label="@icon.Label"
+                                                aria-pressed="@(isSelected.ToString().ToLowerInvariant())">
+                                            <i class="bi @icon.Value"></i>
+                                            <span>@icon.Label</span>
+                                        </button>
+                                    }
+                                </div>
+                            </section>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 d-flex align-items-end">
                 <label class="form-check mb-2">
                     <input class="form-check-input" type="checkbox" name="Item.IsActive" value="true" checked="@(Model.Item.IsActive != false)" />
                     <span class="form-check-label">Active</span>
                 </label>
                 <input type="hidden" name="Item.IsActive" value="false" />
             </div>
-            <div class="col-md-4 d-flex align-items-end">
+            <div class="col-lg-4 d-flex align-items-end">
                 <label class="form-check mb-2">
                     <input class="form-check-input" asp-for="Item.ShowInSidebar" />
                     <span class="form-check-label">Show in sidebar</span>
                 </label>
             </div>
-            <div class="col-md-4 d-flex align-items-end">
+            <div class="col-lg-4 d-flex align-items-end">
                 <label class="form-check mb-2">
                     <input class="form-check-input" asp-for="Item.OpenInNewTab" />
                     <span class="form-check-label">New tab</span>
@@ -77,3 +153,131 @@
         </div>
     </form>
 </section>
+
+<script>
+    (function () {
+        var portalSelect = document.querySelector('.js-menu-portal');
+        var parentSelect = document.querySelector('.js-menu-parent');
+        var moduleSelect = document.querySelector('.js-menu-module');
+        var iconValueInput = document.querySelector('.js-menu-icon-value');
+        var iconPreview = document.querySelector('.js-menu-icon-preview');
+        var iconButtons = document.querySelectorAll('.wb-menu-icon-option');
+        var iconTabs = document.querySelectorAll('.wb-menu-icon-tab');
+        var iconPanels = document.querySelectorAll('[data-icon-panel]');
+        var clearIconButton = document.querySelector('.js-menu-icon-clear');
+        var labelInput = document.querySelector('input[name="Item.Label"]');
+
+        if (!portalSelect || !parentSelect || !moduleSelect) return;
+
+        function getScope(tenantId) {
+            return String(tenantId) === '2' ? 'consumer' : 'authority';
+        }
+
+        function filterSelect(select, matcher) {
+            var currentValue = select.value;
+            var hasSelectedVisible = false;
+
+            Array.from(select.options).forEach(function (option, index) {
+                if (index === 0) {
+                    option.hidden = false;
+                    return;
+                }
+
+                var visible = matcher(option);
+                option.hidden = !visible;
+                if (!visible && option.selected) {
+                    option.selected = false;
+                }
+                if (visible && option.value === currentValue) {
+                    hasSelectedVisible = true;
+                }
+            });
+
+            if (currentValue && !hasSelectedVisible) {
+                select.value = '';
+            }
+        }
+
+        function applyPortalFilters() {
+            var tenantId = portalSelect.value || '1';
+            var scope = getScope(tenantId);
+
+            filterSelect(parentSelect, function (option) {
+                return option.dataset.tenant === tenantId;
+            });
+
+            filterSelect(moduleSelect, function (option) {
+                return (option.dataset.scope || '').toLowerCase() === scope;
+            });
+        }
+
+        function getLabelFallback() {
+            var value = (labelInput ? labelInput.value : '').trim();
+            if (!value) return 'M';
+
+            var match = value.match(/[A-Za-z0-9]/);
+            return match ? match[0].toUpperCase() : 'M';
+        }
+
+        function setSelectedIcon(iconValue) {
+            if (!iconValueInput || !iconPreview) return;
+
+            iconValueInput.value = iconValue || '';
+            if (iconValue) {
+                iconPreview.innerHTML = '<i class="bi ' + iconValue + '"></i>';
+            } else {
+                iconPreview.textContent = getLabelFallback();
+            }
+
+            iconButtons.forEach(function (button) {
+                var isSelected = button.dataset.iconValue === iconValue;
+                button.classList.toggle('is-selected', isSelected);
+                button.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+            });
+        }
+
+        function activateTab(tabKey) {
+            iconTabs.forEach(function (tab) {
+                var isActive = tab.dataset.iconTab === tabKey;
+                tab.classList.toggle('is-active', isActive);
+                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            iconPanels.forEach(function (panel) {
+                panel.classList.toggle('is-active', panel.dataset.iconPanel === tabKey);
+            });
+        }
+
+        portalSelect.addEventListener('change', applyPortalFilters);
+
+        iconButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                setSelectedIcon(button.dataset.iconValue || '');
+            });
+        });
+
+        iconTabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                activateTab(tab.dataset.iconTab || '');
+            });
+        });
+
+        if (clearIconButton) {
+            clearIconButton.addEventListener('click', function () {
+                setSelectedIcon('');
+            });
+        }
+
+        if (labelInput) {
+            labelInput.addEventListener('input', function () {
+                if (!iconValueInput.value) {
+                    setSelectedIcon('');
+                }
+            });
+        }
+
+        applyPortalFilters();
+        activateTab(document.querySelector('.wb-menu-icon-tab.is-active')?.dataset.iconTab || '');
+        setSelectedIcon(iconValueInput ? iconValueInput.value : '');
+    })();
+</script>

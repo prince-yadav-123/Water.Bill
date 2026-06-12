@@ -3,6 +3,7 @@
 @using Water.Bill.Core.Common
 @{
     ViewData["Title"] = "Consumer Ledger";
+    var pagination = ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel;
     string DateText(DateTime value) => value.ToString("dd MMM yyyy");
     string Amount(decimal value) => value.ToString("N2");
     var routeFromDate = Model.FromDate?.ToString("yyyy-MM-dd");
@@ -115,6 +116,7 @@
                     </tbody>
                 </table>
             </div>
+            @await Html.PartialAsync("_Pagination", pagination)
         }
     </section>
 }
@@ -209,6 +211,7 @@ else
                     </tbody>
                 </table>
             </div>
+            @await Html.PartialAsync("_Pagination", pagination)
         }
     </section>
 }

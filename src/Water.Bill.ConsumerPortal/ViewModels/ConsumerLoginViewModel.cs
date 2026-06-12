@@ -20,6 +20,10 @@ public class ConsumerLoginViewModel : IValidatableObject
 
     public bool RememberMe { get; set; } = true;
 
+    public bool ShowMobileRegistrationPrompt { get; set; }
+
+    public string? MobileRegistrationUrl { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (LoginMethod == ConsumerLoginMethods.MobileOtp)

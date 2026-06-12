@@ -1,4 +1,101 @@
 @model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationDetailsDto
+@{
+    var timelineItems = new List<(string Title, string Message, DateTime When, string Tone, bool ShowResubmit)>();
+
+    static string NormalizeStatusLabel(string? status) => status switch
+    {
+        "PendingPayment" => "Payment Pending",
+        "PaymentFailed" => "Payment Failed",
+        "Submitted" => "Application Submitted",
+        "UnderReview" => "Under Review",
+        "Approved" => "Application Approved",
+        "FinalConsumerCreated" => "Consumer Number Generated",
+        "Rejected" => "Application Rejected",
+        "SentBackToApplicant" or "CorrectionRequired" => "Action Required",
+        _ when string.IsNullOrWhiteSpace(status) => "Status Updated",
+        _ => status!
+    };
+
+    static string DefaultMessage(string title, string? remarks) => title switch
+    {
+        "Application Submitted" => "Your application has been submitted successfully.",
+        "Payment Pending" => "Application fee is pending. Please complete payment to continue.",
+        "Fee Paid" => "Your payment has been received successfully.",
+        "Payment Failed" => "Your payment could not be completed. Please try again.",
+        "No Payment Required" => "No payment is required for this application.",
+        "Under Review" => "Your application is being reviewed by the department.",
+        "Action Required" => string.IsNullOrWhiteSpace(remarks)
+            ? "Please review the remarks and update your application."
+            : remarks!,
+        "Application Resubmitted" => "Your updated application has been submitted again for review.",
+        "Application Approved" => "Your application has been approved.",
+        "Consumer Number Generated" => "Your consumer number has been generated successfully.",
+        "Application Rejected" => string.IsNullOrWhiteSpace(remarks)
+            ? "Your application was rejected."
+            : remarks!,
+        _ => string.IsNullOrWhiteSpace(remarks) ? "Application status updated." : remarks!
+    };
+
+    static string ToneFor(string title) => title switch
+    {
+        "Application Approved" or "Consumer Number Generated" or "Fee Paid" => "success",
+        "Action Required" or "Payment Pending" => "warning",
+        "Payment Failed" or "Application Rejected" => "danger",
+        _ => "info"
+    };
+
+    foreach (var item in Model.Timeline.OrderBy(x => x.ActionOn))
+    {
+        var title = item.Action switch
+        {
+            "Submitted" when string.Equals(item.FromStatus, "PendingPayment", StringComparison.OrdinalIgnoreCase) => "Fee Paid",
+            "Submitted" => "Application Submitted",
+            "FeeCalculated" or "PendingPayment" => "Payment Pending",
+            "AcceptMoveNext" or "SendBackToPrevious" or "StageAssigned" or "WorkflowStarted" => "Under Review",
+            "ResubmittedByApplicant" => "Application Resubmitted",
+            "SendBackToApplicant" or "CorrectionRequired" => "Action Required",
+            "FinalApproval" => "Application Approved",
+            "FinalConsumerCreated" => "Consumer Number Generated",
+            "Rejected" or "Reject" => "Application Rejected",
+            _ when string.Equals(item.ToStatus, "PendingPayment", StringComparison.OrdinalIgnoreCase) => "Payment Pending",
+            _ when string.Equals(item.ToStatus, "PaymentFailed", StringComparison.OrdinalIgnoreCase) => "Payment Failed",
+            _ when string.Equals(item.ToStatus, "UnderReview", StringComparison.OrdinalIgnoreCase) => "Under Review",
+            _ when string.Equals(item.ToStatus, "Approved", StringComparison.OrdinalIgnoreCase) => "Application Approved",
+            _ when string.Equals(item.ToStatus, "FinalConsumerCreated", StringComparison.OrdinalIgnoreCase) => "Consumer Number Generated",
+            _ when string.Equals(item.ToStatus, "Rejected", StringComparison.OrdinalIgnoreCase) => "Application Rejected",
+            _ => NormalizeStatusLabel(item.ToStatus)
+        };
+
+        if (string.Equals(title, "Application Submitted", StringComparison.OrdinalIgnoreCase)
+            && string.Equals(item.ToStatus, "PendingPayment", StringComparison.OrdinalIgnoreCase))
+        {
+            title = "Payment Pending";
+        }
+
+        var message = DefaultMessage(title, item.Remarks);
+        var tone = ToneFor(title);
+        var showResubmit = string.Equals(title, "Action Required", StringComparison.OrdinalIgnoreCase) && Model.CanResubmit;
+
+        if (timelineItems.Count > 0)
+        {
+            var last = timelineItems[^1];
+            var sameTitle = string.Equals(last.Title, title, StringComparison.OrdinalIgnoreCase);
+            var sameDay = last.When.Date == item.ActionOn.Date;
+            if (sameTitle && sameDay && title is "Under Review" or "Payment Pending")
+            {
+                timelineItems[^1] = (last.Title, last.Message, item.ActionOn, last.Tone, last.ShowResubmit || showResubmit);
+                continue;
+            }
+        }
+
+        timelineItems.Add((title, message, item.ActionOn, tone, showResubmit));
+    }
+
+    if (timelineItems.Count == 0)
+    {
+        timelineItems.Add(("Application Submitted", "Your application has been submitted successfully.", Model.SubmittedOn ?? DateTime.Now, "info", false));
+    }
+}
 
 <section class="wb-page-card wb-application-card">
     <div class="wb-card-title-row">
@@ -6,7 +103,7 @@
             <p class="wb-kicker">Application Status</p>
             <h2>@Model.ApplicationNo</h2>
         </div>
-        <span class="badge text-bg-primary">@Model.ApplicationStatus</span>
+        <span class="badge text-bg-primary">@NormalizeStatusLabel(Model.ApplicationStatus)</span>
     </div>
     <dl class="wb-info-grid">
         <div><dt>Applicant</dt><dd>@Model.ApplicantName</dd></div>
@@ -65,20 +162,78 @@
     }
 
     <h3 class="h5 mt-4">Status Timeline</h3>
-    <div class="wb-timeline">
-        @foreach (var item in Model.Timeline)
+    <div class="wb-nc-timeline">
+        @foreach (var item in timelineItems.OrderBy(x => x.When))
         {
-            <div class="wb-timeline-item">
-                <span></span>
-                <div>
-                    <strong>@item.Action</strong>
-                    <small>@item.FromStatus -> @item.ToStatus · @item.ActionOn.ToString("dd MMM yyyy hh:mm tt")</small>
-                    @if (!string.IsNullOrWhiteSpace(item.Remarks))
+            <article class="wb-nc-timeline-item wb-nc-timeline-@item.Tone">
+                <span class="wb-nc-timeline-dot"></span>
+                <div class="wb-nc-timeline-body">
+                    <div class="wb-nc-timeline-head">
+                        <strong>@item.Title</strong>
+                        <time>@item.When.ToString("dd MMM yyyy hh:mm tt")</time>
+                    </div>
+                    <div class="wb-nc-timeline-note">@item.Message</div>
+                    @if (item.ShowResubmit)
                     {
-                        <p>@item.Remarks</p>
+                        <div class="wb-nc-timeline-actions">
+                            <a class="btn btn-sm btn-warning" asp-action="Resubmit" asp-route-id="@Model.Id">↩ Update &amp; Resubmit</a>
+                        </div>
                     }
                 </div>
-            </div>
+            </article>
         }
     </div>
 </section>
+
+<style>
+    .wb-nc-timeline { display: grid; gap: 10px; margin-top: 14px; }
+    .wb-nc-timeline-item {
+        display: grid;
+        grid-template-columns: 16px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+        padding: 10px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .wb-nc-timeline-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .wb-nc-timeline-dot {
+        width: 12px;
+        height: 12px;
+        margin-top: 6px;
+        border-radius: 999px;
+        background: var(--wb-primary);
+        box-shadow: 0 0 0 4px var(--wb-primary-soft);
+    }
+    .wb-nc-timeline-success .wb-nc-timeline-dot { background: #16a34a; box-shadow: 0 0 0 4px #dcfce7; }
+    .wb-nc-timeline-warning .wb-nc-timeline-dot { background: #d97706; box-shadow: 0 0 0 4px #fef3c7; }
+    .wb-nc-timeline-danger .wb-nc-timeline-dot { background: #dc2626; box-shadow: 0 0 0 4px #fee2e2; }
+    .wb-nc-timeline-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 4px;
+    }
+    .wb-nc-timeline-head strong { font-size: 14px; color: #0f172a; }
+    .wb-nc-timeline-head time {
+        color: #64748b;
+        font-size: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .wb-nc-timeline-note {
+        display: inline-block;
+        max-width: 100%;
+        color: #475569;
+        font-size: 13px;
+        line-height: 1.5;
+        padding: 6px 10px;
+        background: #f8fafc;
+        border-radius: 10px;
+    }
+    .wb-nc-timeline-actions { margin-top: 8px; }
+    @@media (max-width: 575.98px) {
+        .wb-nc-timeline-head { flex-direction: column; gap: 2px; }
+        .wb-nc-timeline-head time { white-space: normal; }
+    }
+</style>

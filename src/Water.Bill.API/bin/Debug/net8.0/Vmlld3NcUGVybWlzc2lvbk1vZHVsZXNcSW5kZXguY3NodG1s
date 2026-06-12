@@ -1,4 +1,5 @@
-@model IReadOnlyList<PermissionModule>
+@model IReadOnlyList<PermissionModuleViewModel>
+@using Water.Bill.Core.Common
 @{
     ViewData["Title"] = "Permission Modules";
 }
@@ -23,6 +24,7 @@
                 <thead>
                     <tr>
                         <th>Module Name</th>
+                        <th>Portal</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -32,6 +34,11 @@
                 {
                     <tr>
                         <td class="fw-semibold">@module.Name</td>
+                        <td>
+                            <span class="badge @(module.PortalScope == AppConstants.PortalScopes.Consumer ? "text-bg-info" : "text-bg-primary")">
+                                @(module.PortalScope == AppConstants.PortalScopes.Consumer ? "Consumer Portal" : "Authority / Admin")
+                            </span>
+                        </td>
                         <td>
                             <span class="badge @(module.IsActive ? "text-bg-success" : "text-bg-secondary")">
                                 @(module.IsActive ? "Active" : "Inactive")

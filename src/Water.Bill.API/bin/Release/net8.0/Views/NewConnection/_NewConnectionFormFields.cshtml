@@ -3,14 +3,6 @@
 @{
     var documentTypes = ViewData["DocumentTypes"] as string[] ?? [];
     var lookupData = ViewData["LookupData"] as NewConnectionLookupDataDto ?? new NewConnectionLookupDataDto();
-    string ChoiceIcon(string text)
-    {
-        var normalized = (text ?? string.Empty).ToLowerInvariant();
-        if (normalized.Contains("commercial") || normalized.Contains("shop")) return "Shop";
-        if (normalized.Contains("industrial") || normalized.Contains("factory")) return "Unit";
-        if (normalized.Contains("institution") || normalized.Contains("school")) return "Inst.";
-        return "Home";
-    }
 }
 
 <div class="wb-newconn-wizard" data-newconn-wizard data-blocks-url="@Url.Action("Blocks", "NewConnection")" data-subtypes-url="@Url.Action("ConnectionSubTypes", "NewConnection")">
@@ -31,22 +23,23 @@
                     <h2>What type of connection?</h2>
                     <p>Choose the category and basic connection details. Tariff and document requirements may vary by category.</p>
                 </div>
-                <div class="wb-choice-grid">
-                    @foreach (var category in lookupData.ConnectionCategories)
-                    {
-                        <label class="wb-choice-card">
-                            <input asp-for="ConnectionCategory" type="radio" value="@category.Value" data-review-label="Connection category" />
-                            <span class="wb-choice-icon">@ChoiceIcon(category.Text)</span>
-                            <strong>@category.Text</strong>
-                            <small>Configured connection category</small>
-                        </label>
-                    }
+                <div class="wb-form-grid">
+                    <div class="wb-field">
+                        <label asp-for="ConnectionCategory" class="form-label required">Connection Category</label>
+                        <select asp-for="ConnectionCategory" class="form-select" data-review-label="Connection category" data-connection-category-select>
+                            <option value="">Select</option>
+                            @foreach (var category in lookupData.ConnectionCategories)
+                            {
+                                <option value="@category.Value">@category.Text</option>
+                            }
+                        </select>
+                    </div>
                 </div>
                 <span asp-validation-for="ConnectionCategory" class="text-danger"></span>
 
                 <div class="wb-form-grid">
                     <div class="wb-field">
-                        <label asp-for="ConnectionType" class="form-label required">Connection Type</label>
+                        <label asp-for="ConnectionType" class="form-label">Connection Type</label>
                         <select asp-for="ConnectionType" class="form-select" data-review-label="Connection type">
                             <option value="">Select</option>
                             @foreach (var connectionType in lookupData.ConnectionTypes)
@@ -80,18 +73,19 @@
                     </div>
                     <div class="wb-field">
                         <label asp-for="PreviousConnectionYesNo" class="form-label">Previous Connection?</label>
-                        <select asp-for="PreviousConnectionYesNo" class="form-select" data-review-label="Previous connection">
+                        <select asp-for="PreviousConnectionYesNo" class="form-select" data-review-label="Previous connection" data-previous-connection-select>
                             <option value="N">No</option>
                             <option value="Y">Yes</option>
                         </select>
                     </div>
+                    <div class="wb-field wb-field-wide" data-other-connection-wrapper>
+                        <label asp-for="OtherConnection" class="form-label">Previous/Other Connection Details</label>
+                        <input asp-for="OtherConnection" class="form-control" data-review-label="Other connection details" data-other-connection-input />
+                        <span asp-validation-for="OtherConnection" class="text-danger"></span>
+                    </div>
                     <div class="wb-field wb-field-wide">
                         <label asp-for="PurposeOfConnection" class="form-label">Purpose of Connection</label>
                         <textarea asp-for="PurposeOfConnection" class="form-control" rows="2" data-review-label="Purpose"></textarea>
-                    </div>
-                    <div class="wb-field wb-field-wide">
-                        <label asp-for="OtherConnection" class="form-label">Previous/Other Connection Details</label>
-                        <input asp-for="OtherConnection" class="form-control" data-review-label="Other connection details" />
                     </div>
                 </div>
             </section>
@@ -273,8 +267,13 @@
     const sectorSelect = wizard.querySelector("[data-sector-select]");
     const blockSelect = wizard.querySelector("[data-block-select]");
     const subTypeSelect = wizard.querySelector("[data-subtype-select]");
+    const connectionCategorySelect = wizard.querySelector("[data-connection-category-select]");
     const villageSelect = wizard.querySelector("[data-village-select]");
     const villageNameInput = wizard.querySelector("[data-village-name]");
+    const previousConnectionSelect = wizard.querySelector("[data-previous-connection-select]");
+    const otherConnectionWrapper = wizard.querySelector("[data-other-connection-wrapper]");
+    const otherConnectionInput = wizard.querySelector("[data-other-connection-input]");
+    const form = wizard.closest("form");
 
     function showAlert(message) {
         alertBox.textContent = message;
@@ -287,10 +286,6 @@
     }
 
     function fieldValue(input) {
-        if (input.type === "radio") {
-            const checked = wizard.querySelector(`input[name="${input.name}"]:checked`);
-            return checked ? checked.closest("label")?.querySelector("strong")?.textContent?.trim() || checked.value : "";
-        }
         if (input.tagName === "SELECT") {
             return input.selectedOptions[0]?.textContent?.trim() || "";
         }
@@ -300,16 +295,42 @@
         return input.value?.trim() || "";
     }
 
+    function setFieldError(input, message) {
+        if (!input) return;
+        const fieldName = input.getAttribute("name");
+        if (!fieldName) return;
+        const messageSpan = form?.querySelector(`[data-valmsg-for="${fieldName}"]`);
+        if (!messageSpan) return;
+
+        messageSpan.textContent = message || "";
+        messageSpan.classList.toggle("field-validation-error", !!message);
+        messageSpan.classList.toggle("field-validation-valid", !message);
+    }
+
+    function getValidator() {
+        if (!window.jQuery || !form) return null;
+        return window.jQuery(form).data("validator") || null;
+    }
+
+    function toggleOtherConnectionField() {
+        if (!previousConnectionSelect || !otherConnectionWrapper || !otherConnectionInput) return;
+
+        const show = previousConnectionSelect.value === "Y";
+        otherConnectionWrapper.hidden = !show;
+        otherConnectionInput.disabled = !show;
+
+        if (!show) {
+            otherConnectionInput.value = "";
+            setFieldError(otherConnectionInput, "");
+        }
+    }
+
     function validateStep(stepNumber) {
         clearAlert();
         const step = wizard.querySelector(`[data-step="${stepNumber}"]`);
         const fields = [...step.querySelectorAll("input, select, textarea")];
         for (const field of fields) {
-            if (field.type === "radio") {
-                if (field.hasAttribute("data-val-required") && !wizard.querySelector(`input[name="${field.name}"]:checked`)) {
-                    showAlert("Please select a connection category.");
-                    return false;
-                }
+            if (field.disabled || field.closest("[hidden]")) {
                 continue;
             }
             if (field.type === "file" && field.dataset.requiredDocument === "true" && !field.files.length) {
@@ -321,10 +342,20 @@
                 field.focus();
                 return false;
             }
-            if ((field.hasAttribute("data-val-required") || field.hasAttribute("data-val-range")) && !field.value?.trim()) {
-                showAlert("Please complete the required fields before continuing.");
+            if (field === otherConnectionInput && previousConnectionSelect?.value === "Y" && !field.value?.trim()) {
+                setFieldError(field, "Please enter Previous/Other Connection Details.");
+                showAlert("Please fix the highlighted field before continuing.");
                 field.focus();
                 return false;
+            }
+            const validator = getValidator();
+            if (validator && typeof validator.element === "function") {
+                const isValid = validator.element(field);
+                if (!isValid) {
+                    showAlert("Please fix the highlighted field before continuing.");
+                    field.focus();
+                    return false;
+                }
             }
             if (field.value && field.dataset.valRegexPattern) {
                 const regex = new RegExp(field.dataset.valRegexPattern);
@@ -355,7 +386,6 @@
 
     function buildReview() {
         const rows = [...wizard.querySelectorAll("[data-review-label]")]
-            .filter(input => input.type !== "radio" || input.checked)
             .map(input => ({ label: input.dataset.reviewLabel, value: fieldValue(input) || "Not provided" }))
             .filter(row => row.label !== "Declaration");
         const files = [...wizard.querySelectorAll("input[type=file]")]
@@ -397,7 +427,7 @@
 
     async function loadSubTypes(selectedValue) {
         if (!subTypeSelect) return;
-        const category = wizard.querySelector('input[name="ConnectionCategory"]:checked')?.value;
+        const category = connectionCategorySelect?.value;
         if (!category) {
             setSelectOptions(subTypeSelect, [], "Select category first", "");
             return;
@@ -441,8 +471,11 @@
         if (input === sectorSelect) {
             loadBlocks("");
         }
-        if (input.name === "ConnectionCategory") {
+        if (input === connectionCategorySelect) {
             loadSubTypes("");
+        }
+        if (input === previousConnectionSelect) {
+            toggleOtherConnectionField();
         }
         if (input === villageSelect) {
             syncVillageName();
@@ -478,6 +511,7 @@
     loadBlocks(blockSelect?.value || "");
     loadSubTypes(subTypeSelect?.value || "");
     syncVillageName();
+    toggleOtherConnectionField();
     setStep(1);
 })();
 </script>

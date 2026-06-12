@@ -21,7 +21,7 @@ public class DashboardController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(decimal? defaulterThreshold, CancellationToken ct)
     {
         ViewData["Title"] = "Dashboard";
         ViewData["ActiveMenu"] = "Dashboard";
@@ -49,13 +49,13 @@ public class DashboardController : Controller
             : null;
 
         var vm = isAdminView
-            ? await BuildAdminDashboardAsync(user?.FullName ?? username, roleName, ct)
+            ? await BuildAdminDashboardAsync(user?.FullName ?? username, roleName, defaulterThreshold, ct)
             : await BuildStaffDashboardAsync(userId, roleId, username, user?.FullName ?? username, roleName, departmentId, ct);
 
         return View(vm);
     }
 
-    private async Task<DashboardIndexViewModel> BuildAdminDashboardAsync(string userName, string roleName, CancellationToken ct)
+    private async Task<DashboardIndexViewModel> BuildAdminDashboardAsync(string userName, string roleName, decimal? defaulterThreshold, CancellationToken ct)
     {
         var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         var pendingTaskQuery = PendingWorkflowTasksQuery();
@@ -115,6 +115,9 @@ public class DashboardController : Controller
 
         var applicationStatusChart = await BuildApplicationStatusChartAsync(ct);
         var challanStatusChart = await BuildChallanStatusChartAsync(paidChallans, pendingChallans, totalChallans - paidChallans - pendingChallans, ct);
+        var divisionConsumerChart = await BuildDivisionConsumerChartAsync(ct);
+        var paymentCollectionChart = await BuildPaymentCollectionByTypeChartAsync(ct);
+        var defaulterWidget = await BuildDefaulterWidgetAsync(totalConsumers, defaulterThreshold, ct);
         var workloadChart = await BuildDepartmentWorkloadChartAsync(pendingTaskQuery, ct);
         var trendChart = await BuildAdminTrendChartAsync(ct);
         var serviceDeskPanel = await BuildAdminServiceDeskPanelAsync(hasSupportQueries, ct);
@@ -132,6 +135,9 @@ public class DashboardController : Controller
             SummaryCards = summaryCards,
             PrimaryStatusChart = applicationStatusChart,
             ChallanStatusChart = challanStatusChart,
+            DivisionConsumerChart = divisionConsumerChart,
+            PaymentCollectionChart = paymentCollectionChart,
+            DefaulterWidget = defaulterWidget,
             SecondaryBarChart = workloadChart,
             TrendChart = trendChart,
             ServiceDeskPanel = serviceDeskPanel,
@@ -160,7 +166,6 @@ public class DashboardController : Controller
         int? departmentId,
         CancellationToken ct)
     {
-        var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         var assignedPendingQuery = ApplyWorkflowAssignmentFilter(PendingWorkflowTasksQuery(), userId, roleId, departmentId);
         var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
         var allAssignedQuery = ApplyWorkflowAssignmentFilter(_db.ApplicationWorkflowTasks
@@ -170,8 +175,17 @@ public class DashboardController : Controller
             .Where(x => !x.IsDeleted && !x.WorkflowInstance.IsDeleted), userId, roleId, departmentId);
 
         var myPendingApprovals = await assignedPendingQuery.CountAsync(ct);
-        var myActionsThisMonth = await _db.ApplicationWorkflowHistories.AsNoTracking()
-            .CountAsync(x => x.ActionBy == userId && x.ActionOn >= monthStart, ct);
+        var today = DateTime.Today;
+        var overdueApprovals = (await assignedPendingQuery
+                .Select(x => new
+                {
+                    x.AssignedOn,
+                    x.Stage.SlaDays
+                })
+                .ToListAsync(ct))
+            .Count(x => x.SlaDays.HasValue
+                && x.SlaDays.Value > 0
+                && x.AssignedOn.Date.AddDays(x.SlaDays.Value) < today);
         var myChallansQuery = _db.Challans.AsNoTracking().Where(x =>
             x.Userid == username || x.Userid == userId.ToString());
         var myChallanCount = await myChallansQuery.CountAsync(ct);
@@ -185,8 +199,8 @@ public class DashboardController : Controller
             MakeCard("My Pending Approvals", myPendingApprovals.ToString("N0"), string.Empty,
                 tone: "warning", url: "/Approvals?tab=Pending", icon: "bi-hourglass-split"),
 
-            MakeCard("Workflow Actions", myActionsThisMonth.ToString("N0"), string.Empty,
-                tone: "success", url: "/Approvals?tab=All", icon: "bi-check2-all"),
+            MakeCard("Overdue Approvals", overdueApprovals.ToString("N0"), string.Empty,
+                tone: "danger", url: "/Approvals?tab=Pending", icon: "bi-exclamation-triangle-fill"),
 
             MakeCard("My Challans", myChallanCount.ToString("N0"), string.Empty,
                 tone: "info", url: Url.Action("Index", "ChallanManagement"), icon: "bi-receipt"),
@@ -195,7 +209,7 @@ public class DashboardController : Controller
                 tone: "danger", url: Url.Action("Index", "ConsumerQueryManagement"), icon: "bi-chat-dots-fill")
         };
 
-        var trendChart = await BuildStaffTrendChartAsync(userId, username, ct);
+        var workloadChart = await BuildStaffWorkloadChartAsync(assignedPendingQuery, ct);
         var recentChallans = await BuildRecentChallansAsync(myChallansQuery, ct);
         var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId, ct);
         var recentActivity = await BuildRecentActivityAsync(_db.Auditlogs.AsNoTracking().Where(x => x.UserId == userId), ct);
@@ -207,7 +221,7 @@ public class DashboardController : Controller
             RoleName = roleName,
             IsAdminView = false,
             SummaryCards = summaryCards,
-            TrendChart = trendChart,
+            SecondaryBarChart = workloadChart,
             PendingApprovals = assignedRows,
             RecentChallans = recentChallans,
             RecentServiceDeskItems = recentServiceDesk,
@@ -259,6 +273,136 @@ public class DashboardController : Controller
         };
     }
 
+    private async Task<DashboardDistributionChartViewModel> BuildDivisionConsumerChartAsync(CancellationToken ct)
+    {
+        var rows = await _db.ConsumerDetailsMasters.AsNoTracking()
+            .GroupBy(x => x.DevType)
+            .Select(x => new { x.Key, Count = x.Count() })
+            .ToListAsync(ct);
+
+        var total = rows.Sum(x => x.Count);
+        var items = rows
+            .Select((x, index) =>
+            {
+                var division = AppConstants.Divisions.Find(x.Key);
+                var label = division?.Name;
+                if (string.IsNullOrWhiteSpace(label) || string.Equals(label, AppConstants.Divisions.AllDivision.Name, StringComparison.OrdinalIgnoreCase))
+                    label = "Others";
+
+                return new { Label = label, x.Count, Color = BarPalette[index % BarPalette.Length] };
+            })
+            .GroupBy(x => x.Label)
+            .Select((group, index) => new DashboardDistributionSliceViewModel
+            {
+                Label = group.Key,
+                Count = group.Sum(x => x.Count),
+                Percentage = total == 0 ? 0 : Math.Round(group.Sum(x => x.Count) * 100m / total, 1),
+                Color = group.FirstOrDefault()?.Color ?? BarPalette[index % BarPalette.Length]
+            })
+            .OrderByDescending(x => x.Count)
+            .ToList();
+
+        NormalizePercentages(items.Select(x => (Action<decimal>)(pct => x.Percentage = pct)).ToList(), items.Select(x => (decimal)x.Count).ToList());
+
+        return new DashboardDistributionChartViewModel
+        {
+            Title = "Division-wise Consumers",
+            Caption = "Consumer count and percentage share by division",
+            Items = items
+        };
+    }
+
+    private async Task<DashboardAmountDistributionChartViewModel> BuildPaymentCollectionByTypeChartAsync(CancellationToken ct)
+    {
+        var onlineRows = await _db.JalnoidaBankpayMasters.AsNoTracking()
+            .Where(x => x.Payamount.HasValue
+                && (
+                    x.Paymentstatus == "SUCCESS" || x.Paymentstatus == "SUC000" || x.Paymentstatus == "Y" || x.Paymentstatus == "S" || x.Paymentstatus == "1"
+                    || x.Status == "SUCCESS" || x.Status == "SUC000" || x.Status == "Y" || x.Status == "S" || x.Status == "1"))
+            .Select(x => x.Payamount!.Value)
+            .ToListAsync(ct);
+
+        var offlineRows = await _db.ChallanPaymentHistories.AsNoTracking()
+            .Where(x => !x.IsDeleted)
+            .Select(x => x.Amount)
+            .ToListAsync(ct);
+
+        var onlineAmount = ToDecimal(onlineRows.Sum());
+        var offlineAmount = ToDecimal(offlineRows.Sum());
+        var items = new List<DashboardAmountDistributionSliceViewModel>
+        {
+            new()
+            {
+                Label = "Online Collection",
+                Amount = onlineAmount,
+                Color = "#16a34a"
+            },
+            new()
+            {
+                Label = "Offline Collection",
+                Amount = offlineAmount,
+                Color = "#2563eb"
+            }
+        };
+
+        NormalizePercentages(items.Select(x => (Action<decimal>)(pct => x.Percentage = pct)).ToList(), items.Select(x => x.Amount).ToList());
+
+        return new DashboardAmountDistributionChartViewModel
+        {
+            Title = "Payment Collection (Offline/Online)",
+            Caption = "Online and offline collection share based on received amount",
+            Items = items
+        };
+    }
+
+    private async Task<DashboardDefaulterWidgetViewModel> BuildDefaulterWidgetAsync(int totalConsumers, decimal? defaulterThreshold, CancellationToken ct)
+    {
+        var threshold = defaulterThreshold.HasValue && defaulterThreshold.Value > 0
+            ? defaulterThreshold.Value
+            : AppConstants.DefaulterDueThreshold;
+        var billRows = await _db.JalPrintBillMasters.AsNoTracking()
+            .Where(x => x.ConsNo != null)
+            .Select(x => new
+            {
+                x.ConsNo,
+                Total = x.TotalBillAmt ?? x.DueAmt ?? x.MinTotalAmt ?? 0d,
+                x.PaidAmt,
+                x.PaidDate,
+                x.PaidStatus
+            })
+            .ToListAsync(ct);
+
+        var defaulters = billRows
+            .GroupBy(x => x.ConsNo!)
+            .Select(group => new
+            {
+                ConsumerNo = group.Key,
+                Outstanding = group.Sum(x =>
+                {
+                    var total = ToDecimal(x.Total);
+                    var paid = x.PaidDate.HasValue || string.Equals(x.PaidStatus, "Y", StringComparison.OrdinalIgnoreCase)
+                        ? (x.PaidAmt.HasValue ? ToDecimal(x.PaidAmt.Value) : total)
+                        : ToDecimal(x.PaidAmt ?? 0d);
+                    return Math.Max(0m, total - paid);
+                })
+            })
+            .Where(x => x.Outstanding >= threshold)
+            .ToList();
+
+        return new DashboardDefaulterWidgetViewModel
+        {
+            Title = "Defaulters",
+            Caption = "Consumers with outstanding dues at or above the configured threshold",
+            TotalConsumers = totalConsumers,
+            ConsumerCount = defaulters.Count,
+            NonDefaulterCount = Math.Max(0, totalConsumers - defaulters.Count),
+            TotalOutstandingAmount = defaulters.Sum(x => x.Outstanding),
+            ThresholdAmount = threshold,
+            ConfiguredThresholdAmount = AppConstants.DefaulterDueThreshold,
+            Url = "/ReportsMis?reportType=Dues"
+        };
+    }
+
     private async Task<DashboardBarChartViewModel> BuildDepartmentWorkloadChartAsync(IQueryable<ApplicationWorkflowTask> pendingTaskQuery, CancellationToken ct)
     {
         var rows = await pendingTaskQuery
@@ -297,7 +441,7 @@ public class DashboardController : Controller
 
         return new DashboardBarChartViewModel
         {
-            Title = "My Pending Work by Type",
+            Title = "My Pending Works",
             Caption = "Only items currently assigned to you",
             Items = rows.Select((x, index) => new DashboardBarItemViewModel
             {
@@ -340,37 +484,6 @@ public class DashboardController : Controller
                 Label = month.Label,
                 PrimaryValue = receivedRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0,
                 SecondaryValue = approvedRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0
-            }).ToList()
-        };
-    }
-
-    private async Task<DashboardTrendChartViewModel> BuildStaffTrendChartAsync(int userId, string username, CancellationToken ct)
-    {
-        var months = LastSixMonths();
-        var actionRows = await _db.ApplicationWorkflowHistories.AsNoTracking()
-            .Where(x => x.ActionBy == userId && x.ActionOn >= months.First().Start)
-            .GroupBy(x => new { x.ActionOn.Year, x.ActionOn.Month })
-            .Select(x => new { x.Key.Year, x.Key.Month, Count = x.Count() })
-            .ToListAsync(ct);
-        var challanRows = await _db.Challans.AsNoTracking()
-            .Where(x => x.EntryDate.HasValue
-                && x.EntryDate.Value >= months.First().Start
-                && (x.Userid == username || x.Userid == userId.ToString()))
-            .GroupBy(x => new { x.EntryDate!.Value.Year, x.EntryDate!.Value.Month })
-            .Select(x => new { x.Key.Year, x.Key.Month, Count = x.Count() })
-            .ToListAsync(ct);
-
-        return new DashboardTrendChartViewModel
-        {
-            Title = "My Monthly Output",
-            Caption = "Workflow actions and challans posted by you",
-            PrimaryLabel = "Workflow Actions",
-            SecondaryLabel = "Challans",
-            Points = months.Select(month => new DashboardTrendPointViewModel
-            {
-                Label = month.Label,
-                PrimaryValue = actionRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0,
-                SecondaryValue = challanRows.FirstOrDefault(x => x.Year == month.Year && x.Month == month.Month)?.Count ?? 0
             }).ToList()
         };
     }
@@ -671,6 +784,29 @@ public class DashboardController : Controller
             Url = url
         };
     }
+
+    private static void NormalizePercentages(IReadOnlyList<Action<decimal>> setters, IReadOnlyList<decimal> bases)
+    {
+        if (setters.Count == 0 || bases.Count == 0 || setters.Count != bases.Count)
+            return;
+
+        var total = bases.Sum();
+        if (total <= 0)
+        {
+            foreach (var set in setters)
+                set(0m);
+            return;
+        }
+
+        var percentages = bases.Select(x => Math.Round(x * 100m / total, 1)).ToList();
+        var diff = 100m - percentages.Sum();
+        percentages[^1] += diff;
+
+        for (var i = 0; i < setters.Count; i++)
+            setters[i](percentages[i]);
+    }
+
+    private static decimal ToDecimal(double value) => Convert.ToDecimal(value);
 
     private static string ResolveAssignedTo(ApplicationWorkflowTask task, IReadOnlyDictionary<int, string> users, IReadOnlyDictionary<int, string> roles)
     {

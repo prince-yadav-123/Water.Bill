@@ -324,8 +324,11 @@ public class RolesUsersController : Controller
         ViewData["ActiveMenu"] = "Role Permission";
         var roles = await _db.Approles.Where(x => !x.IsDeleted).OrderBy(x => x.Name).ToListAsync(ct);
         var selectedRole = roleId.HasValue ? roles.FirstOrDefault(x => x.Id == roleId.Value) : roles.FirstOrDefault();
+        var selectedPortalScope = selectedRole is not null && await IsConsumerRoleAsync(selectedRole.Id, ct)
+            ? AppConstants.PortalScopes.Consumer
+            : AppConstants.PortalScopes.Authority;
         var modules = await _db.PermissionModules
-            .Where(x => x.IsActive && !x.IsDeleted)
+            .Where(x => x.IsActive && !x.IsDeleted && EF.Property<string>(x, "PortalScope") == selectedPortalScope)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
         var permissions = selectedRole is null
@@ -339,7 +342,9 @@ public class RolesUsersController : Controller
             Roles = roles,
             SelectedRole = selectedRole,
             Permissions = permissions,
-            Modules = modules
+            Modules = modules,
+            SelectedPortalScope = selectedPortalScope,
+            SelectedPortalLabel = AppConstants.PortalScopes.DisplayName(selectedPortalScope)
         });
     }
 
@@ -347,8 +352,11 @@ public class RolesUsersController : Controller
     public async Task<IActionResult> SavePermissions(int roleId, CancellationToken ct)
     {
         ViewData["ActiveMenu"] = "Role Permission";
+        var portalScope = await IsConsumerRoleAsync(roleId, ct)
+            ? AppConstants.PortalScopes.Consumer
+            : AppConstants.PortalScopes.Authority;
         var modules = await _db.PermissionModules
-            .Where(x => x.IsActive && !x.IsDeleted)
+            .Where(x => x.IsActive && !x.IsDeleted && EF.Property<string>(x, "PortalScope") == portalScope)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
 
@@ -373,7 +381,7 @@ public class RolesUsersController : Controller
                 CanPrint = Has("Print")
             };
         });
-        await _permissionService.SavePermissionsAsync(roleId, incoming, ct);
+        await _permissionService.SavePermissionsAsync(roleId, incoming, modules.Select(x => x.Id).ToArray(), ct);
         TempData["SuccessMessage"] = "Permissions saved.";
         return RedirectToAction(nameof(Permissions), new { roleId });
     }

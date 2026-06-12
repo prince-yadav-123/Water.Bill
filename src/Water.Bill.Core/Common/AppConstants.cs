@@ -5,6 +5,7 @@ public static class AppConstants
     public const string CookieScheme = "WaterBillCookie";
     public const int DefaultTenantId = 1;
     public const int ConsumerTenantId = 2;
+    public const decimal DefaulterDueThreshold = 200000m;
 
     public static class Divisions
     {
@@ -38,6 +39,18 @@ public static class AppConstants
         public const string Admin = "Admin";
         public const string Staff = "Staff";
         public const string Consumer = "Consumer";
+    }
+
+    public static class PortalScopes
+    {
+        public const string Authority = "Authority";
+        public const string Consumer = "Consumer";
+
+        public static string FromTenant(int tenantId)
+            => tenantId == ConsumerTenantId ? Consumer : Authority;
+
+        public static string DisplayName(string scope)
+            => scope == Consumer ? "Consumer Portal" : "Authority / Admin Portal";
     }
 
     public static class Policies

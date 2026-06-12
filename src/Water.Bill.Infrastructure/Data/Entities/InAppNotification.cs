@@ -20,6 +20,8 @@ public partial class InAppNotification
 
     public string? ReferenceNo { get; set; }
 
+    public string? RedirectUrl { get; set; }
+
     public bool IsRead { get; set; }
 
     public DateTime? ReadAt { get; set; }
@@ -28,4 +30,3 @@ public partial class InAppNotification
 
     public bool IsDeleted { get; set; }
 }
-

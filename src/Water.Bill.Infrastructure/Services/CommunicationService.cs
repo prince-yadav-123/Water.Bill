@@ -45,13 +45,14 @@ public class CommunicationService : ICommunicationService
         string? referenceType = null,
         string? referenceId = null,
         string? referenceNo = null,
+        string? redirectUrl = null,
         CancellationToken ct = default)
     {
         foreach (var channel in ResolveChannels(channels))
         {
             try
             {
-                await SendChannelAsync(purposeKey, channel, recipient, values, referenceType, referenceId, referenceNo, ct);
+                await SendChannelAsync(purposeKey, channel, recipient, values, referenceType, referenceId, referenceNo, redirectUrl, ct);
             }
             catch
             {
@@ -60,7 +61,7 @@ public class CommunicationService : ICommunicationService
         }
     }
 
-    private async Task SendChannelAsync(string purposeKey, string channel, NotificationRecipient recipient, IReadOnlyDictionary<string, string?> values, string? referenceType, string? referenceId, string? referenceNo, CancellationToken ct)
+    private async Task SendChannelAsync(string purposeKey, string channel, NotificationRecipient recipient, IReadOnlyDictionary<string, string?> values, string? referenceType, string? referenceId, string? referenceNo, string? redirectUrl, CancellationToken ct)
     {
         var now = DateTime.Now;
         var purpose = await _db.CommunicationPurposes.AsNoTracking().FirstOrDefaultAsync(x => x.PurposeKey == purposeKey && x.IsActive, ct);
@@ -91,11 +92,11 @@ public class CommunicationService : ICommunicationService
 
         var subject = _renderer.Render(template.Subject ?? template.TemplateName, values);
         var body = _renderer.Render(template.Body, values);
-        var result = await DispatchAsync(channel, recipient, subject, body, template.ExternalTemplateId, purposeKey, referenceType, referenceId, referenceNo, ct);
+        var result = await DispatchAsync(channel, recipient, subject, body, template.ExternalTemplateId, purposeKey, referenceType, referenceId, referenceNo, redirectUrl, ct);
         await LogAsync(purposeKey, channel, recipient, template.Id, template.ExternalTemplateId, subject, body, result.Status, result.ErrorMessage, referenceType, referenceId, referenceNo, now, ct);
     }
 
-    private async Task<CommunicationSendResult> DispatchAsync(string channel, NotificationRecipient recipient, string subject, string body, string? externalTemplateId, string purposeKey, string? referenceType, string? referenceId, string? referenceNo, CancellationToken ct)
+    private async Task<CommunicationSendResult> DispatchAsync(string channel, NotificationRecipient recipient, string subject, string body, string? externalTemplateId, string purposeKey, string? referenceType, string? referenceId, string? referenceNo, string? redirectUrl, CancellationToken ct)
     {
         if (channel == CommunicationChannels.Email)
         {
@@ -119,7 +120,7 @@ public class CommunicationService : ICommunicationService
         }
 
         if (channel == CommunicationChannels.InApp)
-            return await _inAppSender.SendAsync(recipient, subject, body, purposeKey, referenceType, referenceId, referenceNo, ct);
+            return await _inAppSender.SendAsync(recipient, subject, body, purposeKey, referenceType, referenceId, referenceNo, redirectUrl, ct);
 
         return CommunicationSendResult.Skipped($"Channel '{channel}' is not supported.");
     }

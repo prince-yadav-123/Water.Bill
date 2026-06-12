@@ -1,4 +1,5 @@
-@model PermissionModule
+@model PermissionModuleFormViewModel
+@using Water.Bill.Core.Common
 @{
     var isEdit = Model.Id != 0;
 }
@@ -9,12 +10,20 @@
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <input type="hidden" asp-for="Id" />
         <div class="row g-3">
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <label class="form-label required" asp-for="Name">Module Name</label>
                 <input class="form-control" asp-for="Name" required maxlength="100" placeholder="Roles &amp; Users" />
                 <span class="text-danger" asp-validation-for="Name"></span>
             </div>
-            <div class="col-md-4 d-flex align-items-end">
+            <div class="col-md-3">
+                <label class="form-label required" asp-for="PortalScope">Portal Scope</label>
+                <select class="form-select" asp-for="PortalScope">
+                    <option value="@AppConstants.PortalScopes.Authority">Authority / Admin Portal</option>
+                    <option value="@AppConstants.PortalScopes.Consumer">Consumer Portal</option>
+                </select>
+                <span class="text-danger" asp-validation-for="PortalScope"></span>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
                 <label class="form-check mb-2">
                     <input class="form-check-input" asp-for="IsActive" />
                     <span class="form-check-label">Active</span>

@@ -173,7 +173,7 @@ public class SupportQueriesController : Controller
             "ConsumerSupportQuery",
             query.Id.ToString(),
             query.QueryNo,
-            ct);
+            ct: ct);
 
         TempData["SuccessMessage"] = $"Query {query.QueryNo} submitted successfully.";
         return RedirectToAction(nameof(Details), new { id = query.Id });
