@@ -107,10 +107,9 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult AccessDenied()
+    public IActionResult AccessDenied(string? permission = null, string? returnUrl = null)
     {
-        ViewData["Title"] = "Access Denied";
-        return View();
+        return RedirectToAction("Index", "Unauthorized", new { permission, returnUrl });
     }
 
     [HttpGet("/Account/AuthStatus")]

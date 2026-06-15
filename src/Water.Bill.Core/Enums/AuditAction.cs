@@ -12,5 +12,6 @@ public enum AuditAction
     SecuritySettingsChanged = 8,
     UserChanged = 9,
     RoleChanged = 10,
-    MenuChanged = 11
+    MenuChanged = 11,
+    Delete = 12
 }

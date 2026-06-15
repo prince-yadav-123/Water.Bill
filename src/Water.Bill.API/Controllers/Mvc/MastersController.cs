@@ -32,7 +32,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "view", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "view", ct)) return PermissionDenied(definition.Module, "view");
 
         ViewData["Title"] = definition.Title;
         ViewData["ActiveMenu"] = definition.Module;
@@ -63,7 +63,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "add", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "add", ct)) return PermissionDenied(definition.Module, "add");
 
         ViewData["Title"] = $"Create {definition.Title}";
         ViewData["ActiveMenu"] = definition.Module;
@@ -76,7 +76,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "add", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "add", ct)) return PermissionDenied(definition.Module, "add");
 
         ViewData["Title"] = $"Create {definition.Title}";
         ViewData["ActiveMenu"] = definition.Module;
@@ -96,7 +96,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "edit", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "edit", ct)) return PermissionDenied(definition.Module, "edit");
         if (!await ExistsAsync(definition.Key, rowKey, ct)) return NotFound();
 
         ViewData["Title"] = $"Edit {definition.Title}";
@@ -110,7 +110,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "edit", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "edit", ct)) return PermissionDenied(definition.Module, "edit");
 
         ViewData["Title"] = $"Edit {definition.Title}";
         ViewData["ActiveMenu"] = definition.Module;
@@ -132,7 +132,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "view", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "view", ct)) return PermissionDenied(definition.Module, "view");
         if (!await ExistsAsync(definition.Key, rowKey, ct)) return NotFound();
 
         ViewData["Title"] = $"View {definition.Title}";
@@ -146,7 +146,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "delete", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "delete", ct)) return PermissionDenied(definition.Module, "delete");
 
         var changed = await DeactivateAsync(definition.Key, rowKey, ct);
         TempData[changed ? "SuccessMessage" : "ErrorMessage"] = changed
@@ -162,7 +162,7 @@ public class MastersController : Controller
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
-        if (!await HasPermissionAsync(definition.Module, "delete", ct)) return Forbid();
+        if (!await HasPermissionAsync(definition.Module, "delete", ct)) return PermissionDenied(definition.Module, "delete");
 
         var activating = Get(form, "Status") != "0";
         var changed = await UpdateStatusAsync(definition.Key, rowKey, form, ct);
@@ -179,6 +179,32 @@ public class MastersController : Controller
             return false;
 
         return await _permissionService.HasPermissionAsync(roleId, module, action, ct);
+    }
+
+    private IActionResult PermissionDenied(string module, string action)
+    {
+        var acceptHeader = Request.Headers.Accept.ToString();
+        var isAjax = string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase)
+            || (acceptHeader.Contains("application/json", StringComparison.OrdinalIgnoreCase)
+                && !acceptHeader.Contains("text/html", StringComparison.OrdinalIgnoreCase));
+
+        if (isAjax)
+        {
+            return new JsonResult(new
+            {
+                error = "Forbidden",
+                message = "You do not have permission to access this module."
+            })
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
+        }
+
+        return RedirectToAction("Index", "Unauthorized", new
+        {
+            permission = $"{module}.{action}",
+            returnUrl = $"{Request.Path}{Request.QueryString}"
+        });
     }
 
     private async Task<IReadOnlyList<MasterRowViewModel>> GetRowsAsync(string key, CancellationToken ct)

@@ -2009,6 +2009,7 @@ WHEN NOT MATCHED BY TARGET THEN
         (N'Reports / MIS', N'Authority'),
         (N'Advanced Bill Revision / Reversal', N'Authority'),
         (N'Operator Activity Logs', N'Authority'),
+        (N'Error Logs', N'Authority'),
         (N'Communication Templates', N'Authority'),
         (N'Consumer Service Requests', N'Consumer'),
         (N'NotificationManagement', N'Authority')
@@ -2124,6 +2125,7 @@ child_menu_seed AS
         (1, N'Administration', N'Communication Templates', N'CT', N'/CommunicationTemplates', N'Administration', N'Communication Templates', 10, 1, 1, 0),
         (1, N'Administration', N'Communication', N'NT', N'/NotificationManagement', N'Administration', N'Communication', 11, 1, 1, 0),
         (1, N'Administration', N'Operator Activity Logs', N'AL', N'/OperatorAudit', N'Administration', N'Operator Activity Logs', 12, 1, 1, 0),
+        (1, N'Administration', N'Error Logs', N'EL', N'/ErrorLogs', N'Administration', N'Error Logs', 13, 1, 1, 0),
         (1, N'Billing & Metering', N'Bill Search & Print', N'BS', N'/BillSearchPrint', N'Billing & Metering', N'Bill Search & Print', 1, 1, 1, 0),
         (1, N'Billing & Metering', N'Challan Management', N'CH', N'/ChallanManagement', N'Billing & Metering', N'Challan Management', 2, 1, 1, 0),
         (1, N'Billing & Metering', N'Bulk Bill Generation', N'BB', N'/BulkBillGeneration', N'Billing & Metering', N'Bulk Bill Generation', 3, 1, 1, 0),
@@ -2573,6 +2575,60 @@ WHEN NOT MATCHED BY TARGET THEN
             CreatedAt, UpdatedAt, IsDeleted)
     VALUES (CONVERT(UNIQUEIDENTIFIER, '50000000-0000-0000-0000-000000000401'),
             src.TenantId, 480, 30, 8, 1, 1, 1, 1, 90, 5, 5, 15, 0, 3, 1, 0, SYSDATETIME(), NULL, 0);
+
+/* ============================================================
+   15) ERROR LOGS MODULE
+   ============================================================ */
+
+IF OBJECT_ID(N'dbo.ErrorLogs', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ErrorLogs
+    (
+        Id             BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_ErrorLogs PRIMARY KEY,
+        CreatedAt      DATETIME2(6) NOT NULL CONSTRAINT DF_ErrorLogs_CreatedAt DEFAULT (SYSUTCDATETIME()),
+        ExceptionType  NVARCHAR(200) NOT NULL,
+        Message        NVARCHAR(2000) NOT NULL,
+        StackTrace     NVARCHAR(MAX) NULL,
+        RequestPath    NVARCHAR(500) NULL,
+        HttpMethod     NVARCHAR(10) NULL,
+        QueryString    NVARCHAR(2000) NULL,
+        StatusCode     INT NOT NULL CONSTRAINT DF_ErrorLogs_StatusCode DEFAULT (500),
+        IpAddress      NVARCHAR(64) NULL,
+        Username       NVARCHAR(150) NULL,
+        UserId         NVARCHAR(100) NULL,
+        PortalType     NVARCHAR(20) NOT NULL CONSTRAINT DF_ErrorLogs_PortalType DEFAULT (N'Unknown'),
+        UserAgent      NVARCHAR(1000) NULL,
+        ControllerName NVARCHAR(150) NULL,
+        ActionName     NVARCHAR(150) NULL,
+        TraceId        NVARCHAR(100) NULL,
+        IsHandled      BIT NOT NULL CONSTRAINT DF_ErrorLogs_IsHandled DEFAULT (0)
+    );
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_ErrorLogs_CreatedAt' AND object_id = OBJECT_ID(N'dbo.ErrorLogs'))
+BEGIN
+    CREATE INDEX IX_ErrorLogs_CreatedAt ON dbo.ErrorLogs (CreatedAt DESC);
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_ErrorLogs_ExceptionType' AND object_id = OBJECT_ID(N'dbo.ErrorLogs'))
+BEGIN
+    CREATE INDEX IX_ErrorLogs_ExceptionType ON dbo.ErrorLogs (ExceptionType);
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_ErrorLogs_StatusCode' AND object_id = OBJECT_ID(N'dbo.ErrorLogs'))
+BEGIN
+    CREATE INDEX IX_ErrorLogs_StatusCode ON dbo.ErrorLogs (StatusCode);
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_ErrorLogs_PortalType' AND object_id = OBJECT_ID(N'dbo.ErrorLogs'))
+BEGIN
+    CREATE INDEX IX_ErrorLogs_PortalType ON dbo.ErrorLogs (PortalType);
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_ErrorLogs_CreatedAt_Portal_Status' AND object_id = OBJECT_ID(N'dbo.ErrorLogs'))
+BEGIN
+    CREATE INDEX IX_ErrorLogs_CreatedAt_Portal_Status ON dbo.ErrorLogs (CreatedAt DESC, PortalType, StatusCode);
+END;
 
 /* ============================================================
    END

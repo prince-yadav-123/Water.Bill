@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -13,6 +14,7 @@ using Water.Bill.Infrastructure.Data.Entities;
 namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
+[RequirePermission("Consumer Support Queries.view")]
 public class SupportQueriesController : Controller
 {
     private static readonly HashSet<string> AllowedStatuses = new(StringComparer.OrdinalIgnoreCase)
@@ -68,6 +70,7 @@ public class SupportQueriesController : Controller
     }
 
     [HttpGet("/Consumer/SupportQueries/Create")]
+    [RequirePermission("Consumer Support Queries.add")]
     public async Task<IActionResult> Create(CancellationToken ct)
     {
         ViewData["Title"] = "Raise Query";
@@ -84,6 +87,7 @@ public class SupportQueriesController : Controller
 
     [HttpPost("/Consumer/SupportQueries/Create")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer Support Queries.add")]
     public async Task<IActionResult> Create(ConsumerSupportQueryFormViewModel model, List<IFormFile>? documents, CancellationToken ct)
     {
         ViewData["Title"] = "Raise Query";

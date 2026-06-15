@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Core.Enums;
@@ -15,6 +16,7 @@ using Water.Bill.Infrastructure.Data.Entities;
 namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
+[RequirePermission("Consumer Profile.view")]
 public class ProfileController : Controller
 {
     private const string ContactUpdatePurpose = "ContactUpdate";
@@ -76,6 +78,7 @@ public class ProfileController : Controller
     }
 
     [HttpGet("/Consumer/Profile/UpdateContact")]
+    [RequirePermission("Consumer Profile.edit")]
     public async Task<IActionResult> UpdateContact()
     {
         ViewData["Title"] = "Update Mobile/Email";
@@ -90,6 +93,7 @@ public class ProfileController : Controller
 
     [HttpPost("/Consumer/Profile/UpdateContact/SendOtp")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer Profile.edit")]
     public async Task<IActionResult> SendContactUpdateOtp(UpdateContactViewModel model, CancellationToken ct)
     {
         ViewData["Title"] = "Update Mobile/Email";
@@ -125,6 +129,7 @@ public class ProfileController : Controller
 
     [HttpPost("/Consumer/Profile/UpdateContact/Verify")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer Profile.edit")]
     public async Task<IActionResult> VerifyContactUpdate(UpdateContactViewModel model, CancellationToken ct)
     {
         ViewData["Title"] = "Update Mobile/Email";

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.API.Filters;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -14,6 +15,7 @@ public class DepartmentsController : Controller
 
     public DepartmentsController(ApplicationDbContext db) => _db = db;
 
+    [RequirePermission("Department Master.view")]
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Department Master";
@@ -22,6 +24,7 @@ public class DepartmentsController : Controller
         return View(rows);
     }
 
+    [RequirePermission("Department Master.add")]
     public IActionResult Create()
     {
         ViewData["Title"] = "Create Department";
@@ -31,6 +34,7 @@ public class DepartmentsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Department Master.add")]
     public async Task<IActionResult> Create(MasterDeptDetail model, CancellationToken ct)
     {
         ViewData["Title"] = "Create Department";
@@ -47,6 +51,7 @@ public class DepartmentsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [RequirePermission("Department Master.edit")]
     public async Task<IActionResult> Edit(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Edit Department";
@@ -57,6 +62,7 @@ public class DepartmentsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Department Master.edit")]
     public async Task<IActionResult> Edit(int id, MasterDeptDetail model, CancellationToken ct)
     {
         ViewData["Title"] = "Edit Department";
@@ -76,6 +82,7 @@ public class DepartmentsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Department Master.delete")]
     public async Task<IActionResult> ToggleStatus(int id, CancellationToken ct)
     {
         var entity = await _db.MasterDeptDetails.FirstOrDefaultAsync(x => x.Id == id, ct);

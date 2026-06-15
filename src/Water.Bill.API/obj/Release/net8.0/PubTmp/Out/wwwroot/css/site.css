@@ -1248,6 +1248,10 @@ textarea.form-control:focus,
 .badge.text-bg-primary { color: #fff !important; background-color: var(--wb-primary) !important; }
 .badge.text-bg-success { color: var(--wb-primary-deep) !important; background-color: #bff4eb !important; }
 .badge.text-bg-secondary { color: var(--wb-primary-deep) !important; background-color: var(--wb-primary-soft) !important; }
+.badge.text-bg-danger { color: #7f1d1d !important; background-color: #fee2e2 !important; }
+.badge.text-bg-warning { color: #92400e !important; background-color: #fef3c7 !important; }
+.badge.text-bg-info { color: #0c4a6e !important; background-color: #dbeafe !important; }
+.badge.text-bg-orange { color: #9a3412 !important; background-color: #fed7aa !important; }
 
 .wb-actions,
 .form-actions,

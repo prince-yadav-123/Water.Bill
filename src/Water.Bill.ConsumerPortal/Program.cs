@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Water.Bill.Application.DependencyInjection;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.DependencyInjection;
+using Water.Bill.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,7 @@ builder.Services.AddAuthentication(AppConstants.CookieScheme)
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.AccessDeniedPath = "/Unauthorized";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
         options.Cookie.Name = "WaterBill.ConsumerPortal.Auth";
@@ -35,13 +36,13 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseWaterBillExceptionHandling();
 app.UseSession();
 app.UseAuthentication();
 app.Use(async (context, next) =>

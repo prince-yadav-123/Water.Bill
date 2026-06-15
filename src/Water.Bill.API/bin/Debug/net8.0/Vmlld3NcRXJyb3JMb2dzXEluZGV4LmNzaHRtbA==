@@ -1,0 +1,162 @@
+@model Water.Bill.API.Models.Audit.ErrorLogIndexViewModel
+@using Water.Bill.API.Helpers
+@{
+    string DateText(DateTime value)
+    {
+        var ist = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+        return TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(value, DateTimeKind.Utc), ist).ToString("dd MMM yyyy hh:mm tt");
+    }
+
+    string Short(string? value, int max = 90)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return "-";
+        var text = value.Trim();
+        return text.Length <= max ? text : $"{text[..max]}...";
+    }
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Error Logs</h1>
+        <p>Review unhandled runtime issues captured from admin, consumer, public, and API flows.</p>
+    </div>
+    <form method="post" asp-action="ClearOld" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button class="btn btn-outline-danger" type="submit" onclick="return confirm('Clear all error logs older than 30 days?');">Clear Old (&gt; 30 days)</button>
+    </form>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" name="Search" value="@Model.Search" placeholder="Message / type / path / trace ID" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Exception Type</label>
+            <select class="form-select" name="ExceptionType">
+                <option value="">All</option>
+                @foreach (var type in Model.ExceptionTypes)
+                {
+                    if (Model.ExceptionType == type)
+                    {
+                        <option value="@type" selected>@type</option>
+                    }
+                    else
+                    {
+                        <option value="@type">@type</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Status Code</label>
+            <input class="form-control" type="number" min="100" max="599" name="StatusCode" value="@Model.StatusCode" placeholder="500" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Portal</label>
+            <select class="form-select" name="PortalType">
+                <option value="">All</option>
+                @foreach (var portal in new[] { "Admin", "Consumer", "Public", "Api", "Unknown" })
+                {
+                    if (Model.PortalType == portal)
+                    {
+                        <option value="@portal" selected>@portal</option>
+                    }
+                    else
+                    {
+                        <option value="@portal">@portal</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Username</label>
+            <input class="form-control" name="Username" value="@Model.Username" placeholder="Username" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Handled</label>
+            <select class="form-select" name="IsHandled">
+                <option value="">All</option>
+                @if (Model.IsHandled == true)
+                {
+                    <option value="true" selected>Handled</option>
+                }
+                else
+                {
+                    <option value="true">Handled</option>
+                }
+
+                @if (Model.IsHandled == false)
+                {
+                    <option value="false" selected>Unhandled</option>
+                }
+                else
+                {
+                    <option value="false">Unhandled</option>
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="ToDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    <div class="table-responsive wb-approval-table-wrap mt-3">
+        <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+            <thead>
+                <tr>
+                    <th>Date / Time</th>
+                    <th>Portal</th>
+                    <th>Exception Type</th>
+                    <th>Message</th>
+                    <th>Request Path</th>
+                    <th>Status</th>
+                    <th>Username</th>
+                    <th>IP Address</th>
+                    <th>Handled</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Rows.Count == 0)
+            {
+                <tr>
+                    <td colspan="10" class="text-center text-muted py-4">No error logs found for the selected filters.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td>@DateText(row.CreatedAt)</td>
+                        <td><span class="badge text-bg-light border">@row.PortalType</span></td>
+                        <td>@row.ExceptionType</td>
+                        <td title="@row.Message">@Short(row.Message)</td>
+                        <td title="@row.RequestPath">@Short(row.RequestPath, 60)</td>
+                        <td><span class="badge @AdminStatusBadgeHelper.CssClass(row.StatusCode >= 500 ? "Failed" : row.StatusCode.ToString())">@row.StatusCode</span></td>
+                        <td>@(string.IsNullOrWhiteSpace(row.Username) ? "-" : row.Username)</td>
+                        <td>@(string.IsNullOrWhiteSpace(row.IpAddress) ? "-" : row.IpAddress)</td>
+                        <td><span class="badge @AdminStatusBadgeHelper.CssClass(row.IsHandled ? "Completed" : "ActionRequired")">@((row.IsHandled) ? "Handled" : "Unhandled")</span></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">Details</a>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
+</section>

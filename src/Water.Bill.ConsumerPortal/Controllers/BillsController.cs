@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.DTOs.Payments;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -12,6 +13,7 @@ using Water.Bill.Infrastructure.Data.Entities;
 namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
+[RequirePermission("Consumer Bills.view")]
 [Route("Consumer/Bills")]
 public class BillsController : Controller
 {

@@ -27,6 +27,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<IErrorLogService, ErrorLogService>();
         services.AddScoped<ISecuritySettingsService, SecuritySettingsService>();
         services.AddScoped<IConsumerOtpService, ConsumerOtpService>();
         services.AddScoped<IConsumerMobileRegistrationService, ConsumerMobileRegistrationService>();

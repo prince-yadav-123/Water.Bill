@@ -377,6 +377,10 @@
                                 div.classList.remove('is-unread'); div.querySelector('.wb-bell-dot').style.opacity='0';
                                 n.isRead=true; loadCount();
                             }
+                            if (n.hasUrl && n.openUrl) {
+                                if (n.openInNewTab) window.open(n.openUrl, '_blank', 'noopener');
+                                else window.location.href = n.openUrl;
+                            }
                         });
                         listEl.appendChild(div);
                     });

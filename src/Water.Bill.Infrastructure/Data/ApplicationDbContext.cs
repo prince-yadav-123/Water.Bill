@@ -154,6 +154,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<DocumentMaster> DocumentMasters { get; set; }
 
+    public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
+
     public virtual DbSet<ErpPaymentResponse> ErpPaymentResponses { get; set; }
 
     public virtual DbSet<InAppNotification> InAppNotifications { get; set; }

@@ -4,6 +4,7 @@ using Water.Bill.API.Extensions;
 using Water.Bill.Application.DependencyInjection;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.DependencyInjection;
+using Water.Bill.Infrastructure.Extensions;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -28,7 +29,7 @@ try
         {
             options.LoginPath = "/Account/Login";
             options.LogoutPath = "/Account/Logout";
-            options.AccessDeniedPath = "/Account/AccessDenied";
+            options.AccessDeniedPath = "/Unauthorized";
             options.ExpireTimeSpan = TimeSpan.FromHours(8);
             options.SlidingExpiration = true;
             options.Cookie.Name = "WaterBill.Authority.Auth";
@@ -48,6 +49,7 @@ try
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseRouting();
+    app.UseWaterBillExceptionHandling();
     app.UseAuthentication();
     app.Use(async (context, next) =>
     {

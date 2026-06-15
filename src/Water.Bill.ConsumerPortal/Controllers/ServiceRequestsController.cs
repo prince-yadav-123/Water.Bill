@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -13,6 +14,7 @@ using Water.Bill.Infrastructure.Services;
 namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
+[RequirePermission("Consumer Service Requests.view")]
 public class ServiceRequestsController : Controller
 {
     private const string ActiveMenu = "Support & Service Requests";
@@ -64,6 +66,7 @@ public class ServiceRequestsController : Controller
     }
 
     [HttpGet("/Consumer/ServiceRequests/NameTransfer")]
+    [RequirePermission("Consumer Service Requests.add")]
     public async Task<IActionResult> NameTransfer(string? consumerNo, CancellationToken ct)
     {
         ViewData["Title"] = "Name Transfer / Mutation";
@@ -81,6 +84,7 @@ public class ServiceRequestsController : Controller
 
     [HttpPost("/Consumer/ServiceRequests/NameTransfer")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer Service Requests.add")]
     public async Task<IActionResult> NameTransfer(NameTransferRequestViewModel model, CancellationToken ct)
     {
         ViewData["Title"] = "Name Transfer / Mutation";
@@ -160,6 +164,7 @@ public class ServiceRequestsController : Controller
     }
 
     [HttpGet("/Consumer/ServiceRequests/ConnectionChange")]
+    [RequirePermission("Consumer Service Requests.add")]
     public async Task<IActionResult> ConnectionChange(string? consumerNo, CancellationToken ct)
     {
         ViewData["Title"] = "Connection Type / Category Change";
@@ -177,6 +182,7 @@ public class ServiceRequestsController : Controller
 
     [HttpPost("/Consumer/ServiceRequests/ConnectionChange")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer Service Requests.add")]
     public async Task<IActionResult> ConnectionChange(ConnectionChangeRequestViewModel model, CancellationToken ct)
     {
         ViewData["Title"] = "Connection Type / Category Change";

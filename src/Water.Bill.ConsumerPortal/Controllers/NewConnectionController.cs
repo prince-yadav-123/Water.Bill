@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Water.Bill.Application.DTOs.NewConnection;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
+[RequirePermission("Consumer New Connection.view")]
 public class NewConnectionController : Controller
 {
     private static readonly string[] RequiredDocumentTypes =
@@ -36,6 +38,7 @@ public class NewConnectionController : Controller
     }
 
     [HttpGet("/Consumer/NewConnection/Apply")]
+    [RequirePermission("Consumer New Connection.add")]
     public async Task<IActionResult> Apply(CancellationToken ct)
     {
         ViewData["Title"] = "New Connection";
@@ -51,6 +54,7 @@ public class NewConnectionController : Controller
 
     [HttpPost("/Consumer/NewConnection/Apply")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer New Connection.add")]
     public async Task<IActionResult> Apply(NewConnectionApplicationFormDto model, CancellationToken ct)
     {
         ViewData["Title"] = "New Connection";
@@ -141,6 +145,7 @@ public class NewConnectionController : Controller
     }
 
     [HttpGet("/Consumer/NewConnection/Continue/{id:long}")]
+    [RequirePermission("Consumer New Connection.edit")]
     public async Task<IActionResult> Continue(long id, CancellationToken ct)
     {
         var model = await _service.GetConsumerContinuationFormAsync(id, ResolveConsumerNo(), ResolveConsumerUserId(), ct);
@@ -160,6 +165,7 @@ public class NewConnectionController : Controller
 
     [HttpPost("/Consumer/NewConnection/Continue/{id:long}")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer New Connection.edit")]
     public async Task<IActionResult> Continue(long id, NewConnectionApplicationFormDto model, CancellationToken ct)
     {
         var consumerNo = ResolveConsumerNo();
@@ -236,6 +242,7 @@ public class NewConnectionController : Controller
     }
 
     [HttpGet("/Consumer/NewConnection/Resubmit/{id:long}")]
+    [RequirePermission("Consumer New Connection.edit")]
     public async Task<IActionResult> Resubmit(long id, CancellationToken ct)
     {
         var consumerNo = ResolveConsumerNo();
@@ -264,6 +271,7 @@ public class NewConnectionController : Controller
 
     [HttpPost("/Consumer/NewConnection/Resubmit/{id:long}")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer New Connection.edit")]
     public async Task<IActionResult> Resubmit(long id, NewConnectionApplicationFormDto model, string? applicantRemarks, CancellationToken ct)
     {
         var consumerNo = ResolveConsumerNo();

@@ -53,6 +53,15 @@ public static class AppConstants
             => scope == Consumer ? "Consumer Portal" : "Authority / Admin Portal";
     }
 
+    public static class PortalTypes
+    {
+        public const string Admin = "Admin";
+        public const string Consumer = "Consumer";
+        public const string Public = "Public";
+        public const string Api = "Api";
+        public const string Unknown = "Unknown";
+    }
+
     public static class Policies
     {
         public const string AdminOnly = "AdminOnly";
@@ -113,6 +122,7 @@ public static class AppConstants
         public const string MyPendingApplications = "My Pending Applications";
         public const string NewConnectionFeeConfiguration = "New Connection Fee Configuration";
         public const string CommunicationTemplates = "Communication Templates";
+        public const string ErrorLogs = "Error Logs";
     }
 
 }

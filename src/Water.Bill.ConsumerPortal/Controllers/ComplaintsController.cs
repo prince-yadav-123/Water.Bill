@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -11,6 +12,7 @@ using Water.Bill.Infrastructure.Data.Entities;
 namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
+[RequirePermission("Consumer Complaints.view")]
 public class ComplaintsController : Controller
 {
     private static readonly HashSet<string> AllowedStatuses = new(StringComparer.OrdinalIgnoreCase)
@@ -64,6 +66,7 @@ public class ComplaintsController : Controller
     }
 
     [HttpGet("/Consumer/Complaints/Create")]
+    [RequirePermission("Consumer Complaints.add")]
     public async Task<IActionResult> Create(CancellationToken ct)
     {
         ViewData["Title"] = "Raise Complaint";
@@ -80,6 +83,7 @@ public class ComplaintsController : Controller
 
     [HttpPost("/Consumer/Complaints/Create")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer Complaints.add")]
     public async Task<IActionResult> Create(ConsumerComplaintFormViewModel model, List<IFormFile>? documents, CancellationToken ct)
     {
         ViewData["Title"] = "Raise Complaint";

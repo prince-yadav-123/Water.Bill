@@ -247,7 +247,7 @@
                                 <strong>@total.ToString("N0")</strong>
                                 <span>Total Consumers</span>
                             </div>
-                            <div class="wb-dept-grid">
+                            <div class="wb-dept-grid wb-dept-grid-compact">
                                 @foreach (var item in divisionChart.Items)
                                 {
                                     <div class="wb-bar-row">
@@ -1109,9 +1109,15 @@
         @@media (max-width: 767.98px) {
             .wb-dept-grid { grid-template-columns: 1fr; gap: 1rem; }
         }
-        .wb-bar-row    { display: grid; gap: 0.5rem; text-decoration: none; color: inherit; }
-        .wb-bar-copy   { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: #0f172a; }
-        .wb-bar-track  { height: 0.6rem; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+        .wb-dept-grid-compact {
+            grid-template-columns: minmax(0, 1fr);
+            width: 100%;
+            min-width: 0;
+        }
+        .wb-bar-row    { display: grid; gap: 0.5rem; text-decoration: none; color: inherit; width: 100%; min-width: 0; overflow: hidden; }
+        .wb-bar-copy   { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: #0f172a; width: 100%; min-width: 0; }
+        .wb-bar-copy > * { min-width: 0; }
+        .wb-bar-track  { height: 0.6rem; border-radius: 999px; background: #e2e8f0; overflow: hidden; width: 100%; max-width: 100%; }
         .wb-bar-fill   { height: 100%; border-radius: 999px; }
         .wb-bar-meta   { font-size: 0.78rem; color: #64748b; }
         .wb-summary-tile {

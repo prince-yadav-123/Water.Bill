@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Dashboard;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -21,6 +22,7 @@ public class DashboardController : Controller
         _db = db;
     }
 
+    [RequirePermission("Dashboard.view")]
     public async Task<IActionResult> Index(decimal? defaulterThreshold, CancellationToken ct)
     {
         ViewData["Title"] = "Dashboard";

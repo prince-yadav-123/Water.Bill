@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -13,6 +14,7 @@ using Water.Bill.Infrastructure.Services;
 namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
+[RequirePermission("Consumer NDC Applications.view")]
 public class NdcController : Controller
 {
     private const string ActiveMenu = "NDC / No Dues";
@@ -68,6 +70,7 @@ public class NdcController : Controller
     }
 
     [HttpGet("/Consumer/Ndc/Apply")]
+    [RequirePermission("Consumer NDC Applications.add")]
     public async Task<IActionResult> Apply(string? consumerNo, CancellationToken ct)
     {
         ViewData["Title"] = "Apply NDC";
@@ -85,6 +88,7 @@ public class NdcController : Controller
 
     [HttpPost("/Consumer/Ndc/Apply")]
     [ValidateAntiForgeryToken]
+    [RequirePermission("Consumer NDC Applications.add")]
     public async Task<IActionResult> Apply(ConsumerNdcApplyViewModel model, CancellationToken ct)
     {
         ViewData["Title"] = "Apply NDC";

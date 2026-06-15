@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.Approvals;
+using Water.Bill.API.Filters;
 using Water.Bill.Application.DTOs.Workflow;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Application.Models;
@@ -19,15 +20,18 @@ public class ApprovalsController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly IWorkflowService _workflowService;
+    private readonly IPermissionService _permissionService;
 
-    public ApprovalsController(ApplicationDbContext db, IWorkflowService workflowService)
+    public ApprovalsController(ApplicationDbContext db, IWorkflowService workflowService, IPermissionService permissionService)
     {
         _db = db;
         _workflowService = workflowService;
+        _permissionService = permissionService;
     }
 
     public IActionResult Index() => RedirectToAction(nameof(Pending));
 
+    [RequirePermission("My Pending Applications.view")]
     public async Task<IActionResult> Pending(
         string? tab = null,
         string? search = null,
@@ -309,6 +313,7 @@ public class ApprovalsController : Controller
     }
 
     [HttpGet]
+    [RequirePermission("My Pending Applications.view")]
     public async Task<IActionResult> Details(long id, CancellationToken ct)
     {
         var task = await GetAllowedTaskQuery(pendingOnly: false)
@@ -438,6 +443,7 @@ public class ApprovalsController : Controller
     }
 
     [HttpGet]
+    [RequirePermission("My Pending Applications.view")]
     public async Task<IActionResult> OpenCurrent(long id, CancellationToken ct)
     {
         var task = await GetAllowedTaskQuery(pendingOnly: false)
@@ -458,6 +464,10 @@ public class ApprovalsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Action(long taskId, string actionType, string? remarks, int? forwardToUserId, CancellationToken ct)
     {
+        var permissionAction = IsForwardAction(actionType) ? "forward" : "approve";
+        if (!await HasPermissionAsync(AppConstants.Modules.MyPendingApplications, permissionAction, ct))
+            return PermissionDenied(AppConstants.Modules.MyPendingApplications, permissionAction);
+
         var taskExists = await GetAllowedPendingTaskQuery().AnyAsync(x => x.Id == taskId, ct);
         if (!taskExists)
             return NotFound();
@@ -567,6 +577,45 @@ public class ApprovalsController : Controller
 
     private static IReadOnlyCollection<int> BuildDepartmentSet(int? departmentId)
         => departmentId.HasValue ? [departmentId.Value] : [];
+
+    private async Task<bool> HasPermissionAsync(string module, string action, CancellationToken ct)
+    {
+        if (!int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
+            return false;
+
+        return await _permissionService.HasPermissionAsync(roleId, module, action, ct);
+    }
+
+    private IActionResult PermissionDenied(string module, string action)
+    {
+        var acceptHeader = Request.Headers.Accept.ToString();
+        var isAjax = string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase)
+            || (acceptHeader.Contains("application/json", StringComparison.OrdinalIgnoreCase)
+                && !acceptHeader.Contains("text/html", StringComparison.OrdinalIgnoreCase));
+
+        if (isAjax)
+        {
+            return new JsonResult(new
+            {
+                error = "Forbidden",
+                message = "You do not have permission to access this module."
+            })
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
+        }
+
+        return RedirectToAction("Index", "Unauthorized", new
+        {
+            permission = $"{module}.{action}",
+            returnUrl = $"{Request.Path}{Request.QueryString}"
+        });
+    }
+
+    private static bool IsForwardAction(string? actionType)
+        => string.Equals(actionType, "ForwardToUser", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(actionType, "ForwardUser", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(actionType, "Forward", StringComparison.OrdinalIgnoreCase);
 
     private bool IsAdminUser()
     {
