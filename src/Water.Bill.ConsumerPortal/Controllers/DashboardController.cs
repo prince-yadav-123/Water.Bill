@@ -265,55 +265,48 @@ public class DashboardController : Controller
     private async Task<IReadOnlyList<BillingYearTrendViewModel>> GetBillingTrendAsync(string consumerNo, CancellationToken ct)
     {
         var startYear = DateTime.Today.Year - 4;
+        var startDate = new DateTime(startYear, 1, 1);
 
-        var generatedRows = await _db.Challans
+        var challanRows = await _db.Challans
             .AsNoTracking()
             .Where(x => x.ConsNo == consumerNo
-                && x.EntryDate.HasValue
-                && x.EntryDate.Value.Year >= startYear)
+                && ((x.EntryDate.HasValue && x.EntryDate.Value >= startDate)
+                    || (x.PayDate.HasValue && x.PayDate.Value >= startDate)))
             .Select(x => new
             {
-                Year = x.EntryDate!.Value.Year,
-                Amount = (double?)((x.BillAmt ?? 0)
+                x.EntryDate,
+                x.PayDate,
+                GeneratedAmount = (double?)((x.BillAmt ?? 0)
                     + (x.Noc ?? 0)
                     + (x.TFee ?? 0)
                     + (x.ConnCharge ?? 0)
                     + (x.Disconnection ?? 0)
-                    + (x.Reconnection ?? 0))
+                    + (x.Reconnection ?? 0)),
+                PaidAmount = (double?)(x.PaidAmt ?? 0)
             })
-            .GroupBy(x => x.Year)
-            .Select(x => new
-            {
-                Year = x.Key,
-                Generated = (double?)x.Sum(b => b.Amount) ?? 0
-            })
-            .OrderBy(x => x.Year)
             .ToListAsync(ct);
 
-        var paidRows = await _db.Challans
-            .AsNoTracking()
-            .Where(x => x.ConsNo == consumerNo
-                && x.PayDate.HasValue
-                && x.PayDate.Value.Year >= startYear
-                && (x.PaidAmt ?? 0) > 0)
+        var generatedRows = challanRows
+            .Where(x => x.EntryDate.HasValue)
+            .GroupBy(x => x.EntryDate!.Value.Year)
+            .ToDictionary(
+                x => x.Key,
+                x => x.Sum(b => b.GeneratedAmount ?? 0));
+
+        var paidRows = challanRows
+            .Where(x => x.PayDate.HasValue && (x.PaidAmount ?? 0) > 0)
             .GroupBy(x => x.PayDate!.Value.Year)
-            .Select(x => new
-            {
-                Year = x.Key,
-                Paid = (double?)x.Sum(b => b.PaidAmt) ?? 0
-            })
-            .OrderBy(x => x.Year)
-            .ToListAsync(ct);
+            .ToDictionary(
+                x => x.Key,
+                x => x.Sum(b => b.PaidAmount ?? 0));
 
         return Enumerable.Range(startYear, 5).Select(year =>
         {
-            var generated = generatedRows.FirstOrDefault(x => x.Year == year);
-            var paid = paidRows.FirstOrDefault(x => x.Year == year);
             return new BillingYearTrendViewModel
             {
                 Year = year,
-                BilledAmount = generated?.Generated ?? 0,
-                PaidAmount = paid?.Paid ?? 0
+                BilledAmount = generatedRows.GetValueOrDefault(year, 0),
+                PaidAmount = paidRows.GetValueOrDefault(year, 0)
             };
         }).ToList();
     }

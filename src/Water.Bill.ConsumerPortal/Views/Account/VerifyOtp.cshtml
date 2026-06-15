@@ -66,14 +66,7 @@
                 <div class="alert alert-danger small">@TempData["OtpError"]</div>
             }
 
-            @if (!string.IsNullOrWhiteSpace(Model.DevelopmentOtp))
-            {
-                <div class="alert alert-info small">
-                    Development OTP: <strong>@Model.DevelopmentOtp</strong>
-                </div>
-            }
-
-            <form class="wb-auth-form" asp-action="VerifyOtp" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <form class="wb-auth-form" asp-action="VerifyOtp" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" autocomplete="off">
                 @Html.AntiForgeryToken()
                 <input asp-for="ConsumerNo" type="hidden" />
                 <input asp-for="MaskedMobileNo" type="hidden" />
@@ -87,7 +80,7 @@
                     <div class="wb-otp-boxes" role="group" aria-label="Enter 6 digit OTP">
                         @for (var i = 0; i < 6; i++)
                         {
-                            <input class="wb-otp-box" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="OTP digit @(i + 1)" data-otp-box />
+                            <input class="wb-otp-box" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="OTP digit @(i + 1)" data-otp-box spellcheck="false" />
                         }
                     </div>
                     <span asp-validation-for="Otp" class="text-danger small"></span>

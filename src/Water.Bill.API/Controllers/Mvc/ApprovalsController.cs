@@ -11,6 +11,7 @@ using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Security;
 using Water.Bill.Infrastructure.Services;
 
 namespace Water.Bill.API.Controllers.Mvc;
@@ -19,12 +20,14 @@ namespace Water.Bill.API.Controllers.Mvc;
 public class ApprovalsController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IConfiguration _configuration;
     private readonly IWorkflowService _workflowService;
     private readonly IPermissionService _permissionService;
 
-    public ApprovalsController(ApplicationDbContext db, IWorkflowService workflowService, IPermissionService permissionService)
+    public ApprovalsController(ApplicationDbContext db, IConfiguration configuration, IWorkflowService workflowService, IPermissionService permissionService)
     {
         _db = db;
+        _configuration = configuration;
         _workflowService = workflowService;
         _permissionService = permissionService;
     }
@@ -460,6 +463,31 @@ public class ApprovalsController : Controller
         return RedirectToAction(nameof(Details), new { id = task.Id });
     }
 
+    [HttpGet]
+    [RequirePermission("My Pending Applications.view")]
+    public async Task<IActionResult> Document(long taskId, long documentId, CancellationToken ct)
+    {
+        var task = await GetAllowedTaskQuery(pendingOnly: false)
+            .FirstOrDefaultAsync(x => x.Id == taskId, ct);
+        if (task is null || !string.Equals(task.WorkflowInstance.ApplicationType, "NewConnection", StringComparison.OrdinalIgnoreCase))
+            return NotFound();
+
+        var document = await _db.NewConnectionApplicationDocuments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == documentId
+                && x.ApplicationId == task.ApplicationId
+                && !x.IsDeleted, ct);
+        if (document is null || string.IsNullOrWhiteSpace(document.FilePath))
+            return NotFound();
+
+        if (!FileUploadSecurityHelper.TryResolveSafeStoredFilePath(GetDocumentStorageBasePath(), document.FilePath, out var fullPath))
+            return NotFound();
+
+        return System.IO.File.Exists(fullPath)
+            ? PhysicalFile(fullPath, FileUploadSecurityHelper.ResolveSafeContentType(document.FilePath), document.FileName)
+            : NotFound();
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Action(long taskId, string actionType, string? remarks, int? forwardToUserId, CancellationToken ct)
@@ -679,4 +707,7 @@ public class ApprovalsController : Controller
 
         return result;
     }
+
+    private string GetDocumentStorageBasePath()
+        => _configuration["FileStorage:DocumentBasePath"] ?? "C:\\WaterBillUploads";
 }

@@ -189,7 +189,7 @@ public class ChallanManagementController : Controller
             return View(model);
         }
 
-        var bank = await FindBankAsync(model.BankCode, ct);
+        var bankName = await ResolveBankNameAsync(model.BankCode, ct);
         var now = DateTime.Now;
         var challanNo = await GenerateChallanNoAsync(consumer.DevType, ct);
         var amount = model.Amount.GetValueOrDefault();
@@ -198,13 +198,13 @@ public class ChallanManagementController : Controller
 
         var challan = new Challan
         {
-            ReceiptId = challanNo,
-            ReceiptId1 = challanNo,
-            RecpNo = challanNo,
-            ConsNo = consumer.ConsNo,
-            FlatNo = consumer.FlatNo,
-            Blk = consumer.BlkNo,
-            Sec = consumer.Sector,
+            ReceiptId = TrimToLength(challanNo, 22),
+            ReceiptId1 = TrimToLength(challanNo, 50),
+            RecpNo = TrimToLength(challanNo, 15),
+            ConsNo = TrimToLength(consumer.ConsNo, 15),
+            FlatNo = TrimToLength(consumer.FlatNo, 20),
+            Blk = TrimToLength(consumer.BlkNo, 15),
+            Sec = TrimToLength(consumer.Sector, 15),
             BlPerFr = model.BillPeriodFrom,
             BlPerTo = model.BillPeriodTo,
             DueDt = model.DueDate,
@@ -218,27 +218,27 @@ public class ChallanManagementController : Controller
             Rmc = 0,
             Secu = 0,
             TFee = 0,
-            Css = "0",
-            BnkCd = model.BankCode,
-            BrNm = BuildBankName(bank),
-            RevBilFr = purposeCode,
+            Css = TrimToLength("0", 6),
+            BnkCd = TrimToLength(model.BankCode, 100),
+            BrNm = TrimToLength(bankName, 100),
+            RevBilFr = TrimToLength(purposeCode, 10),
             DevType = consumer.DevType,
             Gst = 0,
             ConnCharge = heads.ConnectionCharge,
             PanalityCharges = heads.OtherCharge,
-            BankId = model.BankCode,
-            DeposeterName = consumer.ConsNm1,
-            BillId = model.Purpose == ChallanPurposes.ExistingBillDue ? sourceBill?.BillNo : purposeCode,
-            Status = "1",
+            BankId = TrimToLength(model.BankCode, 20),
+            DeposeterName = TrimToLength(consumer.ConsNm1, 150),
+            BillId = TrimToLength(model.Purpose == ChallanPurposes.ExistingBillDue ? sourceBill?.BillNo : purposeCode, 20),
+            Status = TrimToLength("1", 2),
             EntryDate = now,
-            ChallanVia = "ADMIN",
+            ChallanVia = TrimToLength("ADMIN", 20),
             ChallanStatus = 1,
-            Userid = CurrentUsername(),
-            Address = BuildAddress(consumer),
+            Userid = TrimToLength(CurrentUsername(), 50),
+            Address = TrimToLength(BuildAddress(consumer), 100),
             RT = 0,
             Disconnection = 0,
             Reconnection = 0,
-            Rid = consumer.Rid?.ToString()
+            Rid = TrimToLength(consumer.Rid?.ToString(), 15)
         };
 
         _db.Challans.Add(challan);
@@ -347,8 +347,7 @@ public class ChallanManagementController : Controller
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        var bank = await FindBankAsync(model.BankCode, ct);
-        var bankName = BuildBankName(bank);
+        var bankName = await ResolveBankNameAsync(model.BankCode, ct);
 
         var strategy = _db.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
@@ -357,12 +356,12 @@ public class ChallanManagementController : Controller
 
             challan.PayDate = model.PaymentDate;
             challan.PaidAmt = model.Amount;
-            challan.BnkCd = model.BankCode ?? challan.BnkCd;
-            challan.BankId = model.BankCode ?? challan.BankId;
-            challan.BrNm = bankName ?? challan.BrNm;
-            challan.Status = "1";
+            challan.BnkCd = TrimToLength(model.BankCode, 100) ?? challan.BnkCd;
+            challan.BankId = TrimToLength(model.BankCode, 20) ?? challan.BankId;
+            challan.BrNm = TrimToLength(bankName, 100) ?? challan.BrNm;
+            challan.Status = TrimToLength("1", 2);
             challan.ChallanStatus = 1;
-            challan.Upd = "PAID";
+            challan.Upd = TrimToLength("PAID", 10);
 
             _db.ChallanPaymentHistories.Add(new ChallanPaymentHistory
             {
@@ -966,41 +965,114 @@ WHERE [CONS_NO] = {consumerNo}
 
     private async Task<List<SelectListItem>> BuildBankOptionsAsync(string? selected, CancellationToken ct)
     {
-        var banks = await _db.BankMasters
-            .AsNoTracking()
-            .Where(x => (x.Status == null || x.Status == 1) && (x.IsActive == null || x.IsActive == 1 || x.IsActive1 == 1))
-            .OrderBy(x => x.BankName)
-            .ThenBy(x => x.BranchName)
-            .Take(200)
-            .ToListAsync(ct);
+        List<SelectListItem> options;
+        try
+        {
+            var banks = await _db.BankMasters
+                .AsNoTracking()
+                .Where(x => (x.Status == null || x.Status == 1) && (x.IsActive == null || x.IsActive == 1 || x.IsActive1 == 1))
+                .Select(x => new
+                {
+                    x.Id,
+                    x.BankName,
+                    x.BranchName,
+                    x.BankBranchCode,
+                    x.Prefix
+                })
+                .Take(400)
+                .ToListAsync(ct);
 
-        return banks
-            .Select(x =>
+            options = banks
+                .Select(x =>
+                {
+                    var value = !string.IsNullOrWhiteSpace(x.BankBranchCode)
+                        ? x.BankBranchCode
+                        : (!string.IsNullOrWhiteSpace(x.Prefix) ? x.Prefix : x.Id.ToString());
+                    var text = string.Join(" - ", new[] { x.BankName, x.BranchName }.Where(v => !string.IsNullOrWhiteSpace(v)));
+                    return new SelectListItem(string.IsNullOrWhiteSpace(text) ? value : text, value, value == selected);
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Value))
+                .GroupBy(x => x.Value!, StringComparer.OrdinalIgnoreCase)
+                .Select(x => x.First())
+                .OrderBy(x => x.Text)
+                .Take(200)
+                .ToList();
+        }
+        catch
+        {
+            var fallbackBanks = await _db.JalBankMasters
+                .AsNoTracking()
+                .Where(x => x.Status == null || x.Status == 1)
+                .OrderBy(x => x.BankName)
+                .Take(100)
+                .ToListAsync(ct);
+
+            options = fallbackBanks
+                .Select(x =>
+                {
+                    var value = !string.IsNullOrWhiteSpace(x.BankId) ? x.BankId : x.Id.ToString();
+                    var text = string.IsNullOrWhiteSpace(x.BankName)
+                        ? value
+                        : (!string.IsNullOrWhiteSpace(x.AccountNo) ? $"{x.BankName} - {x.AccountNo}" : x.BankName);
+                    return new SelectListItem(text, value, value == selected);
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Value))
+                .GroupBy(x => x.Value!, StringComparer.OrdinalIgnoreCase)
+                .Select(x => x.First())
+                .OrderBy(x => x.Text)
+                .ToList();
+        }
+
+        if (!string.IsNullOrWhiteSpace(selected)
+            && !options.Any(x => string.Equals(x.Value, selected, StringComparison.OrdinalIgnoreCase)))
+        {
+            var selectedBank = await FindJalBankAsync(selected, ct);
+            if (selectedBank is not null)
             {
-                var value = BankValue(x);
-                return new SelectListItem(BuildBankName(x) ?? value, value, value == selected);
-            })
-            .Where(x => !string.IsNullOrWhiteSpace(x.Value))
-            .ToList();
+                var value = !string.IsNullOrWhiteSpace(selectedBank.BankId)
+                    ? selectedBank.BankId
+                    : selected!;
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    var text = string.IsNullOrWhiteSpace(selectedBank.BankName)
+                        ? value
+                        : (!string.IsNullOrWhiteSpace(selectedBank.AccountNo) ? $"{selectedBank.BankName} - {selectedBank.AccountNo}" : selectedBank.BankName);
+                    options.Insert(0, new SelectListItem(text, value, true));
+                }
+            }
+            else
+            {
+                options.Insert(0, new SelectListItem(selected, selected, true));
+            }
+        }
+
+        return options;
     }
 
-    private async Task<BankMaster?> FindBankAsync(string? bankCode, CancellationToken ct)
+    private async Task<JalBankMaster?> FindJalBankAsync(string? bankCode, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(bankCode))
             return null;
 
-        if (int.TryParse(bankCode, out var bankId))
+        return await _db.JalBankMasters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.BankId == bankCode, ct);
+    }
+
+    private async Task<string?> ResolveBankNameAsync(string? bankCode, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(bankCode))
+            return null;
+
+        var bank = await FindJalBankAsync(bankCode, ct);
+        if (bank is not null)
         {
-            var byId = await _db.BankMasters
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == bankId, ct);
-            if (byId is not null)
-                return byId;
+            return !string.IsNullOrWhiteSpace(bank.AccountNo)
+                ? string.Join(" - ", new[] { bank.BankName, bank.AccountNo }.Where(x => !string.IsNullOrWhiteSpace(x)))
+                : bank.BankName;
         }
 
-        return await _db.BankMasters
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.BankBranchCode == bankCode || x.Prefix == bankCode, ct);
+        return bankCode;
     }
 
     private static ChallanConsumerSummaryViewModel ToConsumerSummary(ConsumerDetailsMaster consumer)
@@ -1029,19 +1101,6 @@ WHERE [CONS_NO] = {consumerNo}
             Address = challan.Address,
             DevType = challan.DevType.HasValue ? Convert.ToInt32(challan.DevType.Value) : null
         };
-
-    private static string? BuildBankName(BankMaster? bank)
-    {
-        if (bank is null)
-            return null;
-
-        return string.Join(" - ", new[] { bank.BankName, bank.BranchName }.Where(x => !string.IsNullOrWhiteSpace(x)));
-    }
-
-    private static string BankValue(BankMaster bank)
-        => !string.IsNullOrWhiteSpace(bank.BankBranchCode)
-            ? bank.BankBranchCode
-            : (!string.IsNullOrWhiteSpace(bank.Prefix) ? bank.Prefix : bank.Id.ToString());
 
     private static string PurposeCode(string? purpose) => purpose switch
     {
@@ -1107,6 +1166,15 @@ WHERE [CONS_NO] = {consumerNo}
         => !string.IsNullOrWhiteSpace(consumer.ConsAddress)
             ? consumer.ConsAddress
             : BuildPropertyNo(consumer.Sector, consumer.BlkNo, consumer.FlatNo);
+
+    private static string? TrimToLength(string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var trimmed = value.Trim();
+        return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
+    }
 
     private string CurrentUsername()
         => User.FindFirstValue("FullName")

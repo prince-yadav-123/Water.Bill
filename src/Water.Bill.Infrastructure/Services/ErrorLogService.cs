@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Application.Models;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -25,11 +26,11 @@ public class ErrorLogService : IErrorLogService
             {
                 CreatedAt = model.CreatedAt,
                 ExceptionType = Trim(model.ExceptionType, 200) ?? "Exception",
-                Message = Trim(model.Message, 2000) ?? "Unhandled exception occurred.",
-                StackTrace = model.StackTrace,
-                RequestPath = Trim(model.RequestPath, 500),
+                Message = Trim(SensitiveDataRedactionHelper.Redact(model.Message), 2000) ?? "Unhandled exception occurred.",
+                StackTrace = SensitiveDataRedactionHelper.Redact(model.StackTrace),
+                RequestPath = Trim(SensitiveDataRedactionHelper.Redact(model.RequestPath), 500),
                 HttpMethod = Trim(model.HttpMethod, 10),
-                QueryString = Trim(model.QueryString, 2000),
+                QueryString = Trim(SensitiveDataRedactionHelper.Redact(model.QueryString), 2000),
                 StatusCode = model.StatusCode,
                 IpAddress = Trim(model.IpAddress, 64),
                 Username = Trim(model.Username, 150),
@@ -47,7 +48,7 @@ public class ErrorLogService : IErrorLogService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to persist error log for path {Path}", model.RequestPath);
+            _logger.LogError(ex, "Failed to persist error log for path {Path}", SensitiveDataRedactionHelper.Redact(model.RequestPath));
             return false;
         }
     }

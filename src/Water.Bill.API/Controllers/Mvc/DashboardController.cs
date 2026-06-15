@@ -119,7 +119,15 @@ public class DashboardController : Controller
         var challanStatusChart = await BuildChallanStatusChartAsync(paidChallans, pendingChallans, totalChallans - paidChallans - pendingChallans, ct);
         var divisionConsumerChart = await BuildDivisionConsumerChartAsync(ct);
         var paymentCollectionChart = await BuildPaymentCollectionByTypeChartAsync(ct);
-        var defaulterWidget = await BuildDefaulterWidgetAsync(totalConsumers, defaulterThreshold, ct);
+        DashboardDefaulterWidgetViewModel defaulterWidget;
+        try
+        {
+            defaulterWidget = await BuildDefaulterWidgetAsync(totalConsumers, defaulterThreshold, ct);
+        }
+        catch
+        {
+            defaulterWidget = BuildDefaulterFallbackWidget(totalConsumers, defaulterThreshold);
+        }
         var workloadChart = await BuildDepartmentWorkloadChartAsync(pendingTaskQuery, ct);
         var trendChart = await BuildAdminTrendChartAsync(ct);
         var serviceDeskPanel = await BuildAdminServiceDeskPanelAsync(hasSupportQueries, ct);
@@ -362,43 +370,116 @@ public class DashboardController : Controller
         var threshold = defaulterThreshold.HasValue && defaulterThreshold.Value > 0
             ? defaulterThreshold.Value
             : AppConstants.DefaulterDueThreshold;
-        var billRows = await _db.JalPrintBillMasters.AsNoTracking()
-            .Where(x => x.ConsNo != null)
-            .Select(x => new
-            {
-                x.ConsNo,
-                Total = x.TotalBillAmt ?? x.DueAmt ?? x.MinTotalAmt ?? 0d,
-                x.PaidAmt,
-                x.PaidDate,
-                x.PaidStatus
-            })
-            .ToListAsync(ct);
 
-        var defaulters = billRows
-            .GroupBy(x => x.ConsNo!)
-            .Select(group => new
+        const string sql = """
+WITH latest_dates AS (
+    SELECT
+        CONS_NO,
+        MAX(ENTRY_DATE) AS MaxEntryDate
+    FROM jal_print_bill_master
+    WHERE CONS_NO IS NOT NULL
+    GROUP BY CONS_NO
+),
+latest_bill AS (
+    SELECT
+        j.CONS_NO,
+        MAX(
+            CASE
+                WHEN
+                    COALESCE(j.TOTAL_BILL_AMT, j.due_amt, j.MIN_TOTAL_AMT, 0) -
+                    CASE
+                        WHEN j.paid_date IS NOT NULL OR j.PAID_STATUS = 'Y'
+                            THEN COALESCE(j.paid_amt, j.TOTAL_BILL_AMT, j.due_amt, j.MIN_TOTAL_AMT, 0)
+                        ELSE COALESCE(j.paid_amt, 0)
+                    END > 0
+                THEN
+                    COALESCE(j.TOTAL_BILL_AMT, j.due_amt, j.MIN_TOTAL_AMT, 0) -
+                    CASE
+                        WHEN j.paid_date IS NOT NULL OR j.PAID_STATUS = 'Y'
+                            THEN COALESCE(j.paid_amt, j.TOTAL_BILL_AMT, j.due_amt, j.MIN_TOTAL_AMT, 0)
+                        ELSE COALESCE(j.paid_amt, 0)
+                    END
+                ELSE 0
+            END
+        ) AS Outstanding
+    FROM jal_print_bill_master j
+    INNER JOIN latest_dates ld
+        ON ld.CONS_NO = j.CONS_NO
+       AND (
+            (ld.MaxEntryDate IS NULL AND j.ENTRY_DATE IS NULL)
+            OR j.ENTRY_DATE = ld.MaxEntryDate
+       )
+    GROUP BY j.CONS_NO
+)
+SELECT
+    COUNT(1) AS DefaulterCount,
+    COALESCE(SUM(Outstanding), 0) AS TotalOutstanding
+FROM latest_bill
+WHERE Outstanding >= @threshold;
+""";
+
+        var defaulterCount = 0;
+        var totalOutstanding = 0m;
+        var connection = _db.Database.GetDbConnection();
+        var shouldClose = connection.State != ConnectionState.Open;
+
+        try
+        {
+            if (shouldClose)
+                await connection.OpenAsync(ct);
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            command.CommandType = CommandType.Text;
+            command.CommandTimeout = 90;
+
+            var thresholdParam = command.CreateParameter();
+            thresholdParam.ParameterName = "@threshold";
+            thresholdParam.Value = threshold;
+            thresholdParam.DbType = DbType.Decimal;
+            command.Parameters.Add(thresholdParam);
+
+            await using var reader = await command.ExecuteReaderAsync(ct);
+            if (await reader.ReadAsync(ct))
             {
-                ConsumerNo = group.Key,
-                Outstanding = group.Sum(x =>
-                {
-                    var total = ToDecimal(x.Total);
-                    var paid = x.PaidDate.HasValue || string.Equals(x.PaidStatus, "Y", StringComparison.OrdinalIgnoreCase)
-                        ? (x.PaidAmt.HasValue ? ToDecimal(x.PaidAmt.Value) : total)
-                        : ToDecimal(x.PaidAmt ?? 0d);
-                    return Math.Max(0m, total - paid);
-                })
-            })
-            .Where(x => x.Outstanding >= threshold)
-            .ToList();
+                defaulterCount = reader.IsDBNull(0) ? 0 : reader.GetInt32(0);
+                totalOutstanding = reader.IsDBNull(1) ? 0m : Convert.ToDecimal(reader.GetValue(1));
+            }
+        }
+        finally
+        {
+            if (shouldClose && connection.State == ConnectionState.Open)
+                await connection.CloseAsync();
+        }
 
         return new DashboardDefaulterWidgetViewModel
         {
             Title = "Defaulters",
             Caption = "Consumers with outstanding dues at or above the configured threshold",
             TotalConsumers = totalConsumers,
-            ConsumerCount = defaulters.Count,
-            NonDefaulterCount = Math.Max(0, totalConsumers - defaulters.Count),
-            TotalOutstandingAmount = defaulters.Sum(x => x.Outstanding),
+            ConsumerCount = defaulterCount,
+            NonDefaulterCount = Math.Max(0, totalConsumers - defaulterCount),
+            TotalOutstandingAmount = totalOutstanding,
+            ThresholdAmount = threshold,
+            ConfiguredThresholdAmount = AppConstants.DefaulterDueThreshold,
+            Url = "/ReportsMis?reportType=Dues"
+        };
+    }
+
+    private static DashboardDefaulterWidgetViewModel BuildDefaulterFallbackWidget(int totalConsumers, decimal? defaulterThreshold)
+    {
+        var threshold = defaulterThreshold.HasValue && defaulterThreshold.Value > 0
+            ? defaulterThreshold.Value
+            : AppConstants.DefaulterDueThreshold;
+
+        return new DashboardDefaulterWidgetViewModel
+        {
+            Title = "Defaulters",
+            Caption = "Consumers with outstanding dues at or above the configured threshold",
+            TotalConsumers = totalConsumers,
+            ConsumerCount = 0,
+            NonDefaulterCount = totalConsumers,
+            TotalOutstandingAmount = 0m,
             ThresholdAmount = threshold,
             ConfiguredThresholdAmount = AppConstants.DefaulterDueThreshold,
             Url = "/ReportsMis?reportType=Dues"

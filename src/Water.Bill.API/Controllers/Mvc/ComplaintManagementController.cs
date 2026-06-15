@@ -8,6 +8,7 @@ using Water.Bill.API.Models.Complaints;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Security;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
@@ -167,9 +168,11 @@ public class ComplaintManagementController : Controller
         if (document is null)
             return NotFound();
 
-        var fullPath = Path.Combine(GetStorageBasePath(), document.FilePath.Replace('/', Path.DirectorySeparatorChar));
+        if (!FileUploadSecurityHelper.TryResolveSafeStoredFilePath(GetStorageBasePath(), document.FilePath, out var fullPath))
+            return NotFound();
+
         return System.IO.File.Exists(fullPath)
-            ? PhysicalFile(fullPath, document.ContentType ?? "application/octet-stream", document.FileName)
+            ? PhysicalFile(fullPath, FileUploadSecurityHelper.ResolveSafeContentType(document.FilePath), document.FileName)
             : NotFound();
     }
 

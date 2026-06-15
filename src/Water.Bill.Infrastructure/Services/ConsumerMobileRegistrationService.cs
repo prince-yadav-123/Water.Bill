@@ -22,19 +22,22 @@ public class ConsumerMobileRegistrationService : IConsumerMobileRegistrationServ
     private readonly ApplicationDbContext _db;
     private readonly ICommunicationService _communicationService;
     private readonly ILogger<ConsumerMobileRegistrationService> _logger;
+    private readonly IOtpThrottleService _otpThrottleService;
     private readonly string? _configuredDefaultOtp;
 
     public ConsumerMobileRegistrationService(
         ApplicationDbContext db,
         ICommunicationService communicationService,
         IConfiguration configuration,
-        ILogger<ConsumerMobileRegistrationService> logger)
+        ILogger<ConsumerMobileRegistrationService> logger,
+        IOtpThrottleService otpThrottleService)
     {
         _db = db;
         _communicationService = communicationService;
         _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Communication:Sms:DefaultOtp"])
             ?? NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
         _logger = logger;
+        _otpThrottleService = otpThrottleService;
     }
 
     public async Task<ConsumerMobileRegistrationEligibilityResult> CheckEligibilityAsync(string consumerNo, CancellationToken ct = default)
@@ -87,6 +90,9 @@ public class ConsumerMobileRegistrationService : IConsumerMobileRegistrationServ
 
         if (!string.IsNullOrWhiteSpace(NormalizeMobileNo(consumer.MobNo)))
             throw new InvalidOperationException("Mobile number is already registered for this Consumer Number.");
+
+        if (!_otpThrottleService.TryConsumeRequest(Purpose, $"{normalizedConsumerNo}:{normalizedMobileNo}", out _))
+            throw new InvalidOperationException("Too many OTP requests. Please try again after some time.");
 
         var now = DateTime.UtcNow;
         var activeOtp = await _db.ConsumerOtpVerifications
@@ -143,8 +149,7 @@ public class ConsumerMobileRegistrationService : IConsumerMobileRegistrationServ
             ConsumerNo = normalizedConsumerNo,
             MaskedMobileNo = MaskMobileNo(normalizedMobileNo),
             ExpiresAt = expiresAt,
-            ResendAvailableInSeconds = ResendCooldownSeconds,
-            DevelopmentOtp = otp
+            ResendAvailableInSeconds = ResendCooldownSeconds
         };
     }
 

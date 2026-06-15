@@ -234,6 +234,14 @@ public class BillsController : Controller
             });
         }
 
+        if (_paymentService.IsDevelopmentMode())
+        {
+            var processed = await _paymentService.ProcessDevelopmentSuccessAsync(result.JalReferenceId, BuildPaymentActorContext(), ct);
+            TempData[processed.Success ? "SuccessMessage" : "ErrorMessage"] = processed.Message
+                ?? (processed.Success ? "Payment simulated successfully." : "Payment simulation failed.");
+            return RedirectToAction(nameof(Current));
+        }
+
         return RedirectToAction(nameof(PaymentStarted), new { referenceId = result.JalReferenceId });
     }
 
@@ -552,4 +560,13 @@ public class BillsController : Controller
         "UPI" => "UPI",
         _ => "AX"
     };
+
+    private PaymentActorContextDto BuildPaymentActorContext()
+        => new()
+        {
+            UserName = User.FindFirstValue("FullName") ?? User.Identity?.Name ?? ResolveConsumerNo(),
+            UserRole = AppConstants.Roles.Consumer,
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = Request.Headers.UserAgent.ToString()
+        };
 }

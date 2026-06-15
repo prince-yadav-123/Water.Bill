@@ -66,8 +66,6 @@ public class ConsumerOtpViewModel : IValidatableObject
 
     public int ResendAvailableInSeconds { get; set; }
 
-    public string? DevelopmentOtp { get; set; }
-
     [Display(Name = "OTP")]
     public string? Otp { get; set; }
 

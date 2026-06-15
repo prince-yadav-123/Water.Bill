@@ -15,6 +15,8 @@ public class PaymentInitiationRequestDto
     public double Amount { get; set; }
     public string GatewayCode { get; set; } = "AX";
     public string BillOrNdc { get; set; } = "Bill";
+    public string? ContextId { get; set; }
+    public string? ContextReferenceNo { get; set; }
     public string? IpAddress { get; set; }
     public string? UserAgent { get; set; }
 }

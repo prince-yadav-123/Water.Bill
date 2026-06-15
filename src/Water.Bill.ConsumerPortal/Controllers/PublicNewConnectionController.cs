@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Water.Bill.Application.DTOs.NewConnection;
+using Water.Bill.Application.DTOs.Payments;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.ViewModels;
+using Water.Bill.Infrastructure.Security;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
@@ -18,19 +20,22 @@ public class PublicNewConnectionController : Controller
     private readonly INewConnectionApplicationService _applicationService;
     private readonly INewConnectionLookupService _lookupService;
     private readonly INewConnectionFeeService _feeService;
+    private readonly IConsumerPaymentService _paymentService;
 
     public PublicNewConnectionController(
         IConfiguration configuration,
         IPublicNewConnectionOtpService otpService,
         INewConnectionApplicationService applicationService,
         INewConnectionLookupService lookupService,
-        INewConnectionFeeService feeService)
+        INewConnectionFeeService feeService,
+        IConsumerPaymentService paymentService)
     {
         _configuration = configuration;
         _otpService = otpService;
         _applicationService = applicationService;
         _lookupService = lookupService;
         _feeService = feeService;
+        _paymentService = paymentService;
     }
 
     [HttpGet("/NewConnection/Start")]
@@ -53,8 +58,6 @@ public class PublicNewConnectionController : Controller
         {
             var result = await _otpService.RequestOtpAsync(mobileNumber, ct);
             TempData["OtpMessage"] = $"OTP sent to {result.MaskedMobileNumber}.";
-            if (!string.IsNullOrWhiteSpace(result.DevelopmentOtp))
-                TempData["DevelopmentOtp"] = result.DevelopmentOtp;
 
             return RedirectToAction(nameof(VerifyOtp), new { mobileNumber = result.MobileNumber, mode = NormalizeMode(mode) });
         }
@@ -324,6 +327,7 @@ public class PublicNewConnectionController : Controller
         if (mobile is null)
             return RedirectToAction(nameof(Start));
 
+        ViewData["IsDevelopmentPayment"] = _paymentService.IsDevelopmentMode();
         var model = await BuildPaymentModelAsync(id, mobile, true, step, paymentMethod, paymentIdentifier, ct);
         if (model is null)
             return NotFound();
@@ -348,28 +352,58 @@ public class PublicNewConnectionController : Controller
         if (model is null)
             return NotFound();
 
-        try
+        var result = await _paymentService.InitiatePaymentAsync(new PaymentInitiationRequestDto
         {
-            var result = await _applicationService.CompletePublicPaymentAsync(id, mobile, new NewConnectionPaymentRequestDto
-            {
-                FeeQuote = model.Fee,
-                ActionByName = mobile,
-                ActionByRole = "PublicApplicant",
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                UserAgent = Request.Headers.UserAgent.ToString(),
-                PaymentMethod = paymentMethod,
-                PaymentIdentifier = paymentIdentifier,
-                StartWorkflow = true
-            }, ct);
+            ConsumerNo = $"NC{id}",
+            ConsumerName = model.Application.ApplicantName,
+            ConsumerProperty = $"{model.Application.Sector} / {model.Application.Block} / {model.Application.FlatNo}",
+            MobileNo = model.Application.MobileNumber,
+            Email = model.Application.EmailId,
+            BillNo = model.Application.ApplicationNo,
+            ChallanNo = id.ToString(),
+            Amount = Convert.ToDouble(model.Fee.TotalAmount),
+            GatewayCode = paymentMethod ?? "AX",
+            BillOrNdc = PaymentReferenceKinds.NewConnection,
+            ContextId = id.ToString(),
+            ContextReferenceNo = model.Application.ApplicationNo,
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = Request.Headers.UserAgent.ToString()
+        }, ct);
 
-            TempData["SuccessMessage"] = $"Application submitted successfully. Application Number: {result.ApplicationNo}.";
-            return RedirectToAction(nameof(Details), new { id = result.Id });
-        }
-        catch (InvalidOperationException ex)
+        if (!result.Success || string.IsNullOrWhiteSpace(result.JalReferenceId))
         {
-            TempData["ErrorMessage"] = ex.Message;
+            TempData["ErrorMessage"] = result.Message ?? "Payment reference could not be created.";
             return RedirectToAction(nameof(Payment), new { id, step = 3, paymentMethod, paymentIdentifier });
         }
+
+        if (_paymentService.IsDevelopmentMode())
+        {
+            var processed = await _paymentService.ProcessDevelopmentSuccessAsync(result.JalReferenceId, BuildPaymentActorContext());
+            TempData[processed.Success ? "SuccessMessage" : "ErrorMessage"] = processed.Message
+                ?? (processed.Success ? "Application payment simulated successfully." : "Application payment simulation failed.");
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        return RedirectToAction(nameof(PaymentStarted), new { referenceId = result.JalReferenceId });
+    }
+
+    [HttpGet("/NewConnection/PaymentStarted/{referenceId}")]
+    public async Task<IActionResult> PaymentStarted(string referenceId, CancellationToken ct)
+    {
+        var mobile = GetVerifiedMobile();
+        if (mobile is null)
+            return RedirectToAction(nameof(Start));
+
+        ViewData["Title"] = "Payment Initiated";
+        ViewData["IsPublicFlow"] = true;
+        var result = await _paymentService.GetInitiatedPaymentAsync(referenceId, null, ct);
+        if (result is null)
+        {
+            TempData["ErrorMessage"] = "Payment reference was not found for this application.";
+            return RedirectToAction(nameof(MyApplications));
+        }
+
+        return View("~/Views/NewConnection/PaymentStarted.cshtml", result);
     }
 
     [HttpGet("/NewConnection/Resubmit/{id:long}")]
@@ -494,6 +528,15 @@ public class PublicNewConnectionController : Controller
     private int? ResolveDevType()
         => int.TryParse(_configuration["NewConnection:DefaultDevType"], out var devType) ? devType : null;
 
+    private PaymentActorContextDto BuildPaymentActorContext()
+        => new()
+        {
+            UserName = GetVerifiedMobile() ?? "PublicApplicant",
+            UserRole = "PublicApplicant",
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = Request.Headers.UserAgent.ToString()
+        };
+
     private async Task<NewConnectionPaymentViewModel?> BuildPaymentModelAsync(
         long id,
         string mobile,
@@ -537,29 +580,16 @@ public class PublicNewConnectionController : Controller
         if (string.IsNullOrWhiteSpace(storageRoot))
             throw new InvalidOperationException("Document storage path is not configured.");
 
-        var maxUploadSizeMb = int.TryParse(_configuration["FileStorage:MaxUploadSizeMb"], out var configuredMaxUploadSizeMb)
-            ? configuredMaxUploadSizeMb
-            : 5;
-        var maxBytes = maxUploadSizeMb * 1024L * 1024L;
-        var allowedExtensions = _configuration.GetSection("FileStorage:AllowedExtensions")
-            .GetChildren()
-            .Select(x => x.Value)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .ToArray();
-        if (allowedExtensions.Length == 0)
-            allowedExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
+        var options = FileUploadSecurityHelper.BuildOptions(_configuration);
         var uploadRoot = Path.Combine(storageRoot, applicationNo);
         Directory.CreateDirectory(uploadRoot);
 
         foreach (var file in files.Where(x => x.Length > 0))
         {
-            if (file.Length > maxBytes)
-                throw new InvalidOperationException($"Each document must be {maxUploadSizeMb} MB or smaller.");
+            if (!FileUploadSecurityHelper.TryValidate(file, options, out var errorMessage))
+                throw new InvalidOperationException(errorMessage!);
 
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-                throw new InvalidOperationException("Only PDF, JPG, JPEG, and PNG documents are allowed.");
-
             var safeOriginalName = MakeSafeFileName(Path.GetFileNameWithoutExtension(file.FileName));
             var safeName = $"{safeOriginalName}-{Guid.NewGuid():N}{extension}";
             var physicalPath = Path.Combine(uploadRoot, safeName);
@@ -571,7 +601,7 @@ public class PublicNewConnectionController : Controller
                 DocumentType = ResolveDocumentType(file.Name),
                 FileName = Path.GetFileName(file.FileName),
                 FilePath = $"{applicationNo}/{safeName}",
-                ContentType = file.ContentType,
+                ContentType = FileUploadSecurityHelper.ResolveSafeContentType(file.FileName),
                 FileSize = file.Length
             });
         }

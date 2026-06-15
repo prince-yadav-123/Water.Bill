@@ -257,35 +257,29 @@ public sealed class NotificationDispatchService : INotificationDispatchService
         // AllConsumers overrides everything
         if (targets.Any(t => t.TargetType == "AllConsumers" && !t.IsDeleted))
         {
-            var consumerRows = await _db.ConsumerDetailsMasters.AsNoTracking()
-                .Where(x => x.Status == 1 && x.DeleteDate == null)
-                .Select(x => new
-                {
-                    ConsNo = x.ConsNo,
-                    Name = x.ConsNm1 ?? x.ConsNo,
-                    Email = x.EmailId ?? string.Empty,
-                    Mobile = x.MobNo ?? string.Empty
-                })
+            var consumerRecipients = await
+                (from consumerUser in _db.ConsumerUsers.AsNoTracking()
+                 join consumer in _db.ConsumerDetailsMasters.AsNoTracking()
+                     on consumerUser.ConsumerNo equals consumer.ConsNo
+                 where consumerUser.IsActive && !consumerUser.IsDeleted
+                       && consumer.Status == 1
+                       && consumer.DeleteDate == null
+                 select new
+                 {
+                     UserId = consumerUser.Id,
+                     Name = !string.IsNullOrWhiteSpace(consumerUser.Username)
+                         ? consumerUser.Username
+                         : (consumer.ConsNm1 ?? consumer.ConsNo),
+                     Email = !string.IsNullOrWhiteSpace(consumerUser.Email)
+                         ? consumerUser.Email!
+                         : (consumer.EmailId ?? string.Empty),
+                     Mobile = consumer.MobNo ?? string.Empty
+                 })
                 .ToListAsync(ct);
 
-            var consumerNos = consumerRows
-                .Select(x => x.ConsNo)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Trim().ToUpperInvariant())
-                .ToList();
-
-            var linkedUsers = await _db.ConsumerUsers.AsNoTracking()
-                .Where(x => x.IsActive && !x.IsDeleted && x.ConsumerNo != null && consumerNos.Contains(x.ConsumerNo))
-                .Select(x => new { x.Id, x.ConsumerNo })
-                .ToListAsync(ct);
-
-            var linkedByNo = linkedUsers
-                .GroupBy(x => x.ConsumerNo!)
-                .ToDictionary(g => g.Key, g => g.First().Id);
-
-            return consumerRows
+            return consumerRecipients
                 .Select(x => new NotifRecipient(
-                    linkedByNo.TryGetValue(x.ConsNo.Trim().ToUpperInvariant(), out var userId) ? userId : 0,
+                    x.UserId,
                     x.Name,
                     x.Email,
                     x.Mobile,
@@ -295,65 +289,44 @@ public sealed class NotificationDispatchService : INotificationDispatchService
 
         var activeTargets = targets.Where(t => !t.IsDeleted).ToList();
 
-        foreach (var target in activeTargets)
-        {
-            switch (target.TargetType)
-            {
-                case "ConsumerUser" when long.TryParse(target.TargetId, out var uid):
-                    var consumerUserExists = await _db.ConsumerUsers.AsNoTracking()
-                        .AnyAsync(x => x.Id == (int)uid && x.IsActive && !x.IsDeleted, ct);
-                    if (!consumerUserExists)
-                        break;
-                    break;
-
-                case "ConsumerNo" when !string.IsNullOrWhiteSpace(target.TargetId):
-                    // ConsumerNo is stored uppercase (NormalizeConsumerNo)
-                    var normalized = target.TargetId.Trim().ToUpperInvariant();
-                    var consumerExists = await _db.ConsumerDetailsMasters.AsNoTracking()
-                        .AnyAsync(x => x.ConsNo == normalized && x.Status == 1 && x.DeleteDate == null, ct);
-
-                    if (!consumerExists)
-                        break;
-                    break;
-            }
-        }
-
         var normalizedTargets = activeTargets
             .Where(t => t.TargetType == "ConsumerNo" && !string.IsNullOrWhiteSpace(t.TargetId))
             .Select(t => t.TargetId!.Trim().ToUpperInvariant())
+            .Distinct()
             .ToList();
 
         var recipients = new List<NotifRecipient>();
 
         if (normalizedTargets.Count > 0)
         {
-            var masterMatches = await _db.ConsumerDetailsMasters.AsNoTracking()
-                .Where(x => normalizedTargets.Contains(x.ConsNo) && x.Status == 1 && x.DeleteDate == null)
-                .Select(x => new
+            var matchedConsumers = await
+                (from consumer in _db.ConsumerDetailsMasters.AsNoTracking()
+                 join consumerUser in _db.ConsumerUsers.AsNoTracking().Where(x => x.IsActive && !x.IsDeleted)
+                     on consumer.ConsNo equals consumerUser.ConsumerNo into consumerUserGroup
+                 from consumerUser in consumerUserGroup.DefaultIfEmpty()
+                 where normalizedTargets.Contains(consumer.ConsNo)
+                       && consumer.Status == 1
+                       && consumer.DeleteDate == null
+                 select new
                 {
-                    ConsNo = x.ConsNo,
-                    Name = x.ConsNm1 ?? x.ConsNo,
-                    Email = x.EmailId ?? string.Empty,
-                    Mobile = x.MobNo ?? string.Empty
+                    UserId = consumerUser != null ? consumerUser.Id : 0,
+                    Name = consumerUser != null && !string.IsNullOrWhiteSpace(consumerUser.Username)
+                        ? consumerUser.Username
+                        : (consumer.ConsNm1 ?? consumer.ConsNo),
+                    Email = consumerUser != null && !string.IsNullOrWhiteSpace(consumerUser.Email)
+                        ? consumerUser.Email!
+                        : (consumer.EmailId ?? string.Empty),
+                    Mobile = consumer.MobNo ?? string.Empty
                 })
                 .ToListAsync(ct);
 
-            var consumerNos = masterMatches.Select(x => x.ConsNo).ToList();
-
-            var linkedUsers = await _db.ConsumerUsers.AsNoTracking()
-                .Where(x => x.IsActive && !x.IsDeleted && x.ConsumerNo != null && consumerNos.Contains(x.ConsumerNo))
-                .Select(x => new { x.Id, x.ConsumerNo, x.Username, Email = x.Email ?? string.Empty })
-                .ToListAsync(ct);
-
-            foreach (var master in masterMatches)
+            foreach (var consumer in matchedConsumers)
             {
-                var linkedUser = linkedUsers.FirstOrDefault(x => string.Equals(x.ConsumerNo, master.ConsNo, StringComparison.OrdinalIgnoreCase));
-
                 recipients.Add(new NotifRecipient(
-                    linkedUser?.Id ?? 0,
-                    linkedUser?.Username ?? master.Name,
-                    string.IsNullOrWhiteSpace(linkedUser?.Email) ? master.Email : linkedUser!.Email,
-                    master.Mobile,
+                    consumer.UserId,
+                    consumer.Name,
+                    consumer.Email,
+                    consumer.Mobile,
                     "Consumer"));
             }
         }

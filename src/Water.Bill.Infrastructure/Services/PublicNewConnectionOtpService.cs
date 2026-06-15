@@ -19,18 +19,27 @@ public class PublicNewConnectionOtpService : IPublicNewConnectionOtpService
 
     private readonly ApplicationDbContext _db;
     private readonly IConsumerSmsSender _smsSender;
+    private readonly IOtpThrottleService _otpThrottleService;
     private readonly string? _configuredDefaultOtp;
 
-    public PublicNewConnectionOtpService(ApplicationDbContext db, IConsumerSmsSender smsSender, IConfiguration configuration)
+    public PublicNewConnectionOtpService(
+        ApplicationDbContext db,
+        IConsumerSmsSender smsSender,
+        IConfiguration configuration,
+        IOtpThrottleService otpThrottleService)
     {
         _db = db;
         _smsSender = smsSender;
-        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]) ?? "123456";
+        _otpThrottleService = otpThrottleService;
+        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
     }
 
     public async Task<PublicOtpRequestResult> RequestOtpAsync(string mobileNumber, CancellationToken ct = default)
     {
         var mobile = NormalizeMobile(mobileNumber);
+        if (!_otpThrottleService.TryConsumeRequest(Purpose, mobile, out _))
+            throw new InvalidOperationException("Too many OTP requests. Please try again after some time.");
+
         var now = DateTime.UtcNow;
         var activeOtp = await _db.PublicNewConnectionOtpVerifications
             .Where(x => x.MobileNumber == mobile
@@ -82,8 +91,7 @@ public class PublicNewConnectionOtpService : IPublicNewConnectionOtpService
             MobileNumber = mobile,
             MaskedMobileNumber = MaskMobile(mobile),
             ExpiresAt = expiresAt,
-            ResendAvailableInSeconds = ResendCooldownSeconds,
-            DevelopmentOtp = otp
+            ResendAvailableInSeconds = ResendCooldownSeconds
         };
     }
 

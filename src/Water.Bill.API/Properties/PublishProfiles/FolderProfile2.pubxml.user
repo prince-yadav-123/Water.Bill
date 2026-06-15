@@ -3,7 +3,7 @@
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>E:\Application Builds\Water.Bill Builds</_PublishTargetUrl>
-    <History>True|2026-06-15T06:58:38.1541395Z||;True|2026-06-13T12:47:48.0053268+05:30||;True|2026-06-12T18:33:02.4998618+05:30||;True|2026-06-12T18:20:36.3063485+05:30||;</History>
+    <History>True|2026-06-15T18:35:40.7616846Z||;False|2026-06-16T00:05:07.4093632+05:30||;True|2026-06-15T23:43:16.0440287+05:30||;False|2026-06-15T23:42:06.9415690+05:30||;True|2026-06-15T22:57:21.7856940+05:30||;True|2026-06-15T12:28:38.1541395+05:30||;True|2026-06-13T12:47:48.0053268+05:30||;True|2026-06-12T18:33:02.4998618+05:30||;True|2026-06-12T18:20:36.3063485+05:30||;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

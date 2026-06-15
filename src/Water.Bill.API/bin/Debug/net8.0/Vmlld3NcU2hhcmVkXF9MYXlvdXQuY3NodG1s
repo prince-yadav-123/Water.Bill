@@ -182,8 +182,13 @@
                 }
             </nav>
             <div class="wb-sidebar-bottom">
-                @* <a class="wb-nav-link" asp-controller="Profile" asp-action="Index">Profile</a> *@
-                <a class="wb-nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="wb-nav-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="wb-nav-link wb-nav-button">
+                        <span class="wb-nav-icon">L</span>
+                        <span class="wb-nav-text">Logout</span>
+                    </button>
+                </form>
             </div>
         </aside>
     }

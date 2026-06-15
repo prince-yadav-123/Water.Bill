@@ -21,12 +21,18 @@ public class ConsumerOtpService : IConsumerOtpService
 
     private readonly ApplicationDbContext _db;
     private readonly ICommunicationService _communicationService;
+    private readonly IOtpThrottleService _otpThrottleService;
     private readonly string? _configuredDefaultOtp;
 
-    public ConsumerOtpService(ApplicationDbContext db, ICommunicationService communicationService, IConfiguration configuration)
+    public ConsumerOtpService(
+        ApplicationDbContext db,
+        ICommunicationService communicationService,
+        IConfiguration configuration,
+        IOtpThrottleService otpThrottleService)
     {
         _db = db;
         _communicationService = communicationService;
+        _otpThrottleService = otpThrottleService;
         _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Communication:Sms:DefaultOtp"])
             ?? NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
     }
@@ -77,6 +83,9 @@ public class ConsumerOtpService : IConsumerOtpService
         var mobileNo = NormalizeMobileNo(consumer.MobNo);
         if (string.IsNullOrWhiteSpace(mobileNo))
             throw new InvalidOperationException("Mobile number is not registered for this consumer. Please contact support.");
+
+        if (!_otpThrottleService.TryConsumeRequest(Purpose, $"{normalizedConsumerNo}:{mobileNo}", out _))
+            throw new InvalidOperationException("Too many OTP requests. Please try again after some time.");
 
         var now = DateTime.UtcNow;
         var activeOtp = await _db.Set<ConsumerOtpVerification>()
@@ -130,8 +139,7 @@ public class ConsumerOtpService : IConsumerOtpService
             ConsumerNo = normalizedConsumerNo,
             MaskedMobileNo = MaskMobileNo(mobileNo),
             ExpiresAt = expiresAt,
-            ResendAvailableInSeconds = ResendCooldownSeconds,
-            DevelopmentOtp = otp
+            ResendAvailableInSeconds = ResendCooldownSeconds
         };
     }
 
@@ -196,10 +204,17 @@ public class ConsumerOtpService : IConsumerOtpService
             .AsNoTracking()
             .FirstOrDefaultAsync(x => !x.IsDeleted && x.Name.ToLower() == AppConstants.Roles.Consumer.ToLower(), ct);
 
+        var consumerUserId = await _db.ConsumerUsers
+            .AsNoTracking()
+            .Where(x => !x.IsDeleted && x.ConsumerNo == normalizedConsumerNo)
+            .Select(x => (int?)x.Id)
+            .FirstOrDefaultAsync(ct);
+
         await _db.SaveChangesAsync(ct);
 
         return new ConsumerOtpVerifyResult
         {
+            ConsumerUserId = consumerUserId,
             ConsumerNo = normalizedConsumerNo,
             ConsumerName = GetConsumerName(consumer),
             Email = consumer.EmailId,

@@ -1,0 +1,68 @@
+@model ConsumerLoginUserDetailsViewModel
+@{
+    ViewData["Title"] = "Consumer Login Details";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Consumer Login Details</h1>
+        <p>Review Consumer Portal login account and linked consumer information.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit Login</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-form-card wb-form-card-wide">
+    <dl class="wb-detail-grid">
+        <div>
+            <dt>Consumer Number</dt>
+            <dd>@Model.ConsumerNo</dd>
+        </div>
+        <div>
+            <dt>Status</dt>
+            <dd><span class="badge @(Model.IsActive ? "text-bg-success" : "text-bg-secondary")">@(Model.IsActive ? "Active" : "Inactive")</span></dd>
+        </div>
+        <div>
+            <dt>Consumer Name</dt>
+            <dd>@Model.ConsumerName</dd>
+        </div>
+        <div>
+            <dt>Consumer Mobile</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.ConsumerMobileNo) ? "-" : Model.ConsumerMobileNo)</dd>
+        </div>
+        <div>
+            <dt>Consumer Email</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.ConsumerEmail) ? "-" : Model.ConsumerEmail)</dd>
+        </div>
+        <div>
+            <dt>Login Email</dt>
+            <dd>@(string.IsNullOrWhiteSpace(Model.Email) ? "-" : Model.Email)</dd>
+        </div>
+        <div>
+            <dt>Username</dt>
+            <dd>@Model.Username</dd>
+        </div>
+        <div>
+            <dt>Failed Login Count</dt>
+            <dd>@Model.FailedLoginCount</dd>
+        </div>
+        <div>
+            <dt>Lockout Until</dt>
+            <dd>@(Model.LockoutUntil.HasValue ? Model.LockoutUntil.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") : "-")</dd>
+        </div>
+        <div>
+            <dt>Last Login</dt>
+            <dd>@(Model.LastLoginAt.HasValue ? Model.LastLoginAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") : "-")</dd>
+        </div>
+        <div>
+            <dt>Created</dt>
+            <dd>@Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</dd>
+        </div>
+        <div>
+            <dt>Last Updated</dt>
+            <dd>@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") : "-")</dd>
+        </div>
+    </dl>
+</section>

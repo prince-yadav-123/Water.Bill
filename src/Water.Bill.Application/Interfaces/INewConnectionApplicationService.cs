@@ -14,6 +14,8 @@ public interface INewConnectionApplicationService
 
     Task<NewConnectionApplicationDetailsDto> CompleteConsumerPaymentAsync(long id, string consumerNo, int? consumerUserId, NewConnectionPaymentRequestDto request, CancellationToken ct = default);
 
+    Task<NewConnectionApplicationDetailsDto> FinalizeGatewayPaymentAsync(long id, NewConnectionPaymentRequestDto request, CancellationToken ct = default);
+
     Task<NewConnectionApplicationDetailsDto?> TrackAsync(string applicationNo, string mobileNumber, CancellationToken ct = default);
 
     Task<IReadOnlyList<NewConnectionApplicationSummaryDto>> GetConsumerApplicationsAsync(string consumerNo, int? consumerUserId, CancellationToken ct = default);

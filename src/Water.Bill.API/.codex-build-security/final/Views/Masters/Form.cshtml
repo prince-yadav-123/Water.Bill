@@ -1,0 +1,84 @@
+@model Water.Bill.API.ViewModels.MasterFormViewModel
+
+<div class="wb-page-head">
+    <div>
+        <h1>@(Model.IsEdit ? "Edit" : "Create") @Model.Title</h1>
+        <p>Manage values used by the New Connection flow and related old-compatible tables.</p>
+    </div>
+    <div class="wb-actions">
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-key="@Model.Key">Back to list</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="row g-3">
+            @foreach (var field in Model.Fields)
+            {
+                <div class="col-12 col-md-6">
+                    <label class="form-label" for="@field.Name">
+                        @field.Label
+                        @if (field.IsRequired)
+                        {
+                            <span class="text-danger">*</span>
+                        }
+                    </label>
+                    @if (field.Name == "Status")
+                    {
+                        var isActive = string.IsNullOrWhiteSpace(field.Value) || field.Value != "0";
+                        <div class="d-flex flex-wrap gap-3">
+                            <div class="form-check wb-form-check">
+                                <input class="form-check-input" id="@field.Name-Active" name="@field.Name" type="radio" value="1" @(isActive ? "checked" : "") @(field.IsReadOnly ? "disabled" : "") />
+                                <label class="form-check-label" for="@field.Name-Active">Active</label>
+                            </div>
+                            <div class="form-check wb-form-check">
+                                <input class="form-check-input" id="@field.Name-Inactive" name="@field.Name" type="radio" value="0" @(!isActive ? "checked" : "") @(field.IsReadOnly ? "disabled" : "") />
+                                <label class="form-check-label" for="@field.Name-Inactive">Inactive</label>
+                            </div>
+                        </div>
+                        @if (field.IsReadOnly)
+                        {
+                            <input type="hidden" name="@field.Name" value="@(isActive ? "1" : "0")" />
+                        }
+                    }
+                    else if (field.InputType == "select")
+                    {
+                        <select class="form-select" id="@field.Name" name="@field.Name" @(field.IsReadOnly ? "disabled" : "")>
+                            <option value="">Select @field.Label</option>
+                            @foreach (var option in field.Options)
+                            {
+                                if (string.Equals(option.Value, field.Value, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <option value="@option.Value" selected>@option.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@option.Value">@option.Text</option>
+                                }
+                            }
+                        </select>
+                        @if (field.IsReadOnly)
+                        {
+                            <input type="hidden" name="@field.Name" value="@field.Value" />
+                        }
+                    }
+                    else
+                    {
+                        <input class="form-control" id="@field.Name" name="@field.Name" type="@field.InputType" value="@field.Value" @(field.IsReadOnly ? "readonly" : "") />
+                    }
+                    @if (ViewData.ModelState.TryGetValue(field.Name, out var state) && state.Errors.Count > 0)
+                    {
+                        <span class="text-danger small">@state.Errors[0].ErrorMessage</span>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" asp-action="Index" asp-route-key="@Model.Key">Cancel</a>
+            <button type="submit" class="btn btn-primary">@(Model.IsEdit ? "Save Changes" : "Create")</button>
+        </div>
+    </form>
+</section>

@@ -95,13 +95,6 @@
                     }
                 </div>
 
-                @if (!string.IsNullOrWhiteSpace(Model.DevelopmentOtp))
-                {
-                    <div class="alert alert-info">
-                        <span>Development OTP: <strong>@Model.DevelopmentOtp</strong></span>
-                    </div>
-                }
-
                 <div class="wb-form-grid single">
                     <div>
                         <label asp-for="Otp" class="form-label required"></label>

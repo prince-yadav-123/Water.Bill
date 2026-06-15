@@ -328,13 +328,21 @@ public class NotificationManagementController : Controller
     {
         var userId = ResolveInternalUserId();
         if (userId == 0)
+        {
+            TempData["NotificationMessage"] = "Please sign in again to open this notification.";
+            TempData["NotificationMessageType"] = "warning";
             return RedirectToAction(nameof(MyNotifications));
+        }
 
         var notif = await _db.InAppNotifications
             .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId && x.UserType == "Internal" && !x.IsDeleted, ct);
 
         if (notif is null)
+        {
+            TempData["NotificationMessage"] = "This notification is not available anymore.";
+            TempData["NotificationMessageType"] = "warning";
             return RedirectToAction(nameof(MyNotifications));
+        }
 
         if (!notif.IsRead)
         {
@@ -345,9 +353,24 @@ public class NotificationManagementController : Controller
 
         var nav = NotificationNavigationHelper.ResolveForInternal(notif.RedirectUrl, notif.ReferenceType, notif.ReferenceId, notif.ReferenceNo);
         if (!nav.HasTarget || string.IsNullOrWhiteSpace(nav.Url))
+        {
+            TempData["NotificationMessage"] = "This notification does not have a valid destination.";
+            TempData["NotificationMessageType"] = "info";
             return RedirectToAction(nameof(MyNotifications));
+        }
 
-        return Redirect(nav.Url);
+        if (Url.IsLocalUrl(nav.Url))
+            return LocalRedirect(nav.Url);
+
+        if (Uri.TryCreate(nav.Url, UriKind.Absolute, out var absoluteUri) &&
+            (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
+        {
+            return Redirect(nav.Url);
+        }
+
+        TempData["NotificationMessage"] = "This notification link is not allowed.";
+        TempData["NotificationMessageType"] = "warning";
+        return RedirectToAction(nameof(MyNotifications));
     }
 
     [HttpPost, ValidateAntiForgeryToken]

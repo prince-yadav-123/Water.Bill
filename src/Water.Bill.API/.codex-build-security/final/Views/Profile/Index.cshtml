@@ -1,0 +1,111 @@
+@using Water.Bill.Infrastructure.Data.Entities
+@model Appuser
+@{
+    ViewData["Title"] = "My Profile";
+    var initials = string.IsNullOrWhiteSpace(Model.FullName)
+        ? Model.Username[..Math.Min(2, Model.Username.Length)].ToUpperInvariant()
+        : string.Concat(Model.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => p[0])).ToUpperInvariant();
+}
+
+<div class="wb-page-head">
+    <div>
+        <p class="wb-kicker">Administration</p>
+        <h1>My Profile</h1>
+        <p>View and update your account details.</p>
+    </div>
+</div>
+
+<div class="row g-3">
+
+    @* ── Profile Card ── *@
+    <div class="col-12 col-xl-4">
+        <section class="wb-page-card wb-admin-card h-100">
+            <div class="d-flex flex-column align-items-center text-center py-3 gap-3">
+                <div class="wb-profile-avatar-lg">@initials</div>
+                <div>
+                    <div class="fw-bold fs-5">@Model.FullName</div>
+                    <div class="text-muted" style="font-size:.9rem">@@@Model.Username</div>
+                    <span class="badge text-bg-primary mt-1">@(Model.Role?.Name ?? "User")</span>
+                </div>
+                <div class="w-100 border-top pt-3 text-start">
+                    <dl class="row g-2 mb-0">
+                        <dt class="col-5 text-muted" style="font-size:.82rem">Email</dt>
+                        <dd class="col-7 fw-semibold" style="font-size:.88rem;word-break:break-word">@Model.Email</dd>
+
+                        <dt class="col-5 text-muted" style="font-size:.82rem">Mobile</dt>
+                        <dd class="col-7 fw-semibold" style="font-size:.88rem">@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "-" : Model.PhoneNumber)</dd>
+
+                        <dt class="col-5 text-muted" style="font-size:.82rem">Role</dt>
+                        <dd class="col-7 fw-semibold" style="font-size:.88rem">@(Model.Role?.Name ?? "-")</dd>
+
+                        <dt class="col-5 text-muted" style="font-size:.82rem">Last Login</dt>
+                        <dd class="col-7 fw-semibold" style="font-size:.88rem">
+                            @(Model.LastLoginAt.HasValue ? Model.LastLoginAt.Value.ToString("dd MMM yyyy hh:mm tt") : "Not recorded")
+                        </dd>
+
+                        <dt class="col-5 text-muted" style="font-size:.82rem">Member Since</dt>
+                        <dd class="col-7 fw-semibold" style="font-size:.88rem">@Model.CreatedAt.ToString("dd MMM yyyy")</dd>
+                    </dl>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    @* ── Edit Form ── *@
+    <div class="col-12 col-xl-8">
+        <section class="wb-page-card wb-admin-card">
+            <div class="wb-card-title-row mb-3">
+                <div>
+                    <p class="wb-kicker">Profile Settings</p>
+                    <h2>Update Details</h2>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] is string msg)
+            {
+                <div class="alert alert-success">@msg</div>
+            }
+
+            <form asp-action="Update" method="post" class="wb-form-grid">
+                @Html.AntiForgeryToken()
+
+                <div class="wb-field">
+                    <label class="form-label required">Full Name</label>
+                    <input name="fullName" class="form-control" value="@Model.FullName" maxlength="200" required />
+                </div>
+
+                <div class="wb-field">
+                    <label class="form-label">Username</label>
+                    <input class="form-control" value="@Model.Username" disabled />
+                    <div class="form-text text-muted">Username cannot be changed.</div>
+                </div>
+
+                <div class="wb-field">
+                    <label class="form-label">Email Address</label>
+                    <input class="form-control" value="@Model.Email" disabled />
+                    <div class="form-text text-muted">Email is managed by administration.</div>
+                </div>
+
+                <div class="wb-field">
+                    <label class="form-label">Mobile / Phone</label>
+                    <input name="phoneNumber" class="form-control" value="@Model.PhoneNumber" maxlength="15"
+                           placeholder="Enter mobile number" inputmode="tel" />
+                </div>
+
+                <div class="wb-field wb-field-wide">
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+<style>
+    .wb-profile-avatar-lg {
+        width: 5rem; height: 5rem; border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff; font-size: 1.75rem; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; box-shadow: 0 6px 20px rgba(37,99,235,.3);
+    }
+</style>

@@ -2,6 +2,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.Application.DTOs.Payments;
+using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
@@ -16,10 +18,12 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 public class ChallansController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IConsumerPaymentService _paymentService;
 
-    public ChallansController(ApplicationDbContext db)
+    public ChallansController(ApplicationDbContext db, IConsumerPaymentService paymentService)
     {
         _db = db;
+        _paymentService = paymentService;
     }
 
     [HttpGet("")]
@@ -102,6 +106,7 @@ public class ChallansController : Controller
     {
         ViewData["Title"] = "Pay Challan";
         ViewData["ActiveMenu"] = "My Challans";
+        ViewData["IsDevelopmentPayment"] = _paymentService.IsDevelopmentMode();
 
         var model = await BuildPaymentModelAsync(id, step, paymentMethod, paymentIdentifier, ct);
         if (model is null)
@@ -149,71 +154,66 @@ public class ChallansController : Controller
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        var now = DateTime.Now;
-        var referenceNo = string.IsNullOrWhiteSpace(paymentIdentifier)
-            ? $"TEST-{now:yyyyMMddHHmmss}-{challan.Id}"
-            : paymentIdentifier;
+        var consumer = await _db.ConsumerDetailsMasters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ConsNo == consumerNo, ct);
 
-        var strategy = _db.Database.CreateExecutionStrategy();
-        await strategy.ExecuteAsync(async () =>
+        var result = await _paymentService.InitiatePaymentAsync(new PaymentInitiationRequestDto
         {
-            await using var tx = await _db.Database.BeginTransactionAsync(ct);
+            ConsumerNo = consumerNo,
+            ConsumerName = consumer?.ConsNm1 ?? challan.DeposeterName ?? $"Consumer {consumerNo}",
+            ConsumerProperty = BuildPropertyNo(challan.Sec ?? consumer?.Sector, challan.Blk ?? consumer?.BlkNo, challan.FlatNo ?? consumer?.FlatNo),
+            MobileNo = consumer?.MobNo,
+            Email = consumer?.EmailId,
+            BillNo = challan.BillId ?? string.Empty,
+            ChallanNo = BuildChallanNo(challan),
+            BillDateFrom = challan.BlPerFr,
+            BillDateTo = challan.BlPerTo,
+            DueDate = challan.DueDt,
+            Amount = amount,
+            GatewayCode = paymentMethod ?? "AX",
+            BillOrNdc = PaymentReferenceKinds.Challan,
+            ContextId = challan.Id.ToString(),
+            ContextReferenceNo = BuildChallanNo(challan),
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = Request.Headers.UserAgent.ToString()
+        }, ct);
 
-            challan.PayDate = now;
-            challan.PaidAmt = amount;
-            challan.Status = "1";
-            challan.ChallanStatus = 1;
-            challan.Upd = "PAID";
-            challan.BankId = challan.BankId ?? "ONLINE";
-            challan.BnkCd = challan.BnkCd ?? "ONLINE";
-            challan.BrNm = challan.BrNm ?? "Simulated Online Payment";
+        if (!result.Success || string.IsNullOrWhiteSpace(result.JalReferenceId))
+        {
+            TempData["ErrorMessage"] = result.Message ?? "Payment reference could not be created.";
+            return RedirectToAction(nameof(Pay), new { id, step = 3, paymentMethod, paymentIdentifier });
+        }
 
-            _db.ChallanPaymentHistories.Add(new ChallanPaymentHistory
-            {
-                ChallanId = challan.Id,
-                ChallanNo = challan.RecpNo ?? challan.ReceiptId,
-                ConsumerNo = challan.ConsNo,
-                SourceBillNo = string.Equals(challan.RevBilFr, "BILL", StringComparison.OrdinalIgnoreCase) ? challan.BillId : null,
-                Amount = amount,
-                PaymentDate = now,
-                PaymentMode = paymentMethod,
-                BankCode = challan.BnkCd,
-                BankName = challan.BrNm,
-                TransactionReferenceNo = referenceNo,
-                Remarks = "Simulated consumer challan payment for current phase.",
-                PostedByUserId = ResolveConsumerUserId(),
-                PostedByName = User.Identity?.Name ?? consumerNo,
-                PostedOn = now
-            });
+        if (_paymentService.IsDevelopmentMode())
+        {
+            var processed = await _paymentService.ProcessDevelopmentSuccessAsync(result.JalReferenceId, BuildPaymentActorContext(), ct);
+            TempData[processed.Success ? "SuccessMessage" : "ErrorMessage"] = processed.Message
+                ?? (processed.Success ? "Challan payment simulated successfully." : "Challan payment simulation failed.");
+            return RedirectToAction(processed.Success ? nameof(Success) : nameof(Pay), new { id });
+        }
 
-            _db.ChallanHistories.Add(new ChallanHistory
-            {
-                ChallanId = challan.Id,
-                ChallanNo = challan.RecpNo ?? challan.ReceiptId,
-                ConsumerNo = challan.ConsNo,
-                FromStatus = currentStatus,
-                ToStatus = ChallanStatus.Paid,
-                Action = "ConsumerPayment",
-                Remarks = $"Consumer simulated payment completed. Ref: {referenceNo}",
-                ActionByUserId = ResolveConsumerUserId(),
-                ActionByName = User.Identity?.Name ?? consumerNo,
-                ActionOn = now
-            });
+        return RedirectToAction(nameof(PaymentStarted), new { referenceId = result.JalReferenceId });
+    }
 
-            await _db.SaveChangesAsync(ct);
+    [HttpGet("PaymentStarted/{referenceId}")]
+    public async Task<IActionResult> PaymentStarted(string referenceId, CancellationToken ct)
+    {
+        ViewData["Title"] = "Payment Initiated";
+        ViewData["ActiveMenu"] = "My Challans";
 
-            if (string.Equals(challan.RevBilFr, "BILL", StringComparison.OrdinalIgnoreCase)
-                && !string.IsNullOrWhiteSpace(challan.BillId)
-                && !string.IsNullOrWhiteSpace(challan.ConsNo))
-            {
-                await MarkSourceBillPaidAsync(challan, amount, now, paymentMethod, ct);
-            }
+        var consumerNo = ResolveConsumerNo();
+        if (string.IsNullOrWhiteSpace(consumerNo))
+            return RedirectToAction("Login", "Account");
 
-            await tx.CommitAsync(ct);
-        });
+        var result = await _paymentService.GetInitiatedPaymentAsync(referenceId, consumerNo, ct);
+        if (result is null)
+        {
+            TempData["ErrorMessage"] = "Payment reference was not found for this consumer account.";
+            return RedirectToAction(nameof(Index));
+        }
 
-        TempData["SuccessMessage"] = $"Challan {challan.RecpNo ?? challan.ReceiptId} paid successfully. Reference: {referenceNo}";
-        return RedirectToAction(nameof(Success), new { id });
+        return View(result);
     }
 
     [HttpGet("Success/{id:long}")]
@@ -435,6 +435,16 @@ WHERE [CONS_NO] = {consumerNo}
         "UPI" => "UPI",
         _ => "UPI"
     };
+
+    private PaymentActorContextDto BuildPaymentActorContext()
+        => new()
+        {
+            UserId = ResolveConsumerUserId(),
+            UserName = User.FindFirstValue("FullName") ?? User.Identity?.Name ?? ResolveConsumerNo(),
+            UserRole = AppConstants.Roles.Consumer,
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = Request.Headers.UserAgent.ToString()
+        };
 
     private static int? PaymentModeCode(string? mode) => mode switch
     {

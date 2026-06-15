@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.DTOs.NewConnection;
 using Water.Bill.Application.Interfaces;
@@ -242,6 +243,9 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             request,
             ct);
     }
+
+    public Task<NewConnectionApplicationDetailsDto> FinalizeGatewayPaymentAsync(long id, NewConnectionPaymentRequestDto request, CancellationToken ct = default)
+        => CompletePaymentAsync(id, _ => true, request, ct);
 
     public async Task<NewConnectionApplicationDetailsDto?> TrackAsync(string applicationNo, string mobileNumber, CancellationToken ct = default)
     {
@@ -719,10 +723,29 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
         NewConnectionPaymentRequestDto request,
         CancellationToken ct)
     {
+        if (_db.Database.CurrentTransaction is not null)
+        {
+            return await CompletePaymentCoreAsync(id, ownershipPredicate, request, ct, useLocalTransaction: false);
+        }
+
         var strategy = _db.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync(async () =>
+            await CompletePaymentCoreAsync(id, ownershipPredicate, request, ct, useLocalTransaction: true));
+    }
+
+    private async Task<NewConnectionApplicationDetailsDto> CompletePaymentCoreAsync(
+        long id,
+        Func<NewConnectionApplication, bool> ownershipPredicate,
+        NewConnectionPaymentRequestDto request,
+        CancellationToken ct,
+        bool useLocalTransaction)
+    {
+        IDbContextTransaction? transaction = null;
+        try
         {
-            await using var transaction = await _db.Database.BeginTransactionAsync(ct);
+            if (useLocalTransaction)
+                transaction = await _db.Database.BeginTransactionAsync(ct);
+
             var now = DateTime.Now;
             var entity = await _db.NewConnectionApplications
                 .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct)
@@ -801,11 +824,18 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             }
 
             await _db.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+            if (transaction is not null)
+                await transaction.CommitAsync(ct);
+
             return await EnrichWorkflowProgressAsync(
                 (await GetDetailsQuery().FirstAsync(x => x.Id == entity.Id, ct))!,
                 ct);
-        });
+        }
+        finally
+        {
+            if (transaction is not null)
+                await transaction.DisposeAsync();
+        }
     }
 
     private async Task<NewConnectionApplicationDetailsDto> EnrichWorkflowProgressAsync(NewConnectionApplicationDetailsDto details, CancellationToken ct)

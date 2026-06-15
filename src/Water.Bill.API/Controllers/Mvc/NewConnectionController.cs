@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Water.Bill.Application.DTOs.NewConnection;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Infrastructure.Security;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
@@ -126,29 +127,16 @@ public class NewConnectionController : Controller
         if (string.IsNullOrWhiteSpace(storageRoot))
             throw new InvalidOperationException("Document storage path is not configured.");
 
-        var maxUploadSizeMb = int.TryParse(_configuration["FileStorage:MaxUploadSizeMb"], out var configuredMaxUploadSizeMb)
-            ? configuredMaxUploadSizeMb
-            : 5;
-        var maxBytes = maxUploadSizeMb * 1024L * 1024L;
-        var allowedExtensions = _configuration.GetSection("FileStorage:AllowedExtensions")
-            .GetChildren()
-            .Select(x => x.Value)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .ToArray();
-        if (allowedExtensions.Length == 0)
-            allowedExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
+        var options = FileUploadSecurityHelper.BuildOptions(_configuration);
         var uploadRoot = Path.Combine(storageRoot, applicationNo);
         Directory.CreateDirectory(uploadRoot);
 
         foreach (var file in files.Where(x => x.Length > 0))
         {
-            if (file.Length > maxBytes)
-                throw new InvalidOperationException($"Each document must be {maxUploadSizeMb} MB or smaller.");
+            if (!FileUploadSecurityHelper.TryValidate(file, options, out var errorMessage))
+                throw new InvalidOperationException(errorMessage!);
 
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-                throw new InvalidOperationException("Only PDF, JPG, JPEG, and PNG documents are allowed.");
-
             var safeOriginalName = MakeSafeFileName(Path.GetFileNameWithoutExtension(file.FileName));
             var safeName = $"{safeOriginalName}-{Guid.NewGuid():N}{extension}";
             var physicalPath = Path.Combine(uploadRoot, safeName);
@@ -160,7 +148,7 @@ public class NewConnectionController : Controller
                 DocumentType = ResolveDocumentType(file.Name),
                 FileName = Path.GetFileName(file.FileName),
                 FilePath = $"{applicationNo}/{safeName}",
-                ContentType = file.ContentType,
+                ContentType = FileUploadSecurityHelper.ResolveSafeContentType(file.FileName),
                 FileSize = file.Length
             });
         }

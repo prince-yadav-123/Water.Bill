@@ -7,14 +7,10 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 public class PublicConsumerMobileRegistrationController : Controller
 {
     private readonly IConsumerMobileRegistrationService _mobileRegistrationService;
-    private readonly IHostEnvironment _environment;
 
-    public PublicConsumerMobileRegistrationController(
-        IConsumerMobileRegistrationService mobileRegistrationService,
-        IHostEnvironment environment)
+    public PublicConsumerMobileRegistrationController(IConsumerMobileRegistrationService mobileRegistrationService)
     {
         _mobileRegistrationService = mobileRegistrationService;
-        _environment = environment;
     }
 
     [HttpGet("/Consumer/Public/UpdateMobile")]
@@ -69,7 +65,6 @@ public class PublicConsumerMobileRegistrationController : Controller
             model.MaskedMobileNo = otpResult.MaskedMobileNo;
             model.ExpiresAt = otpResult.ExpiresAt;
             model.ResendAvailableInSeconds = otpResult.ResendAvailableInSeconds;
-            model.DevelopmentOtp = _environment.IsDevelopment() ? otpResult.DevelopmentOtp : null;
             TempData["InfoMessage"] = $"OTP sent to {otpResult.MaskedMobileNo}.";
             return View("Index", model);
         }

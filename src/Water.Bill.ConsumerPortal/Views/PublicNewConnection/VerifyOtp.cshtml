@@ -26,13 +26,6 @@
             </p>
         </div>
 
-        @if (TempData["DevelopmentOtp"] is string devOtp)
-        {
-            <div class="wb-dev-otp-box">
-                Development OTP: &nbsp;<strong>@devOtp</strong>
-            </div>
-        }
-
         <div class="wb-otp-phone-row">
             <span class="wb-otp-mobile">+91 @maskedMobile</span>
             <a class="wb-otp-edit" asp-action="Start" asp-route-mode="@flowMode">
@@ -43,7 +36,7 @@
             </a>
         </div>
 
-        <form asp-action="VerifyOtp" method="post" id="otpForm">
+        <form asp-action="VerifyOtp" method="post" id="otpForm" autocomplete="off">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
             <input type="hidden" name="mobileNumber" value="@Model" />
@@ -51,12 +44,12 @@
             <input type="hidden" name="otp" id="otpHiddenInput" />
 
             <div class="wb-otp-boxes" id="otpBoxes">
-                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
-                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
-                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
-                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
-                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
-                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" spellcheck="false" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" spellcheck="false" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" spellcheck="false" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" spellcheck="false" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" spellcheck="false" />
+                <input class="wb-otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" spellcheck="false" />
             </div>
 
             <button class="btn btn-primary w-100 mt-3" type="submit" id="otpSubmitBtn" disabled>
@@ -87,13 +80,6 @@
     .wb-otp-header { text-align: center; }
     .wb-otp-header h1 { margin: 0; font-size: 1.35rem; font-weight: 800; color: #0f172a; }
     .wb-otp-header .wb-public-auth-subtitle { margin: 4px 0 0; }
-
-    .wb-dev-otp-box {
-        display: flex; align-items: center; justify-content: center;
-        gap: 4px; padding: 10px 14px; border-radius: 10px;
-        background: #eff6ff; border: 1px solid #bfdbfe;
-        color: #1d4ed8; font-size: 0.9rem;
-    }
 
     .wb-otp-phone-row {
         display: flex; align-items: center; justify-content: center;

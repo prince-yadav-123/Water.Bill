@@ -9,6 +9,4 @@ public class PublicOtpRequestResult
     public DateTime ExpiresAt { get; set; }
 
     public int ResendAvailableInSeconds { get; set; }
-
-    public string? DevelopmentOtp { get; set; }
 }

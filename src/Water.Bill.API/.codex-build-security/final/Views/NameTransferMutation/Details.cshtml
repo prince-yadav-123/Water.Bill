@@ -1,0 +1,152 @@
+@model Water.Bill.API.Models.ConsumerWorkflows.ConsumerChangeDetailsViewModel
+@using Water.Bill.Core.Common
+@{
+    string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+    string Value(string key) => Model.DetailValues.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : "-";
+    string DateText(DateOnly? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Badge(string? status) => status switch
+    {
+        "Approved" => "text-bg-success",
+        "Rejected" => "text-bg-danger",
+        _ => "text-bg-warning"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Name Transfer Details</h1>
+        <p>Application @Model.Application.ApplicationId for consumer @Text(Model.Application.ConsNo)</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="@Model.BackAction">Back</a>
+</div>
+
+@if (TempData["SuccessMessage"] is string success)
+{
+    <div class="alert alert-success wb-alert">@success</div>
+}
+@if (TempData["ErrorMessage"] is string error)
+{
+    <div class="alert alert-danger wb-alert">@error</div>
+}
+
+<section class="wb-page-card wb-admin-card">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <small class="text-muted">Application No</small>
+            <div class="fw-semibold">@Model.Application.ApplicationId</div>
+        </div>
+        <div class="col-md-3">
+            <small class="text-muted">Consumer No</small>
+            <div class="fw-semibold">@Text(Model.Application.ConsNo)</div>
+        </div>
+        <div class="col-md-3">
+            <small class="text-muted">Status</small>
+            <div><span class="badge @Badge(Model.Application.ApplicationStatus)">@Text(Model.Application.ApplicationStatus)</span></div>
+        </div>
+        <div class="col-md-3">
+            <small class="text-muted">Created On</small>
+            <div class="fw-semibold">@DateText(Model.Application.EnterDate)</div>
+        </div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card mt-4">
+    <h2 class="wb-section-title">Transfer Information</h2>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <small class="text-muted">Old Consumer Name</small>
+            <div class="fw-semibold">@Value("OldName")</div>
+        </div>
+        <div class="col-md-6">
+            <small class="text-muted">New Consumer Name</small>
+            <div class="fw-semibold">@Text(Model.Application.ConName)</div>
+        </div>
+        <div class="col-md-6">
+            <small class="text-muted">Old Father / Name 2</small>
+            <div class="fw-semibold">@Value("OldFather")</div>
+        </div>
+        <div class="col-md-6">
+            <small class="text-muted">New Father / Name 2</small>
+            <div class="fw-semibold">@Value("NewFather")</div>
+        </div>
+        <div class="col-md-6">
+            <small class="text-muted">Mobile</small>
+            <div class="fw-semibold">@Text(Model.Application.ConPhoneMobile)</div>
+        </div>
+        <div class="col-md-6">
+            <small class="text-muted">Property</small>
+            <div class="fw-semibold">@Text($"{Model.Application.SectorVill}/{Model.Application.Block}-{Model.Application.PlotNo}".Trim('/', '-'))</div>
+        </div>
+        <div class="col-md-4">
+            <small class="text-muted">Transfer Fee</small>
+            <div class="fw-semibold">@Value("TransferFee")</div>
+        </div>
+        <div class="col-md-4">
+            <small class="text-muted">Security Amount</small>
+            <div class="fw-semibold">@Value("SecurityAmount")</div>
+        </div>
+        <div class="col-md-4">
+            <small class="text-muted">Challan No / Date</small>
+            <div class="fw-semibold">@Value("ChallanNo") / @Value("ChallanDate")</div>
+        </div>
+        <div class="col-12">
+            <small class="text-muted">Request Remarks</small>
+            <div class="fw-semibold">@Value("Remarks")</div>
+        </div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card mt-4">
+    <h2 class="wb-section-title">Request History</h2>
+    @if (Model.Histories.Count == 0)
+    {
+        <div class="wb-empty">No history found.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle wb-table wb-admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Division</th>
+                        <th>Status</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Histories)
+                {
+                    <tr>
+                        <td>@row.SerialNumber</td>
+                        <td>@DateText(row.ForwardDate)</td>
+                        <td>@Text(row.Division)</td>
+                        <td>@Text(row.CurentStatus)</td>
+                        <td>@Text(row.Remark)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@if (Model.CanApprove || Model.CanReject)
+{
+    <section class="wb-page-card wb-admin-card mt-4">
+        <h2 class="wb-section-title">Authority Action</h2>
+        <form method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ApplicationId" value="@Model.Application.ApplicationId" />
+            <div class="col-12">
+                <label class="form-label">Remarks</label>
+                <textarea class="form-control" name="Remarks" rows="3" maxlength="200" required></textarea>
+            </div>
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <button class="btn btn-outline-danger" type="submit" formaction="@Url.Action("Reject")">Reject</button>
+                <button class="btn btn-primary" type="submit" formaction="@Url.Action("Approve")">Approve & Apply Change</button>
+            </div>
+        </form>
+    </section>
+}

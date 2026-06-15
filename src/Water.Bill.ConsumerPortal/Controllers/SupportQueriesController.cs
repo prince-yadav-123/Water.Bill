@@ -10,6 +10,7 @@ using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Security;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
@@ -235,7 +236,7 @@ public class SupportQueriesController : Controller
                 DocumentType = "Support Document",
                 FileName = saved.FileName,
                 FilePath = saved.RelativePath,
-                ContentType = file.ContentType,
+                ContentType = FileUploadSecurityHelper.ResolveSafeContentType(file.FileName),
                 FileSize = file.Length,
                 UploadedByConsumerUserId = query.ConsumerUserId,
                 UploadedAt = DateTime.Now
@@ -248,28 +249,21 @@ public class SupportQueriesController : Controller
         if (files is null)
             return;
 
-        var maxBytes = (_configuration.GetValue<int?>("FileStorage:MaxUploadSizeMb") ?? 5) * 1024L * 1024L;
-        var allowedExtensions = _configuration.GetSection("FileStorage:AllowedExtensions").Get<string[]>() ?? [".pdf", ".jpg", ".jpeg", ".png"];
+        var options = FileUploadSecurityHelper.BuildOptions(_configuration);
         foreach (var file in files.Where(x => x.Length > 0))
         {
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (file.Length > maxBytes)
-                ModelState.AddModelError(string.Empty, $"File {file.FileName} exceeds allowed upload size.");
-            if (!allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-                ModelState.AddModelError(string.Empty, $"File type {extension} is not allowed.");
+            if (!FileUploadSecurityHelper.TryValidate(file, options, out var errorMessage))
+                ModelState.AddModelError(string.Empty, errorMessage!);
         }
     }
 
     private async Task<(string FileName, string RelativePath)> SaveDocumentFileAsync(string queryNo, IFormFile file, CancellationToken ct)
     {
-        var maxBytes = (_configuration.GetValue<int?>("FileStorage:MaxUploadSizeMb") ?? 5) * 1024L * 1024L;
-        if (file.Length > maxBytes)
-            throw new InvalidOperationException($"File {file.FileName} exceeds allowed upload size.");
+        var options = FileUploadSecurityHelper.BuildOptions(_configuration);
+        if (!FileUploadSecurityHelper.TryValidate(file, options, out var errorMessage))
+            throw new InvalidOperationException(errorMessage!);
 
-        var allowedExtensions = _configuration.GetSection("FileStorage:AllowedExtensions").Get<string[]>() ?? [".pdf", ".jpg", ".jpeg", ".png"];
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        if (!allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-            throw new InvalidOperationException($"File type {extension} is not allowed.");
 
         var basePath = GetStorageBasePath();
         var relativeDirectory = Path.Combine("support-queries", queryNo);
@@ -286,11 +280,13 @@ public class SupportQueriesController : Controller
 
     private IActionResult ServeDocument(ConsumerSupportQueryDocument document)
     {
-        var fullPath = Path.Combine(GetStorageBasePath(), document.FilePath.Replace('/', Path.DirectorySeparatorChar));
+        if (!FileUploadSecurityHelper.TryResolveSafeStoredFilePath(GetStorageBasePath(), document.FilePath, out var fullPath))
+            return NotFound();
+
         if (!System.IO.File.Exists(fullPath))
             return NotFound();
 
-        return PhysicalFile(fullPath, document.ContentType ?? "application/octet-stream", document.FileName);
+        return PhysicalFile(fullPath, FileUploadSecurityHelper.ResolveSafeContentType(document.FilePath), document.FileName);
     }
 
     private string GetStorageBasePath()

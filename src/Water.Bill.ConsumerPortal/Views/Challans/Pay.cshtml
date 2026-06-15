@@ -1,6 +1,7 @@
 @model ConsumerChallanPaymentViewModel
 @{
     ViewData["Title"] = "Pay Challan";
+    var isDevelopmentPayment = ViewData["IsDevelopmentPayment"] as bool? == true;
 
     string FormatAmount(double value) => $"INR {value:N2}";
     string FormatDate(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
@@ -76,7 +77,7 @@
                     <div>
                         <p class="wb-kicker">Choose Method</p>
                         <h2>Select payment method</h2>
-                        <p class="text-muted mb-0">This phase simulates a successful payment after confirmation.</p>
+                        <p class="text-muted mb-0">@(isDevelopmentPayment ? "This phase simulates a successful payment after confirmation." : "Choose the payment route that will be posted to the live gateway.")</p>
                     </div>
                 </div>
 
@@ -107,7 +108,7 @@
                     <div class="wb-method-input">
                         <label class="form-label required">Payment note / identifier</label>
                         <input class="form-control" name="paymentIdentifier" value="@Model.PaymentIdentifier" placeholder="Optional test reference" />
-                        <small>This is a simulated payment. Real gateway reference will be added later.</small>
+                        <small>@(isDevelopmentPayment ? "This is a simulated payment. A test reference is enough." : "Optional reference for your own tracking before gateway submission.")</small>
                     </div>
 
                     <div class="wb-pay-actions">
@@ -121,8 +122,8 @@
                 <div class="wb-card-title-row">
                     <div>
                         <p class="wb-kicker">Confirm & Pay</p>
-                        <h2>Confirm simulated payment</h2>
-                        <p class="text-muted mb-0">For this phase, confirming will mark the challan as paid.</p>
+                        <h2>@(isDevelopmentPayment ? "Confirm simulated payment" : "Confirm gateway payment")</h2>
+                        <p class="text-muted mb-0">@(isDevelopmentPayment ? "For this phase, confirming will mark the challan as paid." : "Confirm to create the gateway request and continue to the payment page.")</p>
                     </div>
                 </div>
 
@@ -139,7 +140,9 @@
                     <small>Convenience fee: @FormatAmount(Model.ConvenienceFee)</small>
                 </div>
 
-                <p class="wb-secure-note">Payment gateway is not connected yet. This button records a simulated successful challan payment for testing.</p>
+                <p class="wb-secure-note">@(isDevelopmentPayment
+                        ? "Payment gateway is in development mode. This button records a simulated successful challan payment for testing."
+                        : "After confirmation, the challan request will be posted to the configured payment gateway for real-time processing.")</p>
 
                 <form method="post" asp-action="ConfirmPayment" asp-route-id="@Model.Id" class="wb-pay-actions">
                     @Html.AntiForgeryToken()

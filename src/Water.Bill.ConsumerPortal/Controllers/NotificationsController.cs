@@ -133,7 +133,12 @@ public class NotificationsController : Controller
     public async Task<IActionResult> Open(long id, CancellationToken ct)
     {
         var userId = await ResolveConsumerUserIdAsync(ct);
-        if (userId == 0) return RedirectToAction(nameof(Index));
+        if (userId == 0)
+        {
+            TempData["NotificationMessage"] = "Please sign in again to open this notification.";
+            TempData["NotificationMessageType"] = "warning";
+            return RedirectToAction(nameof(Index));
+        }
 
         var notif = await _db.InAppNotifications
             .FirstOrDefaultAsync(x => x.Id == id
@@ -142,7 +147,11 @@ public class NotificationsController : Controller
                                    && !x.IsDeleted, ct);
 
         if (notif is null)
+        {
+            TempData["NotificationMessage"] = "This notification is not available anymore.";
+            TempData["NotificationMessageType"] = "warning";
             return RedirectToAction(nameof(Index));
+        }
 
         if (!notif.IsRead)
         {
@@ -153,9 +162,24 @@ public class NotificationsController : Controller
 
         var nav = NotificationNavigationHelper.ResolveForConsumer(notif.RedirectUrl, notif.ReferenceType, notif.ReferenceId, notif.ReferenceNo);
         if (!nav.HasTarget || string.IsNullOrWhiteSpace(nav.Url))
+        {
+            TempData["NotificationMessage"] = "This notification does not have a valid destination.";
+            TempData["NotificationMessageType"] = "info";
             return RedirectToAction(nameof(Index));
+        }
 
-        return Redirect(nav.Url);
+        if (Url.IsLocalUrl(nav.Url))
+            return LocalRedirect(nav.Url);
+
+        if (Uri.TryCreate(nav.Url, UriKind.Absolute, out var absoluteUri) &&
+            (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
+        {
+            return Redirect(nav.Url);
+        }
+
+        TempData["NotificationMessage"] = "This notification link is not allowed.";
+        TempData["NotificationMessageType"] = "warning";
+        return RedirectToAction(nameof(Index));
     }
 
     // ── Mark all as read ─────────────────────────────────────────────────────

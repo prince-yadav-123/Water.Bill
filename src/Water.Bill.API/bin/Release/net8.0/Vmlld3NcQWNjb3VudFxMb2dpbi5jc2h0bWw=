@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <form class="wb-admin-login-form" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <form class="wb-admin-login-form" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" autocomplete="off">
                 @Html.AntiForgeryToken()
                 <div asp-validation-summary="ModelOnly" class="wb-admin-login-summary"></div>
 
@@ -58,7 +58,7 @@
                     <label asp-for="Username" class="form-label required">Username or Email</label>
                     <div class="wb-admin-input-shell">
                         @* <span class="wb-admin-input-icon">U</span> *@
-                        <input asp-for="Username" class="wb-admin-input" autocomplete="username" autofocus placeholder="admin@noidajal.local" />
+                        <input asp-for="Username" class="wb-admin-input" autocomplete="username" autofocus placeholder="admin@noidajal.local" autocapitalize="off" spellcheck="false" />
                     </div>
                     <span asp-validation-for="Username" class="text-danger"></span>
                 </div>

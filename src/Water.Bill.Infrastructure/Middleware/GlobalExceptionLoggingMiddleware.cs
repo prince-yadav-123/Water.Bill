@@ -48,8 +48,10 @@ public class GlobalExceptionLoggingMiddleware
         var isHandled = false;
         var portalType = DetectPortalType(context);
         var traceId = context.TraceIdentifier;
+        var rawRequestPath = $"{context.Request.Path}{context.Request.QueryString}";
+        var safeRequestPath = SensitiveDataRedactionHelper.Redact(rawRequestPath);
 
-        _logger.LogError(exception, "Unhandled exception captured for {Path}. TraceId: {TraceId}", context.Request.Path, traceId);
+        _logger.LogError(exception, "Unhandled exception captured for {Path}. TraceId: {TraceId}", safeRequestPath, traceId);
 
         using (var scope = _scopeFactory.CreateScope())
         {
@@ -100,11 +102,11 @@ public class GlobalExceptionLoggingMiddleware
         {
             CreatedAt = DateTime.UtcNow,
             ExceptionType = exception.GetType().Name,
-            Message = exception.Message,
-            StackTrace = exception.StackTrace,
-            RequestPath = context.Request.Path.Value,
+            Message = SensitiveDataRedactionHelper.Redact(exception.Message),
+            StackTrace = SensitiveDataRedactionHelper.Redact(exception.StackTrace),
+            RequestPath = SensitiveDataRedactionHelper.Redact(context.Request.Path.Value),
             HttpMethod = context.Request.Method,
-            QueryString = queryString,
+            QueryString = SensitiveDataRedactionHelper.Redact(queryString),
             StatusCode = statusCode,
             IpAddress = context.Connection.RemoteIpAddress?.ToString(),
             Username = username,

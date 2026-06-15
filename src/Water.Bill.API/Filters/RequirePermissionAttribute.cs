@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Core.Enums;
 
 namespace Water.Bill.API.Filters;
 
@@ -24,6 +25,7 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
         var roleIdClaim = user.FindFirstValue("RoleId");
         if (!int.TryParse(roleIdClaim, out var roleId))
         {
+            await LogUnauthorizedAttemptAsync(context, _permission);
             context.Result = BuildForbiddenResult(context, _permission);
             return;
         }
@@ -31,7 +33,10 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
         var permissionService = context.HttpContext.RequestServices.GetRequiredService<IPermissionService>();
         var (module, action) = Parse(_permission);
         if (!await permissionService.HasPermissionAsync(roleId, module, action))
+        {
+            await LogUnauthorizedAttemptAsync(context, $"{module}.{action}");
             context.Result = BuildForbiddenResult(context, $"{module}.{action}");
+        }
     }
 
     private static (string module, string action) Parse(string permission)
@@ -68,5 +73,24 @@ public class RequirePermissionAttribute : Attribute, IAsyncAuthorizationFilter
             permission,
             returnUrl
         });
+    }
+
+    private static async Task LogUnauthorizedAttemptAsync(AuthorizationFilterContext context, string permission)
+    {
+        try
+        {
+            var auditLogService = context.HttpContext.RequestServices.GetRequiredService<IAuditLogService>();
+            var request = context.HttpContext.Request;
+            await auditLogService.LogAsync(
+                AuditAction.PermissionChanged,
+                module: "Authorization",
+                details: $"Blocked direct access to {request.Path}{request.QueryString} for permission {permission}.",
+                success: false,
+                ct: context.HttpContext.RequestAborted);
+        }
+        catch
+        {
+            // Never let audit logging failure block the permission restriction flow.
+        }
     }
 }

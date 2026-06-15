@@ -61,8 +61,6 @@ public class UpdateContactViewModel : IValidatableObject
 
     public int ResendAvailableInSeconds { get; set; }
 
-    public string? DevelopmentOtp { get; set; }
-
     public bool CanSendOtp => !string.IsNullOrWhiteSpace(CurrentMobileNo);
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

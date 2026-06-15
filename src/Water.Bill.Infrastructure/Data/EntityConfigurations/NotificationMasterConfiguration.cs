@@ -8,7 +8,7 @@ public class NotificationMasterConfiguration : IEntityTypeConfiguration<Notifica
 {
     public void Configure(EntityTypeBuilder<NotificationMaster> builder)
     {
-        builder.ToTable("notification_masters");
+        builder.ToTable("NotificationMasters");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).HasColumnName("Id").ValueGeneratedOnAdd();
         builder.Property(x => x.Title).HasMaxLength(200).IsRequired();

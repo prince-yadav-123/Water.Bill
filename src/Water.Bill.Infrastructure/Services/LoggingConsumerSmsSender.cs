@@ -19,7 +19,7 @@ public class LoggingConsumerSmsSender : IConsumerSmsSender
     {
         if (_environment.IsDevelopment())
         {
-            _logger.LogInformation("Development Consumer Portal OTP for {MobileNo}: {Otp}. Expires at {ExpiresAt:u}", mobileNo, otp, expiresAt);
+            _logger.LogInformation("Consumer Portal OTP generated for {MobileNo}. Expires at {ExpiresAt:u}", mobileNo, expiresAt);
         }
         else
         {

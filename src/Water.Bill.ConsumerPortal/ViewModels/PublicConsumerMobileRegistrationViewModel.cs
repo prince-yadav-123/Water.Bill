@@ -21,8 +21,6 @@ public class PublicConsumerMobileRegistrationViewModel : IValidatableObject
 
     public int ResendAvailableInSeconds { get; set; }
 
-    public string? DevelopmentOtp { get; set; }
-
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (string.IsNullOrWhiteSpace(ConsumerNo))

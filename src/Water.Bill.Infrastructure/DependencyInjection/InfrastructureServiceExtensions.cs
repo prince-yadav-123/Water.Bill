@@ -14,6 +14,8 @@ public static class InfrastructureServiceExtensions
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
 
+        services.AddMemoryCache();
+
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString, sqlServer =>
             {
@@ -32,6 +34,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IConsumerOtpService, ConsumerOtpService>();
         services.AddScoped<IConsumerMobileRegistrationService, ConsumerMobileRegistrationService>();
         services.AddScoped<IPublicNewConnectionOtpService, PublicNewConnectionOtpService>();
+        services.AddSingleton<IOtpThrottleService, OtpThrottleService>();
         services.AddScoped<IConsumerSmsSender, LoggingConsumerSmsSender>();
         services.AddScoped<IConsumerAccountService, ConsumerAccountService>();
         services.AddScoped<INewConnectionApplicationService, NewConnectionApplicationService>();

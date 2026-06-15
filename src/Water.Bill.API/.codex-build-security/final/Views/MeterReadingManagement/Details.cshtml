@@ -1,0 +1,126 @@
+@model Water.Bill.API.Models.MeterReadings.MeterReadingDetailsViewModel
+@using Water.Bill.API.Models.MeterReadings
+@using Water.Bill.Core.Common
+@{
+    ViewData["Title"] = "Meter Reading Details";
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string DateTimeText(DateTime value) => value.ToString("dd MMM yyyy hh:mm tt");
+    string Amount(decimal? value) => value.HasValue ? value.Value.ToString("N2") : "-";
+    string Badge(string status) => status switch
+    {
+        MeterReadingStatuses.Normal => "text-bg-success",
+        MeterReadingStatuses.Average => "text-bg-info",
+        MeterReadingStatuses.Locked or MeterReadingStatuses.Faulty => "text-bg-warning",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Meter Reading Details</h1>
+        <p>@Model.ReadingNo · @Model.ConsumerNo</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-action="Create" asp-route-consumerNo="@Model.ConsumerNo">Record Next Reading</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-approval-summary-card">
+        <div class="wb-approval-summary-head">
+            <div>
+                <span class="wb-kicker">Reading</span>
+                <h2>@Model.ReadingNo</h2>
+                <span>@DateText(Model.ReadingDate) · Recorded by @(Model.RecordedByName ?? "-")</span>
+            </div>
+            <span class="badge @Badge(Model.MeterStatus)">@MeterReadingStatuses.Display(Model.MeterStatus)</span>
+        </div>
+        <div class="wb-approval-summary-grid">
+            <div><span>Consumer No</span><strong>@Model.ConsumerNo</strong></div>
+            <div><span>Consumer Name</span><strong>@(Model.ConsumerName ?? "-")</strong></div>
+            <div><span>Property</span><strong>@(Model.PropertyNo ?? "-")</strong></div>
+            <div><span>Previous Reading</span><strong>@Amount(Model.PreviousReading)</strong></div>
+            <div><span>Current Reading</span><strong>@Amount(Model.CurrentReading)</strong></div>
+            <div><span>Consumption</span><strong>@Amount(Model.Consumption)</strong></div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-6">
+            <div class="wb-detail-section h-100">
+                <h2 class="wb-section-title">Consumer Details</h2>
+                <div class="wb-detail-grid">
+                    <div><span>Mobile</span><strong>@(Model.Consumer?.MobileNo ?? "-")</strong></div>
+                    <div><span>Email</span><strong>@(Model.Consumer?.Email ?? "-")</strong></div>
+                    <div><span>Connection</span><strong>@(Model.Consumer?.ConnectionType ?? "-")</strong></div>
+                    <div><span>Division</span><strong>@AppConstants.Divisions.FormatDisplay(Model.Consumer?.DevType)</strong></div>
+                    <div style="grid-column: 1 / -1;"><span>Address</span><strong>@(Model.Consumer?.Address ?? "-")</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="wb-detail-section h-100">
+                <h2 class="wb-section-title">Reading Information</h2>
+                <div class="wb-detail-grid">
+                    <div><span>Period From</span><strong>@DateText(Model.PeriodFrom)</strong></div>
+                    <div><span>Period To</span><strong>@DateText(Model.PeriodTo)</strong></div>
+                    <div><span>Meter No</span><strong>@(Model.MeterNo ?? "-")</strong></div>
+                    <div><span>Source</span><strong>@Model.Source</strong></div>
+                    <div><span>Recorded On</span><strong>@DateTimeText(Model.RecordedAt)</strong></div>
+                    <div><span>Status</span><strong>@MeterReadingStatuses.Display(Model.MeterStatus)</strong></div>
+                    <div style="grid-column: 1 / -1;"><span>Remarks</span><strong>@(Model.Remarks ?? "-")</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+        <div>
+            <h2 class="wb-section-title mb-1">Previous Readings</h2>
+            <p class="text-muted mb-0">Latest history for this consumer.</p>
+        </div>
+        <span class="badge text-bg-secondary">@Model.History.Count record@(Model.History.Count == 1 ? "" : "s")</span>
+    </div>
+
+    @if (Model.History.Count == 0)
+    {
+        <div class="wb-empty">No previous readings available.</div>
+    }
+    else
+    {
+        <div class="table-responsive wb-approval-table-wrap">
+            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                <thead>
+                    <tr>
+                        <th>Reading No</th>
+                        <th>Reading Date</th>
+                        <th>Previous</th>
+                        <th>Current</th>
+                        <th>Consumption</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.History)
+                {
+                    <tr>
+                        <td><strong>@row.ReadingNo</strong></td>
+                        <td>@DateText(row.ReadingDate)</td>
+                        <td>@Amount(row.PreviousReading)</td>
+                        <td>@Amount(row.CurrentReading)</td>
+                        <td>@Amount(row.Consumption)</td>
+                        <td><span class="badge @Badge(row.MeterStatus)">@MeterReadingStatuses.Display(row.MeterStatus)</span></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">View</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

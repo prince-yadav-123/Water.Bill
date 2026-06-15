@@ -93,7 +93,8 @@ public class AccountController : Controller
 
     [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    [HttpGet]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         var sessionToken = User.FindFirstValue("SessionToken");
@@ -103,6 +104,9 @@ public class AccountController : Controller
         await _auditLogService.LogAsync(AuditAction.Logout);
         await HttpContext.SignOutAsync(AppConstants.CookieScheme);
         Response.Cookies.Delete("WaterBill.Authority.Auth");
+        Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
         return RedirectToAction(nameof(Login));
     }
 

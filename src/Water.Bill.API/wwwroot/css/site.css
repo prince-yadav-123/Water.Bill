@@ -206,6 +206,8 @@ a:hover { color: var(--wb-primary-dark); }
 .wb-sidebar-toggle span,
 .wb-mobile-menu span { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 999px; }
 .wb-sidebar-bottom { margin-top: auto; padding: 12px 10px; border-top: 1px solid rgba(255,255,255,.16); }
+.wb-nav-form { margin: 0; }
+.wb-nav-button { font: inherit; cursor: pointer; appearance: none; }
 .wb-sidebar-backdrop { display: none; }
 
 .wb-main { min-height: 100vh; margin-left: 268px; transition: margin-left .22s ease; background: var(--wb-page); }
@@ -1707,4 +1709,31 @@ textarea.form-control:focus,
     .wb-document-row input, .wb-document-row em { grid-column: 2; max-width: 100%; }
     .wb-review-panel dl div { display: grid; }
     .wb-review-panel dd { text-align: left; }
+}
+
+.wb-errorlog-filters { display: grid; grid-template-columns: minmax(240px, 2fr) repeat(4, minmax(140px, 1fr)); gap: 12px; align-items: end; }
+.wb-errorlog-filter { min-width: 0; }
+.wb-errorlog-filter .form-label { display: block; margin-bottom: 6px; color: var(--wb-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.wb-errorlog-filter .form-control,
+.wb-errorlog-filter .form-select { min-height: 40px; }
+.wb-errorlog-filter-search { grid-column: span 2; }
+.wb-errorlog-filter-actions { display: flex; gap: 8px; justify-content: flex-end; align-self: end; }
+.wb-errorlog-filter-actions .btn { min-height: 40px; }
+.wb-portal-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 84px; min-height: 28px; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent; font-size: 11px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+.wb-portal-badge-admin { color: #1d4ed8; background: #dbeafe; border-color: #bfdbfe; }
+.wb-portal-badge-consumer { color: #0f766e; background: #ccfbf1; border-color: #99f6e4; }
+.wb-portal-badge-public { color: #b45309; background: #fef3c7; border-color: #fde68a; }
+.wb-portal-badge-api { color: #7c3aed; background: #ede9fe; border-color: #ddd6fe; }
+.wb-portal-badge-unknown { color: #475569; background: #e2e8f0; border-color: #cbd5e1; }
+
+@media (max-width: 991.98px) {
+  .wb-errorlog-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .wb-errorlog-filter-search { grid-column: span 3; }
+}
+
+@media (max-width: 767.98px) {
+  .wb-errorlog-filters { grid-template-columns: 1fr; }
+  .wb-errorlog-filter-search { grid-column: span 1; }
+  .wb-errorlog-filter-actions { justify-content: stretch; flex-wrap: wrap; }
+  .wb-errorlog-filter-actions .btn { flex: 1 1 140px; }
 }

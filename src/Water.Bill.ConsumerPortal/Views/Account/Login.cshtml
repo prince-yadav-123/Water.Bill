@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <form class="wb-auth-form" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" novalidate data-consumer-login-form>
+            <form class="wb-auth-form" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" novalidate data-consumer-login-form autocomplete="off">
                 @Html.AntiForgeryToken()
                 <input asp-for="LoginMethod" type="hidden" data-login-method />
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
@@ -84,7 +84,7 @@
                         <label asp-for="ConsumerId" class="form-label required"></label>
                         <div class="wb-input-shell">
                             @* <span class="wb-input-icon">ID</span> *@
-                            <input asp-for="ConsumerId" class="wb-input" autocomplete="off" placeholder="WB-XX-XXXXXX" data-login-input data-login-rule="consumer" />
+                            <input asp-for="ConsumerId" class="wb-input" autocomplete="off" placeholder="WB-XX-XXXXXX" data-login-input data-login-rule="consumer" spellcheck="false" />
                         </div>
                         <small class="wb-field-help">Enter the consumer number printed on your latest water bill.</small>
                         <span asp-validation-for="ConsumerId" class="text-danger small"></span>
@@ -98,7 +98,7 @@
                         <label asp-for="UsernameOrEmail" class="form-label required"></label>
                         <div class="wb-input-shell">
                             @* <span class="wb-input-icon">U</span> *@
-                            <input asp-for="UsernameOrEmail" class="wb-input" autocomplete="username" placeholder="username or email@example.com" data-login-input data-login-rule="username" />
+                            <input asp-for="UsernameOrEmail" class="wb-input" autocomplete="username" placeholder="username or email@example.com" data-login-input data-login-rule="username" autocapitalize="off" spellcheck="false" />
                         </div>
                         <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
                         <span class="text-danger small wb-client-error" data-login-error-for="UsernameOrEmail"></span>

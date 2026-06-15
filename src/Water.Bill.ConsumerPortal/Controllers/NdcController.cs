@@ -9,6 +9,7 @@ using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Security;
 using Water.Bill.Infrastructure.Services;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
@@ -265,7 +266,9 @@ public class NdcController : Controller
         if (document is null || string.IsNullOrWhiteSpace(document.AttachmentPath))
             return NotFound();
 
-        var fullPath = Path.Combine(GetNdcStorageBasePath(), document.AttachmentPath.Replace('/', Path.DirectorySeparatorChar));
+        if (!FileUploadSecurityHelper.TryResolveSafeStoredFilePath(GetNdcStorageBasePath(), document.AttachmentPath, out var fullPath))
+            return NotFound();
+
         if (!System.IO.File.Exists(fullPath))
             return NotFound();
 
@@ -399,16 +402,12 @@ public class NdcController : Controller
         if (files is null)
             return;
 
-        var maxBytes = (_configuration.GetValue<int?>("FileStorage:MaxUploadSizeMb") ?? 5) * 1024L * 1024L;
-        var allowedExtensions = _configuration.GetSection("FileStorage:AllowedExtensions").Get<string[]>() ?? [".pdf", ".jpg", ".jpeg", ".png"];
+        var options = FileUploadSecurityHelper.BuildOptions(_configuration);
 
         foreach (var file in files.Where(x => x.Length > 0))
         {
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (file.Length > maxBytes)
-                ModelState.AddModelError(string.Empty, $"File {file.FileName} exceeds allowed upload size.");
-            if (!allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-                ModelState.AddModelError(string.Empty, $"File type {extension} is not allowed.");
+            if (!FileUploadSecurityHelper.TryValidate(file, options, out var errorMessage))
+                ModelState.AddModelError(string.Empty, errorMessage!);
         }
     }
 
@@ -429,6 +428,10 @@ public class NdcController : Controller
             var file = files.GetFile(GetFileInputName(input.DocumentId));
             if (file is null || file.Length == 0)
                 continue;
+
+            var options = FileUploadSecurityHelper.BuildOptions(_configuration);
+            if (!FileUploadSecurityHelper.TryValidate(file, options, out var errorMessage))
+                throw new InvalidOperationException(errorMessage!);
 
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
             var safeFileName = $"{MakeSafeFileName(input.DocumentName)}-{Guid.NewGuid():N}{extension}";

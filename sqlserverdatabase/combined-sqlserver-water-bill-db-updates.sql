@@ -719,9 +719,9 @@ BEGIN
     ON dbo.InAppNotifications (UserType, UserId, IsRead, IsDeleted);
 END;
 
-IF OBJECT_ID(N'dbo.notification_masters', N'U') IS NULL
+IF OBJECT_ID(N'dbo.NotificationMasters', N'U') IS NULL
 BEGIN
-    CREATE TABLE dbo.notification_masters
+    CREATE TABLE dbo.NotificationMasters
     (
         Id               BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_NotificationMasters PRIMARY KEY,
         Title            NVARCHAR(200) NOT NULL,
@@ -743,31 +743,31 @@ BEGIN
     );
 END;
 
-IF OBJECT_ID(N'dbo.notification_masters', N'U') IS NOT NULL
-   AND COL_LENGTH(N'dbo.notification_masters', N'RedirectUrl') IS NULL
+IF OBJECT_ID(N'dbo.NotificationMasters', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.NotificationMasters', N'RedirectUrl') IS NULL
 BEGIN
-    ALTER TABLE dbo.notification_masters
+    ALTER TABLE dbo.NotificationMasters
         ADD RedirectUrl NVARCHAR(1000) NULL;
 END;
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifMaster_Status' AND object_id = OBJECT_ID(N'dbo.notification_masters'))
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifMaster_Status' AND object_id = OBJECT_ID(N'dbo.NotificationMasters'))
 BEGIN
-    CREATE INDEX IX_NotifMaster_Status ON dbo.notification_masters (Status);
+    CREATE INDEX IX_NotifMaster_Status ON dbo.NotificationMasters (Status);
 END;
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifMaster_Audience' AND object_id = OBJECT_ID(N'dbo.notification_masters'))
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifMaster_Audience' AND object_id = OBJECT_ID(N'dbo.NotificationMasters'))
 BEGIN
-    CREATE INDEX IX_NotifMaster_Audience ON dbo.notification_masters (TargetAudience);
+    CREATE INDEX IX_NotifMaster_Audience ON dbo.NotificationMasters (TargetAudience);
 END;
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifMaster_CreatedAt' AND object_id = OBJECT_ID(N'dbo.notification_masters'))
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifMaster_CreatedAt' AND object_id = OBJECT_ID(N'dbo.NotificationMasters'))
 BEGIN
-    CREATE INDEX IX_NotifMaster_CreatedAt ON dbo.notification_masters (CreatedAt, IsDeleted);
+    CREATE INDEX IX_NotifMaster_CreatedAt ON dbo.NotificationMasters (CreatedAt, IsDeleted);
 END;
 
-IF OBJECT_ID(N'dbo.notification_targets', N'U') IS NULL
+IF OBJECT_ID(N'dbo.NotificationTargets', N'U') IS NULL
 BEGIN
-    CREATE TABLE dbo.notification_targets
+    CREATE TABLE dbo.NotificationTargets
     (
         Id             BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_NotificationTargets PRIMARY KEY,
         NotificationId BIGINT NOT NULL,
@@ -776,18 +776,18 @@ BEGIN
         TargetName     NVARCHAR(300) NULL,
         IsDeleted      BIT NOT NULL CONSTRAINT DF_NotificationTargets_IsDeleted DEFAULT (0),
         CONSTRAINT FK_NotificationTargets_NotificationMasters FOREIGN KEY (NotificationId)
-            REFERENCES dbo.notification_masters (Id) ON DELETE CASCADE
+            REFERENCES dbo.NotificationMasters (Id) ON DELETE CASCADE
     );
 END;
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifTarget_NotifId' AND object_id = OBJECT_ID(N'dbo.notification_targets'))
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifTarget_NotifId' AND object_id = OBJECT_ID(N'dbo.NotificationTargets'))
 BEGIN
-    CREATE INDEX IX_NotifTarget_NotifId ON dbo.notification_targets (NotificationId);
+    CREATE INDEX IX_NotifTarget_NotifId ON dbo.NotificationTargets (NotificationId);
 END;
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifTarget_Type_Id' AND object_id = OBJECT_ID(N'dbo.notification_targets'))
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_NotifTarget_Type_Id' AND object_id = OBJECT_ID(N'dbo.NotificationTargets'))
 BEGIN
-    CREATE INDEX IX_NotifTarget_Type_Id ON dbo.notification_targets (TargetType, TargetId);
+    CREATE INDEX IX_NotifTarget_Type_Id ON dbo.NotificationTargets (TargetType, TargetId);
 END;
 
 IF OBJECT_ID(N'dbo.NotificationLogs', N'U') IS NULL
@@ -1840,6 +1840,26 @@ IF OBJECT_ID(N'dbo.jal_bank_master', N'U') IS NOT NULL
 BEGIN
     CREATE UNIQUE INDEX UX_jal_bank_master_Id
         ON dbo.jal_bank_master (Id);
+END;
+
+IF OBJECT_ID(N'dbo.bank_master', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.bank_master', N'Id') IS NULL
+BEGIN
+    ALTER TABLE dbo.bank_master
+        ADD Id INT IDENTITY(1,1) NOT NULL;
+END;
+
+IF OBJECT_ID(N'dbo.bank_master', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.bank_master', N'Id') IS NOT NULL
+   AND NOT EXISTS (
+        SELECT 1
+        FROM sys.indexes
+        WHERE name = N'UX_bank_master_Id'
+          AND object_id = OBJECT_ID(N'dbo.bank_master')
+   )
+BEGIN
+    CREATE UNIQUE INDEX UX_bank_master_Id
+        ON dbo.bank_master (Id);
 END;
 
 IF OBJECT_ID(N'dbo.NewConnectionApprovalHistory', N'U') IS NULL

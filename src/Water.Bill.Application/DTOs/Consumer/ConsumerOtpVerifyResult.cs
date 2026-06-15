@@ -2,6 +2,8 @@ namespace Water.Bill.Application.DTOs.Consumer;
 
 public class ConsumerOtpVerifyResult
 {
+    public int? ConsumerUserId { get; set; }
+
     public string ConsumerNo { get; set; } = string.Empty;
 
     public string ConsumerName { get; set; } = string.Empty;

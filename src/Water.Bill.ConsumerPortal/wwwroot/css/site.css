@@ -79,6 +79,8 @@ a:hover { color: var(--wb-primary-dark); }
 .wb-sidebar-toggle span,
 .wb-mobile-menu span { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 999px; }
 .wb-sidebar-bottom { margin-top: auto; padding: 12px 10px; border-top: 1px solid rgba(255,255,255,.16); }
+.wb-nav-form { margin: 0; }
+.wb-nav-button { font: inherit; cursor: pointer; appearance: none; }
 .wb-sidebar-backdrop { display: none; }
 .wb-app-loader { position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; padding: 18px; pointer-events: none; visibility: hidden; opacity: 0; background: rgba(243,247,251,.36); backdrop-filter: blur(3px); transition: opacity .18s ease, visibility .18s ease; }
 .wb-app-loader.show { pointer-events: auto; visibility: visible; opacity: 1; }

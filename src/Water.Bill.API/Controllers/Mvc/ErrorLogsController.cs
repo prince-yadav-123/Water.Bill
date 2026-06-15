@@ -40,7 +40,9 @@ public class ErrorLogsController : Controller
                 x.Message.Contains(term) ||
                 x.ExceptionType.Contains(term) ||
                 (x.RequestPath != null && x.RequestPath.Contains(term)) ||
-                (x.TraceId != null && x.TraceId.Contains(term)));
+                (x.TraceId != null && x.TraceId.Contains(term)) ||
+                (x.Username != null && x.Username.Contains(term)) ||
+                (x.IpAddress != null && x.IpAddress.Contains(term)));
         }
 
         if (!string.IsNullOrWhiteSpace(model.ExceptionType))
@@ -51,12 +53,6 @@ public class ErrorLogsController : Controller
 
         if (!string.IsNullOrWhiteSpace(model.PortalType))
             query = query.Where(x => x.PortalType == model.PortalType);
-
-        if (!string.IsNullOrWhiteSpace(model.Username))
-        {
-            var username = model.Username.Trim();
-            query = query.Where(x => x.Username != null && x.Username.Contains(username));
-        }
 
         if (model.IsHandled.HasValue)
             query = query.Where(x => x.IsHandled == model.IsHandled.Value);

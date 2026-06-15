@@ -28,20 +28,20 @@ public class ProfileController : Controller
     private readonly IAuditLogService _auditLogService;
     private readonly ApplicationDbContext _db;
     private readonly IConsumerSmsSender _smsSender;
-    private readonly IHostEnvironment _environment;
+    private readonly IOtpThrottleService _otpThrottleService;
     private readonly string? _configuredDefaultOtp;
 
     public ProfileController(
         IAuditLogService auditLogService,
         ApplicationDbContext db,
         IConsumerSmsSender smsSender,
-        IHostEnvironment environment,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IOtpThrottleService otpThrottleService)
     {
         _auditLogService = auditLogService;
         _db = db;
         _smsSender = smsSender;
-        _environment = environment;
+        _otpThrottleService = otpThrottleService;
         _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
     }
 
@@ -116,7 +116,6 @@ public class ProfileController : Controller
             model.MaskedMobileNo = otpResult.MaskedMobileNo;
             model.ExpiresAt = otpResult.ExpiresAt;
             model.ResendAvailableInSeconds = otpResult.ResendAvailableInSeconds;
-            model.DevelopmentOtp = _environment.IsDevelopment() ? otpResult.DevelopmentOtp : null;
             TempData["InfoMessage"] = $"OTP sent to {otpResult.MaskedMobileNo}.";
         }
         catch (InvalidOperationException ex)
@@ -414,6 +413,9 @@ public class ProfileController : Controller
         if (string.IsNullOrWhiteSpace(mobileNo))
             throw new InvalidOperationException("Mobile number is not registered for this consumer. Please contact support.");
 
+        if (!_otpThrottleService.TryConsumeRequest(ContactUpdatePurpose, $"{normalizedConsumerNo}:{mobileNo}", out _))
+            throw new InvalidOperationException("Too many OTP requests. Please try again after some time.");
+
         var now = DateTime.UtcNow;
         var activeOtp = await _db.ConsumerOtpVerifications
             .Where(x => x.ConsumerNo == normalizedConsumerNo
@@ -466,8 +468,7 @@ public class ProfileController : Controller
             ConsumerNo = normalizedConsumerNo,
             MaskedMobileNo = MaskMobileNo(mobileNo),
             ExpiresAt = expiresAt,
-            ResendAvailableInSeconds = ResendCooldownSeconds,
-            DevelopmentOtp = otp
+            ResendAvailableInSeconds = ResendCooldownSeconds
         };
     }
 

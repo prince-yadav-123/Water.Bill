@@ -1,5 +1,6 @@
 using Serilog;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Water.Bill.API.Extensions;
 using Water.Bill.Application.DependencyInjection;
 using Water.Bill.Core.Common;
@@ -14,6 +15,10 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+    var secureCookiePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
 
     builder.Host.UseSerilog((context, logger) => logger.ReadFrom.Configuration(context.Configuration));
 
@@ -21,6 +26,14 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddControllersWithViews();
+    builder.Services.AddAntiforgery(options =>
+    {
+        options.Cookie.Name = "WaterBill.Authority.AntiForgery";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = secureCookiePolicy;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.HeaderName = "X-CSRF-TOKEN";
+    });
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -34,9 +47,16 @@ try
             options.SlidingExpiration = true;
             options.Cookie.Name = "WaterBill.Authority.Auth";
             options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = secureCookiePolicy;
             options.Cookie.SameSite = SameSiteMode.Lax;
         });
     builder.Services.AddHealthChecks();
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
 
     var app = builder.Build();
 
@@ -46,9 +66,16 @@ try
         app.UseSwaggerUI();
     }
 
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHsts();
+    }
+
+    app.UseForwardedHeaders();
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseRouting();
+    app.UseWaterBillSecurityHeaders();
     app.UseWaterBillExceptionHandling();
     app.UseAuthentication();
     app.Use(async (context, next) =>
@@ -59,7 +86,8 @@ try
         var isAuthorityNavigationPage =
             context.Request.Path.Equals("/", StringComparison.OrdinalIgnoreCase) ||
             context.Request.Path.StartsWithSegments("/Landing", StringComparison.OrdinalIgnoreCase) ||
-            context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase);
+            context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase) ||
+            context.Request.Path.StartsWithSegments("/Unauthorized", StringComparison.OrdinalIgnoreCase);
 
         if (isProtectedEndpoint || isAuthenticatedRequest || isAuthorityNavigationPage)
         {

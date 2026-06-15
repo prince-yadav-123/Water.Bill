@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <form asp-action="SendOtp" method="post" class="wb-public-auth-form">
+        <form asp-action="SendOtp" method="post" class="wb-public-auth-form" autocomplete="off">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger wb-mobile-reg-validation"></div>
 
@@ -64,16 +64,12 @@
                     {
                         <span>OTP sent to <strong>@Model.MaskedMobileNo</strong></span>
                     }
-                    @if (!string.IsNullOrWhiteSpace(Model.DevelopmentOtp))
-                    {
-                        <span>Development OTP: <strong>@Model.DevelopmentOtp</strong></span>
-                    }
                 </div>
 
                 <div class="wb-field">
                     <label asp-for="Otp" class="form-label required"></label>
                     <div class="wb-input-shell">
-                        <input asp-for="Otp" class="wb-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6-digit OTP" />
+                        <input asp-for="Otp" class="wb-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6-digit OTP" spellcheck="false" />
                     </div>
                     <span asp-validation-for="Otp" class="text-danger"></span>
                 </div>

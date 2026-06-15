@@ -17,22 +17,19 @@ public class AccountController : Controller
     private readonly IConsumerOtpService _consumerOtpService;
     private readonly IConsumerMobileRegistrationService _consumerMobileRegistrationService;
     private readonly IConsumerAccountService _consumerAccountService;
-    private readonly IHostEnvironment _environment;
 
     public AccountController(
         ISessionService sessionService,
         IAuditLogService auditLogService,
         IConsumerOtpService consumerOtpService,
         IConsumerMobileRegistrationService consumerMobileRegistrationService,
-        IConsumerAccountService consumerAccountService,
-        IHostEnvironment environment)
+        IConsumerAccountService consumerAccountService)
     {
         _sessionService = sessionService;
         _auditLogService = auditLogService;
         _consumerOtpService = consumerOtpService;
         _consumerMobileRegistrationService = consumerMobileRegistrationService;
         _consumerAccountService = consumerAccountService;
-        _environment = environment;
     }
 
     [HttpGet("/Account/Login")]
@@ -128,30 +125,15 @@ public class AccountController : Controller
                 model.UsernameOrEmail?.Trim() ?? string.Empty,
                 model.Password ?? string.Empty);
 
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, result.Id.ToString()),
-                new(ClaimTypes.Name, result.Username ?? result.ConsumerName),
-                new(ClaimTypes.Role, AppConstants.Roles.Consumer),
-                new("FullName", result.ConsumerName),
-                new("ConsumerNo", result.ConsumerNo),
-                new("RoleId", (result.ConsumerRoleId ?? 0).ToString())
-            };
-
-            if (!string.IsNullOrWhiteSpace(result.Email))
-                claims.Add(new Claim(ClaimTypes.Email, result.Email));
-
-            if (!string.IsNullOrWhiteSpace(result.MobileNo))
-                claims.Add(new Claim("MobileNo", result.MobileNo));
-
-            var identity = new ClaimsIdentity(claims, AppConstants.CookieScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(AppConstants.CookieScheme, principal, new AuthenticationProperties
-            {
-                IsPersistent = model.RememberMe,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
-            });
+            var principal = await BuildConsumerPrincipalAsync(
+                result.Id,
+                result.Username ?? result.ConsumerName,
+                result.ConsumerName,
+                result.ConsumerNo,
+                result.ConsumerRoleId,
+                result.Email,
+                result.MobileNo,
+                model.RememberMe);
 
             return LocalRedirect(ResolvePostLoginRedirect(returnUrl));
         }
@@ -180,8 +162,7 @@ public class AccountController : Controller
             ConsumerNo = consumerNo.Trim().ToUpperInvariant(),
             MaskedMobileNo = TempData["OtpMaskedMobile"] as string,
             ExpiresAt = TryGetTempDate("OtpExpiresAt"),
-            ResendAvailableInSeconds = TryGetTempInt("OtpResendSeconds"),
-            DevelopmentOtp = _environment.IsDevelopment() ? TempData["OtpDevelopmentCode"] as string : null
+            ResendAvailableInSeconds = TryGetTempInt("OtpResendSeconds")
         });
     }
 
@@ -200,30 +181,15 @@ public class AccountController : Controller
         {
             var result = await _consumerOtpService.VerifyOtpAsync(model.ConsumerNo, model.Otp ?? string.Empty);
 
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, result.ConsumerNo),
-                new(ClaimTypes.Name, result.ConsumerName),
-                new(ClaimTypes.Role, AppConstants.Roles.Consumer),
-                new("FullName", result.ConsumerName),
-                new("ConsumerNo", result.ConsumerNo),
-                new("RoleId", (result.ConsumerRoleId ?? 0).ToString())
-            };
-
-            if (!string.IsNullOrWhiteSpace(result.Email))
-                claims.Add(new Claim(ClaimTypes.Email, result.Email));
-
-            if (!string.IsNullOrWhiteSpace(result.MobileNo))
-                claims.Add(new Claim("MobileNo", result.MobileNo));
-
-            var identity = new ClaimsIdentity(claims, AppConstants.CookieScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(AppConstants.CookieScheme, principal, new AuthenticationProperties
-            {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
-            });
+            await BuildConsumerPrincipalAsync(
+                result.ConsumerUserId,
+                result.ConsumerName,
+                result.ConsumerName,
+                result.ConsumerNo,
+                result.ConsumerRoleId,
+                result.Email,
+                result.MobileNo,
+                true);
 
             return LocalRedirect(ResolvePostLoginRedirect(returnUrl));
         }
@@ -252,7 +218,10 @@ public class AccountController : Controller
     }
 
     [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
-    [HttpGet]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [HttpPost("/Account/Logout")]
+    [HttpPost("/Consumer/Logout")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         var sessionToken = User.FindFirstValue("SessionToken");
@@ -264,6 +233,9 @@ public class AccountController : Controller
         HttpContext.Session.Clear();
         Response.Cookies.Delete("WaterBill.ConsumerPortal.Auth");
         Response.Cookies.Delete("WaterBill.PublicNewConnection.Session");
+        Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
         return RedirectToAction(nameof(Login));
     }
 
@@ -278,9 +250,6 @@ public class AccountController : Controller
         TempData["OtpMaskedMobile"] = otpResult.MaskedMobileNo;
         TempData["OtpExpiresAt"] = otpResult.ExpiresAt.ToString("O");
         TempData["OtpResendSeconds"] = otpResult.ResendAvailableInSeconds.ToString();
-
-        if (_environment.IsDevelopment())
-            TempData["OtpDevelopmentCode"] = otpResult.DevelopmentOtp;
     }
 
     private DateTime? TryGetTempDate(string key)
@@ -318,5 +287,53 @@ public class AccountController : Controller
         }
 
         return returnUrl!;
+    }
+
+    private async Task<ClaimsPrincipal> BuildConsumerPrincipalAsync(
+        int? consumerUserId,
+        string name,
+        string fullName,
+        string consumerNo,
+        int? consumerRoleId,
+        string? email,
+        string? mobileNo,
+        bool isPersistent)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, consumerUserId?.ToString() ?? consumerNo),
+            new(ClaimTypes.Name, name),
+            new(ClaimTypes.Role, AppConstants.Roles.Consumer),
+            new("FullName", fullName),
+            new("ConsumerNo", consumerNo),
+            new("RoleId", (consumerRoleId ?? 0).ToString())
+        };
+
+        if (!string.IsNullOrWhiteSpace(email))
+            claims.Add(new Claim(ClaimTypes.Email, email));
+
+        if (!string.IsNullOrWhiteSpace(mobileNo))
+            claims.Add(new Claim("MobileNo", mobileNo));
+
+        if (consumerUserId.HasValue && consumerUserId.Value > 0)
+        {
+            var sessionToken = await _sessionService.CreateSessionAsync(
+                consumerUserId.Value,
+                HttpContext.Connection.RemoteIpAddress?.ToString(),
+                Request.Headers.UserAgent.ToString());
+
+            claims.Add(new Claim("SessionToken", sessionToken));
+        }
+
+        var identity = new ClaimsIdentity(claims, AppConstants.CookieScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(AppConstants.CookieScheme, principal, new AuthenticationProperties
+        {
+            IsPersistent = isPersistent,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
+        });
+
+        return principal;
     }
 }
