@@ -133,3 +133,26 @@ public class SelectOption
     public int Value { get; set; }
     public string Text { get; set; } = string.Empty;
 }
+
+public class EmailTestViewModel
+{
+    [Required, EmailAddress]
+    public string ToEmail { get; set; } = string.Empty;
+
+    [MaxLength(200)]
+    public string? ToName { get; set; }
+
+    [Required, MaxLength(200)]
+    public string Subject { get; set; } = "Water.Bill SMTP Test";
+
+    [Required, MaxLength(4000)]
+    public string Message { get; set; } = "This is a test email from Water.Bill. If you are reading this, the SMTP configuration is working.";
+
+    public string Provider { get; set; } = string.Empty;
+    public string Host { get; set; } = string.Empty;
+    public int Port { get; set; } = 587;
+    public bool EnableSsl { get; set; } = true;
+    public string FromEmail { get; set; } = string.Empty;
+    public bool UsernameConfigured { get; set; }
+    public bool PasswordConfigured { get; set; }
+}

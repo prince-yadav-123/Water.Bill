@@ -1609,9 +1609,9 @@ BEGIN
         KhasraNo                 NVARCHAR(20) NULL,
         VillageName              NVARCHAR(100) NULL,
         VillageId                INT NULL,
-        ConnectionCategory       NVARCHAR(2) NOT NULL,
+        ConnectionCategory       NVARCHAR(4) NOT NULL,
         ConnectionType           NVARCHAR(10) NOT NULL,
-        FlatType                 NVARCHAR(10) NOT NULL,
+        FlatType                 NVARCHAR(50) NOT NULL,
         PurposeOfConnection      NVARCHAR(50) NULL,
         PreviousConnectionYesNo  NVARCHAR(1) NULL,
         OtherConnection          NVARCHAR(150) NULL,
@@ -1669,6 +1669,38 @@ END;
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_new_connection_applications_SubmittedByConsumerUserId' AND object_id = OBJECT_ID(N'dbo.new_connection_applications'))
 BEGIN
     CREATE INDEX IX_new_connection_applications_SubmittedByConsumerUserId ON dbo.new_connection_applications (SubmittedByConsumerUserId);
+END;
+
+IF OBJECT_ID(N'dbo.new_connection_applications', N'U') IS NOT NULL
+AND EXISTS
+(
+    SELECT 1
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = 'dbo'
+      AND TABLE_NAME = 'new_connection_applications'
+      AND COLUMN_NAME = 'ConnectionCategory'
+      AND CHARACTER_MAXIMUM_LENGTH IS NOT NULL
+      AND CHARACTER_MAXIMUM_LENGTH < 4
+)
+BEGIN
+    ALTER TABLE dbo.new_connection_applications
+    ALTER COLUMN ConnectionCategory NVARCHAR(4) NOT NULL;
+END;
+
+IF OBJECT_ID(N'dbo.new_connection_applications', N'U') IS NOT NULL
+AND EXISTS
+(
+    SELECT 1
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = 'dbo'
+      AND TABLE_NAME = 'new_connection_applications'
+      AND COLUMN_NAME = 'FlatType'
+      AND CHARACTER_MAXIMUM_LENGTH IS NOT NULL
+      AND CHARACTER_MAXIMUM_LENGTH < 50
+)
+BEGIN
+    ALTER TABLE dbo.new_connection_applications
+    ALTER COLUMN FlatType NVARCHAR(50) NOT NULL;
 END;
 
 IF OBJECT_ID(N'dbo.NewConnectionApplicationFees', N'U') IS NULL
@@ -1825,8 +1857,7 @@ END;
 IF OBJECT_ID(N'dbo.jal_bank_master', N'U') IS NOT NULL
    AND COL_LENGTH(N'dbo.jal_bank_master', N'Id') IS NULL
 BEGIN
-    ALTER TABLE dbo.jal_bank_master
-        ADD Id INT IDENTITY(1,1) NOT NULL;
+    EXEC sp_executesql N'ALTER TABLE [dbo].[jal_bank_master] ADD [Id] INT IDENTITY(1,1) NOT NULL;';
 END;
 
 IF OBJECT_ID(N'dbo.jal_bank_master', N'U') IS NOT NULL
@@ -1838,15 +1869,13 @@ IF OBJECT_ID(N'dbo.jal_bank_master', N'U') IS NOT NULL
           AND object_id = OBJECT_ID(N'dbo.jal_bank_master')
    )
 BEGIN
-    CREATE UNIQUE INDEX UX_jal_bank_master_Id
-        ON dbo.jal_bank_master (Id);
+    EXEC sp_executesql N'CREATE UNIQUE INDEX [UX_jal_bank_master_Id] ON [dbo].[jal_bank_master] ([Id]);';
 END;
 
 IF OBJECT_ID(N'dbo.bank_master', N'U') IS NOT NULL
    AND COL_LENGTH(N'dbo.bank_master', N'Id') IS NULL
 BEGIN
-    ALTER TABLE dbo.bank_master
-        ADD Id INT IDENTITY(1,1) NOT NULL;
+    EXEC sp_executesql N'ALTER TABLE [dbo].[bank_master] ADD [Id] INT IDENTITY(1,1) NOT NULL;';
 END;
 
 IF OBJECT_ID(N'dbo.bank_master', N'U') IS NOT NULL
@@ -1858,8 +1887,7 @@ IF OBJECT_ID(N'dbo.bank_master', N'U') IS NOT NULL
           AND object_id = OBJECT_ID(N'dbo.bank_master')
    )
 BEGIN
-    CREATE UNIQUE INDEX UX_bank_master_Id
-        ON dbo.bank_master (Id);
+    EXEC sp_executesql N'CREATE UNIQUE INDEX [UX_bank_master_Id] ON [dbo].[bank_master] ([Id]);';
 END;
 
 IF OBJECT_ID(N'dbo.NewConnectionApprovalHistory', N'U') IS NULL
@@ -1965,15 +1993,55 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT (FullName, Email, Username, PasswordHash, IsActive, RoleId, PhoneNumber, PasswordChangedAt, LastLoginAt, LastLoginIp, CreatedAt, UpdatedAt, IsDeleted)
     VALUES (src.FullName, src.Email, src.Username, src.PasswordHash, src.IsActive, src.RoleId, src.PhoneNumber, src.PasswordChangedAt, src.LastLoginAt, src.LastLoginIp, SYSDATETIME(), NULL, src.IsDeleted);
 
-;WITH module_seed (Name) AS
+IF OBJECT_ID(N'dbo.PermissionModules', N'U') IS NOT NULL
+BEGIN
+    IF EXISTS
+    (
+        SELECT 1
+        FROM dbo.PermissionModules
+        WHERE Name = N'Operator Activity Logs'
+          AND IsDeleted = 0
+    )
+    AND NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.PermissionModules
+        WHERE Name = N'User Activity Logs'
+          AND IsDeleted = 0
+    )
+    BEGIN
+        UPDATE dbo.PermissionModules
+        SET Name = N'User Activity Logs',
+            PortalScope = N'Authority',
+            IsActive = 1,
+            IsDeleted = 0
+        WHERE Name = N'Operator Activity Logs'
+          AND IsDeleted = 0;
+    END;
+END;
+
+IF OBJECT_ID(N'dbo.MenuItems', N'U') IS NOT NULL
+BEGIN
+    UPDATE dbo.MenuItems
+    SET Label = N'User Activity Logs',
+        Url = N'/UserActivityLogs',
+        Module = N'User Activity Logs',
+        IsActive = 1,
+        IsDeleted = 0,
+        UpdatedAt = SYSDATETIME()
+    WHERE Label = N'Operator Activity Logs'
+      AND IsDeleted = 0;
+END;
+
+;WITH module_seed (Name, PortalScope) AS
 (
     SELECT *
     FROM (VALUES
-        (N'Dashboard'),
-        (N'Consumers'),
-        (N'Billing'),
-        (N'Payments'),
-        (N'Reports'),
+        (N'Dashboard', N'Authority'),
+        (N'Consumers', N'Authority'),
+        (N'Billing', N'Authority'),
+        (N'Payments', N'Authority'),
+        (N'Reports', N'Authority'),
         (N'Role Management', N'Authority'),
         (N'User Management', N'Authority'),
         (N'Role Permission', N'Authority'),
@@ -2028,7 +2096,8 @@ WHEN NOT MATCHED BY TARGET THEN
         (N'Name Transfer / Mutation', N'Authority'),
         (N'Reports / MIS', N'Authority'),
         (N'Advanced Bill Revision / Reversal', N'Authority'),
-        (N'Operator Activity Logs', N'Authority'),
+        (N'User Activity Logs', N'Authority'),
+        (N'Consumer Activity Logs', N'Authority'),
         (N'Error Logs', N'Authority'),
         (N'Communication Templates', N'Authority'),
         (N'Consumer Service Requests', N'Consumer'),
@@ -2144,8 +2213,9 @@ child_menu_seed AS
         (1, N'Administration', N'Consumer Queries', N'QY', N'/ConsumerQueryManagement', N'Administration', N'Consumer Queries', 9, 1, 1, 0),
         (1, N'Administration', N'Communication Templates', N'CT', N'/CommunicationTemplates', N'Administration', N'Communication Templates', 10, 1, 1, 0),
         (1, N'Administration', N'Communication', N'NT', N'/NotificationManagement', N'Administration', N'Communication', 11, 1, 1, 0),
-        (1, N'Administration', N'Operator Activity Logs', N'AL', N'/OperatorAudit', N'Administration', N'Operator Activity Logs', 12, 1, 1, 0),
-        (1, N'Administration', N'Error Logs', N'EL', N'/ErrorLogs', N'Administration', N'Error Logs', 13, 1, 1, 0),
+        (1, N'Administration', N'User Activity Logs', N'AL', N'/UserActivityLogs', N'Administration', N'User Activity Logs', 12, 1, 1, 0),
+        (1, N'Administration', N'Consumer Activity Logs', N'CL', N'/ConsumerActivityLogs', N'Administration', N'Consumer Activity Logs', 13, 1, 1, 0),
+        (1, N'Administration', N'Error Logs', N'EL', N'/ErrorLogs', N'Administration', N'Error Logs', 14, 1, 1, 0),
         (1, N'Billing & Metering', N'Bill Search & Print', N'BS', N'/BillSearchPrint', N'Billing & Metering', N'Bill Search & Print', 1, 1, 1, 0),
         (1, N'Billing & Metering', N'Challan Management', N'CH', N'/ChallanManagement', N'Billing & Metering', N'Challan Management', 2, 1, 1, 0),
         (1, N'Billing & Metering', N'Bulk Bill Generation', N'BB', N'/BulkBillGeneration', N'Billing & Metering', N'Bulk Bill Generation', 3, 1, 1, 0),

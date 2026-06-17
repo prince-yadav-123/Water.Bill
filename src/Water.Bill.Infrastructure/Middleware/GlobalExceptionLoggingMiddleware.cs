@@ -100,7 +100,7 @@ public class GlobalExceptionLoggingMiddleware
 
         return new ErrorLogWriteModel
         {
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = AppTime.IndiaNow,
             ExceptionType = exception.GetType().Name,
             Message = SensitiveDataRedactionHelper.Redact(exception.Message),
             StackTrace = SensitiveDataRedactionHelper.Redact(exception.StackTrace),

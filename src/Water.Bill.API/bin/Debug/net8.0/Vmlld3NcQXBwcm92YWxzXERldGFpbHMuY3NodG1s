@@ -279,7 +279,10 @@
                             <em>@document.UploadedOn.ToString("dd MMM yyyy")</em>
                             @if (!string.IsNullOrWhiteSpace(document.FilePath))
                             {
-                                <a class="btn btn-sm btn-outline-primary" href="@document.FilePath" target="_blank" rel="noopener">View</a>
+                                <a class="btn btn-sm btn-outline-primary"
+                                   href="@Url.Action("Document", "Approvals", new { taskId = Model.Task.Id, documentId = document.Id })"
+                                   target="_blank"
+                                   rel="noopener">View</a>
                             }
                             else
                             {

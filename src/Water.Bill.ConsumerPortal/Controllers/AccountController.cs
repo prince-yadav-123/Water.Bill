@@ -135,6 +135,12 @@ public class AccountController : Controller
                 result.MobileNo,
                 model.RememberMe);
 
+            await _auditLogService.LogAsync(
+                AuditAction.LoginSuccess,
+                AuditLogDisplayHelper.ConsumerAuthenticationModule,
+                entityId: result.Id.ToString(),
+                details: $"Consumer login: {result.ConsumerNo}");
+
             return LocalRedirect(ResolvePostLoginRedirect(returnUrl));
         }
         catch (UnauthorizedAccessException ex)
@@ -190,6 +196,12 @@ public class AccountController : Controller
                 result.Email,
                 result.MobileNo,
                 true);
+
+            await _auditLogService.LogAsync(
+                AuditAction.LoginSuccess,
+                AuditLogDisplayHelper.ConsumerAuthenticationModule,
+                entityId: result.ConsumerUserId?.ToString(),
+                details: $"Consumer OTP login verified: {result.ConsumerNo}");
 
             return LocalRedirect(ResolvePostLoginRedirect(returnUrl));
         }

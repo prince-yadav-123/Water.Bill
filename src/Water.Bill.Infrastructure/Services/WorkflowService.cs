@@ -1214,7 +1214,7 @@ public class WorkflowService : IWorkflowService
             ReferenceNo   = applicationNo,
             RedirectUrl   = BuildInternalWorkflowInstanceUrl(instanceId),
             IsRead        = false,
-            CreatedAt     = DateTime.UtcNow,
+            CreatedAt     = AppTime.IndiaNow,
             IsDeleted     = false
         };
 

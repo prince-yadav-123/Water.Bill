@@ -1,3 +1,5 @@
+using Water.Bill.Core.Common;
+
 namespace Water.Bill.Infrastructure.Data.Entities;
 
 public partial class NotificationMaster
@@ -15,7 +17,7 @@ public partial class NotificationMaster
     public string? RedirectUrl { get; set; }
     public int CreatedByUserId { get; set; }
     public string? CreatedByName { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = AppTime.IndiaNow;
     public DateTime? SentAt { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsDeleted { get; set; }

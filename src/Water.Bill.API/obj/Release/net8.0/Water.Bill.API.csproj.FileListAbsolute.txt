@@ -276,3 +276,4 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Release\net8.0\Views\ErrorLogs\Details.cshtml
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Release\net8.0\Views\ErrorLogs\Index.cshtml
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Release\net8.0\Views\Unauthorized\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Release\net8.0\Views\OperatorAudit\Details.cshtml

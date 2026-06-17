@@ -123,6 +123,8 @@ public static class AppConstants
         public const string NewConnectionFeeConfiguration = "New Connection Fee Configuration";
         public const string CommunicationTemplates = "Communication Templates";
         public const string ErrorLogs = "Error Logs";
+        public const string UserActivityLogs = "User Activity Logs";
+        public const string ConsumerActivityLogs = "Consumer Activity Logs";
     }
 
 }

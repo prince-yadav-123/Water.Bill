@@ -1,9 +1,7 @@
 @model Water.Bill.API.Models.Audit.ErrorLogDetailsViewModel
 @using Water.Bill.API.Helpers
 @{
-    var ist = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-    var createdAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(Model.CreatedAt, DateTimeKind.Utc), ist)
-        .ToString("dd MMM yyyy hh:mm:ss tt");
+    var createdAt = Model.CreatedAt.ToString("dd MMM yyyy hh:mm:ss tt");
 }
 
 <div class="wb-page-head">

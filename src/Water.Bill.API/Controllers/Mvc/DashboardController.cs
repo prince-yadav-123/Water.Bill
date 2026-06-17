@@ -135,7 +135,7 @@ public class DashboardController : Controller
         var pendingApprovalsRows = await BuildPendingApprovalRowsAsync(pendingTaskQuery, ct);
         var recentChallans = await BuildRecentChallansAsync(_db.Challans.AsNoTracking(), ct);
         var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId: null, ct);
-        var recentActivity = await BuildRecentActivityAsync(_db.Auditlogs.AsNoTracking(), ct);
+        var recentActivity = await BuildRecentActivityAsync(BuildAuthorityAuditQuery(), ct);
 
         return new DashboardIndexViewModel
         {
@@ -455,7 +455,7 @@ WHERE Outstanding >= @threshold;
         return new DashboardDefaulterWidgetViewModel
         {
             Title = "Defaulters",
-            Caption = "Consumers with outstanding dues at or above the configured threshold",
+            Caption = "Outstanding dues above the threshold",
             TotalConsumers = totalConsumers,
             ConsumerCount = defaulterCount,
             NonDefaulterCount = Math.Max(0, totalConsumers - defaulterCount),
@@ -475,7 +475,7 @@ WHERE Outstanding >= @threshold;
         return new DashboardDefaulterWidgetViewModel
         {
             Title = "Defaulters",
-            Caption = "Consumers with outstanding dues at or above the configured threshold",
+            Caption = "Outstanding dues above the threshold",
             TotalConsumers = totalConsumers,
             ConsumerCount = 0,
             NonDefaulterCount = totalConsumers,
@@ -777,6 +777,31 @@ WHERE Outstanding >= @threshold;
         return rows;
     }
 
+    private IQueryable<Auditlog> BuildAuthorityAuditQuery()
+    {
+        var authorityUsernames = _db.Appusers
+            .AsNoTracking()
+            .Where(x => !x.IsDeleted)
+            .Select(x => x.Username);
+
+        var authorityModules = AuditLogDisplayHelper.AuthorityModules;
+        var consumerModules = AuditLogDisplayHelper.ConsumerModules;
+
+        return _db.Auditlogs
+            .AsNoTracking()
+            .Where(x =>
+                (
+                    x.Module == AuditLogDisplayHelper.AuthorizationModule
+                    && (x.Details == null || !x.Details.Contains("/Consumer/"))
+                ) ||
+                (x.Module != null && authorityModules.Contains(x.Module)) ||
+                (
+                    (x.Module == null || !consumerModules.Contains(x.Module))
+                    && x.Username != null
+                    && authorityUsernames.Contains(x.Username)
+                ));
+    }
+
     private static IQueryable<ConsumerSupportQuery> ApplyServiceDeskAssignment(IQueryable<ConsumerSupportQuery> query, int? userId)
         => userId.HasValue ? query.Where(x => x.AssignedToUserId == userId.Value) : query;
 
@@ -946,18 +971,7 @@ WHERE Outstanding >= @threshold;
     }
 
     private static string AuditActionLabel(int action)
-        => action switch
-        {
-            1 => "Create",
-            2 => "Update",
-            3 => "Delete",
-            4 => "View",
-            5 => "Login Success",
-            6 => "Login Failed",
-            7 => "Logout",
-            8 => "Permission Changed",
-            _ => $"Action {action}"
-        };
+        => AuditLogDisplayHelper.GetActionLabel(action);
 
     private static bool IsLegacyConsumerChange(string? applicationType)
         => applicationType == WorkflowService.ApplicationTypeNameTransfer

@@ -7,9 +7,10 @@ using Water.Bill.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
-var secureCookiePolicy = builder.Environment.IsDevelopment()
-    ? CookieSecurePolicy.SameAsRequest
-    : CookieSecurePolicy.Always;
+var requireHttpsCookies = builder.Configuration.GetValue<bool>("WebSecurity:RequireHttpsCookies");
+var secureCookiePolicy = requireHttpsCookies
+    ? CookieSecurePolicy.Always
+    : CookieSecurePolicy.SameAsRequest;
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

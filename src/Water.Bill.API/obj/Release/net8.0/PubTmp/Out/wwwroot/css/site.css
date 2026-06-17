@@ -1711,13 +1711,13 @@ textarea.form-control:focus,
     .wb-review-panel dd { text-align: left; }
 }
 
-.wb-errorlog-filters { display: grid; grid-template-columns: minmax(240px, 2fr) repeat(4, minmax(140px, 1fr)); gap: 12px; align-items: end; }
+.wb-errorlog-filters { display: grid; grid-template-columns: minmax(250px, 1.8fr) minmax(150px, 1fr) minmax(120px, .8fr) minmax(130px, .9fr) minmax(130px, .9fr) auto auto; gap: 12px; align-items: end; }
 .wb-errorlog-filter { min-width: 0; }
 .wb-errorlog-filter .form-label { display: block; margin-bottom: 6px; color: var(--wb-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
 .wb-errorlog-filter .form-control,
 .wb-errorlog-filter .form-select { min-height: 40px; }
-.wb-errorlog-filter-search { grid-column: span 2; }
-.wb-errorlog-filter-actions { display: flex; gap: 8px; justify-content: flex-end; align-self: end; }
+.wb-errorlog-filter-search { grid-column: span 1; }
+.wb-errorlog-filter-actions { display: flex; gap: 8px; justify-content: flex-end; align-self: end; min-width: max-content; }
 .wb-errorlog-filter-actions .btn { min-height: 40px; }
 .wb-portal-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 84px; min-height: 28px; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent; font-size: 11px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
 .wb-portal-badge-admin { color: #1d4ed8; background: #dbeafe; border-color: #bfdbfe; }
@@ -1725,10 +1725,45 @@ textarea.form-control:focus,
 .wb-portal-badge-public { color: #b45309; background: #fef3c7; border-color: #fde68a; }
 .wb-portal-badge-api { color: #7c3aed; background: #ede9fe; border-color: #ddd6fe; }
 .wb-portal-badge-unknown { color: #475569; background: #e2e8f0; border-color: #cbd5e1; }
+.wb-activitylog-filterbar { flex-wrap: wrap; overflow-x: visible; }
+.wb-activitylog-filter-search { min-width: 280px; flex: 1 1 320px; }
+.wb-activitylog-filter-actions { display: flex; align-items: center; gap: 8px; }
+.wb-activitylog-table-wrap { overflow-x: auto; }
+.wb-activitylog-table thead th { padding: 9px 12px; }
+.wb-activitylog-table td { padding: 9px 12px; font-size: 12px; line-height: 1.4; vertical-align: middle; }
+.wb-activitylog-date { white-space: nowrap; min-width: 150px; color: #475569; }
+.wb-activitylog-user { min-width: 150px; }
+.wb-activitylog-entity { min-width: 150px; }
+.wb-activitylog-action { min-width: 140px; }
+.wb-activitylog-summary { min-width: 260px; max-width: 380px; }
+.wb-activitylog-summary,
+.wb-activitylog-detail-copy,
+.wb-break-word { white-space: pre-wrap; word-break: break-word; }
+.wb-detail-tile { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; }
+.wb-detail-tile > span { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #64748b; }
+.wb-detail-tile > strong { font-size: 14px; color: #0f172a; }
+.wb-activitylog-detail-copy { margin: 0; font-family: inherit; font-size: 13px; color: #0f172a; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; }
+.wb-errorlog-table-wrap { overflow-x: auto; }
+.wb-errorlog-table thead th { padding: 9px 12px; }
+.wb-errorlog-table td { padding: 9px 12px; font-size: 12px; line-height: 1.4; vertical-align: middle; }
+.wb-errorlog-table .badge { vertical-align: middle; }
+.wb-errorlog-date { white-space: nowrap; font-size: 11.5px; color: #475569; }
+.wb-errorlog-date br { content: ""; }
+.wb-errorlog-type,
+.wb-errorlog-message,
+.wb-errorlog-path,
+.wb-errorlog-user,
+.wb-errorlog-ip { max-width: 0; }
+.wb-errorlog-type { min-width: 150px; }
+.wb-errorlog-message { min-width: 205px; }
+.wb-errorlog-path { min-width: 145px; }
+.wb-errorlog-user { min-width: 88px; }
+.wb-errorlog-ip { min-width: 72px; white-space: nowrap; }
 
 @media (max-width: 991.98px) {
   .wb-errorlog-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .wb-errorlog-filter-search { grid-column: span 3; }
+  .wb-errorlog-filter-actions { grid-column: span 3; justify-content: flex-start; }
 }
 
 @media (max-width: 767.98px) {
@@ -1736,4 +1771,7 @@ textarea.form-control:focus,
   .wb-errorlog-filter-search { grid-column: span 1; }
   .wb-errorlog-filter-actions { justify-content: stretch; flex-wrap: wrap; }
   .wb-errorlog-filter-actions .btn { flex: 1 1 140px; }
+  .wb-activitylog-filter-search { min-width: 100%; flex-basis: 100%; }
+  .wb-activitylog-filter-actions { width: 100%; justify-content: stretch; flex-wrap: wrap; }
+  .wb-activitylog-filter-actions .btn { flex: 1 1 140px; }
 }

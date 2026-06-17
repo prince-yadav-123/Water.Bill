@@ -16,9 +16,10 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
-    var secureCookiePolicy = builder.Environment.IsDevelopment()
-        ? CookieSecurePolicy.SameAsRequest
-        : CookieSecurePolicy.Always;
+    var requireHttpsCookies = builder.Configuration.GetValue<bool>("WebSecurity:RequireHttpsCookies");
+    var secureCookiePolicy = requireHttpsCookies
+        ? CookieSecurePolicy.Always
+        : CookieSecurePolicy.SameAsRequest;
 
     builder.Host.UseSerilog((context, logger) => logger.ReadFrom.Configuration(context.Configuration));
 

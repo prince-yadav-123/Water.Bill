@@ -3,11 +3,14 @@ namespace Water.Bill.API.Models.Reports;
 public class MisReportIndexViewModel
 {
     public string ReportType { get; set; } = "Collection";
+    public string? Search { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
     public string? ConsumerNo { get; set; }
     public int? DevType { get; set; }
     public string? Status { get; set; }
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; }
     public MisReportSummaryViewModel Summary { get; set; } = new();
     public IReadOnlyList<MisReportRowViewModel> Rows { get; set; } = [];
 }

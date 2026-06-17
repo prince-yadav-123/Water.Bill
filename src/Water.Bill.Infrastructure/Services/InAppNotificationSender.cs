@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -36,7 +37,7 @@ public class InAppNotificationSender : IInAppNotificationSender
             ReferenceId = referenceId,
             ReferenceNo = referenceNo,
             RedirectUrl = redirectUrl,
-            CreatedAt = DateTime.Now
+            CreatedAt = AppTime.IndiaNow
         });
         await _db.SaveChangesAsync(ct);
         return CommunicationSendResult.Sent();

@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Infrastructure.Data;
@@ -18,6 +19,7 @@ public class CommunicationService : ICommunicationService
     private readonly IWhatsAppSender _whatsAppSender;
     private readonly IInAppNotificationSender _inAppSender;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<CommunicationService> _logger;
 
     public CommunicationService(
         ApplicationDbContext db,
@@ -26,7 +28,8 @@ public class CommunicationService : ICommunicationService
         ISmsSender smsSender,
         IWhatsAppSender whatsAppSender,
         IInAppNotificationSender inAppSender,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ILogger<CommunicationService> logger)
     {
         _db = db;
         _renderer = renderer;
@@ -35,6 +38,7 @@ public class CommunicationService : ICommunicationService
         _whatsAppSender = whatsAppSender;
         _inAppSender = inAppSender;
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task SendAsync(
@@ -54,9 +58,20 @@ public class CommunicationService : ICommunicationService
             {
                 await SendChannelAsync(purposeKey, channel, recipient, values, referenceType, referenceId, referenceNo, redirectUrl, ct);
             }
-            catch
+            catch (Exception ex)
             {
                 // Notification infrastructure must never break the business flow.
+                _logger.LogError(
+                    ex,
+                    "Communication channel execution failed. PurposeKey={PurposeKey}, Channel={Channel}, RecipientName={RecipientName}, RecipientEmail={RecipientEmail}, RecipientMobile={RecipientMobile}, ReferenceType={ReferenceType}, ReferenceId={ReferenceId}, ReferenceNo={ReferenceNo}",
+                    purposeKey,
+                    channel,
+                    recipient.Name,
+                    recipient.Email,
+                    recipient.Mobile,
+                    referenceType,
+                    referenceId,
+                    referenceNo);
             }
         }
     }

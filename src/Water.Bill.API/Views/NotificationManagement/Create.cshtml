@@ -5,7 +5,10 @@
 
 <div class="wb-page-head">
     <div><p class="wb-kicker">Notification Management</p><h1>Create Notification</h1></div>
-    <a class="btn btn-outline-primary" asp-action="Index">Back to List</a>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" asp-action="TestEmail">Test Email</a>
+        <a class="btn btn-outline-primary" asp-action="Index">Back to List</a>
+    </div>
 </div>
 
 <form asp-action="Create" method="post" id="notifForm">

@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
+using Water.Bill.API.Models;
 using Water.Bill.API.Models.Reports;
+using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 
@@ -21,77 +23,106 @@ public class ReportsMisController : Controller
     {
         ViewData["Title"] = "Reports / MIS";
         ViewData["ActiveMenu"] = "Reports / MIS";
+
         model.ReportType = NormalizeReportType(model.ReportType);
+        model.Search = Normalize(model.Search);
         model.ConsumerNo = Normalize(model.ConsumerNo)?.ToUpperInvariant();
         model.Status = Normalize(model.Status);
-        model.Rows = model.ReportType switch
+        model.PageSize = PagingConstants.Validate(model.PageSize == 0 ? PagingConstants.DefaultPageSize : model.PageSize);
+        model.Page = PagingConstants.ValidatePage(model.Page);
+
+        var query = model.ReportType switch
         {
-            "Dues" => await BuildDuesRowsAsync(model, ct),
-            "Challan" => await BuildChallanRowsAsync(model, ct),
-            "Bill" => await BuildBillRowsAsync(model, ct),
-            _ => await BuildCollectionRowsAsync(model, ct)
+            "Dues" => BuildDuesQuery(model),
+            "Challan" => BuildChallanQuery(model),
+            "Bill" => BuildBillQuery(model),
+            _ => BuildCollectionQuery(model)
         };
-        model.Summary = new MisReportSummaryViewModel
+
+        query = ApplyCommonSearch(query, model.Search);
+        var totalCount = await query.CountAsync(ct);
+
+        model.Summary = totalCount == 0
+            ? new MisReportSummaryViewModel()
+            : await query
+                .GroupBy(_ => 1)
+                .Select(g => new MisReportSummaryViewModel
+                {
+                    TotalCount = g.Count(),
+                    TotalAmount = g.Sum(x => x.Amount),
+                    PaidAmount = g.Sum(x => x.PaidAmount),
+                    PendingAmount = g.Sum(x => x.Amount > x.PaidAmount ? x.Amount - x.PaidAmount : 0)
+                })
+                .FirstAsync(ct);
+
+        model.Rows = totalCount == 0
+            ? []
+            : await query
+                .OrderByDescending(x => x.Date)
+                .ThenByDescending(x => x.ReferenceNo)
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .ToListAsync(ct);
+
+        ViewBag.Pagination = PaginationViewModel.Create(new PagedResult<MisReportRowViewModel>
         {
-            TotalCount = model.Rows.Count,
-            TotalAmount = model.Rows.Sum(x => x.Amount),
-            PaidAmount = model.Rows.Sum(x => x.PaidAmount),
-            PendingAmount = model.Rows.Sum(x => Math.Max(0, x.Amount - x.PaidAmount))
-        };
+            Items = model.Rows,
+            TotalCount = totalCount,
+            Page = model.Page,
+            PageSize = model.PageSize
+        });
+
         return View(model);
     }
 
-    private async Task<IReadOnlyList<MisReportRowViewModel>> BuildCollectionRowsAsync(MisReportIndexViewModel model, CancellationToken ct)
+    private IQueryable<MisReportRowViewModel> BuildCollectionQuery(MisReportIndexViewModel model)
     {
         var query = _db.JalPrintBillMasters.AsNoTracking().Where(x => x.PaidDate != null || x.PaidAmt > 0 || x.PaidStatus == "Y");
         query = ApplyBillFilters(query, model, paidDate: true);
-        var rows = await query.OrderByDescending(x => x.PaidDate ?? x.EntryDate).Take(500).ToListAsync(ct);
-        return rows.Select(x => new MisReportRowViewModel
+        return query.Select(x => new MisReportRowViewModel
         {
             ReferenceNo = x.BillNo,
             ConsumerNo = x.ConsNo,
-            Division = x.DivType ?? x.DevType?.ToString(),
+            Division = x.DivType ?? (x.DevType.HasValue ? x.DevType.Value.ToString() : null),
             Status = "Paid",
             Date = x.PaidDate ?? x.EntryDate,
             Amount = x.TotalBillAmt ?? x.DueAmt ?? 0,
             PaidAmount = x.PaidAmt ?? x.TotalBillAmt ?? 0
-        }).ToList();
+        });
     }
 
-    private async Task<IReadOnlyList<MisReportRowViewModel>> BuildDuesRowsAsync(MisReportIndexViewModel model, CancellationToken ct)
+    private IQueryable<MisReportRowViewModel> BuildDuesQuery(MisReportIndexViewModel model)
     {
         var query = _db.JalPrintBillMasters.AsNoTracking().Where(x => x.Status == "1" && x.PaidDate == null && x.PaidStatus != "Y");
         query = ApplyBillFilters(query, model, paidDate: false);
-        var rows = await query.OrderByDescending(x => x.BillDate ?? x.EntryDate).Take(500).ToListAsync(ct);
-        return rows.Select(x => new MisReportRowViewModel
+        return query.Select(x => new MisReportRowViewModel
         {
             ReferenceNo = x.BillNo,
             ConsumerNo = x.ConsNo,
-            Division = x.DivType ?? x.DevType?.ToString(),
+            Division = x.DivType ?? (x.DevType.HasValue ? x.DevType.Value.ToString() : null),
             Status = "Pending",
             Date = x.BillDate ?? x.EntryDate,
             Amount = x.TotalBillAmt ?? x.DueAmt ?? 0,
             PaidAmount = x.PaidAmt ?? 0
-        }).ToList();
+        });
     }
 
-    private async Task<IReadOnlyList<MisReportRowViewModel>> BuildBillRowsAsync(MisReportIndexViewModel model, CancellationToken ct)
+    private IQueryable<MisReportRowViewModel> BuildBillQuery(MisReportIndexViewModel model)
     {
         var query = ApplyBillFilters(_db.JalPrintBillMasters.AsNoTracking(), model, paidDate: false);
-        var rows = await query.OrderByDescending(x => x.BillDate ?? x.EntryDate).Take(500).ToListAsync(ct);
-        return rows.Select(x => new MisReportRowViewModel
+        return query.Select(x => new MisReportRowViewModel
         {
             ReferenceNo = x.BillNo,
             ConsumerNo = x.ConsNo,
-            Division = x.DivType ?? x.DevType?.ToString(),
+            Division = x.DivType ?? (x.DevType.HasValue ? x.DevType.Value.ToString() : null),
             Status = x.Status == "0" ? "Reversed" : x.PaidStatus == "Y" ? "Paid" : "Generated",
             Date = x.BillDate ?? x.EntryDate,
             Amount = x.TotalBillAmt ?? x.DueAmt ?? 0,
             PaidAmount = x.PaidAmt ?? 0
-        }).ToList();
+        });
     }
 
-    private async Task<IReadOnlyList<MisReportRowViewModel>> BuildChallanRowsAsync(MisReportIndexViewModel model, CancellationToken ct)
+    private IQueryable<MisReportRowViewModel> BuildChallanQuery(MisReportIndexViewModel model)
     {
         var query = _db.Challans.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(model.ConsumerNo))
@@ -102,17 +133,16 @@ public class ReportsMisController : Controller
             query = query.Where(x => (x.EntryDate ?? x.PayDate) < model.ToDate.Value.Date.AddDays(1));
         if (!string.IsNullOrWhiteSpace(model.Status))
             query = query.Where(x => x.Status == model.Status);
-        var rows = await query.OrderByDescending(x => x.EntryDate ?? x.PayDate).Take(500).ToListAsync(ct);
-        return rows.Select(x => new MisReportRowViewModel
+        return query.Select(x => new MisReportRowViewModel
         {
             ReferenceNo = x.RecpNo ?? x.ReceiptId ?? x.ReceiptId1,
             ConsumerNo = x.ConsNo,
-            PropertyNo = $"{x.Sec}/{x.Blk}-{x.FlatNo}".Trim('/', '-'),
+            PropertyNo = (((x.Sec ?? string.Empty) + "/" + (x.Blk ?? string.Empty)) + "-" + (x.FlatNo ?? string.Empty)).Trim('/', '-'),
             Status = x.PayDate.HasValue ? "Paid" : "Pending",
             Date = x.EntryDate ?? x.PayDate,
             Amount = x.PaidAmt ?? x.BillAmt ?? 0,
             PaidAmount = x.PayDate.HasValue ? x.PaidAmt ?? x.BillAmt ?? 0 : 0
-        }).ToList();
+        });
     }
 
     private static IQueryable<Water.Bill.Infrastructure.Data.Entities.JalPrintBillMaster> ApplyBillFilters(
@@ -136,6 +166,27 @@ public class ReportsMisController : Controller
             query = query.Where(x => x.Status == model.Status || x.PaidStatus == model.Status);
         return query;
     }
+
+    private static IQueryable<MisReportRowViewModel> ApplyCommonSearch(IQueryable<MisReportRowViewModel> query, string? search)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+            return query;
+
+        var pattern = $"%{EscapeLikePattern(search)}%";
+        return query.Where(x =>
+            (x.ReferenceNo != null && EF.Functions.Like(x.ReferenceNo, pattern)) ||
+            (x.ConsumerNo != null && EF.Functions.Like(x.ConsumerNo, pattern)) ||
+            (x.ConsumerName != null && EF.Functions.Like(x.ConsumerName, pattern)) ||
+            (x.PropertyNo != null && EF.Functions.Like(x.PropertyNo, pattern)) ||
+            (x.Division != null && EF.Functions.Like(x.Division, pattern)) ||
+            (x.Status != null && EF.Functions.Like(x.Status, pattern)));
+    }
+
+    private static string EscapeLikePattern(string value)
+        => value
+            .Replace("[", "[[]", StringComparison.Ordinal)
+            .Replace("%", "[%]", StringComparison.Ordinal)
+            .Replace("_", "[_]", StringComparison.Ordinal);
 
     private static string NormalizeReportType(string? value) => value?.Trim() switch
     {

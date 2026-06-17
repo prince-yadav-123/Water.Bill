@@ -122,7 +122,7 @@ public class NotificationsController : Controller
         if (notif is not null && !notif.IsRead)
         {
             notif.IsRead  = true;
-            notif.ReadAt  = DateTime.UtcNow;
+            notif.ReadAt  = AppTime.IndiaNow;
             await _db.SaveChangesAsync(ct);
         }
 
@@ -156,7 +156,7 @@ public class NotificationsController : Controller
         if (!notif.IsRead)
         {
             notif.IsRead = true;
-            notif.ReadAt = DateTime.UtcNow;
+            notif.ReadAt = AppTime.IndiaNow;
             await _db.SaveChangesAsync(ct);
         }
 
@@ -195,7 +195,7 @@ public class NotificationsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var now = DateTime.UtcNow;
+        var now = AppTime.IndiaNow;
         await _db.InAppNotifications
             .Where(x => x.UserId == userId
                      && x.UserType == "Consumer"

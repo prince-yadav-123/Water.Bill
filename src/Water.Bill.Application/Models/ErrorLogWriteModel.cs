@@ -1,8 +1,10 @@
+using Water.Bill.Core.Common;
+
 namespace Water.Bill.Application.Models;
 
 public sealed class ErrorLogWriteModel
 {
-    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; init; } = AppTime.IndiaNow;
     public string ExceptionType { get; init; } = string.Empty;
     public string Message { get; init; } = string.Empty;
     public string? StackTrace { get; init; }

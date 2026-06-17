@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -76,7 +77,7 @@ public sealed class NotificationDispatchService : INotificationDispatchService
             : InAppUserTypeConsumer;
 
         int inAppSent = 0, emailSent = 0, emailFailed = 0;
-        var now = DateTime.UtcNow;
+        var now = AppTime.IndiaNow;
 
         // ── STEP A: InApp — completely independent, no template needed ──────
 

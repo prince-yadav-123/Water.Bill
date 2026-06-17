@@ -1972,6 +1972,118 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.OperatorAuditController",
+    "Method": "ConsumerIndex",
+    "RelativePath": "ConsumerActivityLogs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Action",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Module",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Success",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "FromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ToDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Audience",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ActiveMenu",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DetailsRouteName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LegacyRouteName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ActionOptions",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Microsoft.AspNetCore.Mvc.Rendering.SelectListItem, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ModuleOptions",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Microsoft.AspNetCore.Mvc.Rendering.SelectListItem, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Rows",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.OperatorAuditController",
+    "Method": "ConsumerDetails",
+    "RelativePath": "ConsumerActivityLogs/Details/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Water.Bill.API.Controllers.Mvc.ConsumerLedgerController",
     "Method": "Index",
     "RelativePath": "ConsumerLedger",
@@ -4713,13 +4825,18 @@
         "IsRequired": false
       },
       {
+        "Name": "Action",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
         "Name": "Module",
         "Type": "System.String",
         "IsRequired": false
       },
       {
-        "Name": "UserId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Name": "Success",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       },
       {
@@ -4743,8 +4860,48 @@
         "IsRequired": false
       },
       {
+        "Name": "Audience",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ActiveMenu",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DetailsRouteName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LegacyRouteName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ActionOptions",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Microsoft.AspNetCore.Mvc.Rendering.SelectListItem, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ModuleOptions",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Microsoft.AspNetCore.Mvc.Rendering.SelectListItem, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "IsRequired": false
+      },
+      {
         "Name": "Rows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.OperatorAuditRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],
@@ -4760,6 +4917,11 @@
     "Parameters": [
       {
         "Name": "ReportType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -4786,6 +4948,16 @@
       {
         "Name": "Status",
         "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
         "IsRequired": false
       },
       {
@@ -5092,6 +5264,118 @@
         "Name": "returnUrl",
         "Type": "System.String",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.OperatorAuditController",
+    "Method": "Index",
+    "RelativePath": "UserActivityLogs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Action",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Module",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Success",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "FromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ToDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Audience",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Title",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ActiveMenu",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DetailsRouteName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LegacyRouteName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ActionOptions",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Microsoft.AspNetCore.Mvc.Rendering.SelectListItem, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ModuleOptions",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Microsoft.AspNetCore.Mvc.Rendering.SelectListItem, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Rows",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.OperatorAuditController",
+    "Method": "Details",
+    "RelativePath": "UserActivityLogs/Details/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

@@ -1,7 +1,10 @@
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.NotificationManagement;
 using Water.Bill.Application.Interfaces;
@@ -17,11 +20,22 @@ public class NotificationManagementController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly INotificationDispatchService _dispatch;
+    private readonly IEmailSender _emailSender;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<NotificationManagementController> _logger;
 
-    public NotificationManagementController(ApplicationDbContext db, INotificationDispatchService dispatch)
+    public NotificationManagementController(
+        ApplicationDbContext db,
+        INotificationDispatchService dispatch,
+        IEmailSender emailSender,
+        IConfiguration configuration,
+        ILogger<NotificationManagementController> logger)
     {
         _db = db;
         _dispatch = dispatch;
+        _emailSender = emailSender;
+        _configuration = configuration;
+        _logger = logger;
     }
 
     // ── List ─────────────────────────────────────────────────────────────────
@@ -148,7 +162,7 @@ public class NotificationManagementController : Controller
             RedirectUrl = string.IsNullOrWhiteSpace(model.RedirectUrl) ? null : normalizedRedirectUrl,
             CreatedByUserId = userId,
             CreatedByName = userName,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = AppTime.IndiaNow,
             IsActive = true
         };
 
@@ -179,6 +193,45 @@ public class NotificationManagementController : Controller
         }
 
         return RedirectToAction(nameof(Details), new { id = notif.Id });
+    }
+
+    [HttpGet]
+    public IActionResult TestEmail()
+    {
+        ViewData["Title"] = "Test Email";
+        ViewData["ActiveMenu"] = "Notification Management";
+        return View(BuildEmailTestViewModel(new EmailTestViewModel()));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> TestEmail(EmailTestViewModel model, CancellationToken ct)
+    {
+        ViewData["Title"] = "Test Email";
+        ViewData["ActiveMenu"] = "Notification Management";
+        model = BuildEmailTestViewModel(model);
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var encodedMessage = HtmlEncoder.Default.Encode(model.Message).Replace(Environment.NewLine, "<br />");
+        var htmlBody = $"<p>{encodedMessage}</p><p><strong>Sent At:</strong> {AppTime.IndiaNow:dd MMM yyyy hh:mm tt}</p>";
+
+        var result = await _emailSender.SendAsync(model.ToEmail.Trim(), NormalizeOptional(model.ToName), model.Subject.Trim(), htmlBody, ct);
+
+        if (string.Equals(result.Status, "Sent", StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["SuccessMessage"] = $"Test email sent successfully to {model.ToEmail.Trim()}.";
+            return RedirectToAction(nameof(TestEmail));
+        }
+
+        _logger.LogWarning(
+            "Test email failed. RecipientEmail={RecipientEmail}, Status={Status}, ErrorMessage={ErrorMessage}",
+            model.ToEmail.Trim(),
+            result.Status,
+            result.ErrorMessage);
+
+        ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Email test failed.");
+        return View(model);
     }
 
     // ── Send (from draft) ─────────────────────────────────────────────────────
@@ -317,7 +370,7 @@ public class NotificationManagementController : Controller
         if (notif is not null && !notif.IsRead)
         {
             notif.IsRead = true;
-            notif.ReadAt = DateTime.UtcNow;
+            notif.ReadAt = AppTime.IndiaNow;
             await _db.SaveChangesAsync(ct);
         }
         return Json(new { ok = true });
@@ -347,7 +400,7 @@ public class NotificationManagementController : Controller
         if (!notif.IsRead)
         {
             notif.IsRead = true;
-            notif.ReadAt = DateTime.UtcNow;
+            notif.ReadAt = AppTime.IndiaNow;
             await _db.SaveChangesAsync(ct);
         }
 
@@ -383,7 +436,7 @@ public class NotificationManagementController : Controller
             TempData["NotificationMessageType"] = "danger";
             return RedirectToAction(nameof(MyNotifications));
         }
-        var now = DateTime.UtcNow;
+        var now = AppTime.IndiaNow;
         await _db.InAppNotifications
             .Where(x => x.UserId == userId && x.UserType == "Internal" && !x.IsRead && !x.IsDeleted)
             .ExecuteUpdateAsync(s => s
@@ -445,6 +498,25 @@ public class NotificationManagementController : Controller
             .ToListAsync(ct);
 
         return vm;
+    }
+
+    private EmailTestViewModel BuildEmailTestViewModel(EmailTestViewModel vm)
+    {
+        var section = _configuration.GetSection("Communication:Email");
+        vm.Provider = section["Provider"] ?? string.Empty;
+        vm.Host = section["Host"] ?? string.Empty;
+        vm.Port = int.TryParse(section["Port"], out var port) ? port : 587;
+        vm.EnableSsl = bool.TryParse(section["EnableSsl"], out var enableSsl) && enableSsl;
+        vm.FromEmail = section["FromEmail"] ?? string.Empty;
+        vm.UsernameConfigured = !string.IsNullOrWhiteSpace(section["Username"]);
+        vm.PasswordConfigured = !string.IsNullOrWhiteSpace(section["Password"]);
+        return vm;
+    }
+
+    private static string? NormalizeOptional(string? value)
+    {
+        var trimmed = value?.Trim();
+        return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
     }
 
     private static bool HasValidTarget(NotificationCreateViewModel m)

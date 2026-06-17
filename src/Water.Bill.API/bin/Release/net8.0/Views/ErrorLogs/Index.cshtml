@@ -1,18 +1,14 @@
 @model Water.Bill.API.Models.Audit.ErrorLogIndexViewModel
 @using Water.Bill.API.Helpers
 @{
-    string DateText(DateTime value)
-    {
-        var ist = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-        return TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(value, DateTimeKind.Utc), ist).ToString("dd MMM yyyy hh:mm tt");
-    }
-
     string Short(string? value, int max = 90)
     {
         if (string.IsNullOrWhiteSpace(value)) return "-";
         var text = value.Trim();
         return text.Length <= max ? text : $"{text[..max]}...";
     }
+
+    string DateCell(DateTime value) => value.ToString("dd MMM yyyy<br/>hh:mm tt");
 
     string PortalBadgeClass(string? portalType) => (portalType ?? string.Empty).Trim().ToLowerInvariant() switch
     {
@@ -39,7 +35,7 @@
     <form method="get" class="wb-errorlog-filters">
         <div class="wb-errorlog-filter wb-errorlog-filter-search">
             <label class="form-label">Search</label>
-            <input class="form-control" name="Search" value="@Model.Search" placeholder="Message / type / path / trace ID / username / IP" />
+            <input class="form-control" name="Search" value="@Model.Search" placeholder="Search message, type, path, status, username, IP..." />
         </div>
         <div class="wb-errorlog-filter">
             <label class="form-label">Exception Type</label>
@@ -59,10 +55,6 @@
             </select>
         </div>
         <div class="wb-errorlog-filter">
-            <label class="form-label">Status Code</label>
-            <input class="form-control" type="number" min="100" max="599" name="StatusCode" value="@Model.StatusCode" placeholder="500" />
-        </div>
-        <div class="wb-errorlog-filter">
             <label class="form-label">Portal</label>
             <select class="form-select" name="PortalType">
                 <option value="">All</option>
@@ -80,29 +72,6 @@
             </select>
         </div>
         <div class="wb-errorlog-filter">
-            <label class="form-label">Handled</label>
-            <select class="form-select" name="IsHandled">
-                <option value="">All</option>
-                @if (Model.IsHandled == true)
-                {
-                    <option value="true" selected>Handled</option>
-                }
-                else
-                {
-                    <option value="true">Handled</option>
-                }
-
-                @if (Model.IsHandled == false)
-                {
-                    <option value="false" selected>Unhandled</option>
-                }
-                else
-                {
-                    <option value="false">Unhandled</option>
-                }
-            </select>
-        </div>
-        <div class="wb-errorlog-filter">
             <label class="form-label">From</label>
             <input class="form-control" type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
         </div>
@@ -116,8 +85,8 @@
         </div>
     </form>
 
-    <div class="table-responsive wb-approval-table-wrap mt-3">
-        <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+    <div class="table-responsive wb-approval-table-wrap wb-errorlog-table-wrap mt-3">
+        <table class="table align-middle wb-table wb-admin-table wb-approval-table wb-errorlog-table">
             <thead>
                 <tr>
                     <th>Date / Time</th>
@@ -144,14 +113,14 @@
                 @foreach (var row in Model.Rows)
                 {
                     <tr>
-                        <td>@DateText(row.CreatedAt)</td>
+                        <td class="wb-errorlog-date">@Html.Raw(DateCell(row.CreatedAt))</td>
                         <td><span class="@PortalBadgeClass(row.PortalType)">@row.PortalType</span></td>
-                        <td>@row.ExceptionType</td>
-                        <td title="@row.Message">@Short(row.Message)</td>
-                        <td title="@row.RequestPath">@Short(row.RequestPath, 60)</td>
+                        <td class="wb-errorlog-type" title="@row.ExceptionType">@Short(row.ExceptionType, 28)</td>
+                        <td class="wb-errorlog-message" title="@row.Message">@Short(row.Message, 96)</td>
+                        <td class="wb-errorlog-path" title="@row.RequestPath">@Short(row.RequestPath, 54)</td>
                         <td><span class="badge @AdminStatusBadgeHelper.CssClass(row.StatusCode >= 500 ? "Failed" : row.StatusCode.ToString())">@row.StatusCode</span></td>
-                        <td>@(string.IsNullOrWhiteSpace(row.Username) ? "-" : row.Username)</td>
-                        <td>@(string.IsNullOrWhiteSpace(row.IpAddress) ? "-" : row.IpAddress)</td>
+                        <td class="wb-errorlog-user">@(string.IsNullOrWhiteSpace(row.Username) ? "-" : row.Username)</td>
+                        <td class="wb-errorlog-ip">@(string.IsNullOrWhiteSpace(row.IpAddress) ? "-" : row.IpAddress)</td>
                         <td><span class="badge @AdminStatusBadgeHelper.CssClass(row.IsHandled ? "Completed" : "ActionRequired")">@((row.IsHandled) ? "Handled" : "Unhandled")</span></td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@row.Id">Details</a>

@@ -36,26 +36,22 @@ public class ErrorLogsController : Controller
         if (!string.IsNullOrWhiteSpace(model.Search))
         {
             var term = model.Search.Trim();
+            var statusCodeTerm = int.TryParse(term, out var parsedStatusCode) ? parsedStatusCode : (int?)null;
             query = query.Where(x =>
                 x.Message.Contains(term) ||
                 x.ExceptionType.Contains(term) ||
                 (x.RequestPath != null && x.RequestPath.Contains(term)) ||
                 (x.TraceId != null && x.TraceId.Contains(term)) ||
                 (x.Username != null && x.Username.Contains(term)) ||
-                (x.IpAddress != null && x.IpAddress.Contains(term)));
+                (x.IpAddress != null && x.IpAddress.Contains(term)) ||
+                (statusCodeTerm.HasValue && x.StatusCode == statusCodeTerm.Value));
         }
 
         if (!string.IsNullOrWhiteSpace(model.ExceptionType))
             query = query.Where(x => x.ExceptionType == model.ExceptionType);
 
-        if (model.StatusCode.HasValue)
-            query = query.Where(x => x.StatusCode == model.StatusCode.Value);
-
         if (!string.IsNullOrWhiteSpace(model.PortalType))
             query = query.Where(x => x.PortalType == model.PortalType);
-
-        if (model.IsHandled.HasValue)
-            query = query.Where(x => x.IsHandled == model.IsHandled.Value);
 
         if (model.FromDate.HasValue)
             query = query.Where(x => x.CreatedAt >= model.FromDate.Value.Date);
@@ -138,7 +134,7 @@ public class ErrorLogsController : Controller
     [RequirePermission("Error Logs.delete")]
     public async Task<IActionResult> ClearOld(CancellationToken ct)
     {
-        var cutoff = DateTime.UtcNow.AddDays(-30);
+        var cutoff = AppTime.IndiaNow.AddDays(-30);
         var oldLogs = await _db.ErrorLogs.Where(x => x.CreatedAt < cutoff).ToListAsync(ct);
         if (oldLogs.Count == 0)
         {

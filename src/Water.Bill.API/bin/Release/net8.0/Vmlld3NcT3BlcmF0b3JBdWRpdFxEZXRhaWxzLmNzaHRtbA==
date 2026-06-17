@@ -1,0 +1,88 @@
+@model Water.Bill.API.Models.Audit.ActivityLogDetailsViewModel
+@using Water.Bill.Core.Common
+@{
+    string DateText(DateTime value) => value.ToString("dd MMM yyyy hh:mm tt");
+    string PortalBadgeClass(string portalType) => portalType switch
+    {
+        AppConstants.PortalTypes.Consumer => "wb-portal-badge wb-portal-badge-consumer",
+        AppConstants.PortalTypes.Public => "wb-portal-badge wb-portal-badge-public",
+        AppConstants.PortalTypes.Api => "wb-portal-badge wb-portal-badge-api",
+        AppConstants.PortalTypes.Admin => "wb-portal-badge wb-portal-badge-admin",
+        _ => "wb-portal-badge wb-portal-badge-unknown"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>@Model.Title</h1>
+        <p>@Model.Description</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="@Model.BackRouteName">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>Portal</span>
+                <div><span class="@PortalBadgeClass(Model.PortalType)">@Model.PortalType</span></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>Result</span>
+                <div><span class="badge @AdminStatusBadgeHelper.CssClass(Model.Success ? "Success" : "Failed")">@AdminStatusBadgeHelper.Label(Model.Success ? "Success" : "Failed")</span></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>Action</span>
+                <strong>@Model.ActionLabel</strong>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>Timestamp</span>
+                <strong>@DateText(Model.Timestamp)</strong>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>User</span>
+                <strong>@(Model.Username ?? "-")</strong>
+                <small class="text-muted">User Id: @(Model.UserId?.ToString() ?? "Not captured")</small>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>Entity</span>
+                <strong>@Model.EntityLabel</strong>
+                <small class="text-muted">@(string.IsNullOrWhiteSpace(Model.EntityId) ? Model.ModuleLabel : $"Reference: {Model.EntityId}")</small>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>Module</span>
+                <strong>@Model.ModuleLabel</strong>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="wb-detail-tile">
+                <span>IP Address</span>
+                <strong>@(Model.IpAddress ?? "-")</strong>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="wb-detail-tile">
+                <span>User Agent</span>
+                <strong class="wb-break-word">@(Model.UserAgent ?? "-")</strong>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="wb-detail-tile">
+                <span>Details</span>
+                <pre class="wb-activitylog-detail-copy">@(string.IsNullOrWhiteSpace(Model.Details) ? "-" : Model.Details)</pre>
+            </div>
+        </div>
+    </div>
+</section>
