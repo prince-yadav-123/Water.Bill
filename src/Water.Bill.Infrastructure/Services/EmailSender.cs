@@ -20,6 +20,16 @@ public class EmailSender : IEmailSender
     public async Task<CommunicationSendResult> SendAsync(string toEmail, string? toName, string subject, string htmlBody, CancellationToken ct = default)
     {
         var section = _configuration.GetSection("Communication:Email");
+        var isEnabled = !bool.TryParse(section["Enabled"], out var enabled) || enabled;
+        if (!isEnabled)
+        {
+            _logger.LogInformation(
+                "Email send skipped because Communication:Email:Enabled is false. Recipient={RecipientEmail}, Subject={Subject}",
+                toEmail,
+                subject);
+            return CommunicationSendResult.Skipped("Email sending is disabled in configuration.");
+        }
+
         var provider = section["Provider"];
         var host = section["Host"];
         var fromEmail = section["FromEmail"];

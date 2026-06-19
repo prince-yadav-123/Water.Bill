@@ -1,0 +1,85 @@
+@model Water.Bill.API.Models.NotificationManagement.EmailTestViewModel
+@{
+    ViewData["Title"] = "Test Email";
+}
+
+<div class="wb-page-head">
+    <div><p class="wb-kicker">Communication</p><h1>Test Email</h1></div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" asp-action="Create">Create Notification</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-12 col-xl-7">
+        <section class="wb-page-card">
+            <h2 class="wb-section-title mb-3">Send Test Email</h2>
+            <form asp-action="TestEmail" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label asp-for="ToEmail" class="form-label required"></label>
+                        <input asp-for="ToEmail" class="form-control" maxlength="256" placeholder="recipient@example.com" />
+                        <span asp-validation-for="ToEmail" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="ToName" class="form-label"></label>
+                        <input asp-for="ToName" class="form-control" maxlength="200" placeholder="Optional recipient name" />
+                        <span asp-validation-for="ToName" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Subject" class="form-label required"></label>
+                        <input asp-for="Subject" class="form-control" maxlength="200" />
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Message" class="form-label required"></label>
+                        <textarea asp-for="Message" class="form-control" rows="6" maxlength="4000"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Send Test Email</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-5">
+        <section class="wb-page-card">
+            <h2 class="wb-section-title mb-3">SMTP Configuration Summary</h2>
+            <div class="wb-info-list">
+                <div><span class="wb-il-label">Provider</span><strong>@(string.IsNullOrWhiteSpace(Model.Provider) ? "-" : Model.Provider)</strong></div>
+                <div><span class="wb-il-label">Host</span><strong>@(string.IsNullOrWhiteSpace(Model.Host) ? "-" : Model.Host)</strong></div>
+                <div><span class="wb-il-label">Port</span><strong>@Model.Port</strong></div>
+                <div><span class="wb-il-label">SSL Enabled</span><strong>@(Model.EnableSsl ? "Yes" : "No")</strong></div>
+                <div><span class="wb-il-label">From Email</span><strong>@(string.IsNullOrWhiteSpace(Model.FromEmail) ? "-" : Model.FromEmail)</strong></div>
+                <div><span class="wb-il-label">Username Configured</span><strong>@(Model.UsernameConfigured ? "Yes" : "No")</strong></div>
+                <div><span class="wb-il-label">Password Configured</span><strong>@(Model.PasswordConfigured ? "Yes" : "No")</strong></div>
+            </div>
+
+            @if (string.IsNullOrWhiteSpace(Model.Host) || string.IsNullOrWhiteSpace(Model.FromEmail) || string.IsNullOrWhiteSpace(Model.Provider))
+            {
+                <div class="alert alert-warning mt-3 mb-0">
+                    SMTP configuration is incomplete. Email sending will be skipped until the required values are provided in configuration.
+                </div>
+            }
+        </section>
+    </div>
+</div>
+
+<style>
+    .wb-section-title { font-size: 1rem; font-weight: 700; color: #0f172a; }
+    .wb-info-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .wb-info-list > div { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.92rem; }
+    .wb-il-label { color: #64748b; }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
