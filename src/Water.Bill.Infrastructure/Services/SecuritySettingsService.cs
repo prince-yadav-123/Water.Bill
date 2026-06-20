@@ -47,6 +47,7 @@ public class SecuritySettingsService : ISecuritySettingsService
         entity.CaptchaAfterAttempts = settings.CaptchaAfterAttempts;
         entity.AllowMultipleSessions = settings.AllowMultipleSessions;
         entity.BlockNewLoginOnConflict = settings.BlockNewLoginOnConflict;
+        entity.ConsumerLoginOtpEnabled = settings.ConsumerLoginOtpEnabled;
         entity.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(ct);
@@ -71,6 +72,7 @@ public class SecuritySettingsService : ISecuritySettingsService
         EnableCaptchaAfterFailures = entity.EnableCaptchaAfterFailures,
         CaptchaAfterAttempts = entity.CaptchaAfterAttempts,
         AllowMultipleSessions = entity.AllowMultipleSessions,
-        BlockNewLoginOnConflict = entity.BlockNewLoginOnConflict
+        BlockNewLoginOnConflict = entity.BlockNewLoginOnConflict,
+        ConsumerLoginOtpEnabled = entity.ConsumerLoginOtpEnabled
     };
 }

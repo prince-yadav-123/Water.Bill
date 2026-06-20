@@ -59,6 +59,7 @@ BEGIN
         PasswordHash       NVARCHAR(500) NOT NULL,
         IsActive           BIT NOT NULL CONSTRAINT DF_AppUsers_IsActive DEFAULT (1),
         RoleId             INT NOT NULL,
+        DivisionDevType    INT NULL,
         PhoneNumber        NVARCHAR(30) NULL,
         FailedLoginCount    INT NOT NULL CONSTRAINT DF_AppUsers_FailedLoginCount DEFAULT (0),
         LockoutUntil       DATETIME2(6) NULL,
@@ -1331,12 +1332,21 @@ BEGIN
         Id             INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_WorkflowMasters PRIMARY KEY,
         WorkflowName   NVARCHAR(100) NOT NULL,
         ApplicationType NVARCHAR(50) NOT NULL,
+        OverallSlaDays INT NULL,
         IsActive       BIT NOT NULL CONSTRAINT DF_WorkflowMasters_IsActive DEFAULT (1),
         IsDeleted      BIT NOT NULL CONSTRAINT DF_WorkflowMasters_IsDeleted DEFAULT (0),
         CreatedOn      DATETIME2(6) NOT NULL CONSTRAINT DF_WorkflowMasters_CreatedOn DEFAULT (SYSDATETIME()),
         UpdatedOn      DATETIME2(6) NULL
     );
 END;
+
+IF OBJECT_ID(N'dbo.WorkflowMasters', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.WorkflowMasters', N'OverallSlaDays') IS NULL
+BEGIN
+    ALTER TABLE dbo.WorkflowMasters
+        ADD OverallSlaDays INT NULL;
+END;
+GO
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_WorkflowMasters_ApplicationType_Active' AND object_id = OBJECT_ID(N'dbo.WorkflowMasters'))
 BEGIN
@@ -1671,6 +1681,14 @@ BEGIN
     CREATE INDEX IX_new_connection_applications_SubmittedByConsumerUserId ON dbo.new_connection_applications (SubmittedByConsumerUserId);
 END;
 
+IF OBJECT_ID(N'dbo.securitysettings', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.securitysettings', N'ConsumerLoginOtpEnabled') IS NULL
+BEGIN
+    ALTER TABLE dbo.securitysettings
+        ADD ConsumerLoginOtpEnabled BIT NOT NULL
+            CONSTRAINT DF_securitysettings_ConsumerLoginOtpEnabled DEFAULT (1);
+END;
+
 IF OBJECT_ID(N'dbo.new_connection_applications', N'U') IS NOT NULL
 AND EXISTS
 (
@@ -1797,6 +1815,13 @@ BEGIN
 END;
 
 IF OBJECT_ID(N'dbo.AppUsers', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.AppUsers', N'DivisionDevType') IS NULL
+BEGIN
+    ALTER TABLE dbo.AppUsers
+        ADD DivisionDevType INT NULL;
+END;
+
+IF OBJECT_ID(N'dbo.AppUsers', N'U') IS NOT NULL
    AND COL_LENGTH(N'dbo.AppUsers', N'DeptId') IS NULL
 BEGIN
     ALTER TABLE dbo.AppUsers
@@ -1852,6 +1877,21 @@ BEGIN
     INNER JOIN SingleDept sd
         ON sd.UserId = au.Id
     WHERE au.DeptId IS NULL;
+END;
+
+IF OBJECT_ID(N'dbo.AppUsers', N'U') IS NOT NULL
+   AND OBJECT_ID(N'dbo.master_dept_details', N'U') IS NOT NULL
+   AND COL_LENGTH(N'dbo.AppUsers', N'DivisionDevType') IS NOT NULL
+   AND COL_LENGTH(N'dbo.AppUsers', N'DeptId') IS NOT NULL
+   AND COL_LENGTH(N'dbo.master_dept_details', N'DEV_TYPE') IS NOT NULL
+BEGIN
+    UPDATE au
+    SET au.DivisionDevType = md.DEV_TYPE
+    FROM dbo.AppUsers au
+    INNER JOIN dbo.master_dept_details md
+        ON md.Id = au.DeptId
+    WHERE au.DivisionDevType IS NULL
+      AND md.DEV_TYPE IS NOT NULL;
 END;
 
 IF OBJECT_ID(N'dbo.jal_bank_master', N'U') IS NOT NULL
@@ -2556,22 +2596,23 @@ USING
 (
     SELECT *
     FROM (VALUES
-        (N'New Connection', N'NewConnection'),
-        (N'Demo NDC Approval Workflow', N'NDC'),
-        (N'Name Transfer Approval', N'NameTransfer'),
-        (N'Connection Change Approval', N'ConnectionChange')
-    ) v (WorkflowName, ApplicationType)
+        (N'New Connection', N'NewConnection', CAST(NULL AS INT)),
+        (N'Demo NDC Approval Workflow', N'NDC', CAST(NULL AS INT)),
+        (N'Name Transfer Approval', N'NameTransfer', CAST(NULL AS INT)),
+        (N'Connection Change Approval', N'ConnectionChange', CAST(NULL AS INT))
+    ) v (WorkflowName, ApplicationType, OverallSlaDays)
 ) AS src
 ON tgt.ApplicationType = src.ApplicationType
 WHEN MATCHED THEN
     UPDATE SET
         tgt.WorkflowName = src.WorkflowName,
+        tgt.OverallSlaDays = COALESCE(tgt.OverallSlaDays, src.OverallSlaDays),
         tgt.IsActive = 1,
         tgt.IsDeleted = 0,
         tgt.UpdatedOn = SYSDATETIME()
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT (WorkflowName, ApplicationType, IsActive, IsDeleted, CreatedOn, UpdatedOn)
-    VALUES (src.WorkflowName, src.ApplicationType, 1, 0, SYSDATETIME(), NULL);
+    INSERT (WorkflowName, ApplicationType, OverallSlaDays, IsActive, IsDeleted, CreatedOn, UpdatedOn)
+    VALUES (src.WorkflowName, src.ApplicationType, src.OverallSlaDays, 1, 0, SYSDATETIME(), NULL);
 
 ;WITH stage_seed AS
 (
@@ -2626,6 +2667,21 @@ WHEN NOT MATCHED BY TARGET THEN
     VALUES (src.WorkflowId, src.StageName, src.StageOrder, src.DepartmentId, src.ApproverRoleId, src.ApproverUserId,
             src.ApprovalType, src.CanApprove, src.CanReject, src.CanSendCorrection, src.CanForward, src.IsFinalStage,
             src.SlaDays, src.IsActive, src.IsDeleted, SYSDATETIME(), NULL, src.CanForwardToUser, src.CanSendBackToApplicant, src.CanSendBackToPrevious);
+
+UPDATE wm
+SET wm.OverallSlaDays = stage_totals.TotalStageSlaDays
+FROM dbo.WorkflowMasters wm
+INNER JOIN
+(
+    SELECT WorkflowId, SUM(ISNULL(SlaDays, 0)) AS TotalStageSlaDays
+    FROM dbo.WorkflowStages
+    WHERE IsDeleted = 0
+    GROUP BY WorkflowId
+) stage_totals
+    ON stage_totals.WorkflowId = wm.Id
+WHERE wm.OverallSlaDays IS NULL
+  AND stage_totals.TotalStageSlaDays > 0;
+GO
 
 /* ============================================================
    14) ADDITIONAL SEEDS / DEFAULT SETTINGS

@@ -1,6 +1,7 @@
 @model IReadOnlyList<Water.Bill.Infrastructure.Data.Entities.WorkflowStage>
 @{
     var workflow = ViewBag.Workflow as Water.Bill.Infrastructure.Data.Entities.WorkflowMaster;
+    var totalStageSlaDays = ViewBag.TotalStageSlaDays is int total ? total : 0;
     var notifications = ViewBag.Notifications as IDictionary<int, Water.Bill.Infrastructure.Data.Entities.WorkflowStageNotification>
         ?? new Dictionary<int, Water.Bill.Infrastructure.Data.Entities.WorkflowStageNotification>();
     var roleNames = ViewBag.RoleNames as IDictionary<int, string> ?? new Dictionary<int, string>();
@@ -31,6 +32,14 @@
         <div>
             <span class="wb-kicker">Stages</span>
             <strong>@Model.Count</strong>
+        </div>
+        <div>
+            <span class="wb-kicker">Overall SLA</span>
+            <strong>@(workflow?.OverallSlaDays is > 0 ? $"{workflow.OverallSlaDays} days" : "Not set")</strong>
+        </div>
+        <div>
+            <span class="wb-kicker">Total Stage SLA</span>
+            <strong>@totalStageSlaDays days</strong>
         </div>
     </div>
 

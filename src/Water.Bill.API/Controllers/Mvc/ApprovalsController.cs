@@ -285,6 +285,10 @@ public class ApprovalsController : Controller
                 LastUpdatedOn = latestHistory?.ActionOn ?? x.ActionOn ?? x.AssignedOn,
                 SubmittedOn = app?.SubmittedOn ?? ndc?.CreatedOn ?? legacy?.EnterDate?.ToDateTime(TimeOnly.MinValue),
                 AssignedOn = x.AssignedOn,
+                StageSlaDays = x.Stage.SlaDays,
+                StageDueOn = x.Stage.SlaDays.HasValue && x.Stage.SlaDays.Value > 0 ? x.AssignedOn.Date.AddDays(x.Stage.SlaDays.Value) : null,
+                DaysSinceAssigned = Math.Max(0, (int)Math.Floor((DateTime.Now.Date - x.AssignedOn.Date).TotalDays)),
+                SlaState = ResolveSlaState(x, DateTime.Now),
                 CanAct = x.IsActive
                     && x.Status == "Pending"
                     && x.WorkflowInstance.CurrentStageId == x.StageId
@@ -683,6 +687,26 @@ public class ApprovalsController : Controller
             parts.Add(roleName);
 
         return parts.Count == 0 ? "Unassigned" : string.Join(" / ", parts);
+    }
+
+    private static string ResolveSlaState(ApplicationWorkflowTask task, DateTime now)
+    {
+        var isCurrentPendingTask = task.IsActive
+            && string.Equals(task.Status, "Pending", StringComparison.OrdinalIgnoreCase)
+            && task.WorkflowInstance.CurrentStageId == task.StageId
+            && task.WorkflowInstance.IsActive;
+
+        if (!isCurrentPendingTask || !task.Stage.SlaDays.HasValue || task.Stage.SlaDays.Value <= 0)
+            return "None";
+
+        var elapsedDays = Math.Max(0, (int)Math.Floor((now.Date - task.AssignedOn.Date).TotalDays));
+        var slaDays = task.Stage.SlaDays.Value;
+        if (elapsedDays >= slaDays)
+            return "Expired";
+
+        var remainingDays = slaDays - elapsedDays;
+        var nearExpiryThreshold = Math.Max(2, (int)Math.Ceiling(slaDays * 0.30));
+        return remainingDays <= nearExpiryThreshold ? "NearExpiry" : "Normal";
     }
 
     private static bool IsLegacyConsumerChange(string? applicationType)

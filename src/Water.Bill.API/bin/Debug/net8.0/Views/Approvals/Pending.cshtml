@@ -24,6 +24,29 @@
         "ConnectionChange" => "Connection Change",
         _ => t
     };
+
+    string SlaRowClass(Water.Bill.API.Models.Approvals.ApprovalListItemViewModel item) => item.SlaState switch
+    {
+        "Expired" => "wb-sla-row wb-sla-row-expired",
+        "NearExpiry" => "wb-sla-row wb-sla-row-warning",
+        _ => string.Empty
+    };
+
+    string SlaBadgeClass(string state) => state switch
+    {
+        "Expired" => "text-bg-danger",
+        "NearExpiry" => "text-bg-warning text-dark",
+        "Normal" => "text-bg-info",
+        _ => "text-bg-secondary"
+    };
+
+    string SlaBadgeText(Water.Bill.API.Models.Approvals.ApprovalListItemViewModel item) => item.SlaState switch
+    {
+        "Expired" => "SLA Expired",
+        "NearExpiry" => "Near SLA Expiry",
+        "Normal" => "Within SLA",
+        _ => string.Empty
+    };
 }
 
 <div class="wb-page-head">
@@ -148,7 +171,7 @@
                 <tbody>
                     @foreach (var item in Model.Items)
                     {
-                        <tr>
+                        <tr class="@SlaRowClass(item)">
                             <td><strong>@item.ApplicationNo</strong></td>
                             <td>
                                 <div class="fw-semibold">@(item.ApplicantName ?? "-")</div>
@@ -163,7 +186,19 @@
                                     @FriendlyStatus(item.CurrentStatus)
                                 </span>
                             </td>
-                            <td><small>@item.CurrentStage</small></td>
+                            <td>
+                                <div class="fw-semibold">@item.CurrentStage</div>
+                                @if (item.SlaState != "None")
+                                {
+                                    <div class="mt-1 d-flex flex-column gap-1">
+                                        <span class="badge @SlaBadgeClass(item.SlaState) wb-sla-badge">@SlaBadgeText(item)</span>
+                                        @if (item.StageDueOn.HasValue)
+                                        {
+                                            <small class="text-muted">Due by @item.StageDueOn.Value.ToString("dd MMM yyyy")</small>
+                                        }
+                                    </div>
+                                }
+                            </td>
                             <td><small>@item.AssignedTo</small></td>
                             @if (isAdmin)
                             {
@@ -192,3 +227,25 @@
     }
     @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
 </section>
+
+<style>
+    .wb-sla-row-warning {
+        box-shadow: inset 4px 0 0 #f59e0b;
+        background: rgba(245, 158, 11, 0.06);
+    }
+
+    .wb-sla-row-expired {
+        box-shadow: inset 4px 0 0 #dc2626;
+        background: rgba(220, 38, 38, 0.06);
+    }
+
+    .wb-sla-row td {
+        vertical-align: middle;
+    }
+
+    .wb-sla-badge {
+        width: fit-content;
+        font-size: .72rem;
+        font-weight: 600;
+    }
+</style>

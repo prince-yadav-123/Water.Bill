@@ -1,6 +1,7 @@
 @model UserFormViewModel
 @{
     ViewData["Title"] = "Create User";
+    var divisions = ViewBag.DivisionOptions as IEnumerable<Water.Bill.Core.Common.AppConstants.DivisionOption> ?? Enumerable.Empty<Water.Bill.Core.Common.AppConstants.DivisionOption>();
     var roles = ViewBag.Roles as IEnumerable<Approle> ?? Enumerable.Empty<Approle>();
     var departments = ViewBag.Departments as IEnumerable<MasterDeptDetail> ?? Enumerable.Empty<MasterDeptDetail>();
 }
@@ -50,12 +51,23 @@
                 <span class="text-danger small" asp-validation-for="RoleId"></span>
             </div>
             <div class="col-md-6">
+                <label class="form-label required" asp-for="DivisionDevType">Division</label>
+                <select class="form-select" asp-for="DivisionDevType" required data-user-division>
+                    <option value="">Select Division</option>
+                    @foreach (var division in divisions)
+                    {
+                        <option value="@division.DevType">@division.Name</option>
+                    }
+                </select>
+                <span class="text-danger small" asp-validation-for="DivisionDevType"></span>
+            </div>
+            <div class="col-md-6">
                 <label class="form-label" asp-for="DeptId">Department</label>
-                <select class="form-select" asp-for="DeptId">
+                <select class="form-select" asp-for="DeptId" data-user-department>
                     <option value="">Select Department</option>
                     @foreach (var department in departments)
                     {
-                        <option value="@department.Id">@department.DeptName</option>
+                        <option value="@department.Id" data-dev-type="@department.DevType">@department.DeptName</option>
                     }
                 </select>
                 <span class="text-danger small" asp-validation-for="DeptId"></span>
@@ -98,6 +110,34 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         (() => {
+            const division = document.querySelector('[data-user-division]');
+            const department = document.querySelector('[data-user-department]');
+
+            const syncDepartments = () => {
+                if (!division || !department) return;
+
+                const selectedDivision = division.value;
+                const options = Array.from(department.options);
+
+                options.forEach(option => {
+                    if (!option.value) {
+                        option.hidden = false;
+                        return;
+                    }
+
+                    const optionDivision = option.getAttribute('data-dev-type');
+                    const showOption = !selectedDivision || selectedDivision === '4' || optionDivision === selectedDivision;
+                    option.hidden = !showOption;
+
+                    if (!showOption && option.selected) {
+                        department.value = '';
+                    }
+                });
+            };
+
+            division?.addEventListener('change', syncDepartments);
+            syncDepartments();
+
             document.querySelectorAll('[data-password-toggle]').forEach(button => {
                 button.addEventListener('click', () => {
                     const group = button.closest('.wb-password-group');

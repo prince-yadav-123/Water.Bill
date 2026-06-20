@@ -8,6 +8,8 @@ public partial class WorkflowMaster
 
     public string ApplicationType { get; set; } = null!;
 
+    public int? OverallSlaDays { get; set; }
+
     public bool IsActive { get; set; } = true;
 
     public bool IsDeleted { get; set; }

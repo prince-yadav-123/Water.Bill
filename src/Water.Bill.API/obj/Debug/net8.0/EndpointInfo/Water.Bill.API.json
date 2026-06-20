@@ -8110,6 +8110,14 @@
             }
           },
           {
+            "name": "DivisionDevType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
             "name": "PhoneNumber",
             "in": "query",
             "schema": {
@@ -8220,6 +8228,14 @@
           },
           {
             "name": "DeptId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "DivisionDevType",
             "in": "query",
             "schema": {
               "type": "integer",
@@ -8541,6 +8557,11 @@
             "format": "int32"
           },
           "deptId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "divisionDevType": {
             "type": "integer",
             "format": "int32",
             "nullable": true

@@ -195,6 +195,7 @@ public class RolesUsersController : Controller
         ViewData["ActiveMenu"] = "User Management";
         await PopulateRoles(ct);
         await PopulateDepartments(ct);
+        PopulateDivisionOptions();
         return View(new UserFormViewModel());
     }
 
@@ -206,12 +207,15 @@ public class RolesUsersController : Controller
             ModelState.AddModelError(nameof(model.Password), "Password is required.");
         if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != model.ConfirmPassword)
             ModelState.AddModelError(nameof(model.ConfirmPassword), "Password and confirm password do not match.");
+        if (!model.DivisionDevType.HasValue)
+            ModelState.AddModelError(nameof(model.DivisionDevType), "Division is required.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
             await PopulateDepartments(ct);
+            PopulateDivisionOptions();
             return View(model);
         }
 
@@ -223,6 +227,7 @@ public class RolesUsersController : Controller
             PasswordHash = AuthService.HashPassword(model.Password!),
             RoleId = model.RoleId,
             DeptId = model.DeptId,
+            DivisionDevType = model.DivisionDevType,
             PhoneNumber = model.PhoneNumber,
             IsActive = model.IsActive,
             PasswordChangedAt = DateTime.UtcNow,
@@ -243,6 +248,7 @@ public class RolesUsersController : Controller
         if (user is null) return NotFound();
         await PopulateRoles(ct);
         await PopulateDepartments(ct);
+        PopulateDivisionOptions();
         return View(new UserFormViewModel
         {
             Id = user.Id,
@@ -251,6 +257,7 @@ public class RolesUsersController : Controller
             Username = user.Username,
             RoleId = user.RoleId,
             DeptId = user.DeptId,
+            DivisionDevType = user.DivisionDevType,
             PhoneNumber = user.PhoneNumber,
             IsActive = user.IsActive == true
         });
@@ -264,12 +271,15 @@ public class RolesUsersController : Controller
         if (user is null) return NotFound();
         if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != model.ConfirmPassword)
             ModelState.AddModelError(nameof(model.ConfirmPassword), "Password and confirm password do not match.");
+        if (!model.DivisionDevType.HasValue)
+            ModelState.AddModelError(nameof(model.DivisionDevType), "Division is required.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
             await PopulateDepartments(ct);
+            PopulateDivisionOptions();
             return View(model);
         }
         user.FullName = model.FullName;
@@ -277,6 +287,7 @@ public class RolesUsersController : Controller
         user.Username = model.Username;
         user.RoleId = model.RoleId;
         user.DeptId = model.DeptId;
+        user.DivisionDevType = model.DivisionDevType;
         user.PhoneNumber = model.PhoneNumber;
         user.IsActive = model.IsActive;
         user.UpdatedAt = DateTime.UtcNow;
@@ -398,6 +409,9 @@ public class RolesUsersController : Controller
             .Where(x => x.Status == "1")
             .OrderBy(x => x.DeptName)
             .ToListAsync(ct);
+
+    private void PopulateDivisionOptions()
+        => ViewBag.DivisionOptions = AppConstants.Divisions.Options;
 
     private async Task<bool> IsConsumerRoleAsync(int roleId, CancellationToken ct)
         => await _db.Approles.AnyAsync(x =>

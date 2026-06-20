@@ -36,7 +36,7 @@ public class WorkflowsController : Controller
     {
         ViewData["Title"] = "Create Workflow";
         ViewData["ActiveMenu"] = "Workflow Master";
-        Validate(model);
+        await ValidateAsync(model, null, ct);
         if (!ModelState.IsValid) return View("Form", model);
         model.WorkflowName = model.WorkflowName.Trim();
         model.ApplicationType = model.ApplicationType.Trim();
@@ -60,12 +60,13 @@ public class WorkflowsController : Controller
     {
         ViewData["Title"] = "Edit Workflow";
         ViewData["ActiveMenu"] = "Workflow Master";
-        Validate(model);
+        await ValidateAsync(model, id, ct);
         if (!ModelState.IsValid) return View("Form", model);
         var entity = await _db.WorkflowMasters.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (entity is null) return NotFound();
         entity.WorkflowName = model.WorkflowName.Trim();
         entity.ApplicationType = model.ApplicationType.Trim();
+        entity.OverallSlaDays = model.OverallSlaDays;
         entity.IsActive = model.IsActive;
         entity.UpdatedOn = DateTime.Now;
         await _db.SaveChangesAsync(ct);
@@ -85,6 +86,7 @@ public class WorkflowsController : Controller
             .Where(x => x.WorkflowId == workflowId && !x.IsDeleted)
             .OrderBy(x => x.StageOrder)
             .ToListAsync(ct);
+        ViewBag.TotalStageSlaDays = rows.Sum(x => x.SlaDays ?? 0);
         ViewBag.Notifications = await _db.WorkflowStageNotifications
             .AsNoTracking()
             .Where(x => rows.Select(stage => stage.Id).Contains(x.WorkflowStageId) && x.EventType == "StageAssigned" && !x.IsDeleted)
@@ -118,7 +120,7 @@ public class WorkflowsController : Controller
         ViewData["ActiveMenu"] = "Workflow Master";
         await LoadStageLists(model.DepartmentId, model.ApproverRoleId, model.ApproverUserId, ct);
         SuppressStageNavigationValidation();
-        ValidateStage(model);
+        await ValidateStageAsync(model, null, ct);
         if (!ModelState.IsValid) return View("StageForm", model);
         model.StageName = model.StageName.Trim();
         model.CreatedOn = DateTime.Now;
@@ -150,7 +152,7 @@ public class WorkflowsController : Controller
         ViewData["ActiveMenu"] = "Workflow Master";
         await LoadStageLists(model.DepartmentId, model.ApproverRoleId, model.ApproverUserId, ct);
         SuppressStageNavigationValidation();
-        ValidateStage(model);
+        await ValidateStageAsync(model, id, ct);
         if (!ModelState.IsValid) return View("StageForm", model);
         var entity = await _db.WorkflowStages.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (entity is null) return NotFound();
@@ -291,13 +293,26 @@ public class WorkflowsController : Controller
         await _db.SaveChangesAsync(ct);
     }
 
-    private void Validate(WorkflowMaster model)
+    private async Task ValidateAsync(WorkflowMaster model, int? workflowId, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(model.WorkflowName)) ModelState.AddModelError(nameof(model.WorkflowName), "Workflow name is required.");
         if (string.IsNullOrWhiteSpace(model.ApplicationType)) ModelState.AddModelError(nameof(model.ApplicationType), "Application type is required.");
+        if (!model.OverallSlaDays.HasValue || model.OverallSlaDays.Value <= 0)
+            ModelState.AddModelError(nameof(model.OverallSlaDays), "Overall SLA Days is required.");
+
+        if (workflowId.HasValue && model.OverallSlaDays.HasValue && model.OverallSlaDays.Value > 0)
+        {
+            var totalStageSlaDays = await _db.WorkflowStages
+                .AsNoTracking()
+                .Where(x => x.WorkflowId == workflowId.Value && !x.IsDeleted)
+                .SumAsync(x => (int?)x.SlaDays, ct) ?? 0;
+
+            if (totalStageSlaDays > model.OverallSlaDays.Value)
+                ModelState.AddModelError(nameof(model.OverallSlaDays), "Total stage SLA days cannot be greater than Overall SLA Days.");
+        }
     }
 
-    private void ValidateStage(WorkflowStage model)
+    private async Task ValidateStageAsync(WorkflowStage model, int? stageId, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(model.StageName)) ModelState.AddModelError(nameof(model.StageName), "Stage name is required.");
         if (model.StageOrder <= 0) ModelState.AddModelError(nameof(model.StageOrder), "Stage order is required.");
@@ -316,6 +331,22 @@ public class WorkflowsController : Controller
 
         if (!model.ApproverUserId.HasValue && !model.DepartmentId.HasValue && !model.ApproverRoleId.HasValue)
             ModelState.AddModelError(nameof(model.ApproverUserId), "Select at least one assignment target: department, role, or specific user.");
+
+        var workflow = await _db.WorkflowMasters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == model.WorkflowId && !x.IsDeleted, ct);
+
+        if (workflow?.OverallSlaDays is > 0)
+        {
+            var otherStageTotal = await _db.WorkflowStages
+                .AsNoTracking()
+                .Where(x => x.WorkflowId == model.WorkflowId && !x.IsDeleted && (!stageId.HasValue || x.Id != stageId.Value))
+                .SumAsync(x => (int?)x.SlaDays, ct) ?? 0;
+
+            var currentStageSla = model.SlaDays ?? 0;
+            if (otherStageTotal + currentStageSla > workflow.OverallSlaDays.Value)
+                ModelState.AddModelError(nameof(model.SlaDays), "Total stage SLA days cannot be greater than Overall SLA Days.");
+        }
     }
 
     private void SuppressStageNavigationValidation()

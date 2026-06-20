@@ -87,6 +87,17 @@
             </div>
         </div>
 
+        <h2 class="wb-section-title mb-3 mt-4">Consumer Login</h2>
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-check">
+                    <input class="form-check-input" asp-for="Settings.ConsumerLoginOtpEnabled" />
+                    <span class="form-check-label">Require OTP for Consumer Number login</span>
+                </label>
+                <div class="form-text">When enabled, Consumer Number login sends OTP to the registered mobile number. When disabled, valid active consumers can login directly using Consumer Number.</div>
+            </div>
+        </div>
+
         <div class="wb-actions mt-4">
             <button class="btn btn-primary" type="submit">Save Settings</button>
         </div>

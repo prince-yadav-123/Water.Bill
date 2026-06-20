@@ -19,5 +19,6 @@ public class SecuritySettingsDto
     public int CaptchaAfterAttempts { get; set; } = 3;
     public bool AllowMultipleSessions { get; set; } = true;
     public bool BlockNewLoginOnConflict { get; set; }
+    public bool ConsumerLoginOtpEnabled { get; set; } = true;
 }
 

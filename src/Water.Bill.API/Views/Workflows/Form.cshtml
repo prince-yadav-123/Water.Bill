@@ -25,6 +25,11 @@
             </select>
             <span asp-validation-for="ApplicationType" class="text-danger"></span>
         </div>
+        <div class="wb-field">
+            <label asp-for="OverallSlaDays" class="form-label required">Overall SLA Days</label>
+            <input asp-for="OverallSlaDays" class="form-control" type="number" min="1" />
+            <span asp-validation-for="OverallSlaDays" class="text-danger"></span>
+        </div>
         <div class="wb-field wb-field-wide">
             <label class="form-label required">Status</label>
             <div class="wb-status-choice">

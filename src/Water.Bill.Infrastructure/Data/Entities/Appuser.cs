@@ -21,6 +21,8 @@ public partial class Appuser
 
     public int? DeptId { get; set; }
 
+    public int? DivisionDevType { get; set; }
+
     public string? PhoneNumber { get; set; }
 
     public int FailedLoginCount { get; set; }

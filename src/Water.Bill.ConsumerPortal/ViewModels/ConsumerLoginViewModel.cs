@@ -24,6 +24,8 @@ public class ConsumerLoginViewModel : IValidatableObject
 
     public string? MobileRegistrationUrl { get; set; }
 
+    public bool ConsumerNumberOtpEnabled { get; set; } = true;
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (LoginMethod == ConsumerLoginMethods.MobileOtp)

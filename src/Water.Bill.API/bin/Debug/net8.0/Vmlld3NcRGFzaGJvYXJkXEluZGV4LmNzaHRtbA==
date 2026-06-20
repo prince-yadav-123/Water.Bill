@@ -412,41 +412,51 @@
             </div>
         </div>
 
-        @* â”€â”€ Row 2: Department Workload (full width) â”€â”€ *@
-        @if (Model.SecondaryBarChart is { Items.Count: > 0 } deptChart)
-        {
-            <section class="wb-card">
-                <div class="wb-section-hdr">
-                    <div><h2>@deptChart.Title</h2><p>@deptChart.Caption</p></div>
-                    <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View Queue</a>
-                </div>
-                @{ var dMax = Math.Max(1, deptChart.Items.Max(x => x.Value)); }
-                <div class="wb-dept-grid">
-                    @foreach (var b in deptChart.Items)
-                    {
-                        <a class="wb-bar-row text-decoration-none" href="@(b.Url ?? "#")">
-                            <div class="wb-bar-copy"><span>@b.Label</span><strong>@b.Value</strong></div>
-                            <div class="wb-bar-track"><div class="wb-bar-fill" style="width:@(b.Value * 100m / dMax)%;background:@b.Color"></div></div>
-                        </a>
-                    }
-                </div>
-            </section>
-        }
-
-        @* â”€â”€ Row 3: Trend (50%) + Recent Queries (50%) â”€â”€ *@
+        @* â”€â”€ Row 2: Department Workload (50%) + Trend (50%) â”€â”€ *@
         <div class="row g-3">
             <div class="col-12 col-xl-6">
-                @if (Model.TrendChart is { Points.Count: > 0 } tc)
-                {
-                    var mx = Math.Max(1m, tc.Points.Max(x => Math.Max(x.PrimaryValue, x.SecondaryValue)));
-                    <section class="wb-card h-100">
-                        <div class="wb-section-hdr">
-                            <div><h2>@tc.Title</h2><p>@tc.Caption</p></div>
-                            <div class="wb-trend-legend">
-                                <span><i class="wb-swatch wb-p"></i>@tc.PrimaryLabel</span>
-                                <span><i class="wb-swatch wb-s"></i>@tc.SecondaryLabel</span>
-                            </div>
+                <section class="wb-card h-100">
+                    <div class="wb-section-hdr">
+                        <div>
+                            <h2>@(Model.SecondaryBarChart?.Title ?? "Pending Workload by Department")</h2>
+                            <p>@(Model.SecondaryBarChart?.Caption ?? "Current pending items grouped by department.")</p>
                         </div>
+                        <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View Queue</a>
+                    </div>
+                    @if (Model.SecondaryBarChart is { Items.Count: > 0 } deptChart)
+                    {
+                        var dMax = Math.Max(1, deptChart.Items.Max(x => x.Value));
+                        <div class="wb-dept-grid">
+                            @foreach (var b in deptChart.Items)
+                            {
+                                <a class="wb-bar-row text-decoration-none" href="@(b.Url ?? "#")">
+                                    <div class="wb-bar-copy"><span>@b.Label</span><strong>@b.Value</strong></div>
+                                    <div class="wb-bar-track"><div class="wb-bar-fill" style="width:@(b.Value * 100m / dMax)%;background:@b.Color"></div></div>
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="wb-empty">No pending workload data available.</div>
+                    }
+                </section>
+            </div>
+            <div class="col-12 col-xl-6">
+                <section class="wb-card h-100">
+                    <div class="wb-section-hdr">
+                        <div><h2>@(Model.TrendChart?.Title ?? "New Applications Received vs Approved")</h2><p>@(Model.TrendChart?.Caption ?? "Recent application intake versus approvals.")</p></div>
+                        @if (Model.TrendChart is { } tcLegend)
+                        {
+                            <div class="wb-trend-legend">
+                                <span><i class="wb-swatch wb-p"></i>@tcLegend.PrimaryLabel</span>
+                                <span><i class="wb-swatch wb-s"></i>@tcLegend.SecondaryLabel</span>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.TrendChart is { Points.Count: > 0 } tc)
+                    {
+                        var mx = Math.Max(1m, tc.Points.Max(x => Math.Max(x.PrimaryValue, x.SecondaryValue)));
                         <div class="wb-trend-chart">
                             @foreach (var pt in tc.Points)
                             {
@@ -460,11 +470,112 @@
                                 </div>
                             }
                         </div>
-                    </section>
-                }
+                    }
+                    else
+                    {
+                        <div class="wb-empty">No application trend data available.</div>
+                    }
+                </section>
             </div>
-            <div class="col-12 col-xl-6">
-                <section class="wb-card h-100">
+        </div>
+
+        @* â”€â”€ Row 3: Recent section tabs (full width) â”€â”€ *@
+        <section class="wb-card">
+            <div class="wb-section-hdr wb-section-hdr-stacked">
+                <div>
+                    <h2>Recent Operations</h2>
+                    <p>Quickly switch between latest applications, activity, queries, challans, and approval queue items.</p>
+                </div>
+                <div class="wb-dashboard-tabs" role="tablist" aria-label="Recent dashboard sections">
+                    <button class="wb-dashboard-tab is-active" type="button" role="tab" aria-selected="true" data-dashboard-tab="recent-applications">Recent Applications</button>
+                    <button class="wb-dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="recent-activity">Recent Activity</button>
+                    <button class="wb-dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="recent-queries">Recent Queries</button>
+                    <button class="wb-dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="recent-challans">Recent Challans</button>
+                    <button class="wb-dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="current-approval-queue">Current Approval Queue</button>
+                </div>
+            </div>
+
+            <div class="wb-dashboard-tab-panels">
+                <div class="wb-dashboard-tab-panel is-active" role="tabpanel" data-dashboard-panel="recent-applications">
+                    <div class="wb-section-hdr">
+                        <div><h2>Recent Applications</h2><p>Latest incoming requests across core public and service workflows.</p></div>
+                        <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=All">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table wb-table align-middle mb-0">
+                            <thead><tr><th>Type</th><th>Application No</th><th>Applicant</th><th>Status</th><th>Received</th></tr></thead>
+                            <tbody>
+                                @{ var apps = Model.RecentApplications.Take(8).ToList(); }
+                                @if (!apps.Any())
+                                {
+                                    <tr><td colspan="5" class="wb-empty-row">No recent applications found.</td></tr>
+                                }
+                                else
+                                {
+                                    @foreach (var r in apps)
+                                    {
+                                        <tr>
+                                            <td><span class="wb-type-badge">@r.Type</span></td>
+                                            <td>
+                                                @if (!string.IsNullOrWhiteSpace(r.Url))
+                                                { <a class="wb-link" href="@r.Url">@r.ApplicationNo</a> }
+                                                else
+                                                { <span>@r.ApplicationNo</span> }
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">@r.ApplicantName</div>
+                                                <small class="text-muted">@r.Property</small>
+                                            </td>
+                                            <td><span class="badge @ToneClass(StatusTone(r.Status))">@r.Status</span></td>
+                                            <td>@FormatDate(r.CreatedOn)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-activity" hidden>
+                    <div class="wb-section-hdr">
+                        <div><h2>Recent Activity</h2><p>Latest authority-side actions captured through the audit trail.</p></div>
+                        <a class="btn btn-outline-primary btn-sm" asp-controller="OperatorAudit" asp-action="Index">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table wb-table align-middle mb-0">
+                            <thead><tr><th>Action</th><th>Module</th><th>User</th><th>Status</th><th>Time</th></tr></thead>
+                            <tbody>
+                                @{ var acts = Model.RecentActivities.Take(8).ToList(); }
+                                @if (!acts.Any())
+                                {
+                                    <tr><td colspan="5" class="wb-empty-row">No recent operator activity logged.</td></tr>
+                                }
+                                else
+                                {
+                                    @foreach (var a in acts)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">@a.Action</div>
+                                                <small class="text-muted">@a.Details</small>
+                                            </td>
+                                            <td>@a.Module</td>
+                                            <td>@(string.IsNullOrWhiteSpace(a.Username) ? "-" : a.Username)</td>
+                                            <td>
+                                                <span class="badge @ToneClass(AuditTone(a.Success))">
+                                                    @AuditLabel(a.Success)
+                                                </span>
+                                            </td>
+                                            <td>@FormatDate(a.OccurredOn)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-queries" hidden>
                     <div class="wb-section-hdr">
                         <div><h2>Recent Queries</h2><p>Most recently raised consumer support queries.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/ConsumerQueryManagement">View All</a>
@@ -496,14 +607,9 @@
                             </tbody>
                         </table>
                     </div>
-                </section>
-            </div>
-        </div>
+                </div>
 
-        @* â”€â”€ Row 4: Recent Challans (50%) + Approval Queue (50%) â”€â”€ *@
-        <div class="row g-3">
-            <div class="col-12 col-xl-6">
-                <section class="wb-card h-100">
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-challans" hidden>
                     <div class="wb-section-hdr">
                         <div><h2>Recent Challans</h2><p>Latest demand records and payment requests.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/ChallanManagement">View All</a>
@@ -533,10 +639,9 @@
                             </tbody>
                         </table>
                     </div>
-                </section>
-            </div>
-            <div class="col-12 col-xl-6">
-                <section class="wb-card h-100">
+                </div>
+
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="current-approval-queue" hidden>
                     <div class="wb-section-hdr">
                         <div><h2>Current Approval Queue</h2><p>Tasks waiting at the active workflow stage.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View All</a>
@@ -572,88 +677,7 @@
                             </tbody>
                         </table>
                     </div>
-                </section>
-            </div>
-        </div>
-
-        @* â”€â”€ Row 5: Recent Applications (full width) â”€â”€ *@
-        <section class="wb-card">
-            <div class="wb-section-hdr">
-                <div><h2>Recent Applications</h2><p>Latest incoming requests across core public and service workflows.</p></div>
-                <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=All">View All</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table wb-table align-middle mb-0">
-                    <thead><tr><th>Type</th><th>Application No</th><th>Applicant</th><th>Status</th><th>Received</th></tr></thead>
-                    <tbody>
-                        @{ var apps = Model.RecentApplications.Take(8).ToList(); }
-                        @if (!apps.Any())
-                        {
-                            <tr><td colspan="5" class="wb-empty-row">No recent applications found.</td></tr>
-                        }
-                        else
-                        {
-                            @foreach (var r in apps)
-                            {
-                                <tr>
-                                    <td><span class="wb-type-badge">@r.Type</span></td>
-                                    <td>
-                                        @if (!string.IsNullOrWhiteSpace(r.Url))
-                                        { <a class="wb-link" href="@r.Url">@r.ApplicationNo</a> }
-                                        else
-                                        { <span>@r.ApplicationNo</span> }
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold">@r.ApplicantName</div>
-                                        <small class="text-muted">@r.Property</small>
-                                    </td>
-                                    <td><span class="badge @ToneClass(StatusTone(r.Status))">@r.Status</span></td>
-                                    <td>@FormatDate(r.CreatedOn)</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        @* â”€â”€ Row 6: Recent Activity (full width) â”€â”€ *@
-        <section class="wb-card">
-            <div class="wb-section-hdr">
-                <div><h2>Recent Activity</h2><p>Latest authority-side actions captured through the audit trail.</p></div>
-                <a class="btn btn-outline-primary btn-sm" asp-controller="OperatorAudit" asp-action="Index">Open Logs</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table wb-table align-middle mb-0">
-                    <thead><tr><th>Action</th><th>Module</th><th>User</th><th>Status</th><th>Time</th></tr></thead>
-                    <tbody>
-                        @{ var acts = Model.RecentActivities.Take(8).ToList(); }
-                        @if (!acts.Any())
-                        {
-                            <tr><td colspan="5" class="wb-empty-row">No recent operator activity logged.</td></tr>
-                        }
-                        else
-                        {
-                            @foreach (var a in acts)
-                            {
-                                <tr>
-                                    <td>
-                                        <div class="fw-semibold">@a.Action</div>
-                                        <small class="text-muted">@a.Details</small>
-                                    </td>
-                                    <td>@a.Module</td>
-                                    <td>@(string.IsNullOrWhiteSpace(a.Username) ? "-" : a.Username)</td>
-                                    <td>
-                                        <span class="badge @ToneClass(AuditTone(a.Success))">
-                                            @AuditLabel(a.Success)
-                                        </span>
-                                    </td>
-                                    <td>@FormatDate(a.OccurredOn)</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
+                </div>
             </div>
         </section>
     }
@@ -996,6 +1020,49 @@
             font-size: 0.87rem;
             color: #64748b;
         }
+        .wb-section-hdr-stacked {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        /* ─── Dashboard recent tabs ─────────────────────────── */
+        .wb-dashboard-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+        }
+        .wb-dashboard-tab {
+            border: 1px solid #dbe3ef;
+            background: #f8fafc;
+            color: #475569;
+            border-radius: 999px;
+            padding: 0.55rem 0.95rem;
+            font-size: 0.83rem;
+            font-weight: 600;
+            line-height: 1.2;
+            transition: all 0.15s ease;
+        }
+        .wb-dashboard-tab:hover {
+            border-color: #93c5fd;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+        .wb-dashboard-tab.is-active {
+            border-color: #0ea5b7;
+            background: linear-gradient(135deg, #0ea5b7 0%, #2563eb 100%);
+            color: #fff;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.14);
+        }
+        .wb-dashboard-tab-panels {
+            width: 100%;
+        }
+        .wb-dashboard-tab-panel {
+            width: 100%;
+        }
+        .wb-dashboard-tab-panel[hidden] {
+            display: none !important;
+        }
 
         /* ─── Donut chart ─────────────────────────────────────── */
         .wb-donut-wrap {
@@ -1315,11 +1382,37 @@
                     }
                 });
             }
+
+            function initDashboardTabs() {
+                var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-dashboard-tab]'));
+                var panels = Array.prototype.slice.call(document.querySelectorAll('[data-dashboard-panel]'));
+                if (!tabs.length || !panels.length) return;
+
+                tabs.forEach(function (tab) {
+                    tab.addEventListener('click', function () {
+                        var key = tab.getAttribute('data-dashboard-tab');
+
+                        tabs.forEach(function (item) {
+                            var active = item === tab;
+                            item.classList.toggle('is-active', active);
+                            item.setAttribute('aria-selected', active ? 'true' : 'false');
+                        });
+
+                        panels.forEach(function (panel) {
+                            var active = panel.getAttribute('data-dashboard-panel') === key;
+                            panel.classList.toggle('is-active', active);
+                            panel.hidden = !active;
+                        });
+                    });
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 initChart('appStatusChart', window._appStatusData);
                 initChart('challanStatusChart', window._challanStatusData);
                 initChart('paymentCollectionChart', window._paymentCollectionData);
                 initChart('defaulterChart', window._defaulterData);
+                initDashboardTabs();
             });
         })();
     </script>

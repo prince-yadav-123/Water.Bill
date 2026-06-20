@@ -76,7 +76,7 @@
                         <span asp-validation-for="MobileNumber" class="text-danger small"></span>
                         <span class="text-danger small wb-client-error" data-login-error-for="MobileNumber"></span>
                     </div>
-                    <button class="wb-auth-submit" type="submit">Send OTP <span aria-hidden="true">-></span></button>
+                    <button class="wb-auth-submit" type="submit">Continue <span aria-hidden="true">-></span></button>
                 </div>
 
                 <div class="wb-auth-pane" id="consumer-login" role="tabpanel" data-login-pane="consumer-id">
@@ -90,7 +90,9 @@
                         <span asp-validation-for="ConsumerId" class="text-danger small"></span>
                         <span class="text-danger small wb-client-error" data-login-error-for="ConsumerId"></span>
                     </div>
-                    <button class="wb-auth-submit" type="submit">Send OTP <span aria-hidden="true">-></span></button>
+                    <button class="wb-auth-submit" type="submit">
+                        @(Model.ConsumerNumberOtpEnabled ? "Send OTP" : "Consumer Login") <span aria-hidden="true">-></span>
+                    </button>
                 </div>
 
                 <div class="wb-auth-pane" id="credential-login" role="tabpanel" data-login-pane="username-email">

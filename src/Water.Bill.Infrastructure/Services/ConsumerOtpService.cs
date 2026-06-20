@@ -49,6 +49,9 @@ public class ConsumerOtpService : IConsumerOtpService
         if (consumer is null)
             throw new InvalidOperationException("Consumer number not found.");
 
+        if (!IsActiveConsumer(consumer))
+            throw new InvalidOperationException("Consumer is not active.");
+
         return await RequestOtpForConsumerAsync(consumer, ct);
     }
 
@@ -80,9 +83,12 @@ public class ConsumerOtpService : IConsumerOtpService
     private async Task<ConsumerOtpRequestResult> RequestOtpForConsumerAsync(ConsumerDetailsMaster consumer, CancellationToken ct)
     {
         var normalizedConsumerNo = NormalizeConsumerNo(consumer.ConsNo);
+        if (!IsActiveConsumer(consumer))
+            throw new InvalidOperationException("Consumer is not active.");
+
         var mobileNo = NormalizeMobileNo(consumer.MobNo);
         if (string.IsNullOrWhiteSpace(mobileNo))
-            throw new InvalidOperationException("Mobile number is not registered for this consumer. Please contact support.");
+            throw new InvalidOperationException("Mobile number is not registered for this Consumer Number. Please update/register your mobile number first.");
 
         if (!_otpThrottleService.TryConsumeRequest(Purpose, $"{normalizedConsumerNo}:{mobileNo}", out _))
             throw new InvalidOperationException("Too many OTP requests. Please try again after some time.");
@@ -200,6 +206,9 @@ public class ConsumerOtpService : IConsumerOtpService
             .FirstOrDefaultAsync(x => x.ConsNo == normalizedConsumerNo, ct)
             ?? throw new InvalidOperationException("Consumer number not found.");
 
+        if (!IsActiveConsumer(consumer))
+            throw new InvalidOperationException("Consumer is not active.");
+
         var consumerRole = await _db.Approles
             .AsNoTracking()
             .FirstOrDefaultAsync(x => !x.IsDeleted && x.Name.ToLower() == AppConstants.Roles.Consumer.ToLower(), ct);
@@ -292,4 +301,7 @@ public class ConsumerOtpService : IConsumerOtpService
 
         return string.IsNullOrWhiteSpace(name) ? consumer.ConsNo : name;
     }
+
+    private static bool IsActiveConsumer(ConsumerDetailsMaster consumer)
+        => consumer.DeleteDate == null && (consumer.Status == null || consumer.Status == 1);
 }

@@ -74,4 +74,44 @@ public class ConsumerAccountService : IConsumerAccountService
             ConsumerRoleId = consumerRole?.Id
         };
     }
+
+    public async Task<ConsumerAccountLoginResult> LoginByConsumerNoAsync(string consumerNo, CancellationToken ct = default)
+    {
+        var normalizedConsumerNo = (consumerNo ?? string.Empty).Trim().ToUpperInvariant();
+        if (string.IsNullOrWhiteSpace(normalizedConsumerNo))
+            throw new UnauthorizedAccessException("Consumer Number is required.");
+
+        var consumer = await _db.ConsumerDetailsMasters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ConsNo != null && x.ConsNo.ToUpper() == normalizedConsumerNo, ct);
+
+        if (consumer is null)
+            throw new UnauthorizedAccessException("Consumer not found.");
+
+        if (consumer.DeleteDate != null || (consumer.Status.HasValue && consumer.Status != 1))
+            throw new UnauthorizedAccessException("Consumer is not active.");
+
+        var linkedConsumerUserId = await _db.ConsumerUsers
+            .AsNoTracking()
+            .Where(x => !x.IsDeleted && x.ConsumerNo != null && x.ConsumerNo.ToUpper() == normalizedConsumerNo)
+            .Select(x => (int?)x.Id)
+            .FirstOrDefaultAsync(ct);
+
+        var consumerRole = await _db.Approles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => !x.IsDeleted && x.Name.ToLower() == AppConstants.Roles.Consumer.ToLower(), ct);
+
+        var name = (consumer.ConsNm1 ?? string.Empty).Trim();
+
+        return new ConsumerAccountLoginResult
+        {
+            Id = linkedConsumerUserId ?? 0,
+            ConsumerNo = normalizedConsumerNo,
+            ConsumerName = string.IsNullOrWhiteSpace(name) ? normalizedConsumerNo : name,
+            Email = consumer.EmailId,
+            MobileNo = consumer.MobNo,
+            Username = normalizedConsumerNo,
+            ConsumerRoleId = consumerRole?.Id
+        };
+    }
 }

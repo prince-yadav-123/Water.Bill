@@ -26,6 +26,7 @@ entity
         entity.Property(e => e.CreatedAt)
             .HasMaxLength(6)
             .HasDefaultValueSql("SYSDATETIME()");
+        entity.Property(e => e.DivisionDevType).HasColumnName("DivisionDevType");
         entity.Property(e => e.Email).HasMaxLength(150);
         entity.Property(e => e.FullName).HasMaxLength(150);
         entity.Property(e => e.IsActive)

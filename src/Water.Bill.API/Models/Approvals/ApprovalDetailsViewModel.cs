@@ -101,6 +101,14 @@ public class ApprovalListItemViewModel
 
     public DateTime AssignedOn { get; set; }
 
+    public int? StageSlaDays { get; set; }
+
+    public DateTime? StageDueOn { get; set; }
+
+    public int? DaysSinceAssigned { get; set; }
+
+    public string SlaState { get; set; } = "None";
+
     public bool CanAct { get; set; }
 
     public bool CanApprove { get; set; }

@@ -14,6 +14,7 @@ public class WorkflowMasterConfiguration : IEntityTypeConfiguration<WorkflowMast
         entity.Property(e => e.Id).ValueGeneratedOnAdd();
         entity.Property(e => e.WorkflowName).HasMaxLength(100);
         entity.Property(e => e.ApplicationType).HasMaxLength(50);
+        entity.Property(e => e.OverallSlaDays);
         entity.Property(e => e.IsActive).HasDefaultValue(true);
         entity.Property(e => e.CreatedOn).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
         entity.Property(e => e.UpdatedOn).HasColumnType("datetime");

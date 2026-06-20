@@ -17,25 +17,30 @@ public class AccountController : Controller
     private readonly IConsumerOtpService _consumerOtpService;
     private readonly IConsumerMobileRegistrationService _consumerMobileRegistrationService;
     private readonly IConsumerAccountService _consumerAccountService;
+    private readonly ISecuritySettingsService _securitySettingsService;
 
     public AccountController(
         ISessionService sessionService,
         IAuditLogService auditLogService,
         IConsumerOtpService consumerOtpService,
         IConsumerMobileRegistrationService consumerMobileRegistrationService,
-        IConsumerAccountService consumerAccountService)
+        IConsumerAccountService consumerAccountService,
+        ISecuritySettingsService securitySettingsService)
     {
         _sessionService = sessionService;
         _auditLogService = auditLogService;
         _consumerOtpService = consumerOtpService;
         _consumerMobileRegistrationService = consumerMobileRegistrationService;
         _consumerAccountService = consumerAccountService;
+        _securitySettingsService = securitySettingsService;
     }
 
     [HttpGet("/Account/Login")]
     [HttpGet("/Consumer/Login")]
     public async Task<IActionResult> Login(string? returnUrl = null, string? consumerId = null, string? loginMethod = null)
     {
+        var securitySettings = await _securitySettingsService.GetByTenantAsync(AppConstants.DefaultTenantId);
+
         if (User.Identity?.IsAuthenticated == true)
         {
             if (!User.IsInRole(AppConstants.Roles.Consumer))
@@ -47,7 +52,8 @@ public class AccountController : Controller
                 return View(new ConsumerLoginViewModel
                 {
                     ConsumerId = consumerId,
-                    LoginMethod = NormalizeLoginMethod(loginMethod)
+                    LoginMethod = NormalizeLoginMethod(loginMethod),
+                    ConsumerNumberOtpEnabled = securitySettings.ConsumerLoginOtpEnabled
                 });
             }
 
@@ -59,7 +65,8 @@ public class AccountController : Controller
         return View(new ConsumerLoginViewModel
         {
             ConsumerId = consumerId,
-            LoginMethod = NormalizeLoginMethod(loginMethod)
+            LoginMethod = NormalizeLoginMethod(loginMethod),
+            ConsumerNumberOtpEnabled = securitySettings.ConsumerLoginOtpEnabled
         });
     }
 
@@ -74,14 +81,62 @@ public class AccountController : Controller
         ViewData["Title"] = "Login";
         ViewData["ReturnUrl"] = returnUrl;
 
+        var securitySettings = await _securitySettingsService.GetByTenantAsync(AppConstants.DefaultTenantId);
+        model.ConsumerNumberOtpEnabled = securitySettings.ConsumerLoginOtpEnabled;
+
         if (!ModelState.IsValid)
             return View(model);
 
         if (model.LoginMethod == ConsumerLoginMethods.ConsumerId)
         {
-            var eligibility = await _consumerMobileRegistrationService.CheckEligibilityAsync(model.ConsumerId ?? string.Empty);
-            if (eligibility.CanRegisterMobile)
+            if (!securitySettings.ConsumerLoginOtpEnabled)
             {
+                try
+                {
+                    var result = await _consumerAccountService.LoginByConsumerNoAsync(model.ConsumerId ?? string.Empty);
+
+                    await BuildConsumerPrincipalAsync(
+                        result.Id > 0 ? result.Id : null,
+                        result.Username ?? result.ConsumerName,
+                        result.ConsumerName,
+                        result.ConsumerNo,
+                        result.ConsumerRoleId,
+                        result.Email,
+                        result.MobileNo,
+                        model.RememberMe);
+
+                    await _auditLogService.LogAsync(
+                        AuditAction.LoginSuccess,
+                        AuditLogDisplayHelper.ConsumerAuthenticationModule,
+                        entityId: result.Id > 0 ? result.Id.ToString() : result.ConsumerNo,
+                        details: $"Consumer number login: {result.ConsumerNo}");
+
+                    TempData["SuccessMessage"] = "Login successful.";
+                    return LocalRedirect(ResolvePostLoginRedirect(returnUrl));
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                    return View(model);
+                }
+            }
+
+            var eligibility = await _consumerMobileRegistrationService.CheckEligibilityAsync(model.ConsumerId ?? string.Empty);
+            if (eligibility.ConsumerExists && !eligibility.IsActiveConsumer)
+            {
+                ModelState.AddModelError(string.Empty, "Consumer is not active.");
+                return View(model);
+            }
+
+            if (!eligibility.ConsumerExists)
+            {
+                ModelState.AddModelError(string.Empty, "Consumer not found.");
+                return View(model);
+            }
+
+            if (!eligibility.HasRegisteredMobile)
+            {
+                ModelState.AddModelError(string.Empty, "Mobile number is not registered for this Consumer Number. Please update/register your mobile number first.");
                 model.ShowMobileRegistrationPrompt = true;
                 model.MobileRegistrationUrl = Url.Action(
                     "Index",

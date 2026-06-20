@@ -1,4 +1,5 @@
 @model Appuser
+@using Water.Bill.Core.Common
 @{
     ViewData["Title"] = "User Details";
 }
@@ -39,6 +40,10 @@
         <div>
             <dt>Role</dt>
             <dd>@(Model.Role?.Name ?? "Unassigned")</dd>
+        </div>
+        <div>
+            <dt>Division</dt>
+            <dd>@(string.IsNullOrWhiteSpace(AppConstants.Divisions.FormatDisplay(Model.DivisionDevType)) ? "-" : AppConstants.Divisions.FormatDisplay(Model.DivisionDevType))</dd>
         </div>
         <div>
             <dt>Department</dt>
