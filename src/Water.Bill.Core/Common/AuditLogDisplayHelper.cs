@@ -58,6 +58,7 @@ public static class AuditLogDisplayHelper
         AppConstants.Modules.WorkflowMaster,
         AppConstants.Modules.MyPendingApplications,
         AppConstants.Modules.NewConnectionFeeConfiguration,
+        AppConstants.Modules.IntegrationHub,
         AppConstants.Modules.CommunicationTemplates,
         AppConstants.Modules.ErrorLogs,
         AppConstants.Modules.UserActivityLogs,
@@ -82,6 +83,7 @@ public static class AuditLogDisplayHelper
             (int)AuditAction.UserChanged => InferMutationAction(normalizedDetails, "Update"),
             (int)AuditAction.RoleChanged => InferMutationAction(normalizedDetails, "Update"),
             (int)AuditAction.MenuChanged => InferMutationAction(normalizedDetails, "Update"),
+            (int)AuditAction.CommunicationSettingsChanged => InferMutationAction(normalizedDetails, "Update"),
             (int)AuditAction.Delete => "Delete",
             _ => $"Action {action}"
         };
@@ -100,6 +102,7 @@ public static class AuditLogDisplayHelper
             AppConstants.Modules.MenuManagement => "Menu",
             AppConstants.Modules.SecuritySettings => "Security Settings",
             AppConstants.Modules.Profile or AppConstants.Modules.ConsumerProfile => "Profile",
+            AppConstants.Modules.IntegrationHub => "Integration Hub",
             AppConstants.Modules.ConsumerBills or AppConstants.Modules.BillSearchPrint => "Bill",
             AppConstants.Modules.ChallanManagement or AppConstants.Modules.ConsumerChallans => "Challan",
             AppConstants.Modules.OnlinePaymentHistory => "Payment",

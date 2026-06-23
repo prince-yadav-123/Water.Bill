@@ -203,6 +203,7 @@ public class RolesUsersController : Controller
     public async Task<IActionResult> CreateUser(UserFormViewModel model, CancellationToken ct)
     {
         ViewData["ActiveMenu"] = "User Management";
+        NormalizeUserForm(model);
         if (string.IsNullOrWhiteSpace(model.Password))
             ModelState.AddModelError(nameof(model.Password), "Password is required.");
         if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != model.ConfirmPassword)
@@ -211,6 +212,7 @@ public class RolesUsersController : Controller
             ModelState.AddModelError(nameof(model.DivisionDevType), "Division is required.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
+        await ValidateUserReferencesAsync(model, null, ct);
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
@@ -234,7 +236,17 @@ public class RolesUsersController : Controller
             CreatedAt = DateTime.UtcNow
         };
         _db.Appusers.Add(user);
-        await _db.SaveChangesAsync(ct);
+        try
+        {
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException ex) when (TryAddUserSaveErrors(ex, model))
+        {
+            await PopulateRoles(ct);
+            await PopulateDepartments(ct);
+            PopulateDivisionOptions();
+            return View(model);
+        }
         TempData["SuccessMessage"] = "User created.";
         return RedirectToAction(nameof(Users));
     }
@@ -267,6 +279,7 @@ public class RolesUsersController : Controller
     public async Task<IActionResult> EditUser(int id, UserFormViewModel model, CancellationToken ct)
     {
         ViewData["ActiveMenu"] = "User Management";
+        NormalizeUserForm(model);
         var user = await _db.Appusers.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (user is null) return NotFound();
         if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != model.ConfirmPassword)
@@ -275,6 +288,7 @@ public class RolesUsersController : Controller
             ModelState.AddModelError(nameof(model.DivisionDevType), "Division is required.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
+        await ValidateUserReferencesAsync(model, user.Id, ct);
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
@@ -296,7 +310,17 @@ public class RolesUsersController : Controller
             user.PasswordHash = AuthService.HashPassword(model.Password);
             user.PasswordChangedAt = DateTime.UtcNow;
         }
-        await _db.SaveChangesAsync(ct);
+        try
+        {
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException ex) when (TryAddUserSaveErrors(ex, model))
+        {
+            await PopulateRoles(ct);
+            await PopulateDepartments(ct);
+            PopulateDivisionOptions();
+            return View(model);
+        }
         TempData["SuccessMessage"] = "User updated.";
         return RedirectToAction(nameof(Users));
     }
@@ -412,6 +436,82 @@ public class RolesUsersController : Controller
 
     private void PopulateDivisionOptions()
         => ViewBag.DivisionOptions = AppConstants.Divisions.Options;
+
+    private static void NormalizeUserForm(UserFormViewModel model)
+    {
+        model.FullName = model.FullName?.Trim() ?? string.Empty;
+        model.Email = model.Email?.Trim() ?? string.Empty;
+        model.Username = model.Username?.Trim() ?? string.Empty;
+        model.PhoneNumber = model.PhoneNumber?.Trim();
+    }
+
+    private async Task ValidateUserReferencesAsync(UserFormViewModel model, int? currentUserId, CancellationToken ct)
+    {
+        if (!string.IsNullOrWhiteSpace(model.Username))
+        {
+            var usernameExists = await _db.Appusers.AnyAsync(x =>
+                !x.IsDeleted &&
+                x.Username == model.Username &&
+                x.Id != currentUserId, ct);
+            if (usernameExists)
+                ModelState.AddModelError(nameof(model.Username), "Username already exists.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.Email))
+        {
+            var emailExists = await _db.Appusers.AnyAsync(x =>
+                !x.IsDeleted &&
+                x.Email == model.Email &&
+                x.Id != currentUserId, ct);
+            if (emailExists)
+                ModelState.AddModelError(nameof(model.Email), "Email already exists.");
+        }
+
+        if (model.DeptId.HasValue)
+        {
+            var department = await _db.MasterDeptDetails.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == model.DeptId.Value && x.Status == "1", ct);
+
+            if (department is null)
+            {
+                ModelState.AddModelError(nameof(model.DeptId), "Selected department was not found.");
+            }
+            else if (model.DivisionDevType.HasValue
+                && model.DivisionDevType.Value != AppConstants.Divisions.AllDivision.DevType
+                && department.DevType.HasValue
+                && department.DevType.Value != model.DivisionDevType.Value)
+            {
+                ModelState.AddModelError(nameof(model.DeptId), "Selected department does not belong to the selected division.");
+            }
+        }
+    }
+
+    private bool TryAddUserSaveErrors(DbUpdateException ex, UserFormViewModel model)
+    {
+        var root = ex.GetBaseException();
+        if (root is Microsoft.Data.SqlClient.SqlException sqlEx)
+        {
+            if (sqlEx.Number is 2601 or 2627)
+            {
+                var message = sqlEx.Message.Contains("Username", StringComparison.OrdinalIgnoreCase)
+                    ? "Username already exists."
+                    : sqlEx.Message.Contains("Email", StringComparison.OrdinalIgnoreCase)
+                        ? "Email already exists."
+                        : "A record with the same values already exists.";
+                ModelState.AddModelError(string.Empty, message);
+                return true;
+            }
+
+            if (sqlEx.Number == 547)
+            {
+                ModelState.AddModelError(nameof(model.DeptId), "The selected department is no longer valid. Please select it again.");
+                return true;
+            }
+        }
+
+        ModelState.AddModelError(string.Empty, "Could not save user changes. Please verify the entered values and try again.");
+        return true;
+    }
 
     private async Task<bool> IsConsumerRoleAsync(int roleId, CancellationToken ct)
         => await _db.Approles.AnyAsync(x =>

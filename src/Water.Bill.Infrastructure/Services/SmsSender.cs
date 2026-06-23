@@ -6,58 +6,62 @@ namespace Water.Bill.Infrastructure.Services;
 public class SmsSender : ISmsSender
 {
     private static readonly HttpClient HttpClient = new();
-    private readonly IConfiguration _configuration;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
 
-    public SmsSender(IConfiguration configuration) => _configuration = configuration;
+    public SmsSender(ICommunicationConfigurationService communicationConfigurationService)
+        => _communicationConfigurationService = communicationConfigurationService;
 
     public async Task<CommunicationSendResult> SendAsync(string mobileNo, string message, string? externalTemplateId, CancellationToken ct = default)
     {
-        var section = _configuration.GetSection("Communication:Sms");
-        var provider = section["Provider"]?.Trim();
-        var baseUrl = section["BaseUrl"];
-        var apiKey = section["ApiKey"];
+        var settings = await _communicationConfigurationService.GetSmsSettingsAsync(ct);
+        if (!settings.IsEnabled)
+            return CommunicationSendResult.Skipped("SMS sending is disabled in configuration.");
+
+        var provider = settings.Provider?.Trim();
+        var baseUrl = settings.BaseUrl;
+        var apiKey = settings.ApiKey;
         if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(baseUrl) || string.IsNullOrWhiteSpace(apiKey))
             return CommunicationSendResult.Skipped("SMS provider is not configured.");
 
         return provider.ToLowerInvariant() switch
         {
-            "authkey" => await SendAuthkeyAsync(section, mobileNo, message, externalTemplateId, ct),
-            "msg91" => await SendMsg91Async(section, mobileNo, message, ct),
+            "authkey" => await SendAuthkeyAsync(settings, mobileNo, message, externalTemplateId, ct),
+            "msg91" => await SendMsg91Async(settings, mobileNo, message, ct),
             _ => CommunicationSendResult.Skipped($"SMS provider '{provider}' is not supported.")
         };
     }
 
-    private static async Task<CommunicationSendResult> SendAuthkeyAsync(IConfigurationSection section, string mobileNo, string message, string? externalTemplateId, CancellationToken ct)
+    private static async Task<CommunicationSendResult> SendAuthkeyAsync(Water.Bill.Application.DTOs.Communication.SmsCommunicationSettings section, string mobileNo, string message, string? externalTemplateId, CancellationToken ct)
     {
-        var baseUrl = section["BaseUrl"] ?? "https://api.authkey.io/request";
+        var baseUrl = string.IsNullOrWhiteSpace(section.BaseUrl) ? "https://api.authkey.io/request" : section.BaseUrl;
         var query = new Dictionary<string, string?>
         {
-            ["authkey"] = section["ApiKey"],
+            ["authkey"] = section.ApiKey,
             ["mobile"] = SanitizePhone(mobileNo),
-            ["country_code"] = string.IsNullOrWhiteSpace(section["CountryCode"]) ? "91" : section["CountryCode"],
+            ["country_code"] = string.IsNullOrWhiteSpace(section.CountryCode) ? "91" : section.CountryCode,
             ["sms"] = message,
-            ["sender"] = section["SenderId"],
-            ["pe_id"] = section["PeId"],
-            ["template_id"] = externalTemplateId ?? section["TemplateId"]
+            ["sender"] = section.SenderId,
+            ["pe_id"] = section.PeId,
+            ["template_id"] = externalTemplateId ?? section.TemplateId
         };
 
         return await SendGetAsync(baseUrl, query, ct);
     }
 
-    private static async Task<CommunicationSendResult> SendMsg91Async(IConfigurationSection section, string mobileNo, string message, CancellationToken ct)
+    private static async Task<CommunicationSendResult> SendMsg91Async(Water.Bill.Application.DTOs.Communication.SmsCommunicationSettings section, string mobileNo, string message, CancellationToken ct)
     {
-        var baseUrl = string.IsNullOrWhiteSpace(section["BaseUrl"])
+        var baseUrl = string.IsNullOrWhiteSpace(section.BaseUrl)
             ? "https://api.msg91.com/api/sendhttp.php"
-            : section["BaseUrl"]!;
+            : section.BaseUrl!;
 
         var query = new Dictionary<string, string?>
         {
-            ["authkey"] = section["Msg91AuthKey"] ?? section["ApiKey"],
+            ["authkey"] = section.Msg91AuthKey ?? section.ApiKey,
             ["mobiles"] = SanitizePhone(mobileNo),
             ["message"] = message,
-            ["sender"] = section["SenderId"],
-            ["route"] = string.IsNullOrWhiteSpace(section["Route"]) ? "4" : section["Route"],
-            ["country"] = string.IsNullOrWhiteSpace(section["CountryCode"]) ? "91" : section["CountryCode"]
+            ["sender"] = section.SenderId,
+            ["route"] = string.IsNullOrWhiteSpace(section.Route) ? "4" : section.Route,
+            ["country"] = string.IsNullOrWhiteSpace(section.CountryCode) ? "91" : section.CountryCode
         };
 
         return await SendGetAsync(baseUrl, query, ct);

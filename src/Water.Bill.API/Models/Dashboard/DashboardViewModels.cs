@@ -22,6 +22,16 @@ public class DashboardIndexViewModel
     public IReadOnlyList<DashboardQuickLinkViewModel> QuickLinks { get; set; } = Array.Empty<DashboardQuickLinkViewModel>();
 }
 
+public class DashboardAdminWidgetBundleViewModel
+{
+    public DashboardStatusPanelViewModel? ServiceDeskPanel { get; set; }
+    public DashboardDistributionChartViewModel? DivisionConsumerChart { get; set; }
+    public DashboardAmountDistributionChartViewModel? PaymentCollectionChart { get; set; }
+    public DashboardDefaulterWidgetViewModel? DefaulterWidget { get; set; }
+    public DashboardBarChartViewModel? SecondaryBarChart { get; set; }
+    public DashboardTrendChartViewModel? TrendChart { get; set; }
+}
+
 public class DashboardStatCardViewModel
 {
     public string Label { get; set; } = string.Empty;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Infrastructure.Data;
+using Water.Bill.Infrastructure.Options;
 using Water.Bill.Infrastructure.Services;
 
 namespace Water.Bill.Infrastructure.DependencyInjection;
@@ -31,6 +32,10 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IErrorLogService, ErrorLogService>();
         services.AddScoped<ISecuritySettingsService, SecuritySettingsService>();
+        services.AddScoped<ICommunicationConfigurationService, CommunicationConfigurationService>();
+        services.Configure<PimsApiSettings>(configuration.GetSection("PimsApiSettings"));
+        services.AddScoped<IPimsConsumerInfoService, PimsConsumerInfoService>();
+        services.AddScoped<IAuthorityLoginOtpService, AuthorityLoginOtpService>();
         services.AddScoped<IConsumerOtpService, ConsumerOtpService>();
         services.AddScoped<IConsumerMobileRegistrationService, ConsumerMobileRegistrationService>();
         services.AddScoped<IPublicNewConnectionOtpService, PublicNewConnectionOtpService>();

@@ -48,6 +48,10 @@ public class SecuritySettingsService : ISecuritySettingsService
         entity.AllowMultipleSessions = settings.AllowMultipleSessions;
         entity.BlockNewLoginOnConflict = settings.BlockNewLoginOnConflict;
         entity.ConsumerLoginOtpEnabled = settings.ConsumerLoginOtpEnabled;
+        entity.AuthorityLoginTwoFactorEnabled = settings.AuthorityLoginTwoFactorEnabled;
+        entity.AuthorityLoginTwoFactorEmail = settings.AuthorityLoginTwoFactorEmail;
+        entity.AuthorityLoginTwoFactorSms = settings.AuthorityLoginTwoFactorSms;
+        entity.AuthorityLoginTwoFactorWhatsApp = settings.AuthorityLoginTwoFactorWhatsApp;
         entity.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(ct);
@@ -73,6 +77,10 @@ public class SecuritySettingsService : ISecuritySettingsService
         CaptchaAfterAttempts = entity.CaptchaAfterAttempts,
         AllowMultipleSessions = entity.AllowMultipleSessions,
         BlockNewLoginOnConflict = entity.BlockNewLoginOnConflict,
-        ConsumerLoginOtpEnabled = entity.ConsumerLoginOtpEnabled
+        ConsumerLoginOtpEnabled = entity.ConsumerLoginOtpEnabled,
+        AuthorityLoginTwoFactorEnabled = entity.AuthorityLoginTwoFactorEnabled,
+        AuthorityLoginTwoFactorEmail = entity.AuthorityLoginTwoFactorEmail,
+        AuthorityLoginTwoFactorSms = entity.AuthorityLoginTwoFactorSms,
+        AuthorityLoginTwoFactorWhatsApp = entity.AuthorityLoginTwoFactorWhatsApp
     };
 }

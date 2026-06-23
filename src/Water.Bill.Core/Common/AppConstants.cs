@@ -90,6 +90,7 @@ public static class AppConstants
         public const string ConsumerLoginManagement = "Consumer Login Management";
         public const string MenuManagement = "Menu Management";
         public const string PermissionModules = "Permission Modules";
+        public const string IntegrationHub = "Integration Hub";
         public const string SecuritySettings = "Security Settings";
         public const string Profile = "Profile";
         public const string ConsumerDashboard = "Consumer Dashboard";

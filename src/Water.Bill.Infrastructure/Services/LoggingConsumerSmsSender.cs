@@ -8,24 +8,40 @@ public class LoggingConsumerSmsSender : IConsumerSmsSender
 {
     private readonly ILogger<LoggingConsumerSmsSender> _logger;
     private readonly IHostEnvironment _environment;
+    private readonly ISmsSender _smsSender;
 
-    public LoggingConsumerSmsSender(ILogger<LoggingConsumerSmsSender> logger, IHostEnvironment environment)
+    public LoggingConsumerSmsSender(ILogger<LoggingConsumerSmsSender> logger, IHostEnvironment environment, ISmsSender smsSender)
     {
         _logger = logger;
         _environment = environment;
+        _smsSender = smsSender;
     }
 
-    public Task SendOtpAsync(string mobileNo, string otp, DateTime expiresAt, CancellationToken ct = default)
+    public async Task SendOtpAsync(string mobileNo, string otp, DateTime expiresAt, CancellationToken ct = default)
     {
-        if (_environment.IsDevelopment())
+        var message = $"Your Water.Bill OTP is {otp}. It is valid until {expiresAt:dd MMM yyyy hh:mm tt}. Do not share it with anyone.";
+        var result = await _smsSender.SendAsync(mobileNo, message, null, ct);
+
+        if (result.Status == "Sent")
         {
-            _logger.LogInformation("Consumer Portal OTP generated for {MobileNo}. Expires at {ExpiresAt:u}", mobileNo, expiresAt);
-        }
-        else
-        {
-            _logger.LogWarning("No SMS provider is configured. Consumer Portal OTP SMS was not sent to {MobileNo}.", mobileNo);
+            _logger.LogInformation("Consumer Portal OTP sent for {MobileNo}. Expires at {ExpiresAt:u}", mobileNo, expiresAt);
+            return;
         }
 
-        return Task.CompletedTask;
+        if (_environment.IsDevelopment())
+        {
+            _logger.LogInformation(
+                "Consumer Portal OTP dispatch completed with status {Status} for {MobileNo}. Details: {Details}",
+                result.Status,
+                mobileNo,
+                result.ErrorMessage ?? "none");
+            return;
+        }
+
+        _logger.LogWarning(
+            "Consumer Portal OTP SMS was not sent to {MobileNo}. Status={Status}, Details={Details}",
+            mobileNo,
+            result.Status,
+            result.ErrorMessage ?? "none");
     }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Water.Bill.Application.DTOs.Auth;
 using Water.Bill.Application.DTOs.Menu;
 using Water.Bill.Application.DTOs.Security;
@@ -154,6 +155,17 @@ public class MenuReorderViewModel
 public class SecuritySettingsViewModel
 {
     public SecuritySettingsDto Settings { get; set; } = new();
+}
+
+public class AuthorityLoginOtpViewModel
+{
+    public string ChallengeToken { get; set; } = string.Empty;
+    public string DeliverySummary { get; set; } = string.Empty;
+    public DateTime? ExpiresAt { get; set; }
+    public int ResendAvailableInSeconds { get; set; }
+    public bool RememberMe { get; set; } = true;
+    [Required]
+    public string Otp { get; set; } = string.Empty;
 }
 
 public class MasterListViewModel

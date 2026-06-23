@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.DTOs.Payments;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.Filters;
+using Water.Bill.ConsumerPortal.Helpers;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -198,6 +199,12 @@ public class BillsController : Controller
         if (model.Bill.IsPaid)
         {
             TempData["ErrorMessage"] = "This bill is already marked as paid.";
+            return RedirectToAction(nameof(Current));
+        }
+
+        if (model.Bill.DueDate.HasValue && DateTime.Today > model.Bill.DueDate.Value.Date)
+        {
+            TempData["ErrorMessage"] = "Pay date must be less than or equal to due date.";
             return RedirectToAction(nameof(Current));
         }
 
@@ -436,8 +443,8 @@ public class BillsController : Controller
     private static ConsumerBillDetailViewModel MapBill(JalPrintBillMaster bill)
     {
         var dueDate = bill.BillDueDate ?? bill.DueDate;
-        var totalPayable = bill.TotalBillAmt ?? bill.DueAmt ?? 0;
-        var lastPaid = bill.LastPaidAmt ?? bill.PaidAmt ?? 0;
+        var totalPayable = BillAmountCalculator.ResolveCurrentPayableAmount(bill);
+        var lastPaid = BillAmountCalculator.ResolvePaidAmount(bill);
 
         return new ConsumerBillDetailViewModel
         {
@@ -471,8 +478,8 @@ public class BillsController : Controller
 
     private static ConsumerBillHistoryItemViewModel MapHistoryBill(JalPrintBillMaster bill, ConsumerDetailsMaster? consumer)
     {
-        var totalPayable = bill.TotalBillAmt ?? bill.DueAmt ?? 0;
-        var lastPaid = bill.LastPaidAmt ?? bill.PaidAmt ?? 0;
+        var totalPayable = BillAmountCalculator.ResolveCurrentPayableAmount(bill);
+        var lastPaid = BillAmountCalculator.ResolvePaidAmount(bill);
         var status = ResolveBillPaymentStatus(bill, totalPayable, lastPaid);
 
         return new ConsumerBillHistoryItemViewModel
@@ -482,7 +489,7 @@ public class BillsController : Controller
             BillPeriod = FormatBillPeriod(bill.BillDateFrom, bill.BillDateTo),
             Consumption = consumer?.KiloLitter,
             Amount = totalPayable,
-            Status = status == "Pending" || status == "Partially paid" ? "Due" : status,
+            Status = status == "Pending" ? "Due" : status,
             PaidOn = bill.PaidDate,
             DueDate = bill.BillDueDate ?? bill.DueDate
         };
@@ -497,9 +504,6 @@ public class BillsController : Controller
 
         if (lastPaid > 0 && totalPayable <= 0 && bill.PaidDate.HasValue)
             return "Paid";
-
-        if (lastPaid > 0)
-            return "Partially paid";
 
         return "Pending";
     }

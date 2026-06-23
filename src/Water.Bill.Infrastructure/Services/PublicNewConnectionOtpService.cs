@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Water.Bill.Application.DTOs.PublicNewConnection;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Infrastructure.Data;
@@ -19,19 +18,19 @@ public class PublicNewConnectionOtpService : IPublicNewConnectionOtpService
 
     private readonly ApplicationDbContext _db;
     private readonly IConsumerSmsSender _smsSender;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly IOtpThrottleService _otpThrottleService;
-    private readonly string? _configuredDefaultOtp;
 
     public PublicNewConnectionOtpService(
         ApplicationDbContext db,
         IConsumerSmsSender smsSender,
-        IConfiguration configuration,
+        ICommunicationConfigurationService communicationConfigurationService,
         IOtpThrottleService otpThrottleService)
     {
         _db = db;
         _smsSender = smsSender;
+        _communicationConfigurationService = communicationConfigurationService;
         _otpThrottleService = otpThrottleService;
-        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
     }
 
     public async Task<PublicOtpRequestResult> RequestOtpAsync(string mobileNumber, CancellationToken ct = default)
@@ -67,7 +66,8 @@ public class PublicNewConnectionOtpService : IPublicNewConnectionOtpService
             activeOtp.IsActive = false;
         }
 
-        var otp = _configuredDefaultOtp ?? GenerateOtp();
+        var smsSettings = await _communicationConfigurationService.GetSmsSettingsAsync(ct);
+        var otp = NormalizeConfiguredOtp(smsSettings.DefaultOtp) ?? GenerateOtp();
         var salt = GenerateSalt();
         var expiresAt = now.AddMinutes(OtpExpiryMinutes);
 

@@ -7,7 +7,7 @@ using Water.Bill.Infrastructure.Security;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
-public class PublicNewConnectionController : Controller
+public class PublicNewConnectionController : ConsumerPortalControllerBase
 {
     private const string SessionMobileKey = "PublicNewConnection.VerifiedMobile";
     private const string SessionVerifiedAtKey = "PublicNewConnection.VerifiedAt";
@@ -28,7 +28,9 @@ public class PublicNewConnectionController : Controller
         INewConnectionApplicationService applicationService,
         INewConnectionLookupService lookupService,
         INewConnectionFeeService feeService,
-        IConsumerPaymentService paymentService)
+        IConsumerPaymentService paymentService,
+        IErrorLogService errorLogService)
+        : base(errorLogService)
     {
         _configuration = configuration;
         _otpService = otpService;
@@ -63,6 +65,7 @@ public class PublicNewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(nameof(mobileNumber), ex.Message);
             return View((object?)mobileNumber);
         }
@@ -108,6 +111,7 @@ public class PublicNewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View((object?)mobileNumber);
         }
@@ -204,6 +208,7 @@ public class PublicNewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("~/Views/NewConnection/Apply.cshtml", model);
         }
@@ -300,6 +305,7 @@ public class PublicNewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("~/Views/NewConnection/Apply.cshtml", model);
         }
@@ -373,6 +379,8 @@ public class PublicNewConnectionController : Controller
         if (!result.Success || string.IsNullOrWhiteSpace(result.JalReferenceId))
         {
             TempData["ErrorMessage"] = result.Message ?? "Payment reference could not be created.";
+            if (!result.Success)
+                await LogHandledErrorAsync(new InvalidOperationException(result.Message ?? "Payment reference could not be created."));
             return RedirectToAction(nameof(Payment), new { id, step = 3, paymentMethod, paymentIdentifier });
         }
 
@@ -473,6 +481,7 @@ public class PublicNewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("~/Views/NewConnection/Resubmit.cshtml", model);
         }

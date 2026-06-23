@@ -13,7 +13,7 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
 [RequirePermission("Consumer New Connection.view")]
-public class NewConnectionController : Controller
+public class NewConnectionController : ConsumerPortalControllerBase
 {
     private static readonly string[] RequiredDocumentTypes =
     [
@@ -33,7 +33,9 @@ public class NewConnectionController : Controller
         INewConnectionApplicationService service,
         INewConnectionLookupService lookupService,
         INewConnectionFeeService feeService,
-        IConsumerPaymentService paymentService)
+        IConsumerPaymentService paymentService,
+        IErrorLogService errorLogService)
+        : base(errorLogService)
     {
         _configuration = configuration;
         _service = service;
@@ -108,6 +110,7 @@ public class NewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View(model);
         }
@@ -241,6 +244,7 @@ public class NewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("Apply", model);
         }
@@ -316,6 +320,7 @@ public class NewConnectionController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("Resubmit", model);
         }

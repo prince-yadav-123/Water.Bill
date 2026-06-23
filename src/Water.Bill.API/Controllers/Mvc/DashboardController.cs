@@ -1,8 +1,9 @@
-using System.Data;
 using System.Security.Claims;
+using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Dashboard;
 using Water.Bill.Core.Common;
@@ -15,11 +16,14 @@ namespace Water.Bill.API.Controllers.Mvc;
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
 public class DashboardController : Controller
 {
+    private static readonly TimeSpan DashboardCacheTtl = TimeSpan.FromMinutes(60);
     private readonly ApplicationDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public DashboardController(ApplicationDbContext db)
+    public DashboardController(ApplicationDbContext db, IMemoryCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     [RequirePermission("Dashboard.view")]
@@ -59,83 +63,26 @@ public class DashboardController : Controller
 
     private async Task<DashboardIndexViewModel> BuildAdminDashboardAsync(string userName, string roleName, decimal? defaulterThreshold, CancellationToken ct)
     {
-        var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         var pendingTaskQuery = PendingWorkflowTasksQuery();
-        var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
+        var summaryCards = await GetCachedDashboardValueAsync(
+            BuildDashboardCacheKey("admin-summary", ResolveRoleId(), ResolveUserId(), defaulterThreshold),
+            () => BuildAdminSummaryCardsAsync(pendingTaskQuery, ct));
 
-        var totalConsumers = await _db.ConsumerDetailsMasters.AsNoTracking().CountAsync(ct);
-        var activeConsumers = await _db.ConsumerDetailsMasters.AsNoTracking().CountAsync(x => x.Status == 1, ct);
+        var applicationStatusChart = await GetCachedDashboardValueAsync(
+            BuildDashboardCacheKey("admin-app-status", ResolveRoleId(), ResolveUserId(), defaulterThreshold),
+            () => BuildApplicationStatusChartAsync(ct));
 
-        var newConnections = await _db.NewConnectionApplications.AsNoTracking().CountAsync(x => !x.IsDeleted, ct);
-        var finalConsumersCreated = await _db.NewConnectionApplications.AsNoTracking()
-            .CountAsync(x => !x.IsDeleted && x.ApplicationStatus == "FinalConsumerCreated", ct);
+        var challanStatusChart = await GetCachedDashboardValueAsync(
+            BuildDashboardCacheKey("admin-challan-status", ResolveRoleId(), ResolveUserId(), defaulterThreshold),
+            async () =>
+            {
+                var (paid, pending, generated, _) = await BuildChallanStatusCountsAsync(ct);
+                return await BuildChallanStatusChartAsync(paid, pending, generated, ct);
+            });
 
-        var pendingApprovals = await pendingTaskQuery.CountAsync(ct);
-
-        var totalChallans = await _db.Challans.AsNoTracking().CountAsync(ct);
-        var paidChallans = await _db.Challans.AsNoTracking()
-            .CountAsync(x => x.PayDate.HasValue || (x.PaidAmt != null && x.PaidAmt > 0) || x.Status == "Paid", ct);
-        var pendingChallans = await _db.Challans.AsNoTracking().CountAsync(x =>
-            !x.PayDate.HasValue && (x.PaidAmt == null || x.PaidAmt <= 0) && x.Status != "Paid" &&
-            (x.Status == null || x.Status == "" || x.Status == "Generated" || x.Status == "PendingPayment"), ct);
-
-        var collectionThisMonth = await _db.ChallanPaymentHistories.AsNoTracking()
-            .Where(x => !x.IsDeleted && x.PaymentDate >= monthStart)
-            .SumAsync(x => (double?)x.Amount, ct) ?? 0d;
-
-        var openQueries = hasSupportQueries
-            ? await _db.ConsumerSupportQueries.AsNoTracking()
-                .CountAsync(x => !x.IsDeleted && (x.Status == "Open" || x.Status == "InProgress"), ct)
-            : 0;
-
-        var summaryCards = new List<DashboardStatCardViewModel>
-        {
-            MakeCard("Total Consumers", totalConsumers.ToString("N0"), string.Empty,
-                tone: "primary", url: Url.Action("Index", "ConsumerMasterMaintenance"), icon: "bi-people-fill"),
-
-            MakeCard("Active Consumers", activeConsumers.ToString("N0"), string.Empty,
-                tone: "success", url: Url.Action("Index", "ConsumerMasterMaintenance"), icon: "bi-person-check-fill"),
-
-            MakeCard("New Connections", newConnections.ToString("N0"), string.Empty,
-                tone: "info", url: "/Approvals?tab=All&applicationType=NewConnection", icon: "bi-plug-fill"),
-
-            MakeCard("Consumers Created", finalConsumersCreated.ToString("N0"), string.Empty,
-                tone: "success", url: "/Approvals?tab=All&applicationType=NewConnection", icon: "bi-patch-check-fill"),
-
-            MakeCard("Pending Approvals", pendingApprovals.ToString("N0"), string.Empty,
-                tone: "warning", url: "/Approvals?tab=Pending", icon: "bi-hourglass-split"),
-
-            MakeCard("Pending Challans", pendingChallans.ToString("N0"), string.Empty,
-                tone: "warning", url: "/ChallanManagement?status=PendingPayment", icon: "bi-receipt"),
-
-            MakeCard("Collected This Month", $"Rs. {collectionThisMonth:N0}", string.Empty,
-                tone: "success", url: Url.Action("PaymentHistory", "ChallanManagement"), icon: "bi-currency-rupee"),
-
-            MakeCard("Open Queries", openQueries.ToString("N0"), string.Empty,
-                tone: "danger", url: "/ConsumerQueryManagement?status=Open", icon: "bi-chat-dots-fill")
-        };
-
-        var applicationStatusChart = await BuildApplicationStatusChartAsync(ct);
-        var challanStatusChart = await BuildChallanStatusChartAsync(paidChallans, pendingChallans, totalChallans - paidChallans - pendingChallans, ct);
-        var divisionConsumerChart = await BuildDivisionConsumerChartAsync(ct);
-        var paymentCollectionChart = await BuildPaymentCollectionByTypeChartAsync(ct);
-        DashboardDefaulterWidgetViewModel defaulterWidget;
-        try
-        {
-            defaulterWidget = await BuildDefaulterWidgetAsync(totalConsumers, defaulterThreshold, ct);
-        }
-        catch
-        {
-            defaulterWidget = BuildDefaulterFallbackWidget(totalConsumers, defaulterThreshold);
-        }
-        var workloadChart = await BuildDepartmentWorkloadChartAsync(pendingTaskQuery, ct);
-        var trendChart = await BuildAdminTrendChartAsync(ct);
-        var serviceDeskPanel = await BuildAdminServiceDeskPanelAsync(hasSupportQueries, ct);
-        var recentApplications = await BuildRecentApplicationsAsync(ct);
-        var pendingApprovalsRows = await BuildPendingApprovalRowsAsync(pendingTaskQuery, ct);
-        var recentChallans = await BuildRecentChallansAsync(_db.Challans.AsNoTracking(), ct);
-        var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId: null, ct);
-        var recentActivity = await BuildRecentActivityAsync(BuildAuthorityAuditQuery(), ct);
+        var recentApplications = await GetCachedDashboardValueAsync(
+            BuildDashboardCacheKey("admin-recent-applications", ResolveRoleId(), ResolveUserId(), defaulterThreshold),
+            () => BuildRecentApplicationsAsync(ct, 5));
 
         return new DashboardIndexViewModel
         {
@@ -145,17 +92,7 @@ public class DashboardController : Controller
             SummaryCards = summaryCards,
             PrimaryStatusChart = applicationStatusChart,
             ChallanStatusChart = challanStatusChart,
-            DivisionConsumerChart = divisionConsumerChart,
-            PaymentCollectionChart = paymentCollectionChart,
-            DefaulterWidget = defaulterWidget,
-            SecondaryBarChart = workloadChart,
-            TrendChart = trendChart,
-            ServiceDeskPanel = serviceDeskPanel,
             RecentApplications = recentApplications,
-            PendingApprovals = pendingApprovalsRows,
-            RecentChallans = recentChallans,
-            RecentServiceDeskItems = recentServiceDesk,
-            RecentActivities = recentActivity,
             QuickLinks = new List<DashboardQuickLinkViewModel>
             {
                 MakeLink("Consumers", Url.Action("Index", "ConsumerMasterMaintenance"), "Master records"),
@@ -166,6 +103,44 @@ public class DashboardController : Controller
             }
         };
     }
+
+    [HttpGet("/Dashboard/AdminWidgets")]
+    [RequirePermission("Dashboard.view")]
+    public async Task<IActionResult> AdminWidgets(decimal? defaulterThreshold, CancellationToken ct)
+    {
+        var bundle = await GetCachedDashboardValueAsync(
+            BuildDashboardCacheKey("admin-widgets", ResolveRoleId(), ResolveUserId(), defaulterThreshold),
+            () => BuildAdminWidgetsAsync(defaulterThreshold, ct));
+
+        return Json(bundle);
+    }
+
+    [HttpGet("/Dashboard/RecentApplications")]
+    [RequirePermission("Dashboard.view")]
+    public async Task<IActionResult> RecentApplications(CancellationToken ct)
+        => Json(await GetCachedDashboardValueAsync(
+            BuildDashboardCacheKey("recent-applications", ResolveRoleId(), ResolveUserId()),
+            () => BuildRecentApplicationsAsync(ct, 5)));
+
+    [HttpGet("/Dashboard/RecentActivity")]
+    [RequirePermission("Dashboard.view")]
+    public async Task<IActionResult> RecentActivity(CancellationToken ct)
+        => Json(await GetRecentActivityCachedAsync(ct, 5));
+
+    [HttpGet("/Dashboard/RecentQueries")]
+    [RequirePermission("Dashboard.view")]
+    public async Task<IActionResult> RecentQueries(CancellationToken ct)
+        => Json(await GetRecentQueriesCachedAsync(ct, 5));
+
+    [HttpGet("/Dashboard/RecentChallans")]
+    [RequirePermission("Dashboard.view")]
+    public async Task<IActionResult> RecentChallans(CancellationToken ct)
+        => Json(await GetRecentChallansCachedAsync(ct, 5));
+
+    [HttpGet("/Dashboard/CurrentApprovalQueue")]
+    [RequirePermission("Dashboard.view")]
+    public async Task<IActionResult> CurrentApprovalQueue(CancellationToken ct)
+        => Json(await GetCurrentApprovalQueueCachedAsync(ct, 5));
 
     private async Task<DashboardIndexViewModel> BuildStaffDashboardAsync(
         int userId,
@@ -221,9 +196,9 @@ public class DashboardController : Controller
 
         var workloadChart = await BuildStaffWorkloadChartAsync(assignedPendingQuery, ct);
         var recentChallans = await BuildRecentChallansAsync(myChallansQuery, ct);
-        var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId, ct);
-        var recentActivity = await BuildRecentActivityAsync(_db.Auditlogs.AsNoTracking().Where(x => x.UserId == userId), ct);
-        var assignedRows = await BuildPendingApprovalRowsAsync(allAssignedQuery.OrderByDescending(x => x.AssignedOn).Take(8), ct);
+        var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId, ct, 8);
+        var recentActivity = await BuildRecentActivityAsync(_db.Auditlogs.AsNoTracking().Where(x => x.UserId == userId), ct, 8);
+        var assignedRows = await BuildPendingApprovalRowsAsync(allAssignedQuery.OrderByDescending(x => x.AssignedOn), ct, 8);
 
         return new DashboardIndexViewModel
         {
@@ -324,21 +299,16 @@ public class DashboardController : Controller
 
     private async Task<DashboardAmountDistributionChartViewModel> BuildPaymentCollectionByTypeChartAsync(CancellationToken ct)
     {
-        var onlineRows = await _db.JalnoidaBankpayMasters.AsNoTracking()
+        var onlineAmount = await _db.JalnoidaBankpayMasters.AsNoTracking()
             .Where(x => x.Payamount.HasValue
                 && (
                     x.Paymentstatus == "SUCCESS" || x.Paymentstatus == "SUC000" || x.Paymentstatus == "Y" || x.Paymentstatus == "S" || x.Paymentstatus == "1"
                     || x.Status == "SUCCESS" || x.Status == "SUC000" || x.Status == "Y" || x.Status == "S" || x.Status == "1"))
-            .Select(x => x.Payamount!.Value)
-            .ToListAsync(ct);
+            .SumAsync(x => (decimal?)x.Payamount, ct) ?? 0m;
 
-        var offlineRows = await _db.ChallanPaymentHistories.AsNoTracking()
+        var offlineAmount = await _db.ChallanPaymentHistories.AsNoTracking()
             .Where(x => !x.IsDeleted)
-            .Select(x => x.Amount)
-            .ToListAsync(ct);
-
-        var onlineAmount = ToDecimal(onlineRows.Sum());
-        var offlineAmount = ToDecimal(offlineRows.Sum());
+            .SumAsync(x => (decimal?)x.Amount, ct) ?? 0m;
         var items = new List<DashboardAmountDistributionSliceViewModel>
         {
             new()
@@ -363,6 +333,95 @@ public class DashboardController : Controller
             Caption = "Online and offline collection share based on received amount",
             Items = items
         };
+    }
+
+    private async Task<DashboardAdminWidgetBundleViewModel> BuildAdminWidgetsAsync(decimal? defaulterThreshold, CancellationToken ct)
+    {
+        var pendingTaskQuery = PendingWorkflowTasksQuery();
+        var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
+        var totalConsumers = await _db.ConsumerDetailsMasters.AsNoTracking().CountAsync(ct);
+        var divisionChart = await BuildDivisionConsumerChartAsync(ct);
+        var paymentCollectionChart = await BuildPaymentCollectionByTypeChartAsync(ct);
+        var defaulterWidget = await BuildDefaulterWidgetAsync(totalConsumers, defaulterThreshold, ct);
+        var workloadChart = await BuildDepartmentWorkloadChartAsync(pendingTaskQuery, ct);
+        var trendChart = await BuildAdminTrendChartAsync(ct);
+        var serviceDeskPanel = await BuildAdminServiceDeskPanelAsync(hasSupportQueries, ct);
+
+        return new DashboardAdminWidgetBundleViewModel
+        {
+            DivisionConsumerChart = divisionChart,
+            PaymentCollectionChart = paymentCollectionChart,
+            DefaulterWidget = defaulterWidget,
+            SecondaryBarChart = workloadChart,
+            TrendChart = trendChart,
+            ServiceDeskPanel = serviceDeskPanel
+        };
+    }
+
+    private async Task<List<DashboardStatCardViewModel>> BuildAdminSummaryCardsAsync(
+        IQueryable<ApplicationWorkflowTask> pendingTaskQuery,
+        CancellationToken ct)
+    {
+        var monthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
+
+        var totalConsumers = await _db.ConsumerDetailsMasters.AsNoTracking().CountAsync(ct);
+        var activeConsumers = await _db.ConsumerDetailsMasters.AsNoTracking().CountAsync(x => x.Status == 1, ct);
+        var newConnections = await _db.NewConnectionApplications.AsNoTracking().CountAsync(x => !x.IsDeleted, ct);
+        var finalConsumersCreated = await _db.NewConnectionApplications.AsNoTracking()
+            .CountAsync(x => !x.IsDeleted && x.ApplicationStatus == "FinalConsumerCreated", ct);
+        var pendingApprovals = await pendingTaskQuery.CountAsync(ct);
+        var totalChallans = await _db.Challans.AsNoTracking().CountAsync(ct);
+        var paidChallans = await _db.Challans.AsNoTracking()
+            .CountAsync(x => x.PayDate.HasValue || (x.PaidAmt != null && x.PaidAmt > 0) || x.Status == "Paid", ct);
+        var pendingChallans = await _db.Challans.AsNoTracking().CountAsync(x =>
+            !x.PayDate.HasValue && (x.PaidAmt == null || x.PaidAmt <= 0) && x.Status != "Paid" &&
+            (x.Status == null || x.Status == "" || x.Status == "Generated" || x.Status == "PendingPayment"), ct);
+        var collectionThisMonth = await _db.ChallanPaymentHistories.AsNoTracking()
+            .Where(x => !x.IsDeleted && x.PaymentDate >= monthStart)
+            .SumAsync(x => (double?)x.Amount, ct) ?? 0d;
+        var openQueries = hasSupportQueries
+            ? await _db.ConsumerSupportQueries.AsNoTracking()
+                .CountAsync(x => !x.IsDeleted && (x.Status == "Open" || x.Status == "InProgress"), ct)
+            : 0;
+
+        return new List<DashboardStatCardViewModel>
+        {
+            MakeCard("Total Consumers", totalConsumers.ToString("N0"), string.Empty,
+                tone: "primary", url: Url.Action("Index", "ConsumerMasterMaintenance"), icon: "bi-people-fill"),
+
+            MakeCard("Active Consumers", activeConsumers.ToString("N0"), string.Empty,
+                tone: "success", url: Url.Action("Index", "ConsumerMasterMaintenance"), icon: "bi-person-check-fill"),
+
+            MakeCard("New Connections", newConnections.ToString("N0"), string.Empty,
+                tone: "info", url: "/Approvals?tab=All&applicationType=NewConnection", icon: "bi-plug-fill"),
+
+            MakeCard("Consumers Created", finalConsumersCreated.ToString("N0"), string.Empty,
+                tone: "success", url: "/Approvals?tab=All&applicationType=NewConnection", icon: "bi-patch-check-fill"),
+
+            MakeCard("Pending Approvals", pendingApprovals.ToString("N0"), string.Empty,
+                tone: "warning", url: "/Approvals?tab=Pending", icon: "bi-hourglass-split"),
+
+            MakeCard("Pending Challans", pendingChallans.ToString("N0"), string.Empty,
+                tone: "warning", url: "/ChallanManagement?status=PendingPayment", icon: "bi-receipt"),
+
+            MakeCard("Collected This Month", $"Rs. {collectionThisMonth:N0}", string.Empty,
+                tone: "success", url: Url.Action("PaymentHistory", "ChallanManagement"), icon: "bi-currency-rupee"),
+
+            MakeCard("Open Queries", openQueries.ToString("N0"), string.Empty,
+                tone: "danger", url: "/ConsumerQueryManagement?status=Open", icon: "bi-chat-dots-fill")
+        };
+    }
+
+    private async Task<(int Paid, int Pending, int Generated, int Total)> BuildChallanStatusCountsAsync(CancellationToken ct)
+    {
+        var total = await _db.Challans.AsNoTracking().CountAsync(ct);
+        var paid = await _db.Challans.AsNoTracking()
+            .CountAsync(x => x.PayDate.HasValue || (x.PaidAmt != null && x.PaidAmt > 0) || x.Status == "Paid", ct);
+        var pending = await _db.Challans.AsNoTracking().CountAsync(x =>
+            !x.PayDate.HasValue && (x.PaidAmt == null || x.PaidAmt <= 0) && x.Status != "Paid" &&
+            (x.Status == null || x.Status == "" || x.Status == "Generated" || x.Status == "PendingPayment"), ct);
+        return (paid, pending, Math.Max(0, total - paid - pending), total);
     }
 
     private async Task<DashboardDefaulterWidgetViewModel> BuildDefaulterWidgetAsync(int totalConsumers, decimal? defaulterThreshold, CancellationToken ct)
@@ -602,12 +661,12 @@ WHERE Outstanding >= @threshold;
         };
     }
 
-    private async Task<List<DashboardRecentApplicationViewModel>> BuildRecentApplicationsAsync(CancellationToken ct)
+    private async Task<List<DashboardRecentApplicationViewModel>> BuildRecentApplicationsAsync(CancellationToken ct, int take)
     {
         var newConnections = await _db.NewConnectionApplications.AsNoTracking()
             .Where(x => !x.IsDeleted)
             .OrderByDescending(x => x.CreatedOn)
-            .Take(5)
+            .Take(take)
             .Select(x => new DashboardRecentApplicationViewModel
             {
                 Type = "New Connection",
@@ -622,7 +681,7 @@ WHERE Outstanding >= @threshold;
 
         var ndcApps = await _db.ConsumerApplyNdcs.AsNoTracking()
             .OrderByDescending(x => x.CreatedOn)
-            .Take(3)
+            .Take(take)
             .Select(x => new DashboardRecentApplicationViewModel
             {
                 Type = "NDC",
@@ -638,7 +697,7 @@ WHERE Outstanding >= @threshold;
         var serviceRequests = await _db.MasterApplicationDetails.AsNoTracking()
             .Where(x => x.AppType == "TRN" || x.AppType == "CTC")
             .OrderByDescending(x => x.EnterDate)
-            .Take(3)
+            .Take(take)
             .Select(x => new DashboardRecentApplicationViewModel
             {
                 Type = x.AppType == "TRN" ? "Name Transfer" : "Connection Change",
@@ -655,15 +714,40 @@ WHERE Outstanding >= @threshold;
             .Concat(ndcApps)
             .Concat(serviceRequests)
             .OrderByDescending(x => x.CreatedOn)
-            .Take(8)
+            .Take(take)
             .ToList();
     }
 
-    private async Task<List<DashboardPendingApprovalViewModel>> BuildPendingApprovalRowsAsync(IQueryable<ApplicationWorkflowTask> query, CancellationToken ct)
+    private async Task<List<DashboardRecentChallanViewModel>> GetRecentChallansCachedAsync(CancellationToken ct, int take)
+    {
+        var key = BuildDashboardCacheKey("recent-challans", ResolveRoleId(), ResolveUserId());
+        return await GetCachedDashboardValueAsync(key, () => BuildRecentChallansAsync(_db.Challans.AsNoTracking(), ct, take));
+    }
+
+    private async Task<List<DashboardServiceDeskItemViewModel>> GetRecentQueriesCachedAsync(CancellationToken ct, int take)
+    {
+        var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
+        var key = BuildDashboardCacheKey("recent-queries", ResolveRoleId(), ResolveUserId());
+        return await GetCachedDashboardValueAsync(key, () => BuildRecentServiceDeskAsync(hasSupportQueries, null, ct, take));
+    }
+
+    private async Task<List<DashboardActivityItemViewModel>> GetRecentActivityCachedAsync(CancellationToken ct, int take)
+    {
+        var key = BuildDashboardCacheKey("recent-activity", ResolveRoleId(), ResolveUserId());
+        return await GetCachedDashboardValueAsync(key, () => BuildRecentActivityAsync(BuildAuthorityAuditQuery(), ct, take));
+    }
+
+    private async Task<List<DashboardPendingApprovalViewModel>> GetCurrentApprovalQueueCachedAsync(CancellationToken ct, int take)
+    {
+        var key = BuildDashboardCacheKey("approval-queue", ResolveRoleId(), ResolveUserId());
+        return await GetCachedDashboardValueAsync(key, () => BuildPendingApprovalRowsAsync(PendingWorkflowTasksQuery(), ct, take));
+    }
+
+    private async Task<List<DashboardPendingApprovalViewModel>> BuildPendingApprovalRowsAsync(IQueryable<ApplicationWorkflowTask> query, CancellationToken ct, int take)
     {
         var rows = await query
             .OrderByDescending(x => x.AssignedOn)
-            .Take(8)
+            .Take(take)
             .ToListAsync(ct);
 
         if (rows.Count == 0)
@@ -714,11 +798,11 @@ WHERE Outstanding >= @threshold;
         }).ToList();
     }
 
-    private async Task<List<DashboardRecentChallanViewModel>> BuildRecentChallansAsync(IQueryable<Challan> query, CancellationToken ct)
+    private async Task<List<DashboardRecentChallanViewModel>> BuildRecentChallansAsync(IQueryable<Challan> query, CancellationToken ct, int take = 5)
     {
         var rows = await query
             .OrderByDescending(x => x.Id)
-            .Take(8)
+            .Take(take)
             .ToListAsync(ct);
 
         return rows.Select(x => new DashboardRecentChallanViewModel
@@ -737,14 +821,15 @@ WHERE Outstanding >= @threshold;
     private async Task<List<DashboardServiceDeskItemViewModel>> BuildRecentServiceDeskAsync(
         bool hasSupportQueries,
         int? userId,
-        CancellationToken ct)
+        CancellationToken ct,
+        int take)
     {
         if (!hasSupportQueries)
             return new List<DashboardServiceDeskItemViewModel>();
 
         return await ApplyServiceDeskAssignment(_db.ConsumerSupportQueries.AsNoTracking().Where(x => !x.IsDeleted), userId)
             .OrderByDescending(x => x.CreatedAt)
-            .Take(8)
+            .Take(take)
             .Select(x => new DashboardServiceDeskItemViewModel
             {
                 Type = "Query",
@@ -758,11 +843,11 @@ WHERE Outstanding >= @threshold;
             .ToListAsync(ct);
     }
 
-    private static async Task<List<DashboardActivityItemViewModel>> BuildRecentActivityAsync(IQueryable<Auditlog> query, CancellationToken ct)
+    private static async Task<List<DashboardActivityItemViewModel>> BuildRecentActivityAsync(IQueryable<Auditlog> query, CancellationToken ct, int take)
     {
         var rows = await query
             .OrderByDescending(x => x.Timestamp)
-            .Take(8)
+            .Take(take)
             .Select(x => new DashboardActivityItemViewModel
             {
                 Action = AuditActionLabel(x.Action),
@@ -775,6 +860,39 @@ WHERE Outstanding >= @threshold;
             .ToListAsync(ct);
 
         return rows;
+    }
+
+    private string BuildDashboardCacheKey(string segment, int roleId, int userId, decimal? threshold = null, int? departmentId = null)
+    {
+        var parts = new List<string>
+        {
+            "dashboard",
+            segment,
+            $"role:{roleId}",
+            $"user:{userId}"
+        };
+
+        if (departmentId.HasValue)
+            parts.Add($"dept:{departmentId.Value}");
+
+        if (threshold.HasValue)
+            parts.Add($"threshold:{threshold.Value:0.##}");
+
+        return string.Join(":", parts);
+    }
+
+    private async Task<T> GetCachedDashboardValueAsync<T>(string key, Func<Task<T>> factory)
+    {
+        if (_cache.TryGetValue(key, out T? cachedValue) && cachedValue is not null)
+            return cachedValue;
+
+        var value = await factory();
+        _cache.Set(key, value, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = DashboardCacheTtl,
+            Priority = CacheItemPriority.Low
+        });
+        return value;
     }
 
     private IQueryable<Auditlog> BuildAuthorityAuditQuery()

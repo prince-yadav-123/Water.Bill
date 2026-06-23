@@ -20,5 +20,9 @@ public class SecuritySettingsDto
     public bool AllowMultipleSessions { get; set; } = true;
     public bool BlockNewLoginOnConflict { get; set; }
     public bool ConsumerLoginOtpEnabled { get; set; } = true;
+    public bool AuthorityLoginTwoFactorEnabled { get; set; }
+    public bool AuthorityLoginTwoFactorEmail { get; set; } = true;
+    public bool AuthorityLoginTwoFactorSms { get; set; }
+    public bool AuthorityLoginTwoFactorWhatsApp { get; set; }
 }
 

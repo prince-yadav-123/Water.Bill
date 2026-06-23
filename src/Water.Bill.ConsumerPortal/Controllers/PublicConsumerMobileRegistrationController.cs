@@ -4,11 +4,12 @@ using Water.Bill.ConsumerPortal.ViewModels;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
-public class PublicConsumerMobileRegistrationController : Controller
+public class PublicConsumerMobileRegistrationController : ConsumerPortalControllerBase
 {
     private readonly IConsumerMobileRegistrationService _mobileRegistrationService;
 
-    public PublicConsumerMobileRegistrationController(IConsumerMobileRegistrationService mobileRegistrationService)
+    public PublicConsumerMobileRegistrationController(IConsumerMobileRegistrationService mobileRegistrationService, IErrorLogService errorLogService)
+        : base(errorLogService)
     {
         _mobileRegistrationService = mobileRegistrationService;
     }
@@ -70,6 +71,7 @@ public class PublicConsumerMobileRegistrationController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("Index", model);
         }
@@ -99,6 +101,7 @@ public class PublicConsumerMobileRegistrationController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             PopulateOtpDisplay(model);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("Index", model);

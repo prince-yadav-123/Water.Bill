@@ -41,6 +41,16 @@ public class SecuritySettingsController : Controller
         ViewData["ActiveMenu"] = "Security Settings";
         settings.TenantId = settings.TenantId == 0 ? DefaultTenantId : settings.TenantId;
 
+        if (settings.AuthorityLoginTwoFactorEnabled
+            && !settings.AuthorityLoginTwoFactorEmail
+            && !settings.AuthorityLoginTwoFactorSms
+            && !settings.AuthorityLoginTwoFactorWhatsApp)
+        {
+            ModelState.AddModelError(
+                nameof(SecuritySettingsDto.AuthorityLoginTwoFactorEnabled),
+                "Please select at least one channel when Authority Login 2FA is enabled.");
+        }
+
         if (!ModelState.IsValid)
             return View(new SecuritySettingsViewModel { Settings = settings });
 

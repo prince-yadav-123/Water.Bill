@@ -69,6 +69,7 @@ public static class CommunicationChannels
 
 public static class CommunicationPurposes
 {
+    public const string AuthorityLoginOtp = "AuthorityLoginOtp";
     public const string ConsumerOtp = "ConsumerOtp";
     public const string PublicNewConnectionOtp = "PublicNewConnectionOtp";
     public const string NewConnectionSubmitted = "NewConnectionSubmitted";

@@ -22,6 +22,10 @@ public partial class Securitysetting
     public bool AllowMultipleSessions { get; set; } = true;
     public bool BlockNewLoginOnConflict { get; set; }
     public bool ConsumerLoginOtpEnabled { get; set; } = true;
+    public bool AuthorityLoginTwoFactorEnabled { get; set; }
+    public bool AuthorityLoginTwoFactorEmail { get; set; } = true;
+    public bool AuthorityLoginTwoFactorSms { get; set; }
+    public bool AuthorityLoginTwoFactorWhatsApp { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }

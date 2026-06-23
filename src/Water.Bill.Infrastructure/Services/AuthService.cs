@@ -30,6 +30,12 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto dto, CancellationToken ct = default)
     {
+        var validated = await ValidateAuthorityCredentialsAsync(dto, ct);
+        return await CompleteAuthorityLoginAsync(validated.UserId, ct);
+    }
+
+    public async Task<AuthorityLoginValidationResult> ValidateAuthorityCredentialsAsync(LoginRequestDto dto, CancellationToken ct = default)
+    {
         var username = dto.Username.Trim();
         var user = await _db.Appusers
             .Include(x => x.Role)
@@ -59,6 +65,30 @@ public class AuthService : IAuthService
 
         user.FailedLoginCount = 0;
         user.LockoutUntil = null;
+        await _db.SaveChangesAsync(ct);
+
+        return new AuthorityLoginValidationResult
+        {
+            UserId = user.Id,
+            FullName = user.FullName,
+            Email = user.Email,
+            Username = user.Username,
+            RoleId = user.RoleId,
+            RoleName = user.Role.Name,
+            MobileNo = user.PhoneNumber,
+            IsActive = user.IsActive == true
+        };
+    }
+
+    public async Task<LoginResponseDto> CompleteAuthorityLoginAsync(int userId, CancellationToken ct = default)
+    {
+        var user = await _db.Appusers
+            .Include(x => x.Role)
+            .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == userId, ct);
+
+        if (user is null || user.IsActive != true)
+            throw new UnauthorizedAccessException("User account is not active.");
+
         user.LastLoginAt = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
 

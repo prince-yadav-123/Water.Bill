@@ -4,9 +4,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.Filters;
+using Water.Bill.ConsumerPortal.Helpers;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
 using Water.Bill.Core.Enums;
@@ -17,7 +17,7 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 
 [Authorize(AuthenticationSchemes = AppConstants.CookieScheme, Roles = AppConstants.Roles.Consumer)]
 [RequirePermission("Consumer Profile.view")]
-public class ProfileController : Controller
+public class ProfileController : ConsumerPortalControllerBase
 {
     private const string ContactUpdatePurpose = "ContactUpdate";
     private const int OtpLength = 6;
@@ -28,21 +28,23 @@ public class ProfileController : Controller
     private readonly IAuditLogService _auditLogService;
     private readonly ApplicationDbContext _db;
     private readonly IConsumerSmsSender _smsSender;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly IOtpThrottleService _otpThrottleService;
-    private readonly string? _configuredDefaultOtp;
 
     public ProfileController(
         IAuditLogService auditLogService,
         ApplicationDbContext db,
         IConsumerSmsSender smsSender,
-        IConfiguration configuration,
-        IOtpThrottleService otpThrottleService)
+        ICommunicationConfigurationService communicationConfigurationService,
+        IOtpThrottleService otpThrottleService,
+        IErrorLogService errorLogService)
+        : base(errorLogService)
     {
         _auditLogService = auditLogService;
         _db = db;
         _smsSender = smsSender;
+        _communicationConfigurationService = communicationConfigurationService;
         _otpThrottleService = otpThrottleService;
-        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
     }
 
     [HttpGet("/Consumer/Profile")]
@@ -120,6 +122,7 @@ public class ProfileController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
         }
 
@@ -169,6 +172,7 @@ public class ProfileController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View("UpdateContact", model);
         }
@@ -235,8 +239,8 @@ public class ProfileController : Controller
             Connections = linkedConsumers.Select((consumer, index) =>
             {
                 var latestBill = bills.FirstOrDefault(x => x.ConsNo == consumer.ConsNo);
-                var amount = latestBill?.TotalBillAmt ?? latestBill?.DueAmt ?? 0;
-                var lastPaid = latestBill?.LastPaidAmt ?? latestBill?.PaidAmt ?? 0;
+                var amount = BillAmountCalculator.ResolveCurrentPayableAmount(latestBill);
+                var lastPaid = BillAmountCalculator.ResolvePaidAmount(latestBill);
 
                 return new ConsumerConnectionCardViewModel
                 {
@@ -316,9 +320,6 @@ public class ProfileController : Controller
 
         if (lastPaid > 0 && totalPayable <= 0)
             return "Paid";
-
-        if (lastPaid > 0)
-            return "Partially paid";
 
         return "Due";
     }
@@ -443,7 +444,8 @@ public class ProfileController : Controller
             activeOtp.IsActive = false;
         }
 
-        var otp = _configuredDefaultOtp ?? GenerateOtp();
+        var smsSettings = await _communicationConfigurationService.GetSmsSettingsAsync(ct);
+        var otp = NormalizeConfiguredOtp(smsSettings.DefaultOtp) ?? GenerateOtp();
         var salt = GenerateSalt();
         var expiresAt = now.AddMinutes(OtpExpiryMinutes);
 

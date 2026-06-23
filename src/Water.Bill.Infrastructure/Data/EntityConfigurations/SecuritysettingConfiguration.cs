@@ -30,6 +30,10 @@ entity.ToTable("securitysettings");
         entity.Property(e => e.MaxFailedLoginAttempts).HasDefaultValue(5);
         entity.Property(e => e.LockoutDurationMinutes).HasDefaultValue(15);
         entity.Property(e => e.CaptchaAfterAttempts).HasDefaultValue(3);
+        entity.Property(e => e.AuthorityLoginTwoFactorEnabled).HasDefaultValue(false);
+        entity.Property(e => e.AuthorityLoginTwoFactorEmail).HasDefaultValue(true);
+        entity.Property(e => e.AuthorityLoginTwoFactorSms).HasDefaultValue(false);
+        entity.Property(e => e.AuthorityLoginTwoFactorWhatsApp).HasDefaultValue(false);
     }
 }
 

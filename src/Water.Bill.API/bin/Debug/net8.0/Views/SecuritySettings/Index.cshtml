@@ -98,10 +98,64 @@
             </div>
         </div>
 
+        <h2 class="wb-section-title mb-3 mt-4">Authority Login 2FA</h2>
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-check">
+                    <input class="form-check-input" asp-for="Settings.AuthorityLoginTwoFactorEnabled" id="authority2faEnabled" />
+                    <span class="form-check-label">Enable Authority Login 2FA</span>
+                </label>
+                <div class="form-text">When enabled, authority users must verify OTP after valid username and password before entering the portal.</div>
+                <span asp-validation-for="Settings.AuthorityLoginTwoFactorEnabled" class="text-danger"></span>
+            </div>
+
+            <div class="col-12" id="authority2faChannels">
+                <div class="form-label required mb-2">Select 2FA Channel</div>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-check">
+                            <input class="form-check-input" asp-for="Settings.AuthorityLoginTwoFactorEmail" />
+                            <span class="form-check-label">Email</span>
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-check">
+                            <input class="form-check-input" asp-for="Settings.AuthorityLoginTwoFactorSms" />
+                            <span class="form-check-label">SMS</span>
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-check">
+                            <input class="form-check-input" asp-for="Settings.AuthorityLoginTwoFactorWhatsApp" />
+                            <span class="form-check-label">WhatsApp</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-text">OTP will be sent only through the selected enabled communication channels.</div>
+            </div>
+        </div>
+
         <div class="wb-actions mt-4">
             <button class="btn btn-primary" type="submit">Save Settings</button>
         </div>
     </form>
 </section>
 
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const toggle = document.getElementById('authority2faEnabled');
+            const channels = document.getElementById('authority2faChannels');
+            if (!toggle || !channels) return;
+
+            function syncAuthority2faUi() {
+                const enabled = toggle.checked;
+                channels.style.display = enabled ? '' : 'none';
+            }
+
+            toggle.addEventListener('change', syncAuthority2faUi);
+            syncAuthority2faUi();
+        })();
+    </script>
+}

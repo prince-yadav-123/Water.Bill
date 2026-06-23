@@ -26,6 +26,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<ApplicationWorkflowTask> ApplicationWorkflowTasks { get; set; }
 
+    public virtual DbSet<AuthorityLoginOtpVerification> AuthorityLoginOtpVerifications { get; set; }
+
     public virtual DbSet<Approle> Approles { get; set; }
 
     public virtual DbSet<Appuser> Appusers { get; set; }
@@ -97,6 +99,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<ConsumerComplaintHistory> ConsumerComplaintHistories { get; set; }
 
     public virtual DbSet<CommunicationLog> CommunicationLogs { get; set; }
+
+    public virtual DbSet<CommunicationChannelSetting> CommunicationChannelSettings { get; set; }
 
     public virtual DbSet<CommunicationPurpose> CommunicationPurposes { get; set; }
 

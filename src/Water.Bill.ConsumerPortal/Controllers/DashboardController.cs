@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.ConsumerPortal.Helpers;
 using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
 using Water.Bill.Core.Common;
@@ -58,8 +59,15 @@ public class DashboardController : Controller
         var latestBill = bills.FirstOrDefault();
         var recentBills = bills.Select(MapRecentBill).ToList();
 
-        // Sum ALL unpaid bills for accurate total due
-        var totalUnpaidDue = await _db.JalPrintBillMasters
+        // Match the legacy consumer-facing flow: show the current payable bill amount,
+        // not the sum of every unpaid record.
+        var currentPayable = latestBill is null || IsBillPaid(latestBill)
+            ? 0
+            : BillAmountCalculator.ResolveCurrentPayableAmount(latestBill);
+
+        var totalUnpaidDue = currentPayable;
+
+        var unpaidBillCount = await _db.JalPrintBillMasters
             .AsNoTracking()
             .Where(x => x.ConsNo == consumerNo
                 && x.BillType != null
@@ -68,17 +76,7 @@ public class DashboardController : Controller
                 && (x.TotalBillAmt ?? 0) > 0
                 && x.PaidStatus != "Y"
                 && x.PaidStatus != "1")
-            .SumAsync(x => (double?)x.TotalBillAmt, ct) ?? 0;
-
-        var unpaidBillCount = await _db.JalPrintBillMasters
-            .AsNoTracking()
-            .CountAsync(x => x.ConsNo == consumerNo
-                && x.BillType != null
-                && x.BillCount != null
-                && x.BillCount != 0
-                && (x.TotalBillAmt ?? 0) > 0
-                && x.PaidStatus != "Y"
-                && x.PaidStatus != "1", ct);
+            .CountAsync(ct);
 
         var recentPayments = await GetRecentPaymentsAsync(consumerNo, ct);
         var latestChallans = await GetLatestChallansAsync(consumerNo, ct);
@@ -358,8 +356,8 @@ public class DashboardController : Controller
     private static CurrentBillSummaryViewModel MapBill(JalPrintBillMaster bill)
     {
         var dueDate = bill.BillDueDate ?? bill.DueDate;
-        var totalPayable = bill.TotalBillAmt ?? bill.DueAmt ?? 0;
-        var lastPaid = bill.LastPaidAmt ?? bill.PaidAmt ?? 0;
+        var totalPayable = BillAmountCalculator.ResolveCurrentPayableAmount(bill);
+        var lastPaid = BillAmountCalculator.ResolvePaidAmount(bill);
         var now = DateTime.Today;
         return new CurrentBillSummaryViewModel
         {
@@ -382,8 +380,8 @@ public class DashboardController : Controller
 
     private static RecentBillViewModel MapRecentBill(JalPrintBillMaster bill)
     {
-        var totalPayable = bill.TotalBillAmt ?? bill.DueAmt ?? 0;
-        var lastPaid = bill.LastPaidAmt ?? bill.PaidAmt ?? 0;
+        var totalPayable = BillAmountCalculator.ResolveCurrentPayableAmount(bill);
+        var lastPaid = BillAmountCalculator.ResolvePaidAmount(bill);
         return new RecentBillViewModel
         {
             BillNo = string.IsNullOrWhiteSpace(bill.BillNo) ? "Bill" : bill.BillNo,
@@ -490,8 +488,7 @@ public class DashboardController : Controller
             string.Equals(bill.PaidStatus, "1", StringComparison.OrdinalIgnoreCase))
             return "Paid";
         if (lastPaid > 0 && totalPayable <= 0) return "Paid";
-        if (lastPaid > 0) return "Partial";
-        return "Pending";
+        return "Due";
     }
 
     private static string ResolveTransactionStatus(JalnoidaBankpayMaster master, JalnoidaBankpayTran? tran)
@@ -548,6 +545,11 @@ public class DashboardController : Controller
         1 => "Active",
         _ => "Active"
     };
+
+    private static bool IsBillPaid(JalPrintBillMaster bill)
+        => string.Equals(bill.PaidStatus, "Y", StringComparison.OrdinalIgnoreCase)
+           || string.Equals(bill.PaidStatus, "1", StringComparison.OrdinalIgnoreCase)
+           || bill.PaidDate.HasValue;
 
     private static double ParseAmount(string? value)
         => double.TryParse(value, out var amount) ? amount : 0;

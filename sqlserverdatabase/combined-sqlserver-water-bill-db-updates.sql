@@ -686,6 +686,30 @@ BEGIN
     ON dbo.CommunicationLogs (ReferenceType, ReferenceId);
 END;
 
+IF OBJECT_ID(N'dbo.CommunicationChannelSettings', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.CommunicationChannelSettings
+    (
+        Id                 INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_CommunicationChannelSettings PRIMARY KEY,
+        ChannelName        NVARCHAR(50) NOT NULL,
+        IsEnabled          BIT NOT NULL CONSTRAINT DF_CommunicationChannelSettings_IsEnabled DEFAULT (1),
+        ConfigurationJson  NVARCHAR(MAX) NOT NULL CONSTRAINT DF_CommunicationChannelSettings_ConfigurationJson DEFAULT (N'{}'),
+        CreatedByUserId    INT NULL,
+        CreatedByName      NVARCHAR(200) NULL,
+        CreatedAt          DATETIME2(6) NOT NULL CONSTRAINT DF_CommunicationChannelSettings_CreatedAt DEFAULT (SYSDATETIME()),
+        UpdatedByUserId    INT NULL,
+        UpdatedByName      NVARCHAR(200) NULL,
+        UpdatedAt          DATETIME2(6) NULL,
+        IsDeleted          BIT NOT NULL CONSTRAINT DF_CommunicationChannelSettings_IsDeleted DEFAULT (0),
+    );
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UX_CommunicationChannelSettings_ChannelName_IsDeleted' AND object_id = OBJECT_ID(N'dbo.CommunicationChannelSettings'))
+BEGIN
+    CREATE UNIQUE INDEX UX_CommunicationChannelSettings_ChannelName_IsDeleted
+    ON dbo.CommunicationChannelSettings (ChannelName, IsDeleted);
+END;
+
 IF OBJECT_ID(N'dbo.InAppNotifications', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.InAppNotifications
@@ -2112,6 +2136,7 @@ END;
         (N'Rate Master', N'Authority'),
         (N'Department Master', N'Authority'),
         (N'Workflow Master', N'Authority'),
+        (N'Integration Hub', N'Authority'),
         (N'My Pending Applications', N'Authority'),
         (N'New Connection Fee Configuration', N'Authority'),
         (N'Consumer Query Management', N'Authority'),
@@ -2248,14 +2273,15 @@ child_menu_seed AS
         (1, N'Administration', N'Menu Management', N'MN', N'/Menu', N'Administration', N'Menu Management', 4, 1, 1, 0),
         (1, N'Administration', N'Permission Modules', N'PM', N'/PermissionModules', N'Administration', N'Permission Modules', 5, 1, 1, 0),
         (1, N'Administration', N'Security Settings', N'SS', N'/SecuritySettings', N'Administration', N'Security Settings', 6, 1, 1, 0),
-        (1, N'Administration', N'Workflow Master', N'WF', N'/Workflows', N'Administration', N'Workflow Master', 7, 1, 1, 0),
-        (1, N'Administration', N'My Pending Applications', N'AP', N'/Approvals/Pending', N'Administration', N'My Pending Applications', 8, 1, 1, 0),
-        (1, N'Administration', N'Consumer Queries', N'QY', N'/ConsumerQueryManagement', N'Administration', N'Consumer Queries', 9, 1, 1, 0),
-        (1, N'Administration', N'Communication Templates', N'CT', N'/CommunicationTemplates', N'Administration', N'Communication Templates', 10, 1, 1, 0),
-        (1, N'Administration', N'Communication', N'NT', N'/NotificationManagement', N'Administration', N'Communication', 11, 1, 1, 0),
-        (1, N'Administration', N'User Activity Logs', N'AL', N'/UserActivityLogs', N'Administration', N'User Activity Logs', 12, 1, 1, 0),
-        (1, N'Administration', N'Consumer Activity Logs', N'CL', N'/ConsumerActivityLogs', N'Administration', N'Consumer Activity Logs', 13, 1, 1, 0),
-        (1, N'Administration', N'Error Logs', N'EL', N'/ErrorLogs', N'Administration', N'Error Logs', 14, 1, 1, 0),
+        (1, N'Administration', N'Integration Hub', N'IH', N'/IntegrationHub', N'Administration', N'Integration Hub', 7, 1, 1, 0),
+        (1, N'Administration', N'Workflow Master', N'WF', N'/Workflows', N'Administration', N'Workflow Master', 8, 1, 1, 0),
+        (1, N'Administration', N'My Pending Applications', N'AP', N'/Approvals/Pending', N'Administration', N'My Pending Applications', 9, 1, 1, 0),
+        (1, N'Administration', N'Consumer Queries', N'QY', N'/ConsumerQueryManagement', N'Administration', N'Consumer Queries', 10, 1, 1, 0),
+        (1, N'Administration', N'Communication Templates', N'CT', N'/CommunicationTemplates', N'Administration', N'Communication Templates', 11, 1, 1, 0),
+        (1, N'Administration', N'Communication', N'NT', N'/NotificationManagement', N'Administration', N'Communication', 12, 1, 1, 0),
+        (1, N'Administration', N'User Activity Logs', N'AL', N'/UserActivityLogs', N'Administration', N'User Activity Logs', 13, 1, 1, 0),
+        (1, N'Administration', N'Consumer Activity Logs', N'CL', N'/ConsumerActivityLogs', N'Administration', N'Consumer Activity Logs', 14, 1, 1, 0),
+        (1, N'Administration', N'Error Logs', N'EL', N'/ErrorLogs', N'Administration', N'Error Logs', 15, 1, 1, 0),
         (1, N'Billing & Metering', N'Bill Search & Print', N'BS', N'/BillSearchPrint', N'Billing & Metering', N'Bill Search & Print', 1, 1, 1, 0),
         (1, N'Billing & Metering', N'Challan Management', N'CH', N'/ChallanManagement', N'Billing & Metering', N'Challan Management', 2, 1, 1, 0),
         (1, N'Billing & Metering', N'Bulk Bill Generation', N'BB', N'/BulkBillGeneration', N'Billing & Metering', N'Bulk Bill Generation', 3, 1, 1, 0),
@@ -2351,6 +2377,7 @@ USING
 (
     SELECT *
     FROM (VALUES
+        (N'AuthorityLoginOtp', N'Authority Login OTP', N'OTP for authority/admin portal login verification.', N'["UserName","FullName","ApplicationName","Otp","Date","ExpiryMinutes"]', 1, 1),
         (N'ConsumerOtp', N'Consumer OTP', N'OTP for existing consumer login.', N'["ConsumerName","ConsumerNo","Otp","Date","ExpiryMinutes"]', 1, 1),
         (N'PublicNewConnectionOtp', N'Public New Connection OTP', N'OTP for public new connection verification.', N'["ConsumerName","MobileNo","Otp","Date"]', 1, 1),
         (N'NewConnectionSubmitted', N'New Connection Submitted', N'New connection application submitted.', N'["ConsumerName","ApplicationNo","Amount","Status","Date"]', 1, 1),
@@ -2386,6 +2413,9 @@ USING
     SELECT p.Id AS PurposeId, p.PurposeKey, v.Channel, v.TemplateName, v.Subject, v.Body, NULL AS ExternalTemplateId, NULL AS Language, 1 AS IsDefault, 1 AS IsActive, 0 AS IsDeleted
     FROM dbo.CommunicationPurposes p
     JOIN (VALUES
+        (N'AuthorityLoginOtp', N'Email', N'Authority Login OTP Email', N'Your Noida Jal authority login OTP', N'Dear {{FullName}},<br>Your OTP for {{ApplicationName}} is <strong>{{Otp}}</strong>.<br>This OTP is valid for {{ExpiryMinutes}} minutes.<br><br>Date: {{Date}}'),
+        (N'AuthorityLoginOtp', N'SMS', N'Authority Login OTP SMS', NULL, N'Your OTP for {{ApplicationName}} is {{Otp}}. Valid for {{ExpiryMinutes}} minutes.'),
+        (N'AuthorityLoginOtp', N'WhatsApp', N'Authority Login OTP WhatsApp', NULL, N'Your OTP for {{ApplicationName}} is {{Otp}}. Valid for {{ExpiryMinutes}} minutes.'),
         (N'ConsumerOtp', N'SMS',  N'Consumer Login OTP SMS', NULL, N'Your OTP for Noida Jal consumer login is {{Otp}}.'),
         (N'ConsumerOtp', N'Email', N'Consumer Login OTP Email', N'Your Noida Jal login OTP', N'Dear {{ConsumerName}},<br>Your OTP for Noida Jal consumer login is <strong>{{Otp}}</strong>. It is valid for {{ExpiryMinutes}} minutes.'),
         (N'PublicNewConnectionOtp', N'SMS', N'Public New Connection OTP', NULL, N'Your OTP to start or continue Noida water connection application is {{Otp}}.'),
@@ -2774,6 +2804,85 @@ END;
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_ErrorLogs_CreatedAt_Portal_Status' AND object_id = OBJECT_ID(N'dbo.ErrorLogs'))
 BEGIN
     CREATE INDEX IX_ErrorLogs_CreatedAt_Portal_Status ON dbo.ErrorLogs (CreatedAt DESC, PortalType, StatusCode);
+END;
+
+/* ============================================================
+   16) AUTHORITY LOGIN 2FA
+   ============================================================ */
+
+IF COL_LENGTH(N'dbo.securitysettings', N'AuthorityLoginTwoFactorEnabled') IS NULL
+BEGIN
+    ALTER TABLE dbo.securitysettings
+        ADD AuthorityLoginTwoFactorEnabled BIT NOT NULL
+            CONSTRAINT DF_securitysettings_AuthorityLoginTwoFactorEnabled DEFAULT (0);
+END;
+
+IF COL_LENGTH(N'dbo.securitysettings', N'AuthorityLoginTwoFactorEmail') IS NULL
+BEGIN
+    ALTER TABLE dbo.securitysettings
+        ADD AuthorityLoginTwoFactorEmail BIT NOT NULL
+            CONSTRAINT DF_securitysettings_AuthorityLoginTwoFactorEmail DEFAULT (1);
+END;
+
+IF COL_LENGTH(N'dbo.securitysettings', N'AuthorityLoginTwoFactorSms') IS NULL
+BEGIN
+    ALTER TABLE dbo.securitysettings
+        ADD AuthorityLoginTwoFactorSms BIT NOT NULL
+            CONSTRAINT DF_securitysettings_AuthorityLoginTwoFactorSms DEFAULT (0);
+END;
+
+IF COL_LENGTH(N'dbo.securitysettings', N'AuthorityLoginTwoFactorWhatsApp') IS NULL
+BEGIN
+    ALTER TABLE dbo.securitysettings
+        ADD AuthorityLoginTwoFactorWhatsApp BIT NOT NULL
+            CONSTRAINT DF_securitysettings_AuthorityLoginTwoFactorWhatsApp DEFAULT (0);
+END;
+
+IF OBJECT_ID(N'dbo.AuthorityLoginOtpVerifications', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.AuthorityLoginOtpVerifications
+    (
+        Id              BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_AuthorityLoginOtpVerifications PRIMARY KEY,
+        UserId          INT NOT NULL,
+        Username        NVARCHAR(100) NOT NULL,
+        ChallengeToken  NVARCHAR(64) NOT NULL,
+        Channels        NVARCHAR(100) NOT NULL,
+        DeliverySummary NVARCHAR(300) NULL,
+        OtpHash         NVARCHAR(128) NOT NULL,
+        OtpSalt         NVARCHAR(64) NOT NULL,
+        ExpiresAt       DATETIME2(6) NOT NULL,
+        IsVerified      BIT NOT NULL CONSTRAINT DF_AuthorityLoginOtpVerifications_IsVerified DEFAULT (0),
+        VerifiedAt      DATETIME2(6) NULL,
+        AttemptCount    INT NOT NULL CONSTRAINT DF_AuthorityLoginOtpVerifications_AttemptCount DEFAULT (0),
+        LastAttemptAt   DATETIME2(6) NULL,
+        CreatedAt       DATETIME2(6) NOT NULL CONSTRAINT DF_AuthorityLoginOtpVerifications_CreatedAt DEFAULT (SYSUTCDATETIME()),
+        IsActive        BIT NOT NULL CONSTRAINT DF_AuthorityLoginOtpVerifications_IsActive DEFAULT (1),
+        IsDeleted       BIT NOT NULL CONSTRAINT DF_AuthorityLoginOtpVerifications_IsDeleted DEFAULT (0)
+    );
+END;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = N'UX_AuthorityLoginOtpVerifications_ChallengeToken'
+      AND object_id = OBJECT_ID(N'dbo.AuthorityLoginOtpVerifications')
+)
+BEGIN
+    CREATE UNIQUE INDEX UX_AuthorityLoginOtpVerifications_ChallengeToken
+        ON dbo.AuthorityLoginOtpVerifications (ChallengeToken);
+END;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = N'IX_AuthorityLoginOtpVerifications_ActiveLookup'
+      AND object_id = OBJECT_ID(N'dbo.AuthorityLoginOtpVerifications')
+)
+BEGIN
+    CREATE INDEX IX_AuthorityLoginOtpVerifications_ActiveLookup
+        ON dbo.AuthorityLoginOtpVerifications (UserId, IsActive, IsVerified);
 END;
 
 /* ============================================================

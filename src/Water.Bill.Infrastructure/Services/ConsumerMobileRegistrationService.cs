@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.DTOs.Consumer;
@@ -21,21 +20,20 @@ public class ConsumerMobileRegistrationService : IConsumerMobileRegistrationServ
 
     private readonly ApplicationDbContext _db;
     private readonly ICommunicationService _communicationService;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly ILogger<ConsumerMobileRegistrationService> _logger;
     private readonly IOtpThrottleService _otpThrottleService;
-    private readonly string? _configuredDefaultOtp;
 
     public ConsumerMobileRegistrationService(
         ApplicationDbContext db,
         ICommunicationService communicationService,
-        IConfiguration configuration,
+        ICommunicationConfigurationService communicationConfigurationService,
         ILogger<ConsumerMobileRegistrationService> logger,
         IOtpThrottleService otpThrottleService)
     {
         _db = db;
         _communicationService = communicationService;
-        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Communication:Sms:DefaultOtp"])
-            ?? NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
+        _communicationConfigurationService = communicationConfigurationService;
         _logger = logger;
         _otpThrottleService = otpThrottleService;
     }
@@ -122,7 +120,8 @@ public class ConsumerMobileRegistrationService : IConsumerMobileRegistrationServ
             activeOtp.IsActive = false;
         }
 
-        var otp = _configuredDefaultOtp ?? GenerateOtp();
+        var smsSettings = await _communicationConfigurationService.GetSmsSettingsAsync(ct);
+        var otp = NormalizeConfiguredOtp(smsSettings.DefaultOtp) ?? GenerateOtp();
         var salt = GenerateSalt();
         var expiresAt = now.AddMinutes(OtpExpiryMinutes);
 

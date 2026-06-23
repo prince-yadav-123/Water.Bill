@@ -10,12 +10,11 @@ using Water.Bill.Core.Enums;
 
 namespace Water.Bill.ConsumerPortal.Controllers;
 
-public class AccountController : Controller
+public class AccountController : ConsumerPortalControllerBase
 {
     private readonly ISessionService _sessionService;
     private readonly IAuditLogService _auditLogService;
     private readonly IConsumerOtpService _consumerOtpService;
-    private readonly IConsumerMobileRegistrationService _consumerMobileRegistrationService;
     private readonly IConsumerAccountService _consumerAccountService;
     private readonly ISecuritySettingsService _securitySettingsService;
 
@@ -23,14 +22,14 @@ public class AccountController : Controller
         ISessionService sessionService,
         IAuditLogService auditLogService,
         IConsumerOtpService consumerOtpService,
-        IConsumerMobileRegistrationService consumerMobileRegistrationService,
         IConsumerAccountService consumerAccountService,
-        ISecuritySettingsService securitySettingsService)
+        ISecuritySettingsService securitySettingsService,
+        IErrorLogService errorLogService)
+        : base(errorLogService)
     {
         _sessionService = sessionService;
         _auditLogService = auditLogService;
         _consumerOtpService = consumerOtpService;
-        _consumerMobileRegistrationService = consumerMobileRegistrationService;
         _consumerAccountService = consumerAccountService;
         _securitySettingsService = securitySettingsService;
     }
@@ -116,44 +115,21 @@ public class AccountController : Controller
                 }
                 catch (UnauthorizedAccessException ex)
                 {
+                    await LogHandledErrorAsync(ex, StatusCodes.Status403Forbidden);
                     ModelState.AddModelError(string.Empty, ex.Message);
                     return View(model);
                 }
             }
 
-            var eligibility = await _consumerMobileRegistrationService.CheckEligibilityAsync(model.ConsumerId ?? string.Empty);
-            if (eligibility.ConsumerExists && !eligibility.IsActiveConsumer)
-            {
-                ModelState.AddModelError(string.Empty, "Consumer is not active.");
-                return View(model);
-            }
-
-            if (!eligibility.ConsumerExists)
-            {
-                ModelState.AddModelError(string.Empty, "Consumer not found.");
-                return View(model);
-            }
-
-            if (!eligibility.HasRegisteredMobile)
-            {
-                ModelState.AddModelError(string.Empty, "Mobile number is not registered for this Consumer Number. Please update/register your mobile number first.");
-                model.ShowMobileRegistrationPrompt = true;
-                model.MobileRegistrationUrl = Url.Action(
-                    "Index",
-                    "PublicConsumerMobileRegistration",
-                    new { consumerNo = eligibility.ConsumerNo });
-
-                return View(model);
-            }
-
             try
             {
-                var otpResult = await _consumerOtpService.RequestOtpAsync(model.ConsumerId ?? string.Empty);
+                var otpResult = await _consumerOtpService.RequestOtpAsync(model.ConsumerId ?? string.Empty, usePimsMobileLookup: true);
                 SetOtpTempData(otpResult);
                 return RedirectToAction(nameof(VerifyOtp), new { consumerNo = otpResult.ConsumerNo, returnUrl });
             }
             catch (InvalidOperationException ex)
             {
+                await LogHandledErrorAsync(ex);
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
@@ -169,6 +145,7 @@ public class AccountController : Controller
             }
             catch (InvalidOperationException ex)
             {
+                await LogHandledErrorAsync(ex);
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
@@ -200,6 +177,7 @@ public class AccountController : Controller
         }
         catch (UnauthorizedAccessException ex)
         {
+            await LogHandledErrorAsync(ex, StatusCodes.Status403Forbidden);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View(model);
         }
@@ -262,6 +240,7 @@ public class AccountController : Controller
         }
         catch (InvalidOperationException ex)
         {
+            await LogHandledErrorAsync(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View(model);
         }

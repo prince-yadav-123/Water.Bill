@@ -203,283 +203,63 @@
                 </section>
             </div>
             <div class="col-12 col-xl-4">
-                <section class="wb-card h-100">
+                <section class="wb-card h-100" data-admin-widget="service-desk">
                     <div class="wb-section-hdr">
-                        <div><h2>@Model.ServiceDeskPanel?.Title</h2><p>@Model.ServiceDeskPanel?.Caption</p></div>
+                        <div><h2>Query Status Snapshot</h2><p>Consumer support queue at a glance.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/ConsumerQueryManagement">View All</a>
                     </div>
-                    @if (Model.ServiceDeskPanel is { Groups.Count: > 0 } sdp)
-                    {
-                        <div class="d-flex flex-column gap-2">
-                            @foreach (var grp in sdp.Groups)
-                            {
-                                @foreach (var item in grp.Items)
-                                {
-                                    <a class="wb-qrow wb-qrow-@item.Tone" href="@(item.Url ?? "#")">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="wb-qrow-accent"></span>
-                                            <span class="wb-qrow-label">@item.Label</span>
-                                        </div>
-                                        <strong class="wb-qrow-count">@item.Value</strong>
-                                    </a>
-                                }
-                            }
-                        </div>
-                    }
-                    else { <div class="wb-empty">No query data yet.</div> }
+                    <div class="wb-widget-loading-shell" data-admin-widget-target="service-desk"></div>
                 </section>
             </div>
         </div>
 
-        @* â”€â”€ Row 1B: Division / Collection / Defaulters â”€â”€ *@
         <div class="row g-3">
             <div class="col-12 col-xl-4">
-                <section class="wb-card h-100 d-flex flex-column">
+                <section class="wb-card h-100 d-flex flex-column" data-admin-widget="division">
                     <div class="wb-section-hdr">
-                        <div><h2>@Model.DivisionConsumerChart?.Title</h2><p>@Model.DivisionConsumerChart?.Caption</p></div>
+                        <div><h2>Division-wise Consumers</h2><p>Consumer count and percentage share by division.</p></div>
                     </div>
-                    @if (Model.DivisionConsumerChart is { Items.Count: > 0 } divisionChart)
-                    {
-                        var total = divisionChart.Items.Sum(x => x.Count);
-                        var max = Math.Max(1, divisionChart.Items.Max(x => x.Count));
-                        <div class="d-flex flex-column gap-3 flex-grow-1">
-                            <div class="wb-mini-summary">
-                                <strong>@total.ToString("N0")</strong>
-                                <span>Total Consumers</span>
-                            </div>
-                            <div class="wb-dept-grid wb-dept-grid-compact">
-                                @foreach (var item in divisionChart.Items)
-                                {
-                                    <div class="wb-bar-row">
-                                        <div class="wb-bar-copy">
-                                            <span>@item.Label</span>
-                                            <strong>@item.Percentage%</strong>
-                                        </div>
-                                        <div class="wb-bar-track">
-                                            <div class="wb-bar-fill" style="width:@(item.Count * 100m / max)%;background:@item.Color"></div>
-                                        </div>
-                                        <div class="wb-bar-meta">@item.Count.ToString("N0") consumers</div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                    else { <div class="wb-empty">No consumer division data available.</div> }
+                    <div class="wb-widget-loading-shell" data-admin-widget-target="division"></div>
                 </section>
             </div>
             <div class="col-12 col-xl-4">
-                <section class="wb-card h-100 d-flex flex-column">
+                <section class="wb-card h-100 d-flex flex-column" data-admin-widget="payment">
                     <div class="wb-section-hdr">
-                        <div><h2>@Model.PaymentCollectionChart?.Title</h2><p>@Model.PaymentCollectionChart?.Caption</p></div>
+                        <div><h2>Payment Collection (Offline/Online)</h2><p>Online and offline collection share based on received amount.</p></div>
                     </div>
-                    @if (Model.PaymentCollectionChart is { Items.Count: > 0 } paymentChart)
-                    {
-                        var total = paymentChart.Items.Sum(x => x.Amount);
-                        var labels = "[" + string.Join(",", paymentChart.Items.Select(x => $"\"{x.Label}\"")) + "]";
-                        var values = "[" + string.Join(",", paymentChart.Items.Select(x => x.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture))) + "]";
-                        var colors = "[" + string.Join(",", paymentChart.Items.Select(x => $"\"{x.Color}\"")) + "]";
-                        <div class="d-flex flex-column gap-3 flex-grow-1">
-                            <div class="wb-donut-wrap">
-                                <div class="wb-donut-inner">
-                                    <div class="wb-chart-wrap wb-chart-wrap-no-center">
-                                        <canvas id="paymentCollectionChart"></canvas>
-                                    </div>
-                                    <div class="wb-donut-legend w-100">
-                                        @foreach (var item in paymentChart.Items)
-                                        {
-                                            <div class="wb-donut-row">
-                                                <span class="wb-dot" style="background:@item.Color"></span>
-                                                <div>
-                                                    <div class="wb-donut-lbl">@item.Label</div>
-                                                    <small class="text-muted">@FormatCompactCurrency(item.Amount) (@item.Percentage%)</small>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <div class="col-12">
-                                    <div class="wb-summary-tile">
-                                        <span>Total Collection</span>
-                                        <strong>@FormatCompactCurrency(total)</strong>
-                                    </div>
-                                </div>
-                                @foreach (var item in paymentChart.Items)
-                                {
-                                    <div class="col-12 col-sm-6">
-                                        <div class="wb-summary-tile">
-                                            <span>@item.Label</span>
-                                            <strong>@FormatCompactCurrency(item.Amount)</strong>
-                                            <small>@item.Percentage%</small>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                        <script>window._paymentCollectionData = { labels: @Html.Raw(labels), values: @Html.Raw(values), colors: @Html.Raw(colors), type: 'amount', chartType: 'pie' };</script>
-                    }
-                    else { <div class="wb-empty">No collection data available.</div> }
+                    <div class="wb-widget-loading-shell" data-admin-widget-target="payment"></div>
                 </section>
             </div>
             <div class="col-12 col-xl-4">
-                <section class="wb-card h-100">
+                <section class="wb-card h-100 d-flex flex-column" data-admin-widget="defaulter">
                     <div class="wb-section-hdr">
-                        <div><h2>@Model.DefaulterWidget?.Title</h2><p>@Model.DefaulterWidget?.Caption</p></div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <span class="wb-inline-chip">Default: @FormatCompactCurrency(Model.DefaulterWidget?.ConfiguredThresholdAmount ?? 0)</span>
-                            @if (!string.IsNullOrWhiteSpace(Model.DefaulterWidget?.Url))
-                            {
-                                <a class="btn btn-outline-primary btn-sm" href="@Model.DefaulterWidget.Url">View Dues</a>
-                            }
-                        </div>
+                        <div><h2>Defaulters</h2><p>Outstanding dues above the configured threshold.</p></div>
                     </div>
-                    @if (Model.DefaulterWidget is { } defaulter)
-                    {
-                        var defaulterLabels = "[\"Defaulters\",\"Non-Defaulters\"]";
-                        var defaulterValues = $"[{defaulter.ConsumerCount},{defaulter.NonDefaulterCount}]";
-                        var defaulterColors = "[\"#dc2626\",\"#16a34a\"]";
-                        var defPct = defaulter.TotalConsumers == 0 ? 0 : Math.Round(defaulter.ConsumerCount * 100m / defaulter.TotalConsumers, 1);
-                        var nonDefPct = defaulter.TotalConsumers == 0 ? 0 : Math.Round(defaulter.NonDefaulterCount * 100m / defaulter.TotalConsumers, 1);
-                        <div class="d-flex flex-column gap-3">
-                            <form method="get" class="wb-inline-filter">
-                                <label for="defaulterThreshold" class="form-label mb-1">One-time threshold</label>
-                                <div class="d-flex gap-2">
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="defaulterThreshold" name="defaulterThreshold" value="@defaulter.ThresholdAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
-                                    <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-                                </div>
-                            </form>
-                            <div class="wb-donut-wrap">
-                                <div class="wb-donut-inner">
-                                    <div class="wb-chart-wrap">
-                                        <canvas id="defaulterChart"></canvas>
-                                        <div class="wb-chart-center">
-                                            <strong>@defPct%</strong>
-                                            <span>Defaulter Share</span>
-                                        </div>
-                                    </div>
-                                    <div class="wb-donut-legend w-100">
-                                        <div class="wb-donut-row">
-                                            <span class="wb-dot" style="background:#dc2626"></span>
-                                            <div>
-                                                <div class="wb-donut-lbl">Defaulters</div>
-                                                <small class="text-muted">@defaulter.ConsumerCount.ToString("N0") (@defPct%)</small>
-                                            </div>
-                                        </div>
-                                        <div class="wb-donut-row">
-                                            <span class="wb-dot" style="background:#16a34a"></span>
-                                            <div>
-                                                <div class="wb-donut-lbl">Non-Defaulters</div>
-                                                <small class="text-muted">@defaulter.NonDefaulterCount.ToString("N0") (@nonDefPct%)</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <div class="col-12 col-sm-6">
-                                    <div class="wb-summary-tile">
-                                        <span>Total Defaulters</span>
-                                        <strong>@defaulter.ConsumerCount.ToString("N0")</strong>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="wb-summary-tile">
-                                        <span>Total Non-Defaulters</span>
-                                        <strong>@defaulter.NonDefaulterCount.ToString("N0")</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-start border rounded-3 px-3 py-2">
-                                <div>
-                                    <div class="fw-semibold">Total Outstanding</div>
-                                    <small class="text-muted">Across all consumers above threshold</small>
-                                </div>
-                                <strong>@FormatCompactCurrency(defaulter.TotalOutstandingAmount)</strong>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-start border rounded-3 px-3 py-2">
-                                <div>
-                                    <div class="fw-semibold">Threshold Used</div>
-                                    <small class="text-muted">Temporary dashboard view value</small>
-                                </div>
-                                <strong>@FormatCompactCurrency(defaulter.ThresholdAmount)</strong>
-                            </div>
-                        </div>
-                        <script>window._defaulterData = { labels: @Html.Raw(defaulterLabels), values: @Html.Raw(defaulterValues), colors: @Html.Raw(defaulterColors), chartType: 'doughnut', cutout: '72%', rotation: -90, circumference: 180 };</script>
-                    }
-                    else { <div class="wb-empty">No defaulter data available.</div> }
+                    <div class="wb-widget-loading-shell" data-admin-widget-target="defaulter"></div>
                 </section>
             </div>
         </div>
 
-        @* â”€â”€ Row 2: Department Workload (50%) + Trend (50%) â”€â”€ *@
         <div class="row g-3">
             <div class="col-12 col-xl-6">
-                <section class="wb-card h-100">
+                <section class="wb-card h-100" data-admin-widget="workload">
                     <div class="wb-section-hdr">
-                        <div>
-                            <h2>@(Model.SecondaryBarChart?.Title ?? "Pending Workload by Department")</h2>
-                            <p>@(Model.SecondaryBarChart?.Caption ?? "Current pending items grouped by department.")</p>
-                        </div>
+                        <div><h2>Pending Workload by Department</h2><p>Current active workflow queue.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View Queue</a>
                     </div>
-                    @if (Model.SecondaryBarChart is { Items.Count: > 0 } deptChart)
-                    {
-                        var dMax = Math.Max(1, deptChart.Items.Max(x => x.Value));
-                        <div class="wb-dept-grid">
-                            @foreach (var b in deptChart.Items)
-                            {
-                                <a class="wb-bar-row text-decoration-none" href="@(b.Url ?? "#")">
-                                    <div class="wb-bar-copy"><span>@b.Label</span><strong>@b.Value</strong></div>
-                                    <div class="wb-bar-track"><div class="wb-bar-fill" style="width:@(b.Value * 100m / dMax)%;background:@b.Color"></div></div>
-                                </a>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="wb-empty">No pending workload data available.</div>
-                    }
+                    <div class="wb-widget-loading-shell" data-admin-widget-target="workload"></div>
                 </section>
             </div>
             <div class="col-12 col-xl-6">
-                <section class="wb-card h-100">
+                <section class="wb-card h-100" data-admin-widget="trend">
                     <div class="wb-section-hdr">
-                        <div><h2>@(Model.TrendChart?.Title ?? "New Applications Received vs Approved")</h2><p>@(Model.TrendChart?.Caption ?? "Recent application intake versus approvals.")</p></div>
-                        @if (Model.TrendChart is { } tcLegend)
-                        {
-                            <div class="wb-trend-legend">
-                                <span><i class="wb-swatch wb-p"></i>@tcLegend.PrimaryLabel</span>
-                                <span><i class="wb-swatch wb-s"></i>@tcLegend.SecondaryLabel</span>
-                            </div>
-                        }
+                        <div><h2>New Applications Received vs Approved</h2><p>Month-wise comparison for the last 6 months.</p></div>
                     </div>
-                    @if (Model.TrendChart is { Points.Count: > 0 } tc)
-                    {
-                        var mx = Math.Max(1m, tc.Points.Max(x => Math.Max(x.PrimaryValue, x.SecondaryValue)));
-                        <div class="wb-trend-chart">
-                            @foreach (var pt in tc.Points)
-                            {
-                                <div class="wb-trend-col">
-                                    <div class="wb-trend-bars">
-                                        <div class="wb-trend-bar wb-p" style="height:@(pt.PrimaryValue * 100m / mx)%"></div>
-                                        <div class="wb-trend-bar wb-s" style="height:@(pt.SecondaryValue * 100m / mx)%"></div>
-                                    </div>
-                                    <div class="wb-trend-vals"><span>@pt.PrimaryValue</span><span>@pt.SecondaryValue</span></div>
-                                    <div class="wb-trend-lbl">@pt.Label</div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="wb-empty">No application trend data available.</div>
-                    }
+                    <div class="wb-widget-loading-shell" data-admin-widget-target="trend"></div>
                 </section>
             </div>
         </div>
 
-        @* â”€â”€ Row 3: Recent section tabs (full width) â”€â”€ *@
         <section class="wb-card">
             <div class="wb-section-hdr wb-section-hdr-stacked">
                 <div>
@@ -496,12 +276,12 @@
             </div>
 
             <div class="wb-dashboard-tab-panels">
-                <div class="wb-dashboard-tab-panel is-active" role="tabpanel" data-dashboard-panel="recent-applications">
+                <div class="wb-dashboard-tab-panel is-active" role="tabpanel" data-dashboard-panel="recent-applications" data-loaded="true" data-endpoint="/Dashboard/RecentApplications">
                     <div class="wb-section-hdr">
                         <div><h2>Recent Applications</h2><p>Latest incoming requests across core public and service workflows.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=All">View All</a>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive" data-dashboard-content="recent-applications">
                         <table class="table wb-table align-middle mb-0">
                             <thead><tr><th>Type</th><th>Application No</th><th>Applicant</th><th>Status</th><th>Received</th></tr></thead>
                             <tbody>
@@ -536,146 +316,43 @@
                     </div>
                 </div>
 
-                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-activity" hidden>
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-activity" data-loaded="false" data-endpoint="/Dashboard/RecentActivity" hidden>
                     <div class="wb-section-hdr">
                         <div><h2>Recent Activity</h2><p>Latest authority-side actions captured through the audit trail.</p></div>
                         <a class="btn btn-outline-primary btn-sm" asp-controller="OperatorAudit" asp-action="Index">View All</a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table wb-table align-middle mb-0">
-                            <thead><tr><th>Action</th><th>Module</th><th>User</th><th>Status</th><th>Time</th></tr></thead>
-                            <tbody>
-                                @{ var acts = Model.RecentActivities.Take(8).ToList(); }
-                                @if (!acts.Any())
-                                {
-                                    <tr><td colspan="5" class="wb-empty-row">No recent operator activity logged.</td></tr>
-                                }
-                                else
-                                {
-                                    @foreach (var a in acts)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <div class="fw-semibold">@a.Action</div>
-                                                <small class="text-muted">@a.Details</small>
-                                            </td>
-                                            <td>@a.Module</td>
-                                            <td>@(string.IsNullOrWhiteSpace(a.Username) ? "-" : a.Username)</td>
-                                            <td>
-                                                <span class="badge @ToneClass(AuditTone(a.Success))">
-                                                    @AuditLabel(a.Success)
-                                                </span>
-                                            </td>
-                                            <td>@FormatDate(a.OccurredOn)</td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
+                    <div class="wb-dashboard-dynamic" data-dashboard-content="recent-activity">
+                        <div class="wb-dashboard-loading">Loading recent activity...</div>
                     </div>
                 </div>
 
-                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-queries" hidden>
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-queries" data-loaded="false" data-endpoint="/Dashboard/RecentQueries" hidden>
                     <div class="wb-section-hdr">
                         <div><h2>Recent Queries</h2><p>Most recently raised consumer support queries.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/ConsumerQueryManagement">View All</a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table wb-table align-middle mb-0">
-                            <thead><tr><th>Query No</th><th>Consumer</th><th>Status</th><th>Raised</th></tr></thead>
-                            <tbody>
-                                @{ var queries = Model.RecentServiceDeskItems.Take(8).ToList(); }
-                                @if (!queries.Any())
-                                {
-                                    <tr><td colspan="4" class="wb-empty-row">No recent queries found.</td></tr>
-                                }
-                                else
-                                {
-                                    @foreach (var q in queries)
-                                    {
-                                        <tr>
-                                            <td><a class="wb-link" href="@q.Url">@q.ReferenceNo</a></td>
-                                            <td>
-                                                <div>@q.ConsumerName</div>
-                                                <small class="text-muted">@q.Subject</small>
-                                            </td>
-                                            <td><span class="badge @ToneClass(StatusTone(q.Status))">@q.Status</span></td>
-                                            <td>@ShortDate(q.CreatedOn)</td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
+                    <div class="wb-dashboard-dynamic" data-dashboard-content="recent-queries">
+                        <div class="wb-dashboard-loading">Loading recent queries...</div>
                     </div>
                 </div>
 
-                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-challans" hidden>
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="recent-challans" data-loaded="false" data-endpoint="/Dashboard/RecentChallans" hidden>
                     <div class="wb-section-hdr">
                         <div><h2>Recent Challans</h2><p>Latest demand records and payment requests.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/ChallanManagement">View All</a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table wb-table align-middle mb-0">
-                            <thead><tr><th>Challan</th><th>Consumer</th><th>Purpose</th><th>Amount</th><th>Status</th></tr></thead>
-                            <tbody>
-                                @{ var challans = Model.RecentChallans.Take(8).ToList(); }
-                                @if (!challans.Any())
-                                {
-                                    <tr><td colspan="5" class="wb-empty-row">No challans found.</td></tr>
-                                }
-                                else
-                                {
-                                    @foreach (var c in challans)
-                                    {
-                                        <tr>
-                                            <td><a class="wb-link" href="@c.Url">@c.ChallanNo</a></td>
-                                            <td>@c.ConsumerNo</td>
-                                            <td>@c.Purpose</td>
-                                            <td>Rs.&nbsp;@c.Amount.ToString("N0")</td>
-                                            <td><span class="badge @ToneClass(StatusTone(c.Status))">@c.Status</span></td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
+                    <div class="wb-dashboard-dynamic" data-dashboard-content="recent-challans">
+                        <div class="wb-dashboard-loading">Loading recent challans...</div>
                     </div>
                 </div>
 
-                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="current-approval-queue" hidden>
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-dashboard-panel="current-approval-queue" data-loaded="false" data-endpoint="/Dashboard/CurrentApprovalQueue" hidden>
                     <div class="wb-section-hdr">
                         <div><h2>Current Approval Queue</h2><p>Tasks waiting at the active workflow stage.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View All</a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table wb-table align-middle mb-0">
-                            <thead><tr><th>Application</th><th>Stage</th><th>Assigned To</th><th>Waiting</th></tr></thead>
-                            <tbody>
-                                @{ var approvals = Model.PendingApprovals.Take(8).ToList(); }
-                                @if (!approvals.Any())
-                                {
-                                    <tr><td colspan="4" class="wb-empty-row">No pending approvals.</td></tr>
-                                }
-                                else
-                                {
-                                    @foreach (var a in approvals)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <a class="wb-link" href="@a.Url">@a.ApplicationNo</a>
-                                                <div><small class="text-muted">@a.ApplicantName</small></div>
-                                            </td>
-                                            <td>@a.StageName</td>
-                                            <td>@a.AssignedTo</td>
-                                            <td>
-                                                <span class="badge @ToneClass(AgeBadgeTone(a.DaysSinceAssigned))">
-                                                    @(a.DaysSinceAssigned == 0 ? "Today" : $"{a.DaysSinceAssigned}d")
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
+                    <div class="wb-dashboard-dynamic" data-dashboard-content="current-approval-queue">
+                        <div class="wb-dashboard-loading">Loading current approval queue...</div>
                     </div>
                 </div>
             </div>
@@ -1321,6 +998,48 @@
             padding: 1.5rem 0;
             font-size: 0.9rem;
         }
+        .wb-widget-loading-shell,
+        .wb-dashboard-dynamic {
+            width: 100%;
+            min-height: 10rem;
+        }
+        .wb-widget-loading-shell {
+            border: 1px dashed #dbe3ef;
+            border-radius: 0.85rem;
+            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+            padding: 1rem;
+        }
+        .wb-dashboard-loading,
+        .wb-widget-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 8rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .wb-widget-shell-empty {
+            min-height: 8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .wb-widget-summary-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+        .wb-widget-summary-grid.two-up {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        @@media (max-width: 575.98px) {
+            .wb-widget-summary-grid.two-up {
+                grid-template-columns: 1fr;
+            }
+        }
 
         /* ─── Solid status badges (visible on white background) ─── */
         .badge.wb-badge-success  { background: #16a34a; color: #fff; border: none; }
@@ -1336,22 +1055,70 @@
     </style>
     <script>
         (function () {
+            function escapeHtml(value) {
+                return String(value == null ? '' : value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function formatNumber(value) {
+                var num = Number(value || 0);
+                return new Intl.NumberFormat('en-IN').format(num);
+            }
+
             function formatCompactCurrency(value) {
-                var abs = Math.abs(value);
-                if (abs >= 10000000) return '₹' + (value / 10000000).toFixed(2) + ' Cr';
-                return '₹' + (value / 100000).toFixed(2) + ' Lakh';
+                var num = Number(value || 0);
+                var abs = Math.abs(num);
+                if (abs >= 10000000) return '₹' + (num / 10000000).toFixed(2) + ' Cr';
+                return '₹' + (num / 100000).toFixed(2) + ' Lakh';
+            }
+
+            function formatDate(value) {
+                if (!value) return '-';
+                var d = new Date(value);
+                if (isNaN(d.getTime())) return '-';
+                return d.toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            function shortDate(value) {
+                if (!value) return '-';
+                var d = new Date(value);
+                if (isNaN(d.getTime())) return '-';
+                return d.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            }
+
+            function getQueryValue(name) {
+                return new URLSearchParams(window.location.search).get(name);
             }
 
             function initChart(canvasId, data) {
                 var el = document.getElementById(canvasId);
-                if (!el || !data) return;
-                new Chart(el, {
+                if (!el || !data) return null;
+
+                if (el._wbChart) {
+                    el._wbChart.destroy();
+                }
+
+                el._wbChart = new Chart(el, {
                     type: data.chartType || 'doughnut',
                     data: {
-                        labels: data.labels,
+                        labels: data.labels || [],
                         datasets: [{
-                            data: data.values,
-                            backgroundColor: data.colors,
+                            data: data.values || [],
+                            backgroundColor: data.colors || [],
                             borderWidth: 2,
                             borderColor: '#ffffff',
                             hoverOffset: 6
@@ -1368,12 +1135,12 @@
                             tooltip: {
                                 callbacks: {
                                     label: function (ctx) {
-                                        var total = ctx.dataset.data.reduce(function (a, b) { return a + b; }, 0);
-                                        var pct = total > 0 ? Math.round((ctx.parsed / total) * 1000) / 10 : 0;
+                                        var total = ctx.dataset.data.reduce(function (a, b) { return a + Number(b || 0); }, 0);
+                                        var pct = total > 0 ? Math.round((Number(ctx.parsed || 0) / total) * 1000) / 10 : 0;
                                         if (data.type === 'amount') {
                                             return ' ' + ctx.label + ': ' + formatCompactCurrency(ctx.parsed) + ' (' + pct + '%)';
                                         }
-                                        return ' ' + ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
+                                        return ' ' + ctx.label + ': ' + formatNumber(ctx.parsed) + ' (' + pct + '%)';
                                     }
                                 }
                             }
@@ -1381,6 +1148,452 @@
                         animation: { duration: 600, easing: 'easeInOutQuart' }
                     }
                 });
+
+                return el._wbChart;
+            }
+
+            function toneClass(tone) {
+                switch ((tone || '').toLowerCase()) {
+                    case 'success': return 'wb-badge-success';
+                    case 'warning': return 'wb-badge-warning';
+                    case 'danger': return 'wb-badge-danger';
+                    case 'info': return 'wb-badge-info';
+                    case 'secondary': return 'wb-badge-secondary';
+                    default: return 'wb-badge-primary';
+                }
+            }
+
+            function toneFromStatus(value) {
+                var text = (value || '').toString().toLowerCase();
+                if (!text) return 'secondary';
+                if (text.indexOf('success') >= 0 || text.indexOf('paid') >= 0 || text.indexOf('approved') >= 0 || text.indexOf('resolved') >= 0 || text.indexOf('closed') >= 0 || text.indexOf('completed') >= 0 || text.indexOf('active') >= 0) return 'success';
+                if (text.indexOf('fail') >= 0 || text.indexOf('reject') >= 0 || text.indexOf('cancel') >= 0) return 'danger';
+                if (text.indexOf('pending') >= 0 || text.indexOf('due') >= 0 || text.indexOf('draft') >= 0 || text.indexOf('open') >= 0 || text.indexOf('hold') >= 0) return 'warning';
+                if (text.indexOf('review') >= 0 || text.indexOf('process') >= 0 || text.indexOf('progress') >= 0) return 'info';
+                return 'secondary';
+            }
+
+            function buildDonutLegend(items, total, getValue, valueFormatter) {
+                return (items || []).map(function (item) {
+                    var count = Number(getValue(item) || 0);
+                    var pct = total > 0 ? Math.round((count * 1000) / total) / 10 : 0;
+                    return '<div class="wb-donut-row">' +
+                        '<span class="wb-dot" style="background:' + escapeHtml(item.color || '#2563eb') + '"></span>' +
+                        '<div><div class="wb-donut-lbl">' + escapeHtml(item.label || '') + '</div>' +
+                        '<small class="text-muted">' + escapeHtml(valueFormatter(item, count)) + ' &nbsp;(' + pct + '%)</small></div>' +
+                        '</div>';
+                }).join('');
+            }
+
+            function renderDivisionWidget(widget) {
+                if (!widget || !widget.items || !widget.items.length) {
+                    return '<div class="wb-widget-shell-empty">No division data available.</div>';
+                }
+
+                var total = widget.items.reduce(function (sum, item) { return sum + Number(item.count || 0); }, 0);
+                var max = Math.max.apply(Math, widget.items.map(function (item) { return Number(item.count || 0); }).concat([1]));
+
+                return '' +
+                    '<div class="d-flex flex-column gap-3 flex-grow-1">' +
+                        '<div class="wb-mini-summary">' +
+                            '<strong>' + formatNumber(total) + '</strong>' +
+                            '<span>Total Consumers</span>' +
+                        '</div>' +
+                        '<div class="wb-dept-grid wb-dept-grid-compact">' +
+                            widget.items.map(function (item) {
+                                var width = Math.max(4, Math.round((Number(item.count || 0) * 100) / max));
+                                return '' +
+                                    '<div class="wb-bar-row">' +
+                                        '<div class="wb-bar-copy">' +
+                                            '<span>' + escapeHtml(item.label || '') + '</span>' +
+                                            '<strong>' + escapeHtml(String(Number(item.percentage || 0).toFixed(1)).replace('.0', '')) + '%</strong>' +
+                                        '</div>' +
+                                        '<div class="wb-bar-track">' +
+                                            '<div class="wb-bar-fill" style="width:' + width + '%;background:' + escapeHtml(item.color || '#2563eb') + '"></div>' +
+                                        '</div>' +
+                                        '<div class="wb-bar-meta">' + formatNumber(item.count || 0) + ' consumers</div>' +
+                                    '</div>';
+                            }).join('') +
+                        '</div>' +
+                    '</div>';
+            }
+
+            function renderPaymentWidget(widget) {
+                if (!widget || !widget.items || !widget.items.length) {
+                    return '<div class="wb-widget-shell-empty">No collection data available.</div>';
+                }
+
+                var total = widget.items.reduce(function (sum, item) { return sum + Number(item.amount || 0); }, 0);
+                var labels = widget.items.map(function (item) { return item.label; });
+                var values = widget.items.map(function (item) { return Number(item.amount || 0); });
+                var colors = widget.items.map(function (item) { return item.color; });
+                var legend = buildDonutLegend(widget.items, total, function (item) { return item.amount; }, function (item, amount) {
+                    return formatCompactCurrency(amount);
+                });
+
+                return '' +
+                    '<div class="d-flex flex-column gap-3 flex-grow-1">' +
+                        '<div class="wb-donut-wrap">' +
+                            '<div class="wb-donut-inner">' +
+                                '<div class="wb-chart-wrap wb-chart-wrap-no-center">' +
+                                    '<canvas id="paymentCollectionChart"></canvas>' +
+                                '</div>' +
+                                '<div class="wb-donut-legend w-100">' + legend + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="row g-2">' +
+                            '<div class="col-12">' +
+                                '<div class="wb-summary-tile">' +
+                                    '<span>Total Collection</span>' +
+                                    '<strong>' + formatCompactCurrency(total) + '</strong>' +
+                                '</div>' +
+                            '</div>' +
+                            widget.items.map(function (item) {
+                                return '' +
+                                    '<div class="col-12 col-sm-6">' +
+                                        '<div class="wb-summary-tile">' +
+                                            '<span>' + escapeHtml(item.label || '') + '</span>' +
+                                            '<strong>' + formatCompactCurrency(item.amount || 0) + '</strong>' +
+                                            '<small>' + escapeHtml(String(Number(item.percentage || 0).toFixed(1)).replace('.0', '')) + '%</small>' +
+                                        '</div>' +
+                                    '</div>';
+                            }).join('') +
+                        '</div>' +
+                    '</div>';
+            }
+
+            function renderDefaulterWidget(widget) {
+                if (!widget) {
+                    return '<div class="wb-widget-shell-empty">No defaulter data available.</div>';
+                }
+
+                var labels = ['Defaulters', 'Non-Defaulters'];
+                var values = [Number(widget.consumerCount || 0), Number(widget.nonDefaulterCount || 0)];
+                var colors = ['#dc2626', '#16a34a'];
+                var total = Number(widget.totalConsumers || 0);
+                var defPct = total > 0 ? Math.round((values[0] * 1000) / total) / 10 : 0;
+                var nonPct = total > 0 ? Math.round((values[1] * 1000) / total) / 10 : 0;
+
+                return '' +
+                    '<div class="d-flex flex-column gap-3">' +
+                        '<form method="get" class="wb-inline-filter">' +
+                            '<label for="defaulterThreshold" class="form-label mb-1">One-time threshold</label>' +
+                            '<div class="d-flex gap-2">' +
+                                '<input type="number" step="0.01" min="0" class="form-control form-control-sm" id="defaulterThreshold" name="defaulterThreshold" value="' + escapeHtml(Number(widget.thresholdAmount || 0).toString()) + '" />' +
+                                '<button type="submit" class="btn btn-primary btn-sm">Apply</button>' +
+                            '</div>' +
+                        '</form>' +
+                        '<div class="wb-donut-wrap">' +
+                            '<div class="wb-donut-inner">' +
+                                '<div class="wb-chart-wrap">' +
+                                    '<canvas id="defaulterChart"></canvas>' +
+                                    '<div class="wb-chart-center">' +
+                                        '<strong>' + escapeHtml(String(defPct).replace('.0', '')) + '%</strong>' +
+                                        '<span>Defaulter Share</span>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="wb-donut-legend w-100">' +
+                                    '<div class="wb-donut-row"><span class="wb-dot" style="background:#dc2626"></span><div><div class="wb-donut-lbl">Defaulters</div><small class="text-muted">' + formatNumber(values[0]) + ' (' + escapeHtml(String(defPct).replace('.0', '')) + '%)</small></div></div>' +
+                                    '<div class="wb-donut-row"><span class="wb-dot" style="background:#16a34a"></span><div><div class="wb-donut-lbl">Non-Defaulters</div><small class="text-muted">' + formatNumber(values[1]) + ' (' + escapeHtml(String(nonPct).replace('.0', '')) + '%)</small></div></div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="wb-widget-summary-grid two-up mt-3">' +
+                            '<div class="wb-mini-summary"><span>Total Defaulters</span><strong>' + formatNumber(widget.consumerCount || 0) + '</strong></div>' +
+                            '<div class="wb-mini-summary"><span>Total Non-Defaulters</span><strong>' + formatNumber(widget.nonDefaulterCount || 0) + '</strong></div>' +
+                        '</div>' +
+                        '<div class="d-flex justify-content-between align-items-start border rounded-3 px-3 py-2">' +
+                            '<div>' +
+                                '<div class="fw-semibold">Total Outstanding</div>' +
+                                '<small class="text-muted">Across all consumers above threshold</small>' +
+                            '</div>' +
+                            '<strong>' + formatCompactCurrency(widget.totalOutstandingAmount || 0) + '</strong>' +
+                        '</div>' +
+                        '<div class="d-flex justify-content-between align-items-start border rounded-3 px-3 py-2">' +
+                            '<div>' +
+                                '<div class="fw-semibold">Threshold Used</div>' +
+                                '<small class="text-muted">Temporary dashboard view value</small>' +
+                            '</div>' +
+                            '<strong>' + formatCompactCurrency(widget.thresholdAmount || 0) + '</strong>' +
+                        '</div>' +
+                    '</div>';
+            }
+
+            function renderWorkloadWidget(widget) {
+                if (!widget || !widget.items || !widget.items.length) {
+                    return '<div class="wb-widget-shell-empty">No workflow data available.</div>';
+                }
+
+                var max = Math.max.apply(Math, widget.items.map(function (x) { return Number(x.value || 0); }).concat([1]));
+                return '<div class="wb-dept-grid wb-dept-grid-compact">' + widget.items.map(function (item) {
+                    var width = Math.max(4, Math.round((Number(item.value || 0) * 100) / max));
+                    return '' +
+                        '<a class="wb-bar-row text-decoration-none" href="' + escapeHtml(item.url || '#') + '">' +
+                            '<div class="wb-bar-copy"><span>' + escapeHtml(item.label || '') + '</span><strong>' + formatNumber(item.value || 0) + '</strong></div>' +
+                            '<div class="wb-bar-track"><div class="wb-bar-fill" style="width:' + width + '%;background:' + escapeHtml(item.color || '#2563eb') + '"></div></div>' +
+                        '</a>';
+                }).join('') + '</div>';
+            }
+
+            function renderTrendWidget(widget) {
+                if (!widget || !widget.points || !widget.points.length) {
+                    return '<div class="wb-widget-shell-empty">No trend data available.</div>';
+                }
+
+                var max = Math.max.apply(Math, widget.points.map(function (x) {
+                    return Math.max(Number(x.primaryValue || 0), Number(x.secondaryValue || 0));
+                }).concat([1]));
+
+                return '<div class="wb-trend-chart">' + widget.points.map(function (point) {
+                    var pHeight = Math.max(4, Math.round((Number(point.primaryValue || 0) * 100) / max));
+                    var sHeight = Math.max(4, Math.round((Number(point.secondaryValue || 0) * 100) / max));
+                    return '' +
+                        '<div class="wb-trend-col">' +
+                            '<div class="wb-trend-bars">' +
+                                '<div class="wb-trend-bar wb-p" style="height:' + pHeight + '%"></div>' +
+                                '<div class="wb-trend-bar wb-s" style="height:' + sHeight + '%"></div>' +
+                            '</div>' +
+                            '<div class="wb-trend-vals"><span>' + formatNumber(point.primaryValue || 0) + '</span><span>' + formatNumber(point.secondaryValue || 0) + '</span></div>' +
+                            '<div class="wb-trend-lbl">' + escapeHtml(point.label || '') + '</div>' +
+                        '</div>';
+                }).join('') + '</div>';
+            }
+
+            function renderServiceDeskWidget(widget) {
+                if (!widget || !widget.groups || !widget.groups.length) {
+                    return '<div class="wb-widget-shell-empty">No query data available.</div>';
+                }
+
+                var html = '<div class="d-flex flex-column gap-2">';
+                widget.groups.forEach(function (grp) {
+                    html += '<div class="wb-summary-tile">' +
+                        '<strong>' + escapeHtml(grp.label || '') + '</strong>';
+                    (grp.items || []).forEach(function (item) {
+                        html += '<a class="wb-qrow wb-qrow-' + escapeHtml((item.tone || 'secondary').toLowerCase()) + '" href="' + escapeHtml(item.url || '#') + '">' +
+                            '<div class="d-flex align-items-center gap-2"><span class="wb-qrow-accent"></span><span class="wb-qrow-label">' + escapeHtml(item.label || '') + '</span></div>' +
+                            '<strong class="wb-qrow-count">' + formatNumber(item.value || 0) + '</strong>' +
+                        '</a>';
+                    });
+                    html += '</div>';
+                });
+                html += '</div>';
+                return html;
+            }
+
+            function renderAdminWidgets(bundle) {
+                var division = document.querySelector('[data-admin-widget-target="division"]');
+                var payment = document.querySelector('[data-admin-widget-target="payment"]');
+                var defaulter = document.querySelector('[data-admin-widget-target="defaulter"]');
+                var workload = document.querySelector('[data-admin-widget-target="workload"]');
+                var trend = document.querySelector('[data-admin-widget-target="trend"]');
+                var serviceDesk = document.querySelector('[data-admin-widget-target="service-desk"]');
+
+                if (division) {
+                    division.outerHTML = renderDivisionWidget(bundle.divisionConsumerChart);
+                }
+                if (payment) {
+                    payment.outerHTML = renderPaymentWidget(bundle.paymentCollectionChart);
+                    if (bundle.paymentCollectionChart) {
+                        initChart('paymentCollectionChart', {
+                            labels: (bundle.paymentCollectionChart.items || []).map(function (item) { return item.label; }),
+                            values: (bundle.paymentCollectionChart.items || []).map(function (item) { return Number(item.amount || 0); }),
+                            colors: (bundle.paymentCollectionChart.items || []).map(function (item) { return item.color; }),
+                            chartType: 'pie',
+                            type: 'amount'
+                        });
+                    }
+                }
+                if (defaulter) {
+                    defaulter.outerHTML = renderDefaulterWidget(bundle.defaulterWidget);
+                    if (bundle.defaulterWidget) {
+                        initChart('defaulterChart', {
+                            labels: ['Defaulters', 'Non-Defaulters'],
+                            values: [
+                                Number(bundle.defaulterWidget.consumerCount || 0),
+                                Number(bundle.defaulterWidget.nonDefaulterCount || 0)
+                            ],
+                            colors: ['#dc2626', '#16a34a'],
+                            chartType: 'doughnut',
+                            cutout: '72%',
+                            rotation: -90,
+                            circumference: 180
+                        });
+                    }
+                }
+                if (workload) {
+                    workload.outerHTML = renderWorkloadWidget(bundle.secondaryBarChart);
+                }
+                if (trend) {
+                    trend.outerHTML = renderTrendWidget(bundle.trendChart);
+                }
+                if (serviceDesk) {
+                    serviceDesk.outerHTML = renderServiceDeskWidget(bundle.serviceDeskPanel);
+                }
+            }
+
+            function loadAdminWidgets() {
+                var targets = document.querySelectorAll('[data-admin-widget]');
+                if (!targets.length) return;
+
+                var url = new URL('/Dashboard/AdminWidgets', window.location.origin);
+                var threshold = getQueryValue('defaulterThreshold');
+                if (threshold) url.searchParams.set('defaulterThreshold', threshold);
+
+                fetch(url.toString(), { credentials: 'same-origin' })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('Dashboard widget request failed');
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        renderAdminWidgets(data || {});
+                    })
+                    .catch(function () {
+                        targets.forEach(function (target) {
+                            var shell = target.querySelector('[data-admin-widget-target]');
+                            if (shell) {
+                                shell.innerHTML = '<div class="wb-widget-shell-empty">Unable to load widget.</div>';
+                            }
+                        });
+                    });
+            }
+
+            function scheduleLazyLoad(action) {
+                if (typeof window.requestIdleCallback === 'function') {
+                    window.requestIdleCallback(action, { timeout: 900 });
+                    return;
+                }
+
+                window.setTimeout(action, 180);
+            }
+
+            function renderRecentApplications(rows) {
+                rows = rows || [];
+                if (!rows.length) {
+                    return '<div class="wb-empty">No recent applications found.</div>';
+                }
+
+                var html = '<div class="table-responsive"><table class="table wb-table align-middle mb-0"><thead><tr><th>Type</th><th>Application No</th><th>Applicant</th><th>Status</th><th>Received</th></tr></thead><tbody>';
+                rows.forEach(function (r) {
+                    html += '<tr>' +
+                        '<td><span class="wb-type-badge">' + escapeHtml(r.type || '') + '</span></td>' +
+                        '<td>' + (r.url ? '<a class="wb-link" href="' + escapeHtml(r.url) + '">' + escapeHtml(r.applicationNo || '') + '</a>' : '<span>' + escapeHtml(r.applicationNo || '') + '</span>') + '</td>' +
+                        '<td><div class="fw-semibold">' + escapeHtml(r.applicantName || '') + '</div><small class="text-muted">' + escapeHtml(r.property || '') + '</small></td>' +
+                        '<td><span class="badge ' + toneClass(r.statusTone || toneFromStatus(r.status)) + '">' + escapeHtml(r.status || '') + '</span></td>' +
+                        '<td>' + escapeHtml(shortDate(r.createdOn)) + '</td>' +
+                    '</tr>';
+                });
+                html += '</tbody></table></div>';
+                return html;
+            }
+
+            function renderRecentActivity(rows) {
+                rows = rows || [];
+                if (!rows.length) {
+                    return '<div class="wb-empty">No recent activity found.</div>';
+                }
+
+                var html = '<div class="table-responsive"><table class="table wb-table align-middle mb-0"><thead><tr><th>Action</th><th>Module</th><th>User</th><th>Result</th><th>Time</th></tr></thead><tbody>';
+                rows.forEach(function (r) {
+                    html += '<tr>' +
+                        '<td>' + escapeHtml(r.action || '') + '</td>' +
+                        '<td>' + escapeHtml(r.module || '') + '</td>' +
+                        '<td>' + escapeHtml(r.username || '-') + '</td>' +
+                        '<td><span class="badge ' + (r.success ? 'wb-badge-success' : 'wb-badge-danger') + '">' + (r.success ? 'Success' : 'Failed') + '</span></td>' +
+                        '<td>' + escapeHtml(formatDate(r.occurredOn)) + '</td>' +
+                    '</tr>';
+                });
+                html += '</tbody></table></div>';
+                return html;
+            }
+
+            function renderRecentQueries(rows) {
+                rows = rows || [];
+                if (!rows.length) {
+                    return '<div class="wb-empty">No recent queries found.</div>';
+                }
+
+                var html = '<div class="table-responsive"><table class="table wb-table align-middle mb-0"><thead><tr><th>Reference</th><th>Consumer</th><th>Subject</th><th>Status</th><th>Created</th></tr></thead><tbody>';
+                rows.forEach(function (r) {
+                    html += '<tr>' +
+                        '<td>' + (r.url ? '<a class="wb-link" href="' + escapeHtml(r.url) + '">' + escapeHtml(r.referenceNo || '') + '</a>' : escapeHtml(r.referenceNo || '')) + '</td>' +
+                        '<td>' + escapeHtml(r.consumerName || '-') + '</td>' +
+                        '<td>' + escapeHtml(r.subject || '') + '</td>' +
+                        '<td><span class="badge ' + toneClass(r.statusTone || toneFromStatus(r.status)) + '">' + escapeHtml(r.status || '') + '</span></td>' +
+                        '<td>' + escapeHtml(shortDate(r.createdOn)) + '</td>' +
+                    '</tr>';
+                });
+                html += '</tbody></table></div>';
+                return html;
+            }
+
+            function renderRecentChallans(rows) {
+                rows = rows || [];
+                if (!rows.length) {
+                    return '<div class="wb-empty">No recent challans found.</div>';
+                }
+
+                var html = '<div class="table-responsive"><table class="table wb-table align-middle mb-0"><thead><tr><th>Challan No</th><th>Consumer</th><th>Purpose</th><th>Amount</th><th>Status</th></tr></thead><tbody>';
+                rows.forEach(function (r) {
+                    html += '<tr>' +
+                        '<td>' + (r.url ? '<a class="wb-link" href="' + escapeHtml(r.url) + '">' + escapeHtml(r.challanNo || '') + '</a>' : escapeHtml(r.challanNo || '')) + '</td>' +
+                        '<td>' + escapeHtml(r.consumerNo || '-') + '</td>' +
+                        '<td>' + escapeHtml(r.purpose || '') + '</td>' +
+                        '<td>' + escapeHtml(formatCompactCurrency(r.amount || 0)) + '</td>' +
+                        '<td><span class="badge ' + toneClass(r.statusTone || toneFromStatus(r.status)) + '">' + escapeHtml(r.status || '') + '</span></td>' +
+                    '</tr>';
+                });
+                html += '</tbody></table></div>';
+                return html;
+            }
+
+            function renderApprovalQueue(rows) {
+                rows = rows || [];
+                if (!rows.length) {
+                    return '<div class="wb-empty">No pending approvals found.</div>';
+                }
+
+                var html = '<div class="table-responsive"><table class="table wb-table align-middle mb-0"><thead><tr><th>Application No</th><th>Applicant</th><th>Stage</th><th>Assigned To</th><th>Age</th></tr></thead><tbody>';
+                rows.forEach(function (r) {
+                    html += '<tr>' +
+                        '<td>' + (r.url ? '<a class="wb-link" href="' + escapeHtml(r.url) + '">' + escapeHtml(r.applicationNo || '') + '</a>' : escapeHtml(r.applicationNo || '')) + '</td>' +
+                        '<td>' + escapeHtml(r.applicantName || '-') + '</td>' +
+                        '<td>' + escapeHtml(r.stageName || '') + '</td>' +
+                        '<td>' + escapeHtml(r.assignedTo || '-') + '</td>' +
+                        '<td><span class="badge wb-badge-warning">' + escapeHtml(String(r.daysSinceAssigned || 0)) + ' day(s)</span></td>' +
+                    '</tr>';
+                });
+                html += '</tbody></table></div>';
+                return html;
+            }
+
+            function loadDashboardPanel(panel) {
+                if (!panel || panel.getAttribute('data-loaded') === 'true') return Promise.resolve();
+
+                var endpoint = panel.getAttribute('data-endpoint');
+                var container = panel.querySelector('[data-dashboard-content]');
+                if (!endpoint || !container) return Promise.resolve();
+
+                container.innerHTML = '<div class="wb-dashboard-loading">Loading...</div>';
+
+                return fetch(endpoint, { credentials: 'same-origin' })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('Dashboard tab request failed');
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        var html = '';
+                        var key = panel.getAttribute('data-dashboard-panel');
+                        if (key === 'recent-activity') html = renderRecentActivity(data || []);
+                        else if (key === 'recent-queries') html = renderRecentQueries(data || []);
+                        else if (key === 'recent-challans') html = renderRecentChallans(data || []);
+                        else if (key === 'current-approval-queue') html = renderApprovalQueue(data || []);
+                        else if (key === 'recent-applications') html = renderRecentApplications(data || []);
+                        container.innerHTML = html;
+                        panel.setAttribute('data-loaded', 'true');
+                    })
+                    .catch(function () {
+                        container.innerHTML = '<div class="wb-widget-shell-empty">Unable to load dashboard section.</div>';
+                    });
             }
 
             function initDashboardTabs() {
@@ -1403,6 +1616,13 @@
                             panel.classList.toggle('is-active', active);
                             panel.hidden = !active;
                         });
+
+                        var activePanel = panels.find(function (panel) {
+                            return panel.getAttribute('data-dashboard-panel') === key;
+                        });
+                        if (activePanel) {
+                            loadDashboardPanel(activePanel);
+                        }
                     });
                 });
             }
@@ -1410,9 +1630,8 @@
             document.addEventListener('DOMContentLoaded', function () {
                 initChart('appStatusChart', window._appStatusData);
                 initChart('challanStatusChart', window._challanStatusData);
-                initChart('paymentCollectionChart', window._paymentCollectionData);
-                initChart('defaulterChart', window._defaulterData);
                 initDashboardTabs();
+                scheduleLazyLoad(loadAdminWidgets);
             });
         })();
     </script>

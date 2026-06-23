@@ -1,7 +1,6 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
@@ -18,7 +17,7 @@ public class CommunicationService : ICommunicationService
     private readonly ISmsSender _smsSender;
     private readonly IWhatsAppSender _whatsAppSender;
     private readonly IInAppNotificationSender _inAppSender;
-    private readonly IConfiguration _configuration;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly ILogger<CommunicationService> _logger;
 
     public CommunicationService(
@@ -28,7 +27,7 @@ public class CommunicationService : ICommunicationService
         ISmsSender smsSender,
         IWhatsAppSender whatsAppSender,
         IInAppNotificationSender inAppSender,
-        IConfiguration configuration,
+        ICommunicationConfigurationService communicationConfigurationService,
         ILogger<CommunicationService> logger)
     {
         _db = db;
@@ -37,7 +36,7 @@ public class CommunicationService : ICommunicationService
         _smsSender = smsSender;
         _whatsAppSender = whatsAppSender;
         _inAppSender = inAppSender;
-        _configuration = configuration;
+        _communicationConfigurationService = communicationConfigurationService;
         _logger = logger;
     }
 
@@ -117,7 +116,7 @@ public class CommunicationService : ICommunicationService
         {
             if (string.IsNullOrWhiteSpace(recipient.Email))
                 return CommunicationSendResult.Skipped("Recipient email is not available.");
-            return await _emailSender.SendAsync(recipient.Email, recipient.Name, subject, ApplyEmailLayout(subject, body), ct);
+            return await _emailSender.SendAsync(recipient.Email, recipient.Name, subject, await ApplyEmailLayoutAsync(subject, body, ct), ct);
         }
 
         if (channel == CommunicationChannels.Sms)
@@ -140,7 +139,7 @@ public class CommunicationService : ICommunicationService
         return CommunicationSendResult.Skipped($"Channel '{channel}' is not supported.");
     }
 
-    private string ApplyEmailLayout(string title, string body)
+    private async Task<string> ApplyEmailLayoutAsync(string title, string body, CancellationToken ct)
     {
         var layoutPath = Path.Combine(AppContext.BaseDirectory, "EmailTemplates", "DefaultEmailLayout.html");
         if (!File.Exists(layoutPath))
@@ -150,10 +149,23 @@ public class CommunicationService : ICommunicationService
             return body;
 
         var layout = File.ReadAllText(layoutPath);
+        var footerText = await GetEmailFooterTextAsync(ct);
         return layout
             .Replace("{{EmailTitle}}", WebUtility.HtmlEncode(title))
             .Replace("{{EmailBody}}", body)
-            .Replace("{{FooterText}}", _configuration["Communication:Email:FooterText"] ?? "This is an automated message from Noida Water Billing System.");
+            .Replace("{{FooterText}}", footerText);
+    }
+
+    private async Task<string> GetEmailFooterTextAsync(CancellationToken ct)
+    {
+        try
+        {
+            return (await _communicationConfigurationService.GetEmailSettingsAsync(ct)).FooterText;
+        }
+        catch
+        {
+            return "This is an automated message from Noida Water Billing System.";
+        }
     }
 
     private async Task LogAsync(string purposeKey, string channel, NotificationRecipient recipient, int? templateId, string? externalTemplateId, string? subject, string? body, string status, string? error, string? referenceType, string? referenceId, string? referenceNo, DateTime createdAt, CancellationToken ct)

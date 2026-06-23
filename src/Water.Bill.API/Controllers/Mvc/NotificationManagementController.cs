@@ -3,7 +3,6 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.NotificationManagement;
@@ -21,20 +20,20 @@ public class NotificationManagementController : Controller
     private readonly ApplicationDbContext _db;
     private readonly INotificationDispatchService _dispatch;
     private readonly IEmailSender _emailSender;
-    private readonly IConfiguration _configuration;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly ILogger<NotificationManagementController> _logger;
 
     public NotificationManagementController(
         ApplicationDbContext db,
         INotificationDispatchService dispatch,
         IEmailSender emailSender,
-        IConfiguration configuration,
+        ICommunicationConfigurationService communicationConfigurationService,
         ILogger<NotificationManagementController> logger)
     {
         _db = db;
         _dispatch = dispatch;
         _emailSender = emailSender;
-        _configuration = configuration;
+        _communicationConfigurationService = communicationConfigurationService;
         _logger = logger;
     }
 
@@ -196,11 +195,11 @@ public class NotificationManagementController : Controller
     }
 
     [HttpGet]
-    public IActionResult TestEmail()
+    public async Task<IActionResult> TestEmail()
     {
         ViewData["Title"] = "Test Email";
         ViewData["ActiveMenu"] = "Notification Management";
-        return View(BuildEmailTestViewModel(new EmailTestViewModel()));
+        return View(await BuildEmailTestViewModelAsync(new EmailTestViewModel()));
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -208,7 +207,7 @@ public class NotificationManagementController : Controller
     {
         ViewData["Title"] = "Test Email";
         ViewData["ActiveMenu"] = "Notification Management";
-        model = BuildEmailTestViewModel(model);
+        model = await BuildEmailTestViewModelAsync(model, ct);
 
         if (!ModelState.IsValid)
             return View(model);
@@ -500,16 +499,16 @@ public class NotificationManagementController : Controller
         return vm;
     }
 
-    private EmailTestViewModel BuildEmailTestViewModel(EmailTestViewModel vm)
+    private async Task<EmailTestViewModel> BuildEmailTestViewModelAsync(EmailTestViewModel vm, CancellationToken ct = default)
     {
-        var section = _configuration.GetSection("Communication:Email");
-        vm.Provider = section["Provider"] ?? string.Empty;
-        vm.Host = section["Host"] ?? string.Empty;
-        vm.Port = int.TryParse(section["Port"], out var port) ? port : 587;
-        vm.EnableSsl = bool.TryParse(section["EnableSsl"], out var enableSsl) && enableSsl;
-        vm.FromEmail = section["FromEmail"] ?? string.Empty;
-        vm.UsernameConfigured = !string.IsNullOrWhiteSpace(section["Username"]);
-        vm.PasswordConfigured = !string.IsNullOrWhiteSpace(section["Password"]);
+        var settings = await _communicationConfigurationService.GetEmailSettingsAsync(ct);
+        vm.Provider = settings.Provider ?? string.Empty;
+        vm.Host = settings.Host ?? string.Empty;
+        vm.Port = settings.Port;
+        vm.EnableSsl = settings.EnableSsl;
+        vm.FromEmail = settings.FromEmail ?? string.Empty;
+        vm.UsernameConfigured = !string.IsNullOrWhiteSpace(settings.Username);
+        vm.PasswordConfigured = !string.IsNullOrWhiteSpace(settings.Password);
         return vm;
     }
 

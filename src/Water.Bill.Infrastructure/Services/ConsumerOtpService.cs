@@ -1,9 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.DTOs.Consumer;
+using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -21,23 +20,28 @@ public class ConsumerOtpService : IConsumerOtpService
 
     private readonly ApplicationDbContext _db;
     private readonly ICommunicationService _communicationService;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
+    private readonly IPimsConsumerInfoService _pimsConsumerInfoService;
     private readonly IOtpThrottleService _otpThrottleService;
-    private readonly string? _configuredDefaultOtp;
 
     public ConsumerOtpService(
         ApplicationDbContext db,
         ICommunicationService communicationService,
-        IConfiguration configuration,
+        IPimsConsumerInfoService pimsConsumerInfoService,
+        ICommunicationConfigurationService communicationConfigurationService,
         IOtpThrottleService otpThrottleService)
     {
         _db = db;
         _communicationService = communicationService;
+        _pimsConsumerInfoService = pimsConsumerInfoService;
+        _communicationConfigurationService = communicationConfigurationService;
         _otpThrottleService = otpThrottleService;
-        _configuredDefaultOtp = NormalizeConfiguredOtp(configuration["Communication:Sms:DefaultOtp"])
-            ?? NormalizeConfiguredOtp(configuration["Sms:Otp:DefaultOtp"]);
     }
 
     public async Task<ConsumerOtpRequestResult> RequestOtpAsync(string consumerNo, CancellationToken ct = default)
+        => await RequestOtpAsync(consumerNo, false, ct);
+
+    public async Task<ConsumerOtpRequestResult> RequestOtpAsync(string consumerNo, bool usePimsMobileLookup, CancellationToken ct = default)
     {
         var normalizedConsumerNo = NormalizeConsumerNo(consumerNo);
         if (string.IsNullOrWhiteSpace(normalizedConsumerNo))
@@ -51,6 +55,22 @@ public class ConsumerOtpService : IConsumerOtpService
 
         if (!IsActiveConsumer(consumer))
             throw new InvalidOperationException("Consumer is not active.");
+
+        if (usePimsMobileLookup)
+        {
+            var rid = consumer.Rid.GetValueOrDefault();
+            if (rid <= 0)
+                throw new InvalidOperationException("RID was not found for this Consumer Number. Please contact the Authority.");
+
+            var contact = await _pimsConsumerInfoService.GetDetailsByRidAsync(rid, ct);
+            var pimsMobile = NormalizeMobileNo(contact.MobileNo);
+            if (string.IsNullOrWhiteSpace(pimsMobile))
+                throw new InvalidOperationException("Mobile number is not registered for this consumer. Please contact the Authority.");
+
+            consumer.MobNo = pimsMobile;
+            if (!string.IsNullOrWhiteSpace(contact.Email))
+                consumer.EmailId = contact.Email;
+        }
 
         return await RequestOtpForConsumerAsync(consumer, ct);
     }
@@ -120,7 +140,8 @@ public class ConsumerOtpService : IConsumerOtpService
             activeOtp.IsActive = false;
         }
 
-        var otp = _configuredDefaultOtp ?? GenerateOtp();
+        var smsSettings = await _communicationConfigurationService.GetSmsSettingsAsync(ct);
+        var otp = NormalizeConfiguredOtp(smsSettings.DefaultOtp) ?? GenerateOtp();
         var salt = GenerateSalt();
         var expiresAt = now.AddMinutes(OtpExpiryMinutes);
 

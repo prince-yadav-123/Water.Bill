@@ -5,20 +5,20 @@ namespace Water.Bill.Infrastructure.Services;
 
 public class WhatsAppSender : IWhatsAppSender
 {
-    private readonly IConfiguration _configuration;
+    private readonly ICommunicationConfigurationService _communicationConfigurationService;
 
-    public WhatsAppSender(IConfiguration configuration) => _configuration = configuration;
+    public WhatsAppSender(ICommunicationConfigurationService communicationConfigurationService)
+        => _communicationConfigurationService = communicationConfigurationService;
 
-    public Task<CommunicationSendResult> SendAsync(string mobileNo, string message, string? externalTemplateId, CancellationToken ct = default)
+    public async Task<CommunicationSendResult> SendAsync(string mobileNo, string message, string? externalTemplateId, CancellationToken ct = default)
     {
-        var section = _configuration.GetSection("Communication:WhatsApp");
-        var provider = section["Provider"];
-        var baseUrl = section["BaseUrl"];
-        var apiKey = section["ApiKey"];
-        if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(baseUrl) || string.IsNullOrWhiteSpace(apiKey))
-            return Task.FromResult(CommunicationSendResult.Skipped("WhatsApp provider is not configured."));
+        var settings = await _communicationConfigurationService.GetWhatsAppSettingsAsync(ct);
+        if (!settings.IsEnabled)
+            return CommunicationSendResult.Skipped("WhatsApp sending is disabled in configuration.");
 
-        return Task.FromResult(CommunicationSendResult.Skipped($"WhatsApp provider '{provider}' integration is pending."));
+        if (string.IsNullOrWhiteSpace(settings.Provider) || string.IsNullOrWhiteSpace(settings.BaseUrl) || string.IsNullOrWhiteSpace(settings.ApiKey))
+            return CommunicationSendResult.Skipped("WhatsApp provider is not configured.");
+
+        return CommunicationSendResult.Skipped($"WhatsApp provider '{settings.Provider}' integration is pending.");
     }
 }
-

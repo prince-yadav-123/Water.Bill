@@ -13,5 +13,6 @@ public enum AuditAction
     UserChanged = 9,
     RoleChanged = 10,
     MenuChanged = 11,
-    Delete = 12
+    Delete = 12,
+    CommunicationSettingsChanged = 13
 }
