@@ -10,7 +10,15 @@
             <h1>@Model.ApplicationNo</h1>
             <p>Application details and status timeline.</p>
         </div>
-        <a class="btn btn-outline-primary" asp-action="MyApplications">Back to Applications</a>
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+            @if (User?.Identity?.IsAuthenticated == true)
+            {
+                <a class="btn btn-outline-secondary" href="/Notifications" title="View notifications" aria-label="View notifications">
+                    &#128276; Notifications
+                </a>
+            }
+            <a class="btn btn-outline-primary" asp-action="MyApplications">Back to Applications</a>
+        </div>
     </div>
 
     @await Html.PartialAsync("~/Views/NewConnection/_NewConnectionDetailsCard.cshtml", Model)

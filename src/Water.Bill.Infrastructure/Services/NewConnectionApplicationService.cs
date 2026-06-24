@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.DTOs.NewConnection;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -36,12 +38,24 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
     private readonly ApplicationDbContext _db;
     private readonly IWorkflowService _workflowService;
     private readonly ICommunicationService _communicationService;
+    private readonly ITemplateRenderer _templateRenderer;
+    private readonly IErrorLogService _errorLogService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public NewConnectionApplicationService(ApplicationDbContext db, IWorkflowService workflowService, ICommunicationService communicationService)
+    public NewConnectionApplicationService(
+        ApplicationDbContext db,
+        IWorkflowService workflowService,
+        ICommunicationService communicationService,
+        ITemplateRenderer templateRenderer,
+        IErrorLogService errorLogService,
+        IHttpContextAccessor httpContextAccessor)
     {
         _db = db;
         _workflowService = workflowService;
         _communicationService = communicationService;
+        _templateRenderer = templateRenderer;
+        _errorLogService = errorLogService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<NewConnectionApplicationDetailsDto> SubmitAsync(NewConnectionSubmitRequest request, CancellationToken ct = default)
@@ -172,29 +186,17 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
 
             await transaction.CommitAsync(ct);
 
-            await _communicationService.SendAsync(
+            await SendApplicantCommunicationAsync(
                 CommunicationPurposes.NewConnectionSubmitted,
-                new NotificationRecipient
-                {
-                    Name = entity.ApplicantName,
-                    Email = entity.EmailId,
-                    Mobile = entity.MobileNumber,
-                    UserType = request.IsPublicApplication ? null : AppConstants.Roles.Consumer,
-                    UserId = request.SubmittedByConsumerUserId
-                },
-                new Dictionary<string, string?>
-                {
-                    ["ConsumerName"] = entity.ApplicantName,
-                    ["ApplicationNo"] = entity.ApplicationNo,
-                    ["Amount"] = entity.EstimationAmount?.ToString("0.00"),
-                    ["Status"] = entity.ApplicationStatus,
-                    ["Date"] = now.ToString("dd MMM yyyy")
-                },
-                NotificationChannelOptions.For(CommunicationChannels.InApp, CommunicationChannels.Email, CommunicationChannels.Sms),
-                "NewConnectionApplication",
-                entity.Id.ToString(),
-                entity.ApplicationNo,
-                ct: ct);
+                entity,
+                null,
+                "Application submitted successfully.",
+                remarks,
+                entity.SubmittedByConsumerNo,
+                now,
+                ct,
+                entity.EstimationAmount,
+                request.ActionByName);
 
             return await EnrichWorkflowProgressAsync(
                 (await GetDetailsQuery().FirstAsync(x => x.Id == entity.Id, ct))!,
@@ -863,32 +865,176 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             .OrderBy(x => x.AssignedOn)
             .ToListAsync(ct);
 
+        var histories = await _db.ApplicationWorkflowHistories
+            .AsNoTracking()
+            .Where(x => x.WorkflowInstanceId == instance.Id)
+            .OrderBy(x => x.ActionOn)
+            .ThenBy(x => x.Id)
+            .ToListAsync(ct);
+
         var taskByStage = tasks
             .GroupBy(x => x.StageId)
             .ToDictionary(x => x.Key, x => x.OrderByDescending(t => t.AssignedOn).First());
 
+        var assignedUserIds = tasks.Where(x => x.AssignedUserId.HasValue).Select(x => x.AssignedUserId!.Value).Distinct().ToList();
+        var assignedRoleIds = tasks.Where(x => x.AssignedRoleId.HasValue).Select(x => x.AssignedRoleId!.Value).Distinct().ToList();
+
+        var userNames = assignedUserIds.Count > 0
+            ? await _db.Appusers.AsNoTracking()
+                .Where(x => assignedUserIds.Contains(x.Id))
+                .ToDictionaryAsync(x => x.Id, x => x.FullName ?? x.Username, ct)
+            : new Dictionary<int, string>();
+
+        var roleNames = assignedRoleIds.Count > 0
+            ? await _db.Approles.AsNoTracking()
+                .Where(x => assignedRoleIds.Contains(x.Id))
+                .ToDictionaryAsync(x => x.Id, x => x.Name, ct)
+            : new Dictionary<int, string>();
+
+        var historyByStage = histories
+            .Where(x => x.StageId.HasValue)
+            .GroupBy(x => x.StageId!.Value)
+            .ToDictionary(
+                x => x.Key,
+                x => x.OrderByDescending(h => h.ActionOn).ThenByDescending(h => h.Id).First());
+
+        var currentStageOrder = stages.FirstOrDefault(x => x.Id == instance.CurrentStageId)?.StageOrder ?? int.MaxValue;
+        var isTerminal = IsTerminalStatus(details.ApplicationStatus);
+
         details.WorkflowStages = stages.Select(stage =>
         {
             taskByStage.TryGetValue(stage.Id, out var task);
-            var state = string.Equals(task?.Status, "Skipped", StringComparison.OrdinalIgnoreCase)
-                ? "Upcoming"
-                : stage.Id == instance.CurrentStageId && task?.Status == WorkflowService.TaskStatusPending
-                ? "Current"
-                : task?.Status ?? "Upcoming";
+            historyByStage.TryGetValue(stage.Id, out var history);
+
+            var isPendingStage = task is not null && string.Equals(task.Status, WorkflowService.TaskStatusPending, StringComparison.OrdinalIgnoreCase);
+            var state = ResolveStageState(
+                stage,
+                task,
+                history,
+                currentStageOrder,
+                isTerminal);
+
+            var assignedToName = ResolveAssignedToName(task, userNames, roleNames);
+            var assignedToRole = ResolveAssignedToRole(task, roleNames);
+            var actionType = isPendingStage ? null : ResolveStageActionType(task, history, state);
+            var actionByName = isPendingStage ? null : history?.ActionByName;
+            var actionByRole = isPendingStage ? null : history?.ActionByRole;
+            var remarks = isPendingStage ? null : history?.Remarks ?? task?.Remarks;
+            var actionOn = isPendingStage ? null : history?.ActionOn ?? task?.ActionOn;
 
             return new NewConnectionWorkflowStageDto
             {
                 StageOrder = stage.StageOrder,
                 StageName = stage.StageName,
                 State = state,
-                Remarks = task?.Remarks,
+                AssignedToName = assignedToName,
+                AssignedToRole = assignedToRole,
+                ActionType = actionType,
+                ActionByName = actionByName,
+                ActionByRole = actionByRole,
+                Remarks = remarks,
                 AssignedOn = task?.AssignedOn,
-                ActionOn = task?.ActionOn
+                ActionOn = actionOn
             };
         }).ToList();
 
         return details;
     }
+
+    private static bool IsTerminalStatus(string? status)
+        => string.Equals(status, StatusApproved, StringComparison.OrdinalIgnoreCase)
+        || string.Equals(status, StatusRejected, StringComparison.OrdinalIgnoreCase)
+        || string.Equals(status, StatusFinalConsumerCreated, StringComparison.OrdinalIgnoreCase);
+
+    private static string ResolveStageState(
+        WorkflowStage stage,
+        ApplicationWorkflowTask? task,
+        ApplicationWorkflowHistory? history,
+        int currentStageOrder,
+        bool isTerminal)
+    {
+        if (isTerminal && stage.StageOrder > currentStageOrder)
+            return "Not Required";
+
+        if (stage.StageOrder < currentStageOrder)
+            return "Completed";
+
+        if (stage.StageOrder > currentStageOrder)
+            return "Upcoming";
+
+        var latestStatus = task?.Status;
+        var latestAction = history?.Action;
+
+        if (string.Equals(latestStatus, WorkflowService.TaskStatusRejected, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionRejected, StringComparison.OrdinalIgnoreCase))
+            return "Rejected";
+
+        if (string.Equals(latestStatus, WorkflowService.TaskStatusSentBackToApplicant, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestStatus, WorkflowService.TaskStatusCorrectionRequired, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionSendBackToApplicant, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionCorrectionRequired, StringComparison.OrdinalIgnoreCase))
+            return "Action Required";
+
+        if (string.Equals(latestAction, WorkflowService.ActionFinalApproval, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionFinalConsumerCreated, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestStatus, WorkflowService.TaskStatusApproved, StringComparison.OrdinalIgnoreCase))
+            return stage.IsFinalStage || isTerminal ? "Final Approved" : "Completed";
+
+        if (string.Equals(latestStatus, WorkflowService.TaskStatusApproved, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionAcceptMoveNext, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionMoveNext, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionApproved, StringComparison.OrdinalIgnoreCase))
+            return "Completed";
+
+        if (string.Equals(latestStatus, WorkflowService.TaskStatusPending, StringComparison.OrdinalIgnoreCase))
+            return "Pending Action";
+
+        if (string.Equals(latestAction, WorkflowService.ActionStageAssigned, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(latestAction, WorkflowService.ActionWorkflowStarted, StringComparison.OrdinalIgnoreCase))
+            return "Pending Action";
+
+        return stage.IsFinalStage && isTerminal ? "Final Approved" : "Pending Action";
+    }
+
+    private static string? ResolveStageActionType(ApplicationWorkflowTask? task, ApplicationWorkflowHistory? history, string state)
+    {
+        var action = history?.Action;
+
+        return action switch
+        {
+            WorkflowService.ActionWorkflowStarted => "Started",
+            WorkflowService.ActionStageAssigned => "Assigned",
+            WorkflowService.ActionAcceptMoveNext or WorkflowService.ActionMoveNext or WorkflowService.ActionForwardToUser => "Forwarded to Next Stage",
+            WorkflowService.ActionApproved => "Stage Completed",
+            WorkflowService.ActionFinalApproval or WorkflowService.ActionFinalConsumerCreated => "Final Approved",
+            WorkflowService.ActionSendBackToApplicant or WorkflowService.ActionCorrectionRequired => "Sent Back for Correction",
+            WorkflowService.ActionSendBackToPrevious => "Returned to Previous Stage",
+            WorkflowService.ActionRejected => "Rejected",
+            _ when string.Equals(task?.Status, WorkflowService.TaskStatusPending, StringComparison.OrdinalIgnoreCase) => state,
+            _ => !string.IsNullOrWhiteSpace(action) ? action : state
+        };
+    }
+
+    private static string? ResolveAssignedToName(
+        ApplicationWorkflowTask? task,
+        IReadOnlyDictionary<int, string> userNames,
+        IReadOnlyDictionary<int, string> roleNames)
+    {
+        if (task?.AssignedUserId is int userId && userNames.TryGetValue(userId, out var userName))
+            return userName;
+
+        if (task?.AssignedRoleId is int roleId && roleNames.TryGetValue(roleId, out var roleName))
+            return roleName;
+
+        return null;
+    }
+
+    private static string? ResolveAssignedToRole(
+        ApplicationWorkflowTask? task,
+        IReadOnlyDictionary<int, string> roleNames)
+        => task?.AssignedRoleId is int roleId && roleNames.TryGetValue(roleId, out var roleName)
+            ? roleName
+            : null;
 
     private IQueryable<NewConnectionApplicationDetailsDto> GetDetailsQuery()
         => _db.NewConnectionApplications
@@ -1167,25 +1313,20 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             // In-App notification to the authority stage user(s)
             if (sentBackTask.Stage is not null)
             {
-                var notifTitle = "Application Resubmitted";
-                var notifMsg = $"Application {application.ApplicationNo} has been corrected and resubmitted by the applicant. Please review.";
+                var values = BuildWorkflowResubmittedTemplateValues(application.ApplicationNo, sentBackTask.Stage?.StageName, applicantRemarks, now);
 
                 if (sentBackTask.AssignedUserId.HasValue)
                 {
-                    _db.InAppNotifications.Add(new InAppNotification
-                    {
-                        UserType = "Internal",
-                        UserId = sentBackTask.AssignedUserId.Value,
-                        Title = notifTitle,
-                        Message = notifMsg,
-                        PurposeKey = "WorkflowResubmitted",
-                        ReferenceType = "NewConnectionApplication",
-                        ReferenceId = id.ToString(),
-                        ReferenceNo = application.ApplicationNo,
-                        RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
-                        IsRead = false,
-                        CreatedAt = now
-                    });
+                    var notification = await BuildTemplatedInAppNotificationAsync(
+                        userId: sentBackTask.AssignedUserId.Value,
+                        values: values,
+                        referenceId: id.ToString(),
+                        referenceNo: application.ApplicationNo,
+                        redirectUrl: $"/Approvals/Details/{sentBackTask.Id}",
+                        createdAt: now,
+                        ct: ct);
+                    if (notification is not null)
+                        _db.InAppNotifications.Add(notification);
                 }
                 else if (sentBackTask.AssignedRoleId.HasValue)
                 {
@@ -1197,20 +1338,16 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                     var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
                     foreach (var uid in uids)
                     {
-                        _db.InAppNotifications.Add(new InAppNotification
-                        {
-                            UserType = "Internal",
-                            UserId = uid,
-                            Title = notifTitle,
-                            Message = notifMsg,
-                            PurposeKey = "WorkflowResubmitted",
-                            ReferenceType = "NewConnectionApplication",
-                            ReferenceId = id.ToString(),
-                            ReferenceNo = application.ApplicationNo,
-                            RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
-                            IsRead = false,
-                            CreatedAt = now
-                        });
+                        var notification = await BuildTemplatedInAppNotificationAsync(
+                            userId: uid,
+                            values: values,
+                            referenceId: id.ToString(),
+                            referenceNo: application.ApplicationNo,
+                            redirectUrl: $"/Approvals/Details/{sentBackTask.Id}",
+                            createdAt: now,
+                            ct: ct);
+                        if (notification is not null)
+                            _db.InAppNotifications.Add(notification);
                     }
                 }
             }
@@ -1224,6 +1361,17 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
         }
 
         await _db.SaveChangesAsync(ct);
+
+        await SendApplicantCommunicationAsync(
+            CommunicationPurposes.NewConnectionResubmitted,
+            application,
+            sentBackTask?.Stage?.StageName,
+            "Your updated application has been resubmitted successfully and is back under review.",
+            applicantRemarks,
+            application.FinalConsumerNo,
+            now,
+            ct);
+
         return await GetConsumerApplicationDetailsAsync(id, consumerNo, consumerUserId, ct)
             ?? throw new InvalidOperationException("Application not found after resubmission.");
     }
@@ -1367,25 +1515,20 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             // InApp notification to authority stage user(s)
             if (sentBackTask.Stage is not null)
             {
-                var notifTitle = "Application Resubmitted (Public)";
-                var notifMsg = $"Public application {application.ApplicationNo} has been corrected and resubmitted. Please review.";
+                var values = BuildWorkflowResubmittedTemplateValues(application.ApplicationNo, sentBackTask.Stage?.StageName, applicantRemarks, now);
 
                 if (sentBackTask.AssignedUserId.HasValue)
                 {
-                    _db.InAppNotifications.Add(new InAppNotification
-                    {
-                        UserType = "Internal",
-                        UserId = sentBackTask.AssignedUserId.Value,
-                        Title = notifTitle,
-                        Message = notifMsg,
-                        PurposeKey = "WorkflowResubmitted",
-                        ReferenceType = "NewConnectionApplication",
-                        ReferenceId = id.ToString(),
-                        ReferenceNo = application.ApplicationNo,
-                        RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
-                        IsRead = false,
-                        CreatedAt = now
-                    });
+                    var notification = await BuildTemplatedInAppNotificationAsync(
+                        userId: sentBackTask.AssignedUserId.Value,
+                        values: values,
+                        referenceId: id.ToString(),
+                        referenceNo: application.ApplicationNo,
+                        redirectUrl: $"/Approvals/Details/{sentBackTask.Id}",
+                        createdAt: now,
+                        ct: ct);
+                    if (notification is not null)
+                        _db.InAppNotifications.Add(notification);
                 }
                 else if (sentBackTask.AssignedRoleId.HasValue)
                 {
@@ -1397,20 +1540,16 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                     var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
                     foreach (var uid in uids)
                     {
-                        _db.InAppNotifications.Add(new InAppNotification
-                        {
-                            UserType = "Internal",
-                            UserId = uid,
-                            Title = notifTitle,
-                            Message = notifMsg,
-                            PurposeKey = "WorkflowResubmitted",
-                            ReferenceType = "NewConnectionApplication",
-                            ReferenceId = id.ToString(),
-                            ReferenceNo = application.ApplicationNo,
-                            RedirectUrl = $"/Approvals/Details/{sentBackTask.Id}",
-                            IsRead = false,
-                            CreatedAt = now
-                        });
+                        var notification = await BuildTemplatedInAppNotificationAsync(
+                            userId: uid,
+                            values: values,
+                            referenceId: id.ToString(),
+                            referenceNo: application.ApplicationNo,
+                            redirectUrl: $"/Approvals/Details/{sentBackTask.Id}",
+                            createdAt: now,
+                            ct: ct);
+                        if (notification is not null)
+                            _db.InAppNotifications.Add(notification);
                     }
                 }
             }
@@ -1423,8 +1562,254 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
         }
 
         await _db.SaveChangesAsync(ct);
+
+        await SendApplicantCommunicationAsync(
+            CommunicationPurposes.NewConnectionResubmitted,
+            application,
+            sentBackTask?.Stage?.StageName,
+            "Your updated application has been resubmitted successfully and is back under review.",
+            applicantRemarks,
+            application.FinalConsumerNo,
+            now,
+            ct);
+
         return await GetPublicApplicationDetailsAsync(id, mobileNumber, ct)
             ?? throw new InvalidOperationException("Application not found after resubmission.");
+    }
+
+    private async Task<InAppNotification?> BuildTemplatedInAppNotificationAsync(
+        long userId,
+        IReadOnlyDictionary<string, string?> values,
+        string referenceId,
+        string referenceNo,
+        string redirectUrl,
+        DateTime createdAt,
+        CancellationToken ct)
+    {
+        var template = await _db.CommunicationTemplates
+            .AsNoTracking()
+            .Where(x => x.PurposeKey == CommunicationPurposes.WorkflowResubmitted
+                && x.Channel == CommunicationChannels.InApp
+                && x.IsActive
+                && !x.IsDeleted)
+            .OrderByDescending(x => x.IsDefault)
+            .ThenByDescending(x => x.UpdatedAt ?? x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+
+        if (template is null)
+        {
+            await LogNotificationTemplateIssueAsync(
+                CommunicationPurposes.WorkflowResubmitted,
+                "Active in-app communication template was not found for workflow resubmission notification.",
+                referenceId,
+                referenceNo,
+                ct);
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(template.Body))
+        {
+            await LogNotificationTemplateIssueAsync(
+                CommunicationPurposes.WorkflowResubmitted,
+                "In-app communication template body is empty for workflow resubmission notification.",
+                referenceId,
+                referenceNo,
+                ct);
+            return null;
+        }
+
+        string title;
+        string message;
+        try
+        {
+            title = _templateRenderer.Render(template.Subject ?? template.TemplateName ?? CommunicationPurposes.WorkflowResubmitted, values);
+            message = _templateRenderer.Render(template.Body, values);
+        }
+        catch (Exception ex)
+        {
+            await LogNotificationTemplateIssueAsync(
+                CommunicationPurposes.WorkflowResubmitted,
+                $"Failed to render workflow resubmission notification template. {ex.Message}",
+                referenceId,
+                referenceNo,
+                ct);
+            return null;
+        }
+
+        return new InAppNotification
+        {
+            UserType = "Internal",
+            UserId = userId,
+            Title = title,
+            Message = message,
+            PurposeKey = CommunicationPurposes.WorkflowResubmitted,
+            ReferenceType = "NewConnectionApplication",
+            ReferenceId = referenceId,
+            ReferenceNo = referenceNo,
+            RedirectUrl = redirectUrl,
+            IsRead = false,
+            CreatedAt = createdAt
+        };
+    }
+
+    private async Task LogNotificationTemplateIssueAsync(
+        string purposeKey,
+        string message,
+        string? referenceId,
+        string? referenceNo,
+        CancellationToken ct)
+    {
+        await _errorLogService.TryLogAsync(new ErrorLogWriteModel
+        {
+            ExceptionType = "NotificationTemplateIssue",
+            Message = message,
+            RequestPath = "NewConnectionApplicationService/InAppNotification",
+            HttpMethod = "INTERNAL",
+            QueryString = $"referenceId={referenceId}&referenceNo={referenceNo}",
+            StatusCode = 500,
+            PortalType = "Admin",
+            ControllerName = "NewConnectionApplicationService",
+            ActionName = purposeKey,
+            TraceId = referenceNo ?? referenceId,
+            IsHandled = true
+        }, ct);
+    }
+
+    private static Dictionary<string, string?> BuildWorkflowResubmittedTemplateValues(
+        string applicationNo,
+        string? stageName,
+        string? remarks,
+        DateTime when)
+        => new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["ApplicationNo"] = applicationNo,
+            ["StageName"] = stageName,
+            ["Remarks"] = Normalize(remarks),
+            ["Date"] = when.ToString("dd MMM yyyy hh:mm tt")
+        };
+
+    private async Task SendApplicantCommunicationAsync(
+        string purposeKey,
+        NewConnectionApplication application,
+        string? stageName,
+        string? fallbackMessage,
+        string? remarks,
+        string? consumerNo,
+        DateTime when,
+        CancellationToken ct,
+        decimal? amount = null,
+        string? actionBy = null)
+    {
+        try
+        {
+            await _communicationService.SendAsync(
+                purposeKey,
+                BuildApplicantRecipient(application),
+                BuildApplicantNotificationValues(
+                    application,
+                    stageName,
+                    actionBy,
+                    remarks ?? fallbackMessage,
+                    consumerNo,
+                    application.ApplicationStatus,
+                    when,
+                    amount),
+                NotificationChannelOptions.For(
+                    CommunicationChannels.InApp,
+                    CommunicationChannels.Email,
+                    CommunicationChannels.Sms,
+                    CommunicationChannels.WhatsApp),
+                "NewConnectionApplication",
+                application.Id.ToString(),
+                application.ApplicationNo,
+                BuildApplicantPortalUrl(application),
+                ct);
+        }
+        catch (Exception ex)
+        {
+            await _errorLogService.TryLogAsync(new ErrorLogWriteModel
+            {
+                CreatedAt = when,
+                ExceptionType = "ApplicantNotificationDispatchException",
+                Message = $"Applicant notification dispatch failed for purpose {purposeKey}. {ex.Message}",
+                StackTrace = ex.ToString(),
+                RequestPath = "NewConnectionApplicationService/SendApplicantCommunication",
+                HttpMethod = "INTERNAL",
+                QueryString = $"purposeKey={purposeKey}&applicationNo={application.ApplicationNo}",
+                StatusCode = 500,
+                PortalType = application.IsPublicApplication ? AppConstants.PortalTypes.Public : AppConstants.PortalTypes.Consumer,
+                ControllerName = "NewConnectionApplicationService",
+                ActionName = purposeKey,
+                TraceId = application.ApplicationNo,
+                IsHandled = true
+            }, ct);
+        }
+    }
+
+    private Dictionary<string, string?> BuildApplicantNotificationValues(
+        NewConnectionApplication application,
+        string? stageName,
+        string? actionBy,
+        string? remarks,
+        string? consumerNo,
+        string applicationStatus,
+        DateTime when,
+        decimal? amount = null)
+        => new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["ApplicantName"] = application.ApplicantName,
+            ["ConsumerName"] = application.ApplicantName,
+            ["ApplicationNo"] = application.ApplicationNo,
+            ["ApplicationNumber"] = application.ApplicationNo,
+            ["ApplicationStatus"] = NormalizeApplicantStatusLabel(applicationStatus),
+            ["StageName"] = stageName,
+            ["ActionBy"] = actionBy,
+            ["ActionDate"] = when.ToString("dd MMM yyyy hh:mm tt"),
+            ["Date"] = when.ToString("dd MMM yyyy hh:mm tt"),
+            ["Remarks"] = Normalize(remarks),
+            ["ConsumerNumber"] = consumerNo,
+            ["ConsumerNo"] = consumerNo,
+            ["Amount"] = amount?.ToString("0.00"),
+            ["PortalUrl"] = BuildApplicantPortalUrl(application)
+        };
+
+    private static string NormalizeApplicantStatusLabel(string? status)
+        => status switch
+        {
+            StatusSubmitted => "Submitted",
+            StatusPendingPayment => "Payment Pending",
+            StatusPaymentFailed => "Payment Failed",
+            StatusFeePending => "Fee Pending",
+            StatusUnderReview => "Under Review",
+            StatusCorrectionRequired or WorkflowService.StatusSentBackToApplicant => "Action Required",
+            StatusApproved => "Approved",
+            StatusRejected => "Rejected",
+            StatusFinalConsumerCreated => "Final Consumer Created",
+            _ when string.IsNullOrWhiteSpace(status) => "Updated",
+            _ => status!
+        };
+
+    private static NotificationRecipient BuildApplicantRecipient(NewConnectionApplication application)
+        => new()
+        {
+            Name = application.ApplicantName,
+            Email = application.EmailId,
+            Mobile = application.MobileNumber,
+            UserType = application.SubmittedByConsumerUserId.HasValue ? AppConstants.Roles.Consumer : null,
+            UserId = application.SubmittedByConsumerUserId.HasValue ? application.SubmittedByConsumerUserId : null
+        };
+
+    private string BuildApplicantPortalUrl(NewConnectionApplication application)
+    {
+        var request = _httpContextAccessor.HttpContext?.Request;
+        var path = application.IsPublicApplication || !application.SubmittedByConsumerUserId.HasValue
+            ? $"/NewConnection/Track?applicationNo={Uri.EscapeDataString(application.ApplicationNo)}&mobileNumber={Uri.EscapeDataString(application.MobileNumber ?? string.Empty)}"
+            : $"/Consumer/NewConnection/Details/{application.Id}";
+
+        if (request is null)
+            return path;
+
+        return $"{request.Scheme}://{request.Host}{request.PathBase}{path}";
     }
 
     private static string NormalizeRequired(string? value)

@@ -72,7 +72,16 @@ public static class CommunicationPurposes
     public const string AuthorityLoginOtp = "AuthorityLoginOtp";
     public const string ConsumerOtp = "ConsumerOtp";
     public const string PublicNewConnectionOtp = "PublicNewConnectionOtp";
+    public const string WorkflowForward = "WorkflowForward";
+    public const string WorkflowSentBack = "WorkflowSentBack";
+    public const string WorkflowSentBackPrevious = "WorkflowSentBackPrevious";
+    public const string WorkflowAssigned = "WorkflowAssigned";
+    public const string WorkflowResubmitted = "WorkflowResubmitted";
     public const string NewConnectionSubmitted = "NewConnectionSubmitted";
+    public const string NewConnectionForwarded = "NewConnectionForwarded";
+    public const string NewConnectionSentBack = "NewConnectionSentBack";
+    public const string NewConnectionResubmitted = "NewConnectionResubmitted";
+    public const string NewConnectionRejected = "NewConnectionRejected";
     public const string NewConnectionApproved = "NewConnectionApproved";
     public const string FinalConsumerCreated = "FinalConsumerCreated";
     public const string ApprovalStageAssigned = "ApprovalStageAssigned";

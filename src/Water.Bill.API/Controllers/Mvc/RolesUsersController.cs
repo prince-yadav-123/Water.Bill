@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
@@ -21,12 +23,14 @@ public class RolesUsersController : Controller
     private readonly ApplicationDbContext _db;
     private readonly IPermissionService _permissionService;
     private readonly IAuditLogService _auditLogService;
+    private readonly ISessionService _sessionService;
 
-    public RolesUsersController(ApplicationDbContext db, IPermissionService permissionService, IAuditLogService auditLogService)
+    public RolesUsersController(ApplicationDbContext db, IPermissionService permissionService, IAuditLogService auditLogService, ISessionService sessionService)
     {
         _db = db;
         _permissionService = permissionService;
         _auditLogService = auditLogService;
+        _sessionService = sessionService;
     }
 
     public IActionResult Index()
@@ -293,10 +297,12 @@ public class RolesUsersController : Controller
         user.PhoneNumber = model.PhoneNumber;
         user.IsActive = model.IsActive;
         user.UpdatedAt = DateTime.UtcNow;
+        var passwordChanged = false;
         if (!string.IsNullOrWhiteSpace(model.Password))
         {
             user.PasswordHash = AuthService.HashPassword(model.Password);
             user.PasswordChangedAt = DateTime.UtcNow;
+            passwordChanged = true;
         }
         try
         {
@@ -308,7 +314,35 @@ public class RolesUsersController : Controller
             PopulateDivisionOptions();
             return View(model);
         }
-        TempData["SuccessMessage"] = "User updated.";
+
+        if (passwordChanged)
+        {
+            await _sessionService.RevokeAllSessionsAsync(user.Id, "PasswordChanged", ct);
+
+            var currentUserIdText = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(currentUserIdText, out var currentUserId) && currentUserId == user.Id)
+            {
+                await HttpContext.SignOutAsync(AppConstants.CookieScheme);
+                Response.Cookies.Delete("WaterBill.Authority.Auth");
+                Response.Cookies.Append(
+                    "WaterBill.Authority.AuthMessage",
+                    Uri.EscapeDataString("Your password was changed. Please login again."),
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        IsEssential = true,
+                        SameSite = SameSiteMode.Lax,
+                        Secure = Request.IsHttps,
+                        Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+                    });
+
+                return RedirectToAction("Login", "Account");
+            }
+        }
+
+        TempData["SuccessMessage"] = passwordChanged
+            ? "User updated. Active sessions have been signed out."
+            : "User updated.";
         return RedirectToAction(nameof(Users));
     }
 

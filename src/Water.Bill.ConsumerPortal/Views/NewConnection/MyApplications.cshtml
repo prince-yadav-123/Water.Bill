@@ -41,12 +41,20 @@
             <h1>My Applications</h1>
             <p>Track the new connection requests submitted @(isPublic ? "with your verified mobile number" : "from your consumer account").</p>
         </div>
-        @if (!(isPublic && isTrackOnly))
-        {
-            <a class="btn btn-primary" asp-action="Apply">
-                @(isPublic ? "Apply for Another New Connection" : "Apply for New Connection")
-            </a>
-        }
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+            @if (User?.Identity?.IsAuthenticated == true && !isPublic)
+            {
+                <a class="btn btn-outline-secondary" href="/Notifications" title="View notifications" aria-label="View notifications">
+                    &#128276; Notifications
+                </a>
+            }
+            @if (!(isPublic && isTrackOnly))
+            {
+                <a class="btn btn-primary" asp-action="Apply">
+                    @(isPublic ? "Apply for Another New Connection" : "Apply for New Connection")
+                </a>
+            }
+        </div>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(TempData["InfoMessage"]?.ToString()))

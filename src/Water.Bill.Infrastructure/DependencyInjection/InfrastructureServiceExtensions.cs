@@ -55,6 +55,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IInAppNotificationSender, InAppNotificationSender>();
         services.AddScoped<ICommunicationService, CommunicationService>();
         services.AddScoped<INotificationDispatchService, NotificationDispatchService>();
+        services.AddSingleton<IAuthorityLoginEncryptionService, AuthorityLoginEncryptionService>();
 
         return services;
     }

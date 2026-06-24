@@ -1,4 +1,4 @@
-@model LoginRequestDto
+@model AuthorityLoginViewModel
 
 @{
     ViewData["Title"] = "Authority Login";
@@ -52,6 +52,11 @@
 
             <form class="wb-admin-login-form" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" autocomplete="off">
                 @Html.AntiForgeryToken()
+                <input asp-for="KeyId" type="hidden" />
+                <input asp-for="RequestToken" type="hidden" />
+                <input asp-for="EncryptedKey" type="hidden" />
+                <input asp-for="Iv" type="hidden" />
+                <input asp-for="CipherText" type="hidden" />
                 @if (TempData["ErrorMessage"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
                 {
                     <div class="alert alert-danger py-2">@errorMessage</div>
@@ -129,6 +134,186 @@
     </script>
     <script>
         (function () {
+            const form = document.querySelector('.wb-admin-login-form');
+            const usernameInput = form?.querySelector('input[name="Username"]');
+            const passwordInput = form?.querySelector('input[name="Password"]');
+            const rememberInput = form?.querySelector('input[name="RememberMe"]');
+            const keyIdInput = form?.querySelector('input[name="KeyId"]');
+            const requestTokenInput = form?.querySelector('input[name="RequestToken"]');
+            const encryptedKeyInput = form?.querySelector('input[name="EncryptedKey"]');
+            const ivInput = form?.querySelector('input[name="Iv"]');
+            const cipherTextInput = form?.querySelector('input[name="CipherText"]');
+            const submitButton = form?.querySelector('button[type="submit"]');
+            let encryptionReady = null;
+            let originalUsernameName = usernameInput?.getAttribute('name') ?? 'Username';
+            let originalPasswordName = passwordInput?.getAttribute('name') ?? 'Password';
+            const minFreshnessSeconds = 20;
+
+            function toBase64(bytes) {
+                let binary = '';
+                const chunkSize = 0x8000;
+                for (let i = 0; i < bytes.length; i += chunkSize) {
+                    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+                }
+                return btoa(binary);
+            }
+
+            function fromBase64(base64) {
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                return bytes;
+            }
+
+            async function loadEncryptionKey() {
+                const response = await fetch('/Account/LoginEncryptionKey', {
+                    cache: 'no-store',
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Login encryption key could not be loaded.');
+                }
+
+                const keyData = await response.json();
+                const publicKey = await window.crypto.subtle.importKey(
+                    'spki',
+                    fromBase64(keyData.publicKeySpkiBase64),
+                    { name: 'RSA-OAEP', hash: 'SHA-256' },
+                    false,
+                    ['encrypt']);
+
+                return { keyData, publicKey };
+            }
+
+            async function ensureFreshEncryptionReady(forceRefresh = false) {
+                const nowUnixSeconds = Math.floor(Date.now() / 1000);
+                const expiresAt = encryptionReady?.keyData?.expiresAtUnixSeconds ?? 0;
+                const isFreshEnough = !forceRefresh && encryptionReady && expiresAt > (nowUnixSeconds + minFreshnessSeconds);
+
+                if (isFreshEnough) {
+                    return encryptionReady;
+                }
+
+                encryptionReady = await loadEncryptionKey();
+                return encryptionReady;
+            }
+
+            async function encryptAndPopulateFields() {
+                if (!window.crypto?.subtle) {
+                    throw new Error('This browser does not support secure login encryption.');
+                }
+
+                const { keyData, publicKey } = await ensureFreshEncryptionReady();
+
+                const payload = {
+                    username: usernameInput?.value?.trim() ?? '',
+                    password: passwordInput?.value ?? '',
+                    rememberMe: rememberInput?.checked ?? true,
+                    timestampUnixSeconds: Math.floor(Date.now() / 1000)
+                };
+
+                const payloadBytes = new TextEncoder().encode(JSON.stringify(payload));
+                const aesKey = await window.crypto.subtle.generateKey(
+                    { name: 'AES-GCM', length: 256 },
+                    true,
+                    ['encrypt']);
+                const rawAesKey = new Uint8Array(await window.crypto.subtle.exportKey('raw', aesKey));
+                const iv = window.crypto.getRandomValues(new Uint8Array(12));
+                const encryptedPayload = new Uint8Array(await window.crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv },
+                    aesKey,
+                    payloadBytes));
+                const encryptedKey = new Uint8Array(await window.crypto.subtle.encrypt(
+                    { name: 'RSA-OAEP' },
+                    publicKey,
+                    rawAesKey));
+
+                keyIdInput.value = keyData.keyId;
+                requestTokenInput.value = keyData.requestToken;
+                encryptedKeyInput.value = toBase64(encryptedKey);
+                ivInput.value = toBase64(iv);
+                cipherTextInput.value = toBase64(encryptedPayload);
+            }
+
+            function suppressPlaintextFieldValidation() {
+                const summary = document.querySelector('.wb-admin-login-summary');
+                if (summary) {
+                    summary.textContent = '';
+                    summary.classList.remove('validation-summary-errors');
+                }
+
+                const validationSpans = form.querySelectorAll('[data-valmsg-for="Username"], [data-valmsg-for="Password"]');
+                validationSpans.forEach(span => {
+                    span.textContent = '';
+                    span.classList.remove('field-validation-error');
+                    span.classList.add('field-validation-valid');
+                });
+
+                if (usernameInput) {
+                    usernameInput.disabled = true;
+                    usernameInput.removeAttribute('name');
+                }
+
+                if (passwordInput) {
+                    passwordInput.disabled = true;
+                    passwordInput.removeAttribute('name');
+                }
+            }
+
+            function restorePlaintextInputs() {
+                if (usernameInput) {
+                    usernameInput.disabled = false;
+                    usernameInput.setAttribute('name', originalUsernameName);
+                }
+
+                if (passwordInput) {
+                    passwordInput.disabled = false;
+                    passwordInput.setAttribute('name', originalPasswordName);
+                }
+            }
+
+            if (form) {
+                ensureFreshEncryptionReady(true)
+                    .then(result => { encryptionReady = result; })
+                    .catch(() => { encryptionReady = null; });
+
+                form.addEventListener('submit', async function (event) {
+                    if (form.dataset.encryptedSubmit === 'true') {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.textContent = 'Securing Sign In...';
+                    }
+
+                    try {
+                        await encryptAndPopulateFields();
+                        suppressPlaintextFieldValidation();
+                        form.dataset.encryptedSubmit = 'true';
+                        form.submit();
+                    } catch (error) {
+                        restorePlaintextInputs();
+                        const summary = document.querySelector('.wb-admin-login-summary');
+                        if (summary) {
+                            summary.textContent = error instanceof Error
+                                ? error.message
+                                : 'Login request could not be secured. Please try again.';
+                            summary.classList.add('validation-summary-errors');
+                        }
+                        if (submitButton) {
+                            submitButton.disabled = false;
+                            submitButton.textContent = 'Sign In';
+                        }
+                    }
+                });
+            }
+
             async function redirectIfAuthoritySessionExists() {
                 try {
                     const response = await fetch('/Account/AuthStatus', {

@@ -55,6 +55,16 @@ public class NewConnectionWorkflowStageDto
 
     public string State { get; set; } = "Upcoming";
 
+    public string? AssignedToName { get; set; }
+
+    public string? AssignedToRole { get; set; }
+
+    public string? ActionType { get; set; }
+
+    public string? ActionByName { get; set; }
+
+    public string? ActionByRole { get; set; }
+
     public string? Remarks { get; set; }
 
     public DateTime? AssignedOn { get; set; }

@@ -1,0 +1,4 @@
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\.tmp_track\obj\Debug\net8.0\Water.Bill.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\.tmp_track\obj\Debug\net8.0\Water.Bill.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\.tmp_track\obj\Debug\net8.0\Water.Bill.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\.tmp_track\obj\Debug\net8.0\Water.Bill.Infrastructure.sourcelink.json

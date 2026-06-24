@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -18,6 +20,7 @@ public class CommunicationService : ICommunicationService
     private readonly IWhatsAppSender _whatsAppSender;
     private readonly IInAppNotificationSender _inAppSender;
     private readonly ICommunicationConfigurationService _communicationConfigurationService;
+    private readonly IErrorLogService _errorLogService;
     private readonly ILogger<CommunicationService> _logger;
 
     public CommunicationService(
@@ -28,6 +31,7 @@ public class CommunicationService : ICommunicationService
         IWhatsAppSender whatsAppSender,
         IInAppNotificationSender inAppSender,
         ICommunicationConfigurationService communicationConfigurationService,
+        IErrorLogService errorLogService,
         ILogger<CommunicationService> logger)
     {
         _db = db;
@@ -37,6 +41,7 @@ public class CommunicationService : ICommunicationService
         _whatsAppSender = whatsAppSender;
         _inAppSender = inAppSender;
         _communicationConfigurationService = communicationConfigurationService;
+        _errorLogService = errorLogService;
         _logger = logger;
     }
 
@@ -92,6 +97,15 @@ public class CommunicationService : ICommunicationService
         if (purpose is null || template is null)
         {
             await LogAsync(purposeKey, channel, recipient, null, null, null, null, "Skipped", "Active communication template was not found.", referenceType, referenceId, referenceNo, now, ct);
+            await TryLogErrorAsync(
+                purposeKey,
+                channel,
+                recipient,
+                "Active communication template was not found.",
+                referenceType,
+                referenceId,
+                referenceNo,
+                ct);
             return;
         }
 
@@ -101,6 +115,15 @@ public class CommunicationService : ICommunicationService
         if (unknown.Count > 0)
         {
             await LogAsync(purposeKey, channel, recipient, template.Id, template.ExternalTemplateId, template.Subject, template.Body, "Failed", $"Template contains unknown placeholder(s): {string.Join(", ", unknown)}.", referenceType, referenceId, referenceNo, now, ct);
+            await TryLogErrorAsync(
+                purposeKey,
+                channel,
+                recipient,
+                $"Template contains unknown placeholder(s): {string.Join(", ", unknown)}.",
+                referenceType,
+                referenceId,
+                referenceNo,
+                ct);
             return;
         }
 
@@ -108,6 +131,19 @@ public class CommunicationService : ICommunicationService
         var body = _renderer.Render(template.Body, values);
         var result = await DispatchAsync(channel, recipient, subject, body, template.ExternalTemplateId, purposeKey, referenceType, referenceId, referenceNo, redirectUrl, ct);
         await LogAsync(purposeKey, channel, recipient, template.Id, template.ExternalTemplateId, subject, body, result.Status, result.ErrorMessage, referenceType, referenceId, referenceNo, now, ct);
+
+        if (string.Equals(result.Status, "Failed", StringComparison.OrdinalIgnoreCase))
+        {
+            await TryLogErrorAsync(
+                purposeKey,
+                channel,
+                recipient,
+                result.ErrorMessage ?? "Communication dispatch failed.",
+                referenceType,
+                referenceId,
+                referenceNo,
+                ct);
+        }
     }
 
     private async Task<CommunicationSendResult> DispatchAsync(string channel, NotificationRecipient recipient, string subject, string body, string? externalTemplateId, string purposeKey, string? referenceType, string? referenceId, string? referenceNo, string? redirectUrl, CancellationToken ct)
@@ -215,6 +251,33 @@ public class CommunicationService : ICommunicationService
         {
             return [];
         }
+    }
+
+    private async Task TryLogErrorAsync(
+        string purposeKey,
+        string channel,
+        NotificationRecipient recipient,
+        string message,
+        string? referenceType,
+        string? referenceId,
+        string? referenceNo,
+        CancellationToken ct)
+    {
+        await _errorLogService.TryLogAsync(new ErrorLogWriteModel
+        {
+            CreatedAt = DateTime.Now,
+            ExceptionType = "CommunicationDispatchException",
+            Message = $"Communication dispatch issue. PurposeKey={purposeKey}; Channel={channel}; RecipientName={recipient.Name}; RecipientEmail={recipient.Email}; RecipientMobile={recipient.Mobile}; Details={message}",
+            RequestPath = "CommunicationService/SendAsync",
+            HttpMethod = "INTERNAL",
+            QueryString = $"purposeKey={purposeKey}&channel={channel}&referenceType={referenceType}&referenceId={referenceId}&referenceNo={referenceNo}",
+            StatusCode = 500,
+            PortalType = recipient.UserType ?? AppConstants.PortalTypes.Unknown,
+            ControllerName = "CommunicationService",
+            ActionName = purposeKey,
+            TraceId = referenceNo ?? referenceId,
+            IsHandled = true
+        }, ct);
     }
 
 }

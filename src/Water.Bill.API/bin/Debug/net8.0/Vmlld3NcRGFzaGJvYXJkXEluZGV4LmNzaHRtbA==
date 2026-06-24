@@ -364,7 +364,7 @@
     @* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• *@
     else
     {
-        @* â”€â”€ Row 1: My Pending Work by Type (50%) + My Challans (50%) â”€â”€ *@
+        @* â”€â”€ Row 1: My Pending Work by Type (50%) + Assigned Queries (50%) â”€â”€ *@
         <div class="row g-3">
             <div class="col-12 col-xl-6">
                 @if (Model.SecondaryBarChart is { Items.Count: > 0 } staffChart)
@@ -400,92 +400,17 @@
             <div class="col-12 col-xl-6">
                 <section class="wb-card h-100">
                     <div class="wb-section-hdr">
-                        <div><h2>My Challans</h2><p>Recent challans created or posted under your account.</p></div>
-                        <a class="btn btn-outline-primary btn-sm" href="/ChallanManagement">View All</a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table wb-table align-middle mb-0">
-                            <thead><tr><th>Challan</th><th>Consumer</th><th>Amount</th><th>Status</th></tr></thead>
-                            <tbody>
-                                @{ var myChallans = Model.RecentChallans.Take(8).ToList(); }
-                                @if (!myChallans.Any())
-                                {
-                                    <tr><td colspan="4" class="wb-empty-row">No challans posted by you yet.</td></tr>
-                                }
-                                else
-                                {
-                                    @foreach (var c in myChallans)
-                                    {
-                                        <tr>
-                                            <td><a class="wb-link" href="@c.Url">@c.ChallanNo</a></td>
-                                            <td>@c.ConsumerNo</td>
-                                            <td>Rs.&nbsp;@c.Amount.ToString("N0")</td>
-                                            <td><span class="badge @ToneClass(StatusTone(c.Status))">@c.Status</span></td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </div>
-        </div>
-
-        @* â”€â”€ Row 2: Assigned Review Queue (full width) â”€â”€ *@
-        <section class="wb-card">
-            <div class="wb-section-hdr">
-                <div><h2>Assigned Review Queue</h2><p>Tasks matched to your user, role, or department assignment.</p></div>
-                <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View All</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table wb-table align-middle mb-0">
-                    <thead><tr><th>Type</th><th>Application</th><th>Stage</th><th>Waiting</th></tr></thead>
-                    <tbody>
-                        @{ var myQueue = Model.PendingApprovals.Take(8).ToList(); }
-                        @if (!myQueue.Any())
-                        {
-                            <tr><td colspan="4" class="wb-empty-row">Nothing is assigned to you right now.</td></tr>
-                        }
-                        else
-                        {
-                            @foreach (var r in myQueue)
-                            {
-                                <tr>
-                                    <td><span class="wb-type-badge">@r.ApplicationType</span></td>
-                                    <td>
-                                        <a class="wb-link" href="@r.Url">@r.ApplicationNo</a>
-                                        <div><small class="text-muted">@r.ApplicantName</small></div>
-                                    </td>
-                                    <td>@r.StageName</td>
-                                    <td>
-                                        <span class="badge @ToneClass(AgeBadgeTone(r.DaysSinceAssigned))">
-                                            @(r.DaysSinceAssigned == 0 ? "Today" : $"{r.DaysSinceAssigned}d")
-                                        </span>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        @* â”€â”€ Row 3: Assigned Queries (50%) + Recent Activity (50%) â”€â”€ *@
-        <div class="row g-3">
-            <div class="col-12 col-xl-6">
-                <section class="wb-card h-100">
-                    <div class="wb-section-hdr">
                         <div><h2>Assigned Queries</h2><p>Support queries currently assigned to you.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/ConsumerQueryManagement">View All</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table wb-table align-middle mb-0">
-                            <thead><tr><th>Query No</th><th>Consumer</th><th>Status</th></tr></thead>
+                            <thead><tr><th>Query No</th><th>Consumer</th><th>Subject</th><th>Status</th></tr></thead>
                             <tbody>
                                 @{ var myDesk = Model.RecentServiceDeskItems.Take(8).ToList(); }
                                 @if (!myDesk.Any())
                                 {
-                                    <tr><td colspan="3" class="wb-empty-row">No queries assigned to you.</td></tr>
+                                    <tr><td colspan="4" class="wb-empty-row">No assigned queries right now.</td></tr>
                                 }
                                 else
                                 {
@@ -493,10 +418,8 @@
                                     {
                                         <tr>
                                             <td><a class="wb-link" href="@q.Url">@q.ReferenceNo</a></td>
-                                            <td>
-                                                <div>@q.ConsumerName</div>
-                                                <small class="text-muted">@q.Subject</small>
-                                            </td>
+                                            <td>@q.ConsumerName</td>
+                                            <td>@q.Subject</td>
                                             <td><span class="badge @ToneClass(StatusTone(q.Status))">@q.Status</span></td>
                                         </tr>
                                     }
@@ -506,46 +429,66 @@
                     </div>
                 </section>
             </div>
-            <div class="col-12 col-xl-6">
-                <section class="wb-card h-100">
-                    <div class="wb-section-hdr">
-                        <div><h2>Recent Activity</h2><p>Your recent actions captured in the audit trail.</p></div>
+        </div>
+
+        @* â”€â”€ Row 2: Review Queue + Recent Activity Tabs â”€â”€ *@
+        <section class="wb-card wb-dashboard-tabs-shell">
+            <div class="wb-section-hdr">
+                @* <div><h2>Operations</h2><p>Assigned review work first, with recent activity available on demand.</p></div> *@
+            </div>
+            <div class="wb-dashboard-tabs" role="tablist" aria-label="Staff dashboard operations">
+                <button type="button" class="wb-dashboard-tab is-active" data-staff-dashboard-tab="review-queue" role="tab" aria-selected="true">
+                    Review Queue
+                </button>
+                <button type="button" class="wb-dashboard-tab" data-staff-dashboard-tab="recent-activity" role="tab" aria-selected="false">
+                    Recent Activity
+                </button>
+            </div>
+            <div class="wb-dashboard-tab-panels">
+                <div class="wb-dashboard-tab-panel is-active" role="tabpanel" data-staff-dashboard-panel="review-queue">
+                    <div class="wb-section-hdr wb-dashboard-panel-header">
+                        <div><p>Tasks currently assigned to your role or user account.</p></div>
+                        <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View All</a>
+                    </div>
+                    <div data-staff-dashboard-content>
+                        @{ var myQueue = Model.PendingApprovals.Take(8).ToList(); }
+                        @if (!myQueue.Any())
+                        {
+                            <div class="wb-empty">Nothing is assigned to you right now.</div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table wb-table align-middle mb-0">
+                                    <thead><tr><th>Application No</th><th>Applicant</th><th>Stage</th><th>Assigned To</th><th>Age</th></tr></thead>
+                                    <tbody>
+                                        @foreach (var r in myQueue)
+                                        {
+                                            <tr>
+                                                <td><a class="wb-link" href="@r.Url">@r.ApplicationNo</a></td>
+                                                <td>@r.ApplicantName</td>
+                                                <td>@r.StageName</td>
+                                                <td>@(string.IsNullOrWhiteSpace(r.AssignedTo) ? "-" : r.AssignedTo)</td>
+                                                <td><span class="badge wb-badge-warning">@r.DaysSinceAssigned day(s)</span></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="wb-dashboard-tab-panel" role="tabpanel" data-staff-dashboard-panel="recent-activity" data-loaded="false" data-endpoint="/Dashboard/StaffRecentActivity" hidden>
+                    <div class="wb-section-hdr wb-dashboard-panel-header">
+                        <div><p>Your recent actions captured in the audit trail.</p></div>
                         <a class="btn btn-outline-primary btn-sm" asp-controller="OperatorAudit" asp-action="Index">Open Logs</a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table wb-table align-middle mb-0">
-                            <thead><tr><th>Action</th><th>Module</th><th>Status</th><th>Time</th></tr></thead>
-                            <tbody>
-                                @{ var myActs = Model.RecentActivities.Take(8).ToList(); }
-                                @if (!myActs.Any())
-                                {
-                                    <tr><td colspan="4" class="wb-empty-row">No recent activity logged yet.</td></tr>
-                                }
-                                else
-                                {
-                                    @foreach (var a in myActs)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <div class="fw-semibold">@a.Action</div>
-                                                <small class="text-muted">@a.Details</small>
-                                            </td>
-                                            <td>@a.Module</td>
-                                            <td>
-                                                <span class=”badge @ToneClass(AuditTone(a.Success))”>
-                                                    @AuditLabel(a.Success)
-                                                </span>
-                                            </td>
-                                            <td>@ShortDate(a.OccurredOn)</td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
+                    <div data-staff-dashboard-content>
+                        <div class="wb-dashboard-loading">Loading...</div>
                     </div>
-                </section>
+                </div>
             </div>
-        </div>
+        </section>
     }
 
 </div>
@@ -1700,10 +1643,68 @@
                 });
             }
 
+            function loadStaffDashboardPanel(panel) {
+                if (!panel || panel.getAttribute('data-loaded') === 'true') return Promise.resolve();
+
+                var endpoint = panel.getAttribute('data-endpoint');
+                var container = panel.querySelector('[data-staff-dashboard-content]');
+                if (!endpoint || !container) return Promise.resolve();
+
+                container.innerHTML = '<div class="wb-dashboard-loading">Loading...</div>';
+
+                return fetch(endpoint, { credentials: 'same-origin' })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('Staff dashboard tab request failed');
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        var key = panel.getAttribute('data-staff-dashboard-panel');
+                        var html = '';
+                        if (key === 'recent-activity') html = renderRecentActivity(data || []);
+                        container.innerHTML = html;
+                        panel.setAttribute('data-loaded', 'true');
+                    })
+                    .catch(function () {
+                        container.innerHTML = '<div class="wb-widget-shell-empty">Unable to load dashboard section.</div>';
+                    });
+            }
+
+            function initStaffDashboardTabs() {
+                var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-staff-dashboard-tab]'));
+                var panels = Array.prototype.slice.call(document.querySelectorAll('[data-staff-dashboard-panel]'));
+                if (!tabs.length || !panels.length) return;
+
+                tabs.forEach(function (tab) {
+                    tab.addEventListener('click', function () {
+                        var key = tab.getAttribute('data-staff-dashboard-tab');
+
+                        tabs.forEach(function (item) {
+                            var active = item === tab;
+                            item.classList.toggle('is-active', active);
+                            item.setAttribute('aria-selected', active ? 'true' : 'false');
+                        });
+
+                        panels.forEach(function (panel) {
+                            var active = panel.getAttribute('data-staff-dashboard-panel') === key;
+                            panel.classList.toggle('is-active', active);
+                            panel.hidden = !active;
+                        });
+
+                        var activePanel = panels.find(function (panel) {
+                            return panel.getAttribute('data-staff-dashboard-panel') === key;
+                        });
+                        if (activePanel) {
+                            loadStaffDashboardPanel(activePanel);
+                        }
+                    });
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 initChart('appStatusChart', window._appStatusData);
                 initChart('challanStatusChart', window._challanStatusData);
                 initDashboardTabs();
+                initStaffDashboardTabs();
                 scheduleLazyLoad(loadAdminWidgets);
             });
         })();

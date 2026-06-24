@@ -1,6 +1,7 @@
 using Serilog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Water.Bill.API.Security;
 using Water.Bill.API.Extensions;
 using Water.Bill.Application.DependencyInjection;
 using Water.Bill.Core.Common;
@@ -26,6 +27,7 @@ try
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddHttpContextAccessor();
+    builder.Services.AddScoped<AuthoritySessionCookieEvents>();
     builder.Services.AddControllersWithViews();
     builder.Services.AddAntiforgery(options =>
     {
@@ -50,6 +52,7 @@ try
             options.Cookie.HttpOnly = true;
             options.Cookie.SecurePolicy = secureCookiePolicy;
             options.Cookie.SameSite = SameSiteMode.Lax;
+            options.EventsType = typeof(AuthoritySessionCookieEvents);
         });
     builder.Services.AddHealthChecks();
     builder.Services.Configure<ForwardedHeadersOptions>(options =>

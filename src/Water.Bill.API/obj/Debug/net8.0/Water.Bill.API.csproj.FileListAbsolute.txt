@@ -1,287 +1,3 @@
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.csproj.AssemblyReference.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.AssemblyInfoInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.AssemblyInfo.cs
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.csproj.CoreCompileInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.RazorAssemblyInfo.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.RazorAssemblyInfo.cs
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.sourcelink.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\appsettings.Development.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\appsettings.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\artifacts\phase2\obj\project.assets.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\dotnet-tools.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Account\AccessDenied.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Account\Login.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Account\VerifyTwoFactor.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Approvals\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Approvals\Pending.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillRevision\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillRevision\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillSearchPrint\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillSearchPrint\Print.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BulkBillGeneration\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\PaymentHistory.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Print.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Receipt.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Form.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Preview.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ComplaintManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ComplaintManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerAccountAdjustments\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerAccountAdjustments\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerAccountAdjustments\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLedger\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLedger\Print.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Edit.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerMasterMaintenance\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerMasterMaintenance\Edit.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerMasterMaintenance\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerQueryManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerQueryManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Dashboard\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Departments\Form.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Departments\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Print.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ErrorLogs\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ErrorLogs\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\IntegrationHub\Edit.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\IntegrationHub\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Landing\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Masters\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Masters\Form.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Masters\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\Edit.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\_MenuForm.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\MeterReadingManagement\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\MeterReadingManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\MeterReadingManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\SearchConsumer.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcApplications\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcApplications\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcCertificates\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcCertificates\Print.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnectionFeeConfigurations\Form.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnectionFeeConfigurations\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\Apply.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\Track.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\_NewConnectionDetailsCard.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\_NewConnectionFormFields.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Print.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Templates.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\MyNotifications.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\TestEmail.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OnlinePaymentHistory\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OnlinePaymentHistory\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OperatorAudit\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OperatorAudit\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Create.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Details.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Edit.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\_PermissionModuleForm.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Profile\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ReportsMis\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\CreateRole.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\CreateUser.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\EditRole.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\EditUser.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Permissions.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\RoleDetails.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Roles.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\UserDetails.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Users.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\SecuritySettings\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_Layout.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_Pagination.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_ValidationScriptsPartial.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_WaterLoader.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Unauthorized\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\Form.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\Index.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\StageForm.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\Stages.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\_ViewImports.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\_ViewStart.cshtml
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.staticwebassets.runtime.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.staticwebassets.endpoints.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.exe
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.deps.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.runtimeconfig.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Azure.Core.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Azure.Identity.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\FluentValidation.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Humanizer.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.Workspaces.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.Workspaces.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Data.SqlClient.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Design.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Relational.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.SqlServer.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Extensions.DependencyModel.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Identity.Client.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Identity.Client.Extensions.Msal.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.OpenApi.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Mono.TextTemplating.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.AspNetCore.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Extensions.Hosting.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Extensions.Logging.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Formatting.Compact.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Settings.Configuration.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Sinks.Console.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Sinks.Debug.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Sinks.File.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.CodeDom.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.AttributedModel.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.Convention.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.Hosting.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.Runtime.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.TypedParts.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Drawing.Common.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Memory.Data.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Runtime.Caching.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Security.Cryptography.ProtectedData.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Security.Permissions.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Windows.Extensions.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\unix\lib\net6.0\Microsoft.Data.SqlClient.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Data.SqlClient.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Application.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Core.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Infrastructure.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Application.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Core.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Infrastructure.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rjimswa.dswa.cache.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\scopedcss\bundle\Water.Bill.API.styles.css
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.build.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.build.json.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.development.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bi.9A40BF7E.Up2Date
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\refint\Water.Bill.API.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.genruntimeconfig.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\ref\Water.Bill.API.dll
 C:\Temp\wb-api-out\appsettings.Development.json
 C:\Temp\wb-api-out\appsettings.json
 C:\Temp\wb-api-out\artifacts\phase2\obj\project.assets.json
@@ -546,4 +262,1344 @@ C:\Temp\wb-dashboard-role-out\Water.Bill.API.deps.json
 C:\Temp\wb-dashboard-role-out\Water.Bill.API.runtimeconfig.json
 C:\Temp\wb-dashboard-role-out\Water.Bill.API.dll
 C:\Temp\wb-dashboard-role-out\Water.Bill.API.pdb
+C:\Temp\WBVerifyAPI\appsettings.Development.json
+C:\Temp\WBVerifyAPI\appsettings.json
+C:\Temp\WBVerifyAPI\artifacts\phase2\obj\project.assets.json
+C:\Temp\WBVerifyAPI\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Temp\WBVerifyAPI\dotnet-tools.json
+C:\Temp\WBVerifyAPI\Views\Account\AccessDenied.cshtml
+C:\Temp\WBVerifyAPI\Views\Account\Login.cshtml
+C:\Temp\WBVerifyAPI\Views\Account\VerifyTwoFactor.cshtml
+C:\Temp\WBVerifyAPI\Views\Approvals\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\Approvals\Pending.cshtml
+C:\Temp\WBVerifyAPI\Views\BillRevision\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\BillRevision\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\BillSearchPrint\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\BillSearchPrint\Print.cshtml
+C:\Temp\WBVerifyAPI\Views\BulkBillGeneration\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ChallanManagement\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\ChallanManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ChallanManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Temp\WBVerifyAPI\Views\ChallanManagement\Print.cshtml
+C:\Temp\WBVerifyAPI\Views\ChallanManagement\Receipt.cshtml
+C:\Temp\WBVerifyAPI\Views\CommunicationTemplates\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\CommunicationTemplates\Form.cshtml
+C:\Temp\WBVerifyAPI\Views\CommunicationTemplates\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\CommunicationTemplates\Preview.cshtml
+C:\Temp\WBVerifyAPI\Views\ComplaintManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ComplaintManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerLedger\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerLedger\Print.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerLoginManagement\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerLoginManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerLoginManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerQueryManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ConsumerQueryManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Dashboard\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Departments\Form.cshtml
+C:\Temp\WBVerifyAPI\Views\Departments\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\DisconnectionManagement\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\DisconnectionManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\DisconnectionManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\DisconnectionManagement\Print.cshtml
+C:\Temp\WBVerifyAPI\Views\ErrorLogs\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\ErrorLogs\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\IntegrationHub\Edit.cshtml
+C:\Temp\WBVerifyAPI\Views\IntegrationHub\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Landing\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Masters\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\Masters\Form.cshtml
+C:\Temp\WBVerifyAPI\Views\Masters\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Menu\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\Menu\Edit.cshtml
+C:\Temp\WBVerifyAPI\Views\Menu\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Menu\_MenuForm.cshtml
+C:\Temp\WBVerifyAPI\Views\MeterReadingManagement\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\MeterReadingManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\MeterReadingManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\NameTransferMutation\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\NameTransferMutation\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\NameTransferMutation\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI\Views\NdcApplications\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\NdcApplications\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\NdcCertificates\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\NdcCertificates\Print.cshtml
+C:\Temp\WBVerifyAPI\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Temp\WBVerifyAPI\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\NewConnection\Apply.cshtml
+C:\Temp\WBVerifyAPI\Views\NewConnection\Track.cshtml
+C:\Temp\WBVerifyAPI\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Temp\WBVerifyAPI\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Temp\WBVerifyAPI\Views\NoticeManagement\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\NoticeManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\NoticeManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\NoticeManagement\Print.cshtml
+C:\Temp\WBVerifyAPI\Views\NoticeManagement\Templates.cshtml
+C:\Temp\WBVerifyAPI\Views\NotificationManagement\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\NotificationManagement\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\NotificationManagement\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\NotificationManagement\MyNotifications.cshtml
+C:\Temp\WBVerifyAPI\Views\NotificationManagement\TestEmail.cshtml
+C:\Temp\WBVerifyAPI\Views\OnlinePaymentHistory\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\OnlinePaymentHistory\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\OperatorAudit\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\OperatorAudit\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\PermissionModules\Create.cshtml
+C:\Temp\WBVerifyAPI\Views\PermissionModules\Details.cshtml
+C:\Temp\WBVerifyAPI\Views\PermissionModules\Edit.cshtml
+C:\Temp\WBVerifyAPI\Views\PermissionModules\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Temp\WBVerifyAPI\Views\Profile\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\ReportsMis\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\CreateRole.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\CreateUser.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\EditRole.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\EditUser.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\Permissions.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\RoleDetails.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\Roles.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\UserDetails.cshtml
+C:\Temp\WBVerifyAPI\Views\RolesUsers\Users.cshtml
+C:\Temp\WBVerifyAPI\Views\SecuritySettings\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Shared\_Layout.cshtml
+C:\Temp\WBVerifyAPI\Views\Shared\_Pagination.cshtml
+C:\Temp\WBVerifyAPI\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Temp\WBVerifyAPI\Views\Shared\_WaterLoader.cshtml
+C:\Temp\WBVerifyAPI\Views\Unauthorized\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Workflows\Form.cshtml
+C:\Temp\WBVerifyAPI\Views\Workflows\Index.cshtml
+C:\Temp\WBVerifyAPI\Views\Workflows\StageForm.cshtml
+C:\Temp\WBVerifyAPI\Views\Workflows\Stages.cshtml
+C:\Temp\WBVerifyAPI\Views\_ViewImports.cshtml
+C:\Temp\WBVerifyAPI\Views\_ViewStart.cshtml
+C:\Temp\WBVerifyAPI\Water.Bill.API.staticwebassets.runtime.json
+C:\Temp\WBVerifyAPI\Water.Bill.API.staticwebassets.endpoints.json
+C:\Temp\WBVerifyAPI\Water.Bill.API.exe
+C:\Temp\WBVerifyAPI\Water.Bill.API.deps.json
+C:\Temp\WBVerifyAPI\Water.Bill.API.runtimeconfig.json
+C:\Temp\WBVerifyAPI\Water.Bill.API.dll
+C:\Temp\WBVerifyAPI\Water.Bill.API.pdb
+C:\Temp\WBVerifyAPI2\appsettings.Development.json
+C:\Temp\WBVerifyAPI2\appsettings.json
+C:\Temp\WBVerifyAPI2\artifacts\phase2\obj\project.assets.json
+C:\Temp\WBVerifyAPI2\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Temp\WBVerifyAPI2\dotnet-tools.json
+C:\Temp\WBVerifyAPI2\Views\Account\AccessDenied.cshtml
+C:\Temp\WBVerifyAPI2\Views\Account\Login.cshtml
+C:\Temp\WBVerifyAPI2\Views\Account\VerifyTwoFactor.cshtml
+C:\Temp\WBVerifyAPI2\Views\Approvals\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\Approvals\Pending.cshtml
+C:\Temp\WBVerifyAPI2\Views\BillRevision\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\BillRevision\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\BillSearchPrint\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\BillSearchPrint\Print.cshtml
+C:\Temp\WBVerifyAPI2\Views\BulkBillGeneration\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ChallanManagement\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\ChallanManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ChallanManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Temp\WBVerifyAPI2\Views\ChallanManagement\Print.cshtml
+C:\Temp\WBVerifyAPI2\Views\ChallanManagement\Receipt.cshtml
+C:\Temp\WBVerifyAPI2\Views\CommunicationTemplates\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\CommunicationTemplates\Form.cshtml
+C:\Temp\WBVerifyAPI2\Views\CommunicationTemplates\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\CommunicationTemplates\Preview.cshtml
+C:\Temp\WBVerifyAPI2\Views\ComplaintManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ComplaintManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerLedger\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerLedger\Print.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerLoginManagement\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerLoginManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerLoginManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerQueryManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ConsumerQueryManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Dashboard\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Departments\Form.cshtml
+C:\Temp\WBVerifyAPI2\Views\Departments\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\DisconnectionManagement\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\DisconnectionManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\DisconnectionManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\DisconnectionManagement\Print.cshtml
+C:\Temp\WBVerifyAPI2\Views\ErrorLogs\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\ErrorLogs\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\IntegrationHub\Edit.cshtml
+C:\Temp\WBVerifyAPI2\Views\IntegrationHub\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Landing\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Masters\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\Masters\Form.cshtml
+C:\Temp\WBVerifyAPI2\Views\Masters\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Menu\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\Menu\Edit.cshtml
+C:\Temp\WBVerifyAPI2\Views\Menu\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Menu\_MenuForm.cshtml
+C:\Temp\WBVerifyAPI2\Views\MeterReadingManagement\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\MeterReadingManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\MeterReadingManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\NameTransferMutation\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\NameTransferMutation\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\NameTransferMutation\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI2\Views\NdcApplications\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\NdcApplications\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\NdcCertificates\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\NdcCertificates\Print.cshtml
+C:\Temp\WBVerifyAPI2\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Temp\WBVerifyAPI2\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\NewConnection\Apply.cshtml
+C:\Temp\WBVerifyAPI2\Views\NewConnection\Track.cshtml
+C:\Temp\WBVerifyAPI2\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Temp\WBVerifyAPI2\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Temp\WBVerifyAPI2\Views\NoticeManagement\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\NoticeManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\NoticeManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\NoticeManagement\Print.cshtml
+C:\Temp\WBVerifyAPI2\Views\NoticeManagement\Templates.cshtml
+C:\Temp\WBVerifyAPI2\Views\NotificationManagement\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\NotificationManagement\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\NotificationManagement\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\NotificationManagement\MyNotifications.cshtml
+C:\Temp\WBVerifyAPI2\Views\NotificationManagement\TestEmail.cshtml
+C:\Temp\WBVerifyAPI2\Views\OnlinePaymentHistory\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\OnlinePaymentHistory\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\OperatorAudit\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\OperatorAudit\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\PermissionModules\Create.cshtml
+C:\Temp\WBVerifyAPI2\Views\PermissionModules\Details.cshtml
+C:\Temp\WBVerifyAPI2\Views\PermissionModules\Edit.cshtml
+C:\Temp\WBVerifyAPI2\Views\PermissionModules\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Temp\WBVerifyAPI2\Views\Profile\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\ReportsMis\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\CreateRole.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\CreateUser.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\EditRole.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\EditUser.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\Permissions.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\RoleDetails.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\Roles.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\UserDetails.cshtml
+C:\Temp\WBVerifyAPI2\Views\RolesUsers\Users.cshtml
+C:\Temp\WBVerifyAPI2\Views\SecuritySettings\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Shared\_Layout.cshtml
+C:\Temp\WBVerifyAPI2\Views\Shared\_Pagination.cshtml
+C:\Temp\WBVerifyAPI2\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Temp\WBVerifyAPI2\Views\Shared\_WaterLoader.cshtml
+C:\Temp\WBVerifyAPI2\Views\Unauthorized\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Workflows\Form.cshtml
+C:\Temp\WBVerifyAPI2\Views\Workflows\Index.cshtml
+C:\Temp\WBVerifyAPI2\Views\Workflows\StageForm.cshtml
+C:\Temp\WBVerifyAPI2\Views\Workflows\Stages.cshtml
+C:\Temp\WBVerifyAPI2\Views\_ViewImports.cshtml
+C:\Temp\WBVerifyAPI2\Views\_ViewStart.cshtml
+C:\Temp\WBVerifyAPI2\Water.Bill.API.staticwebassets.runtime.json
+C:\Temp\WBVerifyAPI2\Water.Bill.API.staticwebassets.endpoints.json
+C:\Temp\WBVerifyAPI2\Water.Bill.API.exe
+C:\Temp\WBVerifyAPI2\Water.Bill.API.deps.json
+C:\Temp\WBVerifyAPI2\Water.Bill.API.runtimeconfig.json
+C:\Temp\WBVerifyAPI2\Water.Bill.API.dll
+C:\Temp\WBVerifyAPI2\Water.Bill.API.pdb
+C:\Temp\WBVerifyAPI3\appsettings.Development.json
+C:\Temp\WBVerifyAPI3\appsettings.json
+C:\Temp\WBVerifyAPI3\artifacts\phase2\obj\project.assets.json
+C:\Temp\WBVerifyAPI3\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Temp\WBVerifyAPI3\dotnet-tools.json
+C:\Temp\WBVerifyAPI3\Views\Account\AccessDenied.cshtml
+C:\Temp\WBVerifyAPI3\Views\Account\Login.cshtml
+C:\Temp\WBVerifyAPI3\Views\Account\VerifyTwoFactor.cshtml
+C:\Temp\WBVerifyAPI3\Views\Approvals\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\Approvals\Pending.cshtml
+C:\Temp\WBVerifyAPI3\Views\BillRevision\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\BillRevision\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\BillSearchPrint\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\BillSearchPrint\Print.cshtml
+C:\Temp\WBVerifyAPI3\Views\BulkBillGeneration\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ChallanManagement\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\ChallanManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ChallanManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Temp\WBVerifyAPI3\Views\ChallanManagement\Print.cshtml
+C:\Temp\WBVerifyAPI3\Views\ChallanManagement\Receipt.cshtml
+C:\Temp\WBVerifyAPI3\Views\CommunicationTemplates\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\CommunicationTemplates\Form.cshtml
+C:\Temp\WBVerifyAPI3\Views\CommunicationTemplates\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\CommunicationTemplates\Preview.cshtml
+C:\Temp\WBVerifyAPI3\Views\ComplaintManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ComplaintManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerLedger\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerLedger\Print.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerLoginManagement\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerLoginManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerLoginManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerQueryManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ConsumerQueryManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Dashboard\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Departments\Form.cshtml
+C:\Temp\WBVerifyAPI3\Views\Departments\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\DisconnectionManagement\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\DisconnectionManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\DisconnectionManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\DisconnectionManagement\Print.cshtml
+C:\Temp\WBVerifyAPI3\Views\ErrorLogs\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\ErrorLogs\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\IntegrationHub\Edit.cshtml
+C:\Temp\WBVerifyAPI3\Views\IntegrationHub\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Landing\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Masters\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\Masters\Form.cshtml
+C:\Temp\WBVerifyAPI3\Views\Masters\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Menu\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\Menu\Edit.cshtml
+C:\Temp\WBVerifyAPI3\Views\Menu\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Menu\_MenuForm.cshtml
+C:\Temp\WBVerifyAPI3\Views\MeterReadingManagement\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\MeterReadingManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\MeterReadingManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\NameTransferMutation\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\NameTransferMutation\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\NameTransferMutation\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI3\Views\NdcApplications\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\NdcApplications\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\NdcCertificates\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\NdcCertificates\Print.cshtml
+C:\Temp\WBVerifyAPI3\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Temp\WBVerifyAPI3\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\NewConnection\Apply.cshtml
+C:\Temp\WBVerifyAPI3\Views\NewConnection\Track.cshtml
+C:\Temp\WBVerifyAPI3\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Temp\WBVerifyAPI3\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Temp\WBVerifyAPI3\Views\NoticeManagement\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\NoticeManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\NoticeManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\NoticeManagement\Print.cshtml
+C:\Temp\WBVerifyAPI3\Views\NoticeManagement\Templates.cshtml
+C:\Temp\WBVerifyAPI3\Views\NotificationManagement\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\NotificationManagement\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\NotificationManagement\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\NotificationManagement\MyNotifications.cshtml
+C:\Temp\WBVerifyAPI3\Views\NotificationManagement\TestEmail.cshtml
+C:\Temp\WBVerifyAPI3\Views\OnlinePaymentHistory\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\OnlinePaymentHistory\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\OperatorAudit\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\OperatorAudit\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\PermissionModules\Create.cshtml
+C:\Temp\WBVerifyAPI3\Views\PermissionModules\Details.cshtml
+C:\Temp\WBVerifyAPI3\Views\PermissionModules\Edit.cshtml
+C:\Temp\WBVerifyAPI3\Views\PermissionModules\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Temp\WBVerifyAPI3\Views\Profile\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\ReportsMis\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\CreateRole.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\CreateUser.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\EditRole.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\EditUser.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\Permissions.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\RoleDetails.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\Roles.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\UserDetails.cshtml
+C:\Temp\WBVerifyAPI3\Views\RolesUsers\Users.cshtml
+C:\Temp\WBVerifyAPI3\Views\SecuritySettings\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Shared\_Layout.cshtml
+C:\Temp\WBVerifyAPI3\Views\Shared\_Pagination.cshtml
+C:\Temp\WBVerifyAPI3\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Temp\WBVerifyAPI3\Views\Shared\_WaterLoader.cshtml
+C:\Temp\WBVerifyAPI3\Views\Unauthorized\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Workflows\Form.cshtml
+C:\Temp\WBVerifyAPI3\Views\Workflows\Index.cshtml
+C:\Temp\WBVerifyAPI3\Views\Workflows\StageForm.cshtml
+C:\Temp\WBVerifyAPI3\Views\Workflows\Stages.cshtml
+C:\Temp\WBVerifyAPI3\Views\_ViewImports.cshtml
+C:\Temp\WBVerifyAPI3\Views\_ViewStart.cshtml
+C:\Temp\WBVerifyAPI3\Water.Bill.API.staticwebassets.runtime.json
+C:\Temp\WBVerifyAPI3\Water.Bill.API.staticwebassets.endpoints.json
+C:\Temp\WBVerifyAPI3\Water.Bill.API.exe
+C:\Temp\WBVerifyAPI3\Water.Bill.API.deps.json
+C:\Temp\WBVerifyAPI3\Water.Bill.API.runtimeconfig.json
+C:\Temp\WBVerifyAPI3\Water.Bill.API.dll
+C:\Temp\WBVerifyAPI3\Water.Bill.API.pdb
+C:\Temp\WBVerifyAPI4\appsettings.Development.json
+C:\Temp\WBVerifyAPI4\appsettings.json
+C:\Temp\WBVerifyAPI4\artifacts\phase2\obj\project.assets.json
+C:\Temp\WBVerifyAPI4\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Temp\WBVerifyAPI4\dotnet-tools.json
+C:\Temp\WBVerifyAPI4\Views\Account\AccessDenied.cshtml
+C:\Temp\WBVerifyAPI4\Views\Account\Login.cshtml
+C:\Temp\WBVerifyAPI4\Views\Account\VerifyTwoFactor.cshtml
+C:\Temp\WBVerifyAPI4\Views\Approvals\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\Approvals\Pending.cshtml
+C:\Temp\WBVerifyAPI4\Views\BillRevision\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\BillRevision\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\BillSearchPrint\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\BillSearchPrint\Print.cshtml
+C:\Temp\WBVerifyAPI4\Views\BulkBillGeneration\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ChallanManagement\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\ChallanManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ChallanManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Temp\WBVerifyAPI4\Views\ChallanManagement\Print.cshtml
+C:\Temp\WBVerifyAPI4\Views\ChallanManagement\Receipt.cshtml
+C:\Temp\WBVerifyAPI4\Views\CommunicationTemplates\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\CommunicationTemplates\Form.cshtml
+C:\Temp\WBVerifyAPI4\Views\CommunicationTemplates\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\CommunicationTemplates\Preview.cshtml
+C:\Temp\WBVerifyAPI4\Views\ComplaintManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ComplaintManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerLedger\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerLedger\Print.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerLoginManagement\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerLoginManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerLoginManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerQueryManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ConsumerQueryManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Dashboard\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Departments\Form.cshtml
+C:\Temp\WBVerifyAPI4\Views\Departments\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\DisconnectionManagement\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\DisconnectionManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\DisconnectionManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\DisconnectionManagement\Print.cshtml
+C:\Temp\WBVerifyAPI4\Views\ErrorLogs\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\ErrorLogs\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\IntegrationHub\Edit.cshtml
+C:\Temp\WBVerifyAPI4\Views\IntegrationHub\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Landing\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Masters\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\Masters\Form.cshtml
+C:\Temp\WBVerifyAPI4\Views\Masters\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Menu\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\Menu\Edit.cshtml
+C:\Temp\WBVerifyAPI4\Views\Menu\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Menu\_MenuForm.cshtml
+C:\Temp\WBVerifyAPI4\Views\MeterReadingManagement\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\MeterReadingManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\MeterReadingManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\NameTransferMutation\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\NameTransferMutation\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\NameTransferMutation\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI4\Views\NdcApplications\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\NdcApplications\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\NdcCertificates\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\NdcCertificates\Print.cshtml
+C:\Temp\WBVerifyAPI4\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Temp\WBVerifyAPI4\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\NewConnection\Apply.cshtml
+C:\Temp\WBVerifyAPI4\Views\NewConnection\Track.cshtml
+C:\Temp\WBVerifyAPI4\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Temp\WBVerifyAPI4\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Temp\WBVerifyAPI4\Views\NoticeManagement\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\NoticeManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\NoticeManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\NoticeManagement\Print.cshtml
+C:\Temp\WBVerifyAPI4\Views\NoticeManagement\Templates.cshtml
+C:\Temp\WBVerifyAPI4\Views\NotificationManagement\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\NotificationManagement\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\NotificationManagement\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\NotificationManagement\MyNotifications.cshtml
+C:\Temp\WBVerifyAPI4\Views\NotificationManagement\TestEmail.cshtml
+C:\Temp\WBVerifyAPI4\Views\OnlinePaymentHistory\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\OnlinePaymentHistory\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\OperatorAudit\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\OperatorAudit\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\PermissionModules\Create.cshtml
+C:\Temp\WBVerifyAPI4\Views\PermissionModules\Details.cshtml
+C:\Temp\WBVerifyAPI4\Views\PermissionModules\Edit.cshtml
+C:\Temp\WBVerifyAPI4\Views\PermissionModules\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Temp\WBVerifyAPI4\Views\Profile\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\ReportsMis\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\CreateRole.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\CreateUser.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\EditRole.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\EditUser.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\Permissions.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\RoleDetails.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\Roles.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\UserDetails.cshtml
+C:\Temp\WBVerifyAPI4\Views\RolesUsers\Users.cshtml
+C:\Temp\WBVerifyAPI4\Views\SecuritySettings\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Shared\_Layout.cshtml
+C:\Temp\WBVerifyAPI4\Views\Shared\_Pagination.cshtml
+C:\Temp\WBVerifyAPI4\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Temp\WBVerifyAPI4\Views\Shared\_WaterLoader.cshtml
+C:\Temp\WBVerifyAPI4\Views\Unauthorized\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Workflows\Form.cshtml
+C:\Temp\WBVerifyAPI4\Views\Workflows\Index.cshtml
+C:\Temp\WBVerifyAPI4\Views\Workflows\StageForm.cshtml
+C:\Temp\WBVerifyAPI4\Views\Workflows\Stages.cshtml
+C:\Temp\WBVerifyAPI4\Views\_ViewImports.cshtml
+C:\Temp\WBVerifyAPI4\Views\_ViewStart.cshtml
+C:\Temp\WBVerifyAPI4\Water.Bill.API.staticwebassets.runtime.json
+C:\Temp\WBVerifyAPI4\Water.Bill.API.staticwebassets.endpoints.json
+C:\Temp\WBVerifyAPI4\Water.Bill.API.exe
+C:\Temp\WBVerifyAPI4\Water.Bill.API.deps.json
+C:\Temp\WBVerifyAPI4\Water.Bill.API.runtimeconfig.json
+C:\Temp\WBVerifyAPI4\Water.Bill.API.dll
+C:\Temp\WBVerifyAPI4\Water.Bill.API.pdb
+C:\Temp\WBVerifyAPI5\appsettings.Development.json
+C:\Temp\WBVerifyAPI5\appsettings.json
+C:\Temp\WBVerifyAPI5\artifacts\phase2\obj\project.assets.json
+C:\Temp\WBVerifyAPI5\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Temp\WBVerifyAPI5\dotnet-tools.json
+C:\Temp\WBVerifyAPI5\Views\Account\AccessDenied.cshtml
+C:\Temp\WBVerifyAPI5\Views\Account\Login.cshtml
+C:\Temp\WBVerifyAPI5\Views\Account\VerifyTwoFactor.cshtml
+C:\Temp\WBVerifyAPI5\Views\Approvals\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\Approvals\Pending.cshtml
+C:\Temp\WBVerifyAPI5\Views\BillRevision\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\BillRevision\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\BillSearchPrint\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\BillSearchPrint\Print.cshtml
+C:\Temp\WBVerifyAPI5\Views\BulkBillGeneration\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ChallanManagement\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\ChallanManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ChallanManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Temp\WBVerifyAPI5\Views\ChallanManagement\Print.cshtml
+C:\Temp\WBVerifyAPI5\Views\ChallanManagement\Receipt.cshtml
+C:\Temp\WBVerifyAPI5\Views\CommunicationTemplates\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\CommunicationTemplates\Form.cshtml
+C:\Temp\WBVerifyAPI5\Views\CommunicationTemplates\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\CommunicationTemplates\Preview.cshtml
+C:\Temp\WBVerifyAPI5\Views\ComplaintManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ComplaintManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerLedger\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerLedger\Print.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerLoginManagement\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerLoginManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerLoginManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerQueryManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ConsumerQueryManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Dashboard\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Departments\Form.cshtml
+C:\Temp\WBVerifyAPI5\Views\Departments\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\DisconnectionManagement\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\DisconnectionManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\DisconnectionManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\DisconnectionManagement\Print.cshtml
+C:\Temp\WBVerifyAPI5\Views\ErrorLogs\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\ErrorLogs\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\IntegrationHub\Edit.cshtml
+C:\Temp\WBVerifyAPI5\Views\IntegrationHub\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Landing\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Masters\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\Masters\Form.cshtml
+C:\Temp\WBVerifyAPI5\Views\Masters\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Menu\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\Menu\Edit.cshtml
+C:\Temp\WBVerifyAPI5\Views\Menu\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Menu\_MenuForm.cshtml
+C:\Temp\WBVerifyAPI5\Views\MeterReadingManagement\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\MeterReadingManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\MeterReadingManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\NameTransferMutation\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\NameTransferMutation\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\NameTransferMutation\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Temp\WBVerifyAPI5\Views\NdcApplications\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\NdcApplications\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\NdcCertificates\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\NdcCertificates\Print.cshtml
+C:\Temp\WBVerifyAPI5\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Temp\WBVerifyAPI5\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\NewConnection\Apply.cshtml
+C:\Temp\WBVerifyAPI5\Views\NewConnection\Track.cshtml
+C:\Temp\WBVerifyAPI5\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Temp\WBVerifyAPI5\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Temp\WBVerifyAPI5\Views\NoticeManagement\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\NoticeManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\NoticeManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\NoticeManagement\Print.cshtml
+C:\Temp\WBVerifyAPI5\Views\NoticeManagement\Templates.cshtml
+C:\Temp\WBVerifyAPI5\Views\NotificationManagement\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\NotificationManagement\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\NotificationManagement\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\NotificationManagement\MyNotifications.cshtml
+C:\Temp\WBVerifyAPI5\Views\NotificationManagement\TestEmail.cshtml
+C:\Temp\WBVerifyAPI5\Views\OnlinePaymentHistory\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\OnlinePaymentHistory\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\OperatorAudit\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\OperatorAudit\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\PermissionModules\Create.cshtml
+C:\Temp\WBVerifyAPI5\Views\PermissionModules\Details.cshtml
+C:\Temp\WBVerifyAPI5\Views\PermissionModules\Edit.cshtml
+C:\Temp\WBVerifyAPI5\Views\PermissionModules\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Temp\WBVerifyAPI5\Views\Profile\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\ReportsMis\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\CreateRole.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\CreateUser.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\EditRole.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\EditUser.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\Permissions.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\RoleDetails.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\Roles.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\UserDetails.cshtml
+C:\Temp\WBVerifyAPI5\Views\RolesUsers\Users.cshtml
+C:\Temp\WBVerifyAPI5\Views\SecuritySettings\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Shared\_Layout.cshtml
+C:\Temp\WBVerifyAPI5\Views\Shared\_Pagination.cshtml
+C:\Temp\WBVerifyAPI5\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Temp\WBVerifyAPI5\Views\Shared\_WaterLoader.cshtml
+C:\Temp\WBVerifyAPI5\Views\Unauthorized\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Workflows\Form.cshtml
+C:\Temp\WBVerifyAPI5\Views\Workflows\Index.cshtml
+C:\Temp\WBVerifyAPI5\Views\Workflows\StageForm.cshtml
+C:\Temp\WBVerifyAPI5\Views\Workflows\Stages.cshtml
+C:\Temp\WBVerifyAPI5\Views\_ViewImports.cshtml
+C:\Temp\WBVerifyAPI5\Views\_ViewStart.cshtml
+C:\Temp\WBVerifyAPI5\Water.Bill.API.staticwebassets.runtime.json
+C:\Temp\WBVerifyAPI5\Water.Bill.API.staticwebassets.endpoints.json
+C:\Temp\WBVerifyAPI5\Water.Bill.API.exe
+C:\Temp\WBVerifyAPI5\Water.Bill.API.deps.json
+C:\Temp\WBVerifyAPI5\Water.Bill.API.runtimeconfig.json
+C:\Temp\WBVerifyAPI5\Water.Bill.API.dll
+C:\Temp\WBVerifyAPI5\Water.Bill.API.pdb
+C:\Temp\WBVerifySessionInvalidate\appsettings.Development.json
+C:\Temp\WBVerifySessionInvalidate\appsettings.json
+C:\Temp\WBVerifySessionInvalidate\artifacts\phase2\obj\project.assets.json
+C:\Temp\WBVerifySessionInvalidate\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Temp\WBVerifySessionInvalidate\dotnet-tools.json
+C:\Temp\WBVerifySessionInvalidate\Views\Account\AccessDenied.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Account\Login.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Account\VerifyTwoFactor.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Approvals\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Approvals\Pending.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\BillRevision\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\BillRevision\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\BillSearchPrint\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\BillSearchPrint\Print.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\BulkBillGeneration\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ChallanManagement\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ChallanManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ChallanManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ChallanManagement\Print.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ChallanManagement\Receipt.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\CommunicationTemplates\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\CommunicationTemplates\Form.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\CommunicationTemplates\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\CommunicationTemplates\Preview.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ComplaintManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ComplaintManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerLedger\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerLedger\Print.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerLoginManagement\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerLoginManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerLoginManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerQueryManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ConsumerQueryManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Dashboard\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Departments\Form.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Departments\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\DisconnectionManagement\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\DisconnectionManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\DisconnectionManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\DisconnectionManagement\Print.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ErrorLogs\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ErrorLogs\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\IntegrationHub\Edit.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\IntegrationHub\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Landing\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Masters\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Masters\Form.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Masters\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Menu\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Menu\Edit.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Menu\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Menu\_MenuForm.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\MeterReadingManagement\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\MeterReadingManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\MeterReadingManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NameTransferMutation\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NameTransferMutation\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NameTransferMutation\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NdcApplications\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NdcApplications\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NdcCertificates\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NdcCertificates\Print.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NewConnection\Apply.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NewConnection\Track.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NoticeManagement\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NoticeManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NoticeManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NoticeManagement\Print.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NoticeManagement\Templates.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NotificationManagement\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NotificationManagement\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NotificationManagement\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NotificationManagement\MyNotifications.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\NotificationManagement\TestEmail.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\OnlinePaymentHistory\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\OnlinePaymentHistory\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\OperatorAudit\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\OperatorAudit\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\PermissionModules\Create.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\PermissionModules\Details.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\PermissionModules\Edit.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\PermissionModules\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Profile\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\ReportsMis\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\CreateRole.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\CreateUser.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\EditRole.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\EditUser.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\Permissions.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\RoleDetails.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\Roles.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\UserDetails.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\RolesUsers\Users.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\SecuritySettings\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Shared\_Layout.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Shared\_Pagination.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Shared\_WaterLoader.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Unauthorized\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Workflows\Form.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Workflows\Index.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Workflows\StageForm.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\Workflows\Stages.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\_ViewImports.cshtml
+C:\Temp\WBVerifySessionInvalidate\Views\_ViewStart.cshtml
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.API.staticwebassets.runtime.json
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.API.staticwebassets.endpoints.json
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.API.exe
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.API.deps.json
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.API.runtimeconfig.json
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.API.dll
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.API.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\appsettings.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\artifacts\phase2\obj\project.assets.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\dotnet-tools.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Account\AccessDenied.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Account\Login.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Account\VerifyTwoFactor.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Approvals\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Approvals\Pending.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillRevision\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillRevision\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillSearchPrint\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BillSearchPrint\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\BulkBillGeneration\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ChallanManagement\Receipt.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Form.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\CommunicationTemplates\Preview.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ComplaintManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ComplaintManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLedger\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLedger\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerQueryManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ConsumerQueryManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Dashboard\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Departments\Form.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Departments\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\DisconnectionManagement\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ErrorLogs\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ErrorLogs\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\IntegrationHub\Edit.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\IntegrationHub\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Landing\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Masters\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Masters\Form.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Masters\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\Edit.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Menu\_MenuForm.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\MeterReadingManagement\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\MeterReadingManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\MeterReadingManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcApplications\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcApplications\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcCertificates\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NdcCertificates\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\Apply.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\Track.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NoticeManagement\Templates.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\MyNotifications.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\NotificationManagement\TestEmail.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OnlinePaymentHistory\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OnlinePaymentHistory\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OperatorAudit\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\OperatorAudit\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Edit.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Profile\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\ReportsMis\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\CreateRole.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\CreateUser.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\EditRole.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\EditUser.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Permissions.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\RoleDetails.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Roles.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\UserDetails.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\RolesUsers\Users.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\SecuritySettings\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_Layout.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_Pagination.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Shared\_WaterLoader.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Unauthorized\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\Form.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\StageForm.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\Workflows\Stages.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\_ViewImports.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Views\_ViewStart.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.staticwebassets.runtime.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.staticwebassets.endpoints.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.exe
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.runtimeconfig.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.API.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Azure.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Azure.Identity.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\FluentValidation.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Humanizer.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.Workspaces.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.CodeAnalysis.Workspaces.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Data.SqlClient.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Design.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.SqlServer.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Extensions.DependencyModel.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Identity.Client.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Mono.TextTemplating.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.AspNetCore.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Extensions.Hosting.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Extensions.Logging.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Formatting.Compact.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Settings.Configuration.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Sinks.Console.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Sinks.Debug.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Serilog.Sinks.File.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.CodeDom.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.AttributedModel.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.Convention.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.Hosting.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.Runtime.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Composition.TypedParts.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Drawing.Common.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Memory.Data.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Runtime.Caching.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Security.Permissions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\System.Windows.Extensions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\fr\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\it\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ja\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ko\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pl\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\pt-BR\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\unix\lib\net6.0\Microsoft.Data.SqlClient.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Data.SqlClient.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Application.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Infrastructure.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Application.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Core.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\bin\Debug\net8.0\Water.Bill.Infrastructure.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.csproj.AssemblyReference.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.AssemblyInfoInputs.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.AssemblyInfo.cs
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.csproj.CoreCompileInputs.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.RazorAssemblyInfo.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.RazorAssemblyInfo.cs
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.sourcelink.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\scopedcss\bundle\Water.Bill.API.styles.css
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bi.9A40BF7E.Up2Date
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\refint\Water.Bill.API.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\Water.Bill.API.genruntimeconfig.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\ref\Water.Bill.API.dll
+C:\Temp\WBVerifyNonAdminDashboard\appsettings.Development.json
+C:\Temp\WBVerifyNonAdminDashboard\appsettings.json
+C:\Temp\WBVerifyNonAdminDashboard\artifacts\phase2\obj\project.assets.json
+C:\Temp\WBVerifyNonAdminDashboard\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Temp\WBVerifyNonAdminDashboard\dotnet-tools.json
+C:\Temp\WBVerifyNonAdminDashboard\Views\Account\AccessDenied.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Account\Login.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Account\VerifyTwoFactor.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Approvals\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Approvals\Pending.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\BillRevision\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\BillRevision\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\BillSearchPrint\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\BillSearchPrint\Print.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\BulkBillGeneration\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ChallanManagement\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ChallanManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ChallanManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ChallanManagement\Print.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ChallanManagement\Receipt.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\CommunicationTemplates\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\CommunicationTemplates\Form.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\CommunicationTemplates\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\CommunicationTemplates\Preview.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ComplaintManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ComplaintManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerLedger\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerLedger\Print.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerLoginManagement\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerLoginManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerLoginManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerQueryManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ConsumerQueryManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Dashboard\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Departments\Form.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Departments\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\DisconnectionManagement\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\DisconnectionManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\DisconnectionManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\DisconnectionManagement\Print.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ErrorLogs\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ErrorLogs\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\IntegrationHub\Edit.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\IntegrationHub\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Landing\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Masters\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Masters\Form.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Masters\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Menu\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Menu\Edit.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Menu\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Menu\_MenuForm.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\MeterReadingManagement\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\MeterReadingManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\MeterReadingManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NameTransferMutation\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NameTransferMutation\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NameTransferMutation\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NdcApplications\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NdcApplications\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NdcCertificates\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NdcCertificates\Print.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NewConnection\Apply.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NewConnection\Track.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NoticeManagement\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NoticeManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NoticeManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NoticeManagement\Print.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NoticeManagement\Templates.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NotificationManagement\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NotificationManagement\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NotificationManagement\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NotificationManagement\MyNotifications.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\NotificationManagement\TestEmail.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\OnlinePaymentHistory\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\OnlinePaymentHistory\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\OperatorAudit\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\OperatorAudit\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\PermissionModules\Create.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\PermissionModules\Details.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\PermissionModules\Edit.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\PermissionModules\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Profile\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\ReportsMis\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\CreateRole.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\CreateUser.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\EditRole.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\EditUser.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\Permissions.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\RoleDetails.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\Roles.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\UserDetails.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\RolesUsers\Users.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\SecuritySettings\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Shared\_Layout.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Shared\_Pagination.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Shared\_WaterLoader.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Unauthorized\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Workflows\Form.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Workflows\Index.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Workflows\StageForm.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\Workflows\Stages.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\_ViewImports.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Views\_ViewStart.cshtml
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.API.staticwebassets.runtime.json
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.API.staticwebassets.endpoints.json
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.API.exe
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.API.deps.json
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.API.runtimeconfig.json
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.API.dll
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.API.pdb
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\appsettings.Development.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\appsettings.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\artifacts\phase2\obj\project.assets.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\artifacts\phase2\obj\Water.Bill.API.csproj.nuget.dgspec.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\dotnet-tools.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Account\AccessDenied.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Account\Login.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Account\VerifyTwoFactor.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Approvals\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Approvals\Pending.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\BillRevision\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\BillRevision\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\BillSearchPrint\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\BillSearchPrint\Print.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\BulkBillGeneration\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ChallanManagement\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ChallanManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ChallanManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ChallanManagement\PaymentHistory.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ChallanManagement\Print.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ChallanManagement\Receipt.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\CommunicationTemplates\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\CommunicationTemplates\Form.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\CommunicationTemplates\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\CommunicationTemplates\Preview.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ComplaintManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ComplaintManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConnectionTypeCategoryChange\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConnectionTypeCategoryChange\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConnectionTypeCategoryChange\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConnectionTypeCategoryChange\SearchConsumer.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerAccountAdjustments\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerAccountAdjustments\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerAccountAdjustments\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerLedger\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerLedger\Print.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerLoginManagement\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerLoginManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerLoginManagement\Edit.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerLoginManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerLoginManagement\_ConsumerLoginForm.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerMasterMaintenance\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerMasterMaintenance\Edit.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerMasterMaintenance\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerQueryManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ConsumerQueryManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Dashboard\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Departments\Form.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Departments\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\DisconnectionManagement\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\DisconnectionManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\DisconnectionManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\DisconnectionManagement\Print.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ErrorLogs\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ErrorLogs\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\IntegrationHub\Edit.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\IntegrationHub\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Landing\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Masters\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Masters\Form.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Masters\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Menu\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Menu\Edit.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Menu\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Menu\_MenuForm.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\MeterReadingManagement\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\MeterReadingManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\MeterReadingManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NameTransferMutation\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NameTransferMutation\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NameTransferMutation\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NameTransferMutation\SearchConsumer.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NdcApplications\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NdcApplications\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NdcCertificates\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NdcCertificates\Print.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NewConnectionFeeConfigurations\Form.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NewConnectionFeeConfigurations\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NewConnection\Apply.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NewConnection\Track.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NoticeManagement\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NoticeManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NoticeManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NoticeManagement\Print.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NoticeManagement\Templates.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NotificationManagement\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NotificationManagement\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NotificationManagement\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NotificationManagement\MyNotifications.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\NotificationManagement\TestEmail.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\OnlinePaymentHistory\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\OnlinePaymentHistory\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\OperatorAudit\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\OperatorAudit\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\PermissionModules\Create.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\PermissionModules\Details.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\PermissionModules\Edit.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\PermissionModules\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\PermissionModules\_PermissionModuleForm.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Profile\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\ReportsMis\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\CreateRole.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\CreateUser.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\EditRole.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\EditUser.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\Permissions.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\RoleDetails.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\Roles.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\UserDetails.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\RolesUsers\Users.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\SecuritySettings\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Shared\_Layout.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Shared\_Pagination.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Shared\_WaterLoader.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Unauthorized\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Workflows\Form.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Workflows\Index.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Workflows\StageForm.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\Workflows\Stages.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\_ViewImports.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Views\_ViewStart.cshtml
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Water.Bill.API.staticwebassets.runtime.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Water.Bill.API.staticwebassets.endpoints.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Water.Bill.API.exe
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Water.Bill.API.deps.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Water.Bill.API.runtimeconfig.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Water.Bill.API.dll
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-api\Water.Bill.API.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

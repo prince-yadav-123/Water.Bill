@@ -1,6 +1,50 @@
-@model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationDetailsDto
+﻿@model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationDetailsDto
 @{
-    var timelineItems = new List<(string Title, string Message, DateTime When, string Tone, bool ShowResubmit)>();
+    var timelineItems = new List<(string Title, string Message, DateTime When, string Tone, bool ShowResubmit, string? Actor, string? Role, string Action)>();
+
+    static string StageBadgeClass(string state) => state switch
+    {
+        "Current" or "Pending" or "Pending Action" => "wb-stage-badge wb-stage-badge-pending",
+        "Action Required" => "wb-stage-badge wb-stage-badge-action",
+        "Approved" or "Completed" or "Final Approved" => "wb-stage-badge wb-stage-badge-success",
+        "Rejected" => "wb-stage-badge wb-stage-badge-danger",
+        "Upcoming" => "wb-stage-badge wb-stage-badge-upcoming",
+        "Not Required" or "Skipped" => "wb-stage-badge wb-stage-badge-muted",
+        "Under Review" => "wb-stage-badge wb-stage-badge-info",
+        _ => "wb-stage-badge wb-stage-badge-info"
+    };
+
+    static string StageFriendlyState(string state) => state switch
+    {
+        "Current" => "Pending Action",
+        "Pending" => "Pending Action",
+        "Pending Action" => "Pending Action",
+        "Action Required" => "Action Required",
+        "Approved" => "Completed",
+        "Completed" => "Completed",
+        "Final Approved" => "Final Approved",
+        "Rejected" => "Rejected",
+        "Upcoming" => "Upcoming",
+        "Not Required" => "Not Required",
+        "Skipped" => "Skipped",
+        "Under Review" => "Under Review",
+        _ when string.IsNullOrWhiteSpace(state) => "Updated",
+        _ => state
+    };
+
+    static string FriendlyActionLabel(string? action) => action switch
+    {
+        "WorkflowStarted" => "Started",
+        "StageAssigned" => "Assigned",
+        "AcceptMoveNext" or "MoveNext" or "ForwardToUser" => "Forwarded to Next Stage",
+        "Approved" => "Stage Completed",
+        "FinalApproval" or "FinalConsumerCreated" => "Final Approved",
+        "SendBackToApplicant" or "CorrectionRequired" => "Sent Back for Correction",
+        "SendBackToPrevious" => "Returned to Previous Stage",
+        "Rejected" => "Rejected",
+        _ when string.IsNullOrWhiteSpace(action) => "Updated",
+        _ => action!
+    };
 
     static string NormalizeStatusLabel(string? status) => status switch
     {
@@ -38,9 +82,10 @@
 
     static string ToneFor(string title) => title switch
     {
-        "Application Approved" or "Consumer Number Generated" or "Fee Paid" => "success",
-        "Action Required" or "Payment Pending" => "warning",
+        "Application Approved" or "Final Approved" or "Consumer Number Generated" or "Fee Paid" => "success",
+        "Action Required" or "Payment Pending" or "Pending Action" => "warning",
         "Payment Failed" or "Application Rejected" => "danger",
+        "Under Review" => "info",
         _ => "info"
     };
 
@@ -75,6 +120,8 @@
         var message = DefaultMessage(title, item.Remarks);
         var tone = ToneFor(title);
         var showResubmit = string.Equals(title, "Action Required", StringComparison.OrdinalIgnoreCase) && Model.CanResubmit;
+        var actor = string.IsNullOrWhiteSpace(item.ActionByName) ? null : item.ActionByName;
+        var role = string.IsNullOrWhiteSpace(item.ActionByRole) ? null : item.ActionByRole;
 
         if (timelineItems.Count > 0)
         {
@@ -83,17 +130,17 @@
             var sameDay = last.When.Date == item.ActionOn.Date;
             if (sameTitle && sameDay && title is "Under Review" or "Payment Pending")
             {
-                timelineItems[^1] = (last.Title, last.Message, item.ActionOn, last.Tone, last.ShowResubmit || showResubmit);
+                timelineItems[^1] = (last.Title, last.Message, item.ActionOn, last.Tone, last.ShowResubmit || showResubmit, last.Actor, last.Role, last.Action);
                 continue;
             }
         }
 
-        timelineItems.Add((title, message, item.ActionOn, tone, showResubmit));
+        timelineItems.Add((title, message, item.ActionOn, tone, showResubmit, actor, role, item.Action));
     }
 
     if (timelineItems.Count == 0)
     {
-        timelineItems.Add(("Application Submitted", "Your application has been submitted successfully.", Model.SubmittedOn ?? DateTime.Now, "info", false));
+        timelineItems.Add(("Application Submitted", "Your application has been submitted successfully.", Model.SubmittedOn ?? DateTime.Now, "info", false, null, null, "Submitted"));
     }
 }
 
@@ -121,72 +168,294 @@
             Final consumer number generated: <strong>@Model.FinalConsumerNo</strong>
         </div>
     }
-    @if (Model.WorkflowStages.Count > 0)
-    {
-        <h3 class="h5 mt-4">Approval Progress</h3>
-        <div class="row g-3 mb-4">
-            @foreach (var stage in Model.WorkflowStages)
-            {
-                var badgeClass = stage.State switch
-                {
-                    "Current" => "text-bg-primary",
-                    "Approved" => "text-bg-success",
-                    "Rejected" => "text-bg-danger",
-                    _ => "text-bg-secondary"
-                };
-                <div class="col-12 col-md-6 col-xl-4">
-                    <div class="border rounded-3 p-3 h-100">
-                        <div class="d-flex justify-content-between gap-2">
-                            <div>
-                                <div class="small text-muted">Stage @stage.StageOrder</div>
-                                <strong>@stage.StageName</strong>
-                            </div>
-                            <span class="badge @badgeClass">@stage.State</span>
-                        </div>
-                        @if (stage.AssignedOn.HasValue)
-                        {
-                            <div class="small text-muted mt-2">Assigned @stage.AssignedOn.Value.ToString("dd MMM yyyy hh:mm tt")</div>
-                        }
-                        @if (stage.ActionOn.HasValue)
-                        {
-                            <div class="small text-muted">Action @stage.ActionOn.Value.ToString("dd MMM yyyy hh:mm tt")</div>
-                        }
-                        @if (!string.IsNullOrWhiteSpace(stage.Remarks))
-                        {
-                            <p class="small mb-0 mt-2">@stage.Remarks</p>
-                        }
-                    </div>
-                </div>
-            }
+        <section class="wb-page-card wb-application-track mt-4">
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+            <div>
+                <p class="wb-kicker mb-1">Application Tracking</p>
+                <h3 class="h5 mb-1">Stage Progress &amp; Timeline</h3>
+                <p class="text-muted mb-0">Follow the full journey of this application from submission to final decision.</p>
+            </div>
+            <span class="badge text-bg-primary align-self-start">@NormalizeStatusLabel(Model.ApplicationStatus)</span>
         </div>
-    }
 
-    <h3 class="h5 mt-4">Status Timeline</h3>
-    <div class="wb-nc-timeline">
-        @foreach (var item in timelineItems.OrderBy(x => x.When))
-        {
-            <article class="wb-nc-timeline-item wb-nc-timeline-@item.Tone">
-                <span class="wb-nc-timeline-dot"></span>
-                <div class="wb-nc-timeline-body">
-                    <div class="wb-nc-timeline-head">
-                        <strong>@item.Title</strong>
-                        <time>@item.When.ToString("dd MMM yyyy hh:mm tt")</time>
+        <div class="row g-4 mt-1">
+            <div class="col-12 col-xl-5">
+                <div class="wb-track-panel h-100">
+                    <div class="wb-track-panel-head">
+                        <strong>Stage-wise Progress</strong>
+                        <span class="text-muted small">@Model.WorkflowStages.Count stage(s)</span>
                     </div>
-                    <div class="wb-nc-timeline-note">@item.Message</div>
-                    @if (item.ShowResubmit)
+
+                    @if (Model.WorkflowStages.Count > 0)
                     {
-                        <div class="wb-nc-timeline-actions">
-                            <a class="btn btn-sm btn-warning" asp-action="Resubmit" asp-route-id="@Model.Id">↩ Update &amp; Resubmit</a>
+                        <div class="wb-stage-list">
+                            @foreach (var stage in Model.WorkflowStages)
+                            {
+                                var stateBadge = StageBadgeClass(stage.State);
+                                var isCurrent = string.Equals(stage.State, "Current", StringComparison.OrdinalIgnoreCase)
+                                    || string.Equals(stage.State, "Pending", StringComparison.OrdinalIgnoreCase)
+                                    || string.Equals(stage.State, "Pending Action", StringComparison.OrdinalIgnoreCase);
+                                <article class="wb-stage-card @(isCurrent ? "is-current" : string.Empty)">
+                                    <div class="d-flex justify-content-between gap-2 align-items-start">
+                                        <div>
+                                            <div class="small text-muted">Stage @stage.StageOrder</div>
+                                            <strong>@stage.StageName</strong>
+                                        </div>
+                                        <span class="badge @stateBadge">@StageFriendlyState(stage.State)</span>
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(stage.ActionType)
+                                        || !string.IsNullOrWhiteSpace(stage.ActionByName)
+                                        || !string.IsNullOrWhiteSpace(stage.ActionByRole))
+                                    {
+                                        <div class="mt-2 wb-stage-action-box">
+                                            <div class="small text-muted">Action</div>
+                                            <strong>
+                                                @if (!string.IsNullOrWhiteSpace(stage.ActionType))
+                                                {
+                                                    @FriendlyActionLabel(stage.ActionType)
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Awaiting action</span>
+                                                }
+                                            </strong>
+                                            <div class="small text-muted mt-1">
+                                                <span><strong>By:</strong> @(string.IsNullOrWhiteSpace(stage.ActionByName) ? "Awaiting action" : stage.ActionByName)</span>
+                                                <span class="ms-2"><strong>Time:</strong> @(stage.ActionOn.HasValue ? stage.ActionOn.Value.ToString("dd MMM yyyy hh:mm tt") : "Awaiting action")</span>
+                                            </div>
+                                            @if (!string.IsNullOrWhiteSpace(stage.ActionByRole))
+                                            {
+                                                <div class="small text-muted mt-1"><strong>Role:</strong> @stage.ActionByRole</div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="mt-2 wb-stage-action-box wb-stage-action-box-muted">
+                                            <div class="small text-muted">Action</div>
+                                            <strong class="text-muted">Awaiting action</strong>
+                                            <div class="small text-muted mt-1">
+                                                <span><strong>By:</strong> Awaiting action</span>
+                                                <span class="ms-2"><strong>Time:</strong> Awaiting action</span>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="wb-stage-meta">
+                                        <div>
+                                            <span>Assigned To</span>
+                                            <strong>@(string.IsNullOrWhiteSpace(stage.AssignedToName) ? "Unassigned" : stage.AssignedToName)</strong>
+                                        </div>
+                                        @if (stage.AssignedOn.HasValue)
+                                        {
+                                            <div><span>Assigned</span><strong>@stage.AssignedOn.Value.ToString("dd MMM yyyy hh:mm tt")</strong></div>
+                                        }
+                                        else
+                                        {
+                                            <div><span>Assigned</span><strong>Awaiting assignment</strong></div>
+                                        }
+                                        <div>
+                                            <span>Assigned Role</span>
+                                            <strong>@(string.IsNullOrWhiteSpace(stage.AssignedToRole) ? "-" : stage.AssignedToRole)</strong>
+                                        </div>
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(stage.Remarks))
+                                    {
+                                        <div class="wb-stage-remarks">@stage.Remarks</div>
+                                    }
+                                </article>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="wb-empty-state wb-empty-state-compact">
+                            <strong>No stage data yet.</strong>
+                            <span>The application has not entered workflow tracking yet.</span>
                         </div>
                     }
                 </div>
-            </article>
-        }
-    </div>
+            </div>
+
+            <div class="col-12 col-xl-7">
+                <div class="wb-track-panel h-100">
+                    <div class="wb-track-panel-head">
+                        <strong>Timeline Events</strong>
+                        <span class="text-muted small">@timelineItems.Count event(s)</span>
+                    </div>
+
+                    <div class="wb-nc-timeline wb-nc-timeline-compact">
+                        @foreach (var item in timelineItems.OrderBy(x => x.When))
+                        {
+                            <article class="wb-nc-timeline-item wb-nc-timeline-@item.Tone">
+                                <span class="wb-nc-timeline-dot"></span>
+                                <div class="wb-nc-timeline-body">
+                                    <div class="wb-nc-timeline-head">
+                                        <strong>@item.Title</strong>
+                                        <time>@item.When.ToString("dd MMM yyyy hh:mm tt")</time>
+                                    </div>
+                                    <div class="wb-nc-timeline-note">@item.Message</div>
+                                    @if (!string.IsNullOrWhiteSpace(item.Actor) || !string.IsNullOrWhiteSpace(item.Role))
+                                    {
+                                        <div class="small text-muted mt-1">
+                                            @if (!string.IsNullOrWhiteSpace(item.Actor))
+                                            {
+                                                <span><strong>By:</strong> @item.Actor</span>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(item.Role))
+                                            {
+                                                <span>@(string.IsNullOrWhiteSpace(item.Actor) ? string.Empty : " • ")<strong>Role:</strong> @item.Role</span>
+                                            }
+                                        </div>
+                                    }
+                                    <div class="small text-muted mt-1">
+                                        <strong>Action:</strong> @FriendlyActionLabel(item.Action)
+                                    </div>
+                                    @if (item.ShowResubmit)
+                                    {
+                                        <div class="wb-nc-timeline-actions">
+                                            <a class="btn btn-sm btn-warning" asp-action="Resubmit" asp-route-id="@Model.Id">&#8617; Update &amp; Resubmit</a>
+                                        </div>
+                                    }
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </section>
 
 <style>
+    .wb-application-track {
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 1.25rem;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+    .wb-track-panel {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1rem;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.03);
+    }
+    .wb-track-panel-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 1rem;
+        padding-bottom: .5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .wb-stage-list { display: grid; gap: 12px; }
+    .wb-stage-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: .9rem 1rem;
+        background: #f8fafc;
+    }
+    .wb-stage-card.is-current {
+        border-color: #93c5fd;
+        background: #eff6ff;
+        box-shadow: inset 0 0 0 1px rgba(59,130,246,.08);
+    }
+    .wb-stage-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: .42rem .75rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: .78rem;
+        line-height: 1;
+        letter-spacing: .01em;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+    .wb-stage-badge-pending {
+        color: #1d4ed8;
+        background: #dbeafe;
+        border-color: #93c5fd;
+    }
+    .wb-stage-badge-action {
+        color: #92400e;
+        background: #fef3c7;
+        border-color: #f59e0b;
+    }
+    .wb-stage-badge-success {
+        color: #166534;
+        background: #dcfce7;
+        border-color: #86efac;
+    }
+    .wb-stage-badge-danger {
+        color: #991b1b;
+        background: #fee2e2;
+        border-color: #fca5a5;
+    }
+    .wb-stage-badge-upcoming {
+        color: #475569;
+        background: #e2e8f0;
+        border-color: #cbd5e1;
+    }
+    .wb-stage-badge-muted {
+        color: #64748b;
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    .wb-stage-badge-info {
+        color: #0f766e;
+        background: #ccfbf1;
+        border-color: #99f6e4;
+    }
+    .wb-stage-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .75rem;
+        margin-top: .75rem;
+    }
+    .wb-stage-meta div {
+        display: grid;
+        gap: 2px;
+    }
+    .wb-stage-meta span {
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #94a3b8;
+    }
+    .wb-stage-meta strong {
+        font-size: .82rem;
+        color: #0f172a;
+    }
+    .wb-stage-remarks {
+        margin-top: .8rem;
+        padding: .7rem .85rem;
+        background: #fff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        font-size: .92rem;
+        color: #475569;
+        line-height: 1.5;
+    }
+    .wb-stage-action-box {
+        margin-top: .8rem;
+        padding: .75rem .85rem;
+        background: #fff;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
+    }
+    .wb-stage-action-box-muted {
+        background: #f8fafc;
+        border-style: dashed;
+        border-color: #cbd5e1;
+    }
     .wb-nc-timeline { display: grid; gap: 10px; margin-top: 14px; }
+    .wb-nc-timeline-compact { margin-top: 0; }
     .wb-nc-timeline-item {
         display: grid;
         grid-template-columns: 16px minmax(0, 1fr);
@@ -232,8 +501,13 @@
         border-radius: 10px;
     }
     .wb-nc-timeline-actions { margin-top: 8px; }
+    .wb-empty-state-compact {
+        min-height: 180px;
+        padding: 1.5rem 1rem;
+    }
     @@media (max-width: 575.98px) {
         .wb-nc-timeline-head { flex-direction: column; gap: 2px; }
         .wb-nc-timeline-head time { white-space: normal; }
+        .wb-stage-meta { grid-template-columns: 1fr; }
     }
 </style>

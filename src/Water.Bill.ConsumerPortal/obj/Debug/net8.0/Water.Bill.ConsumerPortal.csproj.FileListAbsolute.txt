@@ -1,13 +1,33 @@
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.csproj.AssemblyReference.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.AssemblyInfoInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.AssemblyInfo.cs
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.csproj.CoreCompileInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.RazorAssemblyInfo.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.RazorAssemblyInfo.cs
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.sourcelink.json
+C:\Temp\wb-consumer-out\appsettings.Development.json
+C:\Temp\wb-consumer-out\appsettings.json
+C:\Temp\wb-consumer-out\dotnet-tools.json
+C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
+C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
+C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.exe
+C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.deps.json
+C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.runtimeconfig.json
+C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.dll
+C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.pdb
+C:\Temp\wb-consumer-fast-out\appsettings.Development.json
+C:\Temp\wb-consumer-fast-out\appsettings.json
+C:\Temp\wb-consumer-fast-out\dotnet-tools.json
+C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
+C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
+C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.exe
+C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.deps.json
+C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.runtimeconfig.json
+C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.dll
+C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.pdb
+C:\Temp\wb-consumer-out-2\appsettings.Development.json
+C:\Temp\wb-consumer-out-2\appsettings.json
+C:\Temp\wb-consumer-out-2\dotnet-tools.json
+C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
+C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
+C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.exe
+C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.deps.json
+C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.runtimeconfig.json
+C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.dll
+C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\appsettings.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\dotnet-tools.json
@@ -64,6 +84,16 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Water.Bill.Application.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Water.Bill.Core.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Water.Bill.Infrastructure.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.csproj.AssemblyReference.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.AssemblyInfoInputs.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.AssemblyInfo.cs
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.csproj.CoreCompileInputs.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.RazorAssemblyInfo.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.RazorAssemblyInfo.cs
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.sourcelink.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -81,34 +111,4 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.genruntimeconfig.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\ref\Water.Bill.ConsumerPortal.dll
-C:\Temp\wb-consumer-out\appsettings.Development.json
-C:\Temp\wb-consumer-out\appsettings.json
-C:\Temp\wb-consumer-out\dotnet-tools.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.exe
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.deps.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.runtimeconfig.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.dll
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.pdb
-C:\Temp\wb-consumer-fast-out\appsettings.Development.json
-C:\Temp\wb-consumer-fast-out\appsettings.json
-C:\Temp\wb-consumer-fast-out\dotnet-tools.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.exe
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.deps.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.runtimeconfig.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.dll
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.pdb
-C:\Temp\wb-consumer-out-2\appsettings.Development.json
-C:\Temp\wb-consumer-out-2\appsettings.json
-C:\Temp\wb-consumer-out-2\dotnet-tools.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.exe
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.deps.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.runtimeconfig.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.dll
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

@@ -257,7 +257,7 @@
                 <tbody>
                     <tr><th>Connection Category</th><td>@app.ConnectionCategory</td><th>Connection Type</th><td>@app.ConnectionType</td></tr>
                     <tr><th>Flat Type</th><td>@app.FlatType</td><th>Pipe Size</th><td>@(app.PipeSize?.ToString() ?? "-")</td></tr>
-                    <tr><th>Purpose</th><td>@TextOrDash(app.PurposeOfConnection)</td><th>Division</th><td>@(app.DevType?.ToString() ?? "-")</td></tr>
+                    <tr><th>Purpose</th><td>@TextOrDash(app.PurposeOfConnection)</td><th>Division</th><td>@TextOrDash(Water.Bill.Core.Common.AppConstants.Divisions.FormatDisplay(app.DevType))</td></tr>
                     <tr><th>Previous Connection</th><td>@TextOrDash(app.PreviousConnectionYesNo)</td><th>Other Connection</th><td>@TextOrDash(app.OtherConnection)</td></tr>
                 </tbody>
             </table>

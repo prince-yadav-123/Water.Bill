@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.DTOs.PublicNewConnection;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Infrastructure.Data;
@@ -17,18 +18,18 @@ public class PublicNewConnectionOtpService : IPublicNewConnectionOtpService
     private const int MaxAttempts = 5;
 
     private readonly ApplicationDbContext _db;
-    private readonly IConsumerSmsSender _smsSender;
+    private readonly ICommunicationService _communicationService;
     private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly IOtpThrottleService _otpThrottleService;
 
     public PublicNewConnectionOtpService(
         ApplicationDbContext db,
-        IConsumerSmsSender smsSender,
+        ICommunicationService communicationService,
         ICommunicationConfigurationService communicationConfigurationService,
         IOtpThrottleService otpThrottleService)
     {
         _db = db;
-        _smsSender = smsSender;
+        _communicationService = communicationService;
         _communicationConfigurationService = communicationConfigurationService;
         _otpThrottleService = otpThrottleService;
     }
@@ -84,7 +85,25 @@ public class PublicNewConnectionOtpService : IPublicNewConnectionOtpService
         });
 
         await _db.SaveChangesAsync(ct);
-        await _smsSender.SendOtpAsync(mobile, otp, expiresAt, ct);
+        await _communicationService.SendAsync(
+            CommunicationPurposes.PublicNewConnectionOtp,
+            new NotificationRecipient
+            {
+                Name = "Applicant",
+                Mobile = mobile
+            },
+            new Dictionary<string, string?>
+            {
+                ["ConsumerName"] = "Applicant",
+                ["MobileNo"] = mobile,
+                ["Otp"] = otp,
+                ["Date"] = now.ToString("dd MMM yyyy hh:mm tt")
+            },
+            NotificationChannelOptions.For(CommunicationChannels.Sms),
+            referenceType: "PublicNewConnectionOtp",
+            referenceId: mobile,
+            referenceNo: mobile,
+            ct: ct);
 
         return new PublicOtpRequestResult
         {

@@ -3899,6 +3899,18 @@
         }
       }
     },
+    "/Dashboard/StaffRecentActivity": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/Dashboard/RecentQueries": {
       "get": {
         "tags": [
@@ -9666,6 +9678,26 @@
             "nullable": true
           },
           "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "assignedToName": {
+            "type": "string",
+            "nullable": true
+          },
+          "assignedToRole": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionByRole": {
             "type": "string",
             "nullable": true
           },

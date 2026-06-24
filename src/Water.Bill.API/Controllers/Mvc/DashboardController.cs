@@ -119,6 +119,19 @@ public class DashboardController : Controller
     public async Task<IActionResult> RecentActivity(CancellationToken ct)
         => Json(await GetRecentActivityCachedAsync(ct, 5));
 
+    [HttpGet("/Dashboard/StaffRecentActivity")]
+    [RequirePermission("Dashboard.view")]
+    public async Task<IActionResult> StaffRecentActivity(CancellationToken ct)
+    {
+        var userId = ResolveUserId();
+        var rows = await BuildRecentActivityAsync(
+            _db.Auditlogs.AsNoTracking().Where(x => x.UserId == userId),
+            ct,
+            8);
+
+        return Json(rows);
+    }
+
     [HttpGet("/Dashboard/RecentQueries")]
     [RequirePermission("Dashboard.view")]
     public async Task<IActionResult> RecentQueries(CancellationToken ct)
@@ -162,33 +175,40 @@ public class DashboardController : Controller
             .Count(x => x.SlaDays.HasValue
                 && x.SlaDays.Value > 0
                 && x.AssignedOn.Date.AddDays(x.SlaDays.Value) < today);
-        var myChallansQuery = _db.Challans.AsNoTracking().Where(x =>
-            x.Userid == username || x.Userid == userId.ToString());
-        var myChallanCount = await myChallansQuery.CountAsync(ct);
         var myOpenQueries = hasSupportQueries
             ? await _db.ConsumerSupportQueries.AsNoTracking()
                 .CountAsync(x => !x.IsDeleted && x.AssignedToUserId == userId && (x.Status == "Open" || x.Status == "InProgress"), ct)
             : 0;
+        var userDivision = await _db.Appusers.AsNoTracking()
+            .Where(x => x.Id == userId && !x.IsDeleted)
+            .Select(x => x.DivisionDevType)
+            .FirstOrDefaultAsync(ct);
+
+        var divisionConsumersQuery = _db.ConsumerDetailsMasters.AsNoTracking();
+        if (userDivision.HasValue && userDivision.Value != AppConstants.Divisions.AllDivision.DevType)
+        {
+            divisionConsumersQuery = divisionConsumersQuery.Where(x => x.DevType == userDivision.Value);
+        }
+
+        var divisionConsumerCount = await divisionConsumersQuery.CountAsync(ct);
 
         var summaryCards = new List<DashboardStatCardViewModel>
         {
-            MakeCard("My Pending Approvals", myPendingApprovals.ToString("N0"), string.Empty,
+            MakeCard("Pending Approvals", myPendingApprovals.ToString("N0"), string.Empty,
                 tone: "warning", url: "/Approvals?tab=Pending", icon: "bi-hourglass-split"),
 
             MakeCard("Overdue Approvals", overdueApprovals.ToString("N0"), string.Empty,
                 tone: "danger", url: "/Approvals?tab=Pending", icon: "bi-exclamation-triangle-fill"),
 
-            MakeCard("My Challans", myChallanCount.ToString("N0"), string.Empty,
-                tone: "info", url: Url.Action("Index", "ChallanManagement"), icon: "bi-receipt"),
+            MakeCard("Division Consumers", divisionConsumerCount.ToString("N0"), string.Empty,
+                tone: "info", url: Url.Action("Index", "ConsumerMasterMaintenance"), icon: "bi-people-fill"),
 
-            MakeCard("My Open Queries", myOpenQueries.ToString("N0"), string.Empty,
+            MakeCard("Queries", myOpenQueries.ToString("N0"), string.Empty,
                 tone: "danger", url: Url.Action("Index", "ConsumerQueryManagement"), icon: "bi-chat-dots-fill")
         };
 
         var workloadChart = await BuildStaffWorkloadChartAsync(assignedPendingQuery, ct);
-        var recentChallans = await BuildRecentChallansAsync(myChallansQuery, ct);
         var recentServiceDesk = await BuildRecentServiceDeskAsync(hasSupportQueries, userId, ct, 8);
-        var recentActivity = await BuildRecentActivityAsync(_db.Auditlogs.AsNoTracking().Where(x => x.UserId == userId), ct, 8);
         var assignedRows = await BuildPendingApprovalRowsAsync(allAssignedQuery.OrderByDescending(x => x.AssignedOn), ct, 8);
 
         return new DashboardIndexViewModel
@@ -199,9 +219,7 @@ public class DashboardController : Controller
             SummaryCards = summaryCards,
             SecondaryBarChart = workloadChart,
             PendingApprovals = assignedRows,
-            RecentChallans = recentChallans,
             RecentServiceDeskItems = recentServiceDesk,
-            RecentActivities = recentActivity,
             QuickLinks = Array.Empty<DashboardQuickLinkViewModel>()
         };
     }

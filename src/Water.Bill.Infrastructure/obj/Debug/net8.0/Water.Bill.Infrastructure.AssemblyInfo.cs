@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Water Billing data access, EF Core DbContext, repositories, and infrastructure se" +
     "rvice implementations.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fa6da1538feb55aff809fdc77f65955256d9463")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c2a1d0ca63b7ddb2b4ac8f7a7150bc5fa8ad4f57")]
 [assembly: System.Reflection.AssemblyProductAttribute("Water.Bill.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Water.Bill.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

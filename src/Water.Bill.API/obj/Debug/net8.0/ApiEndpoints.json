@@ -2753,6 +2753,16 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.DashboardController",
+    "Method": "StaffRecentActivity",
+    "RelativePath": "Dashboard/StaffRecentActivity",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Water.Bill.API.Controllers.Mvc.DisconnectionManagementController",
     "Method": "Index",
     "RelativePath": "DisconnectionManagement",

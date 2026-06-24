@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.Helpers;
@@ -27,14 +28,14 @@ public class ProfileController : ConsumerPortalControllerBase
 
     private readonly IAuditLogService _auditLogService;
     private readonly ApplicationDbContext _db;
-    private readonly IConsumerSmsSender _smsSender;
+    private readonly ICommunicationService _communicationService;
     private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly IOtpThrottleService _otpThrottleService;
 
     public ProfileController(
         IAuditLogService auditLogService,
         ApplicationDbContext db,
-        IConsumerSmsSender smsSender,
+        ICommunicationService communicationService,
         ICommunicationConfigurationService communicationConfigurationService,
         IOtpThrottleService otpThrottleService,
         IErrorLogService errorLogService)
@@ -42,7 +43,7 @@ public class ProfileController : ConsumerPortalControllerBase
     {
         _auditLogService = auditLogService;
         _db = db;
-        _smsSender = smsSender;
+        _communicationService = communicationService;
         _communicationConfigurationService = communicationConfigurationService;
         _otpThrottleService = otpThrottleService;
     }
@@ -463,7 +464,27 @@ public class ProfileController : ConsumerPortalControllerBase
         });
 
         await _db.SaveChangesAsync(ct);
-        await _smsSender.SendOtpAsync(mobileNo, otp, expiresAt, ct);
+        await _communicationService.SendAsync(
+            CommunicationPurposes.ConsumerOtp,
+            new NotificationRecipient
+            {
+                Name = consumer.ConsNm1,
+                Mobile = mobileNo,
+                Email = consumer.EmailId
+            },
+            new Dictionary<string, string?>
+            {
+                ["ConsumerName"] = consumer.ConsNm1,
+                ["ConsumerNo"] = normalizedConsumerNo,
+                ["Otp"] = otp,
+                ["Date"] = now.ToString("dd MMM yyyy hh:mm tt"),
+                ["ExpiryMinutes"] = OtpExpiryMinutes.ToString()
+            },
+            NotificationChannelOptions.For(CommunicationChannels.Sms),
+            referenceType: "ContactUpdateOtp",
+            referenceId: normalizedConsumerNo,
+            referenceNo: normalizedConsumerNo,
+            ct: ct);
 
         return new Water.Bill.Application.DTOs.Consumer.ConsumerOtpRequestResult
         {

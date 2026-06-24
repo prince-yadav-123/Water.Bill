@@ -1,16 +1,6 @@
 C:\Temp\wb-api-out\Water.Bill.Core.deps.json
 C:\Temp\wb-api-out\Water.Bill.Core.dll
 C:\Temp\wb-api-out\Water.Bill.Core.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.csproj.CoreCompileInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.sourcelink.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\refint\Water.Bill.Core.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\ref\Water.Bill.Core.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.deps.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.pdb
 C:\Temp\wb-dashboard-role-out\Water.Bill.Core.deps.json
 C:\Temp\wb-dashboard-role-out\Water.Bill.Core.dll
 C:\Temp\wb-dashboard-role-out\Water.Bill.Core.pdb
@@ -20,3 +10,37 @@ C:\Temp\wb-consumer-out\Water.Bill.Core.pdb
 C:\Temp\wb-consumer-out-2\Water.Bill.Core.deps.json
 C:\Temp\wb-consumer-out-2\Water.Bill.Core.dll
 C:\Temp\wb-consumer-out-2\Water.Bill.Core.pdb
+C:\Temp\WBVerifyAPI\Water.Bill.Core.deps.json
+C:\Temp\WBVerifyAPI\Water.Bill.Core.dll
+C:\Temp\WBVerifyAPI\Water.Bill.Core.pdb
+C:\Temp\WBVerifyAPI2\Water.Bill.Core.deps.json
+C:\Temp\WBVerifyAPI2\Water.Bill.Core.dll
+C:\Temp\WBVerifyAPI2\Water.Bill.Core.pdb
+C:\Temp\WBVerifyAPI3\Water.Bill.Core.deps.json
+C:\Temp\WBVerifyAPI3\Water.Bill.Core.dll
+C:\Temp\WBVerifyAPI3\Water.Bill.Core.pdb
+C:\Temp\WBVerifyAPI4\Water.Bill.Core.deps.json
+C:\Temp\WBVerifyAPI4\Water.Bill.Core.dll
+C:\Temp\WBVerifyAPI4\Water.Bill.Core.pdb
+C:\Temp\WBVerifyAPI5\Water.Bill.Core.deps.json
+C:\Temp\WBVerifyAPI5\Water.Bill.Core.dll
+C:\Temp\WBVerifyAPI5\Water.Bill.Core.pdb
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.Core.deps.json
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.Core.dll
+C:\Temp\WBVerifySessionInvalidate\Water.Bill.Core.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.csproj.CoreCompileInputs.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.sourcelink.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\refint\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\Water.Bill.Core.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\obj\Debug\net8.0\ref\Water.Bill.Core.dll
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Core.deps.json
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Core.dll
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Core.pdb
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Core.deps.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Core.dll
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Core.pdb
