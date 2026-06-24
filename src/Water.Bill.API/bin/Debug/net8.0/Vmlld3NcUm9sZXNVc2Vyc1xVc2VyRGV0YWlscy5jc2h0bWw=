@@ -7,7 +7,7 @@
 <div class="wb-page-head">
     <div>
         <h1>User Details</h1>
-        <p>Review authority user profile, role, and current account state.</p>
+        <p>Review authority user profile, role, division, and current account state.</p>
     </div>
     <div class="wb-actions">
         <a class="btn btn-outline-primary" asp-action="Users">Back</a>
@@ -44,10 +44,6 @@
         <div>
             <dt>Division</dt>
             <dd>@(string.IsNullOrWhiteSpace(AppConstants.Divisions.FormatDisplay(Model.DivisionDevType)) ? "-" : AppConstants.Divisions.FormatDisplay(Model.DivisionDevType))</dd>
-        </div>
-        <div>
-            <dt>Department</dt>
-            <dd>@(Model.Department?.DeptName ?? "-")</dd>
         </div>
         <div>
             <dt>Created</dt>

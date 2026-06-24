@@ -7,6 +7,8 @@
     <RootNamespace>Water.Bill.Core</RootNamespace>
     <AssemblyName>Water.Bill.Core</AssemblyName>
     <Description>Water Billing core domain models, enums, constants, and shared primitives.</Description>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
 </Project>

@@ -1137,7 +1137,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                 ApplicationId = id,
                 ApplicationNo = application.ApplicationNo,
                 StageId = sentBackTask.StageId,
-                AssignedDepartmentId = sentBackTask.AssignedDepartmentId,
+                AssignedDepartmentId = null,
                 AssignedRoleId = sentBackTask.AssignedRoleId,
                 AssignedUserId = sentBackTask.AssignedUserId,
                 Status = WorkflowService.TaskStatusPending,
@@ -1187,14 +1187,13 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                         CreatedAt = now
                     });
                 }
-                else if (sentBackTask.AssignedRoleId.HasValue || sentBackTask.AssignedDepartmentId.HasValue)
+                else if (sentBackTask.AssignedRoleId.HasValue)
                 {
                     var usersQ = _db.Appusers.AsNoTracking()
                         .Where(u => u.IsActive == true && !u.IsDeleted);
                     if (sentBackTask.AssignedRoleId.HasValue)
                         usersQ = usersQ.Where(u => u.RoleId == sentBackTask.AssignedRoleId.Value);
-                    if (sentBackTask.AssignedDepartmentId.HasValue)
-                        usersQ = usersQ.Where(u => u.DeptId == sentBackTask.AssignedDepartmentId.Value);
+                    usersQ = ApplyDivisionRecipientFilter(usersQ, application.DevType);
                     var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
                     foreach (var uid in uids)
                     {
@@ -1339,7 +1338,7 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                 ApplicationId = id,
                 ApplicationNo = application.ApplicationNo,
                 StageId = sentBackTask.StageId,
-                AssignedDepartmentId = sentBackTask.AssignedDepartmentId,
+                AssignedDepartmentId = null,
                 AssignedRoleId = sentBackTask.AssignedRoleId,
                 AssignedUserId = sentBackTask.AssignedUserId,
                 Status = WorkflowService.TaskStatusPending,
@@ -1388,14 +1387,13 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
                         CreatedAt = now
                     });
                 }
-                else if (sentBackTask.AssignedRoleId.HasValue || sentBackTask.AssignedDepartmentId.HasValue)
+                else if (sentBackTask.AssignedRoleId.HasValue)
                 {
                     var usersQ = _db.Appusers.AsNoTracking()
                         .Where(u => u.IsActive == true && !u.IsDeleted);
                     if (sentBackTask.AssignedRoleId.HasValue)
                         usersQ = usersQ.Where(u => u.RoleId == sentBackTask.AssignedRoleId.Value);
-                    if (sentBackTask.AssignedDepartmentId.HasValue)
-                        usersQ = usersQ.Where(u => u.DeptId == sentBackTask.AssignedDepartmentId.Value);
+                    usersQ = ApplyDivisionRecipientFilter(usersQ, application.DevType);
                     var uids = await usersQ.Select(u => u.Id).ToListAsync(ct);
                     foreach (var uid in uids)
                     {
@@ -1448,5 +1446,16 @@ public class NewConnectionApplicationService : INewConnectionApplicationService
             throw new InvalidOperationException("Enter a valid 10 digit mobile number.");
 
         return digits;
+    }
+
+    private IQueryable<Appuser> ApplyDivisionRecipientFilter(IQueryable<Appuser> query, int? applicationDevType)
+    {
+        if (!applicationDevType.HasValue)
+            return query;
+
+        return query.Where(x =>
+            !x.DivisionDevType.HasValue
+            || x.DivisionDevType == applicationDevType.Value
+            || x.DivisionDevType == AppConstants.Divisions.AllDivision.DevType);
     }
 }

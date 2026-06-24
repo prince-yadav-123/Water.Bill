@@ -13,7 +13,7 @@
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="text-danger wb-field-wide"></div>
         <div class="wb-field">
-            <label class="form-label">Code</label>
+            <label class="form-label required">Code</label>
             <input class="form-control" value="@(Model.DeptId == 0 ? "Auto generated from DEPT_ID" : Model.DeptId.ToString())" readonly />
         </div>
         <div class="wb-field">
@@ -22,7 +22,7 @@
             <span asp-validation-for="DeptName" class="text-danger"></span>
         </div>
         <div class="wb-field">
-            <label asp-for="DevType" class="form-label">Division Type</label>
+            <label asp-for="DevType" class="form-label required">Division Type</label>
             <input asp-for="DevType" class="form-control" type="number" />
         </div>
         <div class="wb-field wb-field-wide">

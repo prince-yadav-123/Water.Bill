@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.Application.DTOs.NewConnection;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 
 namespace Water.Bill.Infrastructure.Services;
@@ -22,6 +23,39 @@ public class NewConnectionLookupService : INewConnectionLookupService
             DocumentTypes = await GetDocumentTypesAsync(ct),
             Villages = await GetVillagesAsync(devType, ct)
         };
+
+    public async Task<NewConnectionSectorContextDto> GetSectorContextAsync(string sectorId, CancellationToken ct = default)
+    {
+        var normalizedSector = Normalize(sectorId);
+        if (normalizedSector is null)
+            return new NewConnectionSectorContextDto();
+
+        var devType = await GetSectorDevTypeAsync(normalizedSector, ct);
+
+        return new NewConnectionSectorContextDto
+        {
+            DevType = devType,
+            DivisionDisplay = AppConstants.Divisions.FormatDisplay(devType),
+            Blocks = await GetBlocksBySectorAsync(normalizedSector, devType, ct),
+            ConnectionCategories = devType.HasValue ? await GetConnectionCategoriesAsync(devType, ct) : [],
+            PipeSizes = devType.HasValue ? await GetPipeSizesAsync(devType, ct) : [],
+            Villages = devType.HasValue ? await GetVillagesAsync(devType, ct) : []
+        };
+    }
+
+    public async Task<int?> GetSectorDevTypeAsync(string sectorId, CancellationToken ct = default)
+    {
+        var normalizedSector = Normalize(sectorId);
+        if (normalizedSector is null)
+            return null;
+
+        return await _db.SectorDetails
+            .AsNoTracking()
+            .Where(x => x.SectorId == normalizedSector
+                && (x.Status == null || x.Status == 1))
+            .Select(x => x.DevType)
+            .FirstOrDefaultAsync(ct);
+    }
 
     public async Task<IReadOnlyList<NewConnectionLookupOptionDto>> GetBlocksBySectorAsync(string sectorId, int? devType = null, CancellationToken ct = default)
     {

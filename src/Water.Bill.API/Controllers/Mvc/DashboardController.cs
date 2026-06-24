@@ -46,17 +46,9 @@ public class DashboardController : Controller
             ?? User.FindFirstValue(ClaimTypes.Role)
             ?? AppConstants.Roles.Staff;
         var isAdminView = roleName.Contains("admin", StringComparison.OrdinalIgnoreCase);
-        var departmentId = userId > 0
-            ? await _db.Appusers
-                .AsNoTracking()
-                .Where(x => x.Id == userId && !x.IsDeleted)
-                .Select(x => x.DeptId)
-                .FirstOrDefaultAsync(ct)
-            : null;
-
         var vm = isAdminView
             ? await BuildAdminDashboardAsync(user?.FullName ?? username, roleName, defaulterThreshold, ct)
-            : await BuildStaffDashboardAsync(userId, roleId, username, user?.FullName ?? username, roleName, departmentId, ct);
+            : await BuildStaffDashboardAsync(userId, roleId, username, user?.FullName ?? username, roleName, ct);
 
         return View(vm);
     }
@@ -148,16 +140,15 @@ public class DashboardController : Controller
         string username,
         string userName,
         string roleName,
-        int? departmentId,
         CancellationToken ct)
     {
-        var assignedPendingQuery = ApplyWorkflowAssignmentFilter(PendingWorkflowTasksQuery(), userId, roleId, departmentId);
+        var assignedPendingQuery = ApplyWorkflowAssignmentFilter(PendingWorkflowTasksQuery(), userId, roleId);
         var hasSupportQueries = await TableExistsAsync("consumersupportqueries", ct);
         var allAssignedQuery = ApplyWorkflowAssignmentFilter(_db.ApplicationWorkflowTasks
             .Include(x => x.Stage)
             .Include(x => x.WorkflowInstance)
             .AsNoTracking()
-            .Where(x => !x.IsDeleted && !x.WorkflowInstance.IsDeleted), userId, roleId, departmentId);
+            .Where(x => !x.IsDeleted && !x.WorkflowInstance.IsDeleted), userId, roleId);
 
         var myPendingApprovals = await assignedPendingQuery.CountAsync(ct);
         var today = DateTime.Today;
@@ -343,7 +334,7 @@ public class DashboardController : Controller
         var divisionChart = await BuildDivisionConsumerChartAsync(ct);
         var paymentCollectionChart = await BuildPaymentCollectionByTypeChartAsync(ct);
         var defaulterWidget = await BuildDefaulterWidgetAsync(totalConsumers, defaulterThreshold, ct);
-        var workloadChart = await BuildDepartmentWorkloadChartAsync(pendingTaskQuery, ct);
+        var workloadChart = await BuildRoleWorkloadChartAsync(pendingTaskQuery, ct);
         var trendChart = await BuildAdminTrendChartAsync(ct);
         var serviceDeskPanel = await BuildAdminServiceDeskPanelAsync(hasSupportQueries, ct);
 
@@ -545,26 +536,96 @@ WHERE Outstanding >= @threshold;
         };
     }
 
-    private async Task<DashboardBarChartViewModel> BuildDepartmentWorkloadChartAsync(IQueryable<ApplicationWorkflowTask> pendingTaskQuery, CancellationToken ct)
+    private async Task<DashboardBarChartViewModel> BuildRoleWorkloadChartAsync(IQueryable<ApplicationWorkflowTask> pendingTaskQuery, CancellationToken ct)
     {
+        var roleIds = await pendingTaskQuery
+            .Where(x => x.AssignedRoleId.HasValue)
+            .Select(x => x.AssignedRoleId!.Value)
+            .Distinct()
+            .ToListAsync(ct);
+        var userIds = await pendingTaskQuery
+            .Where(x => x.AssignedUserId.HasValue)
+            .Select(x => x.AssignedUserId!.Value)
+            .Distinct()
+            .ToListAsync(ct);
+        var userRoleMap = await _db.Appusers.AsNoTracking()
+            .Where(x => userIds.Contains(x.Id))
+            .Select(x => new { x.Id, x.RoleId })
+            .ToDictionaryAsync(x => x.Id, x => x.RoleId, ct);
+
+        var derivedRoleIds = userRoleMap.Values
+            .Where(x => x > 0)
+            .Distinct()
+            .ToList();
+
+        roleIds = roleIds
+            .Concat(derivedRoleIds)
+            .Distinct()
+            .ToList();
+
+        var roleNames = await _db.Approles.AsNoTracking()
+            .Where(x => roleIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, x => x.Name, ct);
+
         var rows = await pendingTaskQuery
-            .GroupBy(x => new { x.AssignedDepartmentId, DepartmentName = x.Stage.Department != null ? x.Stage.Department.DeptName : null })
+            .GroupBy(x => new { x.AssignedUserId, x.AssignedRoleId })
             .Select(x => new
             {
-                Name = x.Key.DepartmentName ?? (x.Key.AssignedDepartmentId.HasValue ? $"Department {x.Key.AssignedDepartmentId.Value}" : "Direct Assignment"),
+                x.Key.AssignedUserId,
+                x.Key.AssignedRoleId,
                 Count = x.Count()
             })
             .OrderByDescending(x => x.Count)
-            .Take(6)
             .ToListAsync(ct);
+
+        var groupedRows = rows
+            .Select(x =>
+            {
+                string label;
+
+                if (x.AssignedRoleId.HasValue && roleNames.TryGetValue(x.AssignedRoleId.Value, out var assignedRoleName))
+                {
+                    label = assignedRoleName;
+                }
+                else if (x.AssignedUserId.HasValue
+                    && userRoleMap.TryGetValue(x.AssignedUserId.Value, out var userRoleId)
+                    && userRoleId > 0
+                    && roleNames.TryGetValue(userRoleId, out var userRoleName))
+                {
+                    label = userRoleName;
+                }
+                else if (x.AssignedUserId.HasValue)
+                {
+                    label = "Specific User Queue";
+                }
+                else
+                {
+                    label = "All Roles";
+                }
+
+                return new
+                {
+                    Label = label,
+                    x.Count
+                };
+            })
+            .GroupBy(x => x.Label)
+            .Select(x => new
+            {
+                Label = x.Key,
+                Count = x.Sum(y => y.Count)
+            })
+            .OrderByDescending(x => x.Count)
+            .Take(6)
+            .ToList();
 
         return new DashboardBarChartViewModel
         {
-            Title = "Pending Workload by Department",
-            Caption = "Current active workflow queue",
-            Items = rows.Select((x, index) => new DashboardBarItemViewModel
+            Title = "Pending Workload by User Role",
+            Caption = "Current active workflow queue grouped by role",
+            Items = groupedRows.Select((x, index) => new DashboardBarItemViewModel
             {
-                Label = x.Name,
+                Label = x.Label,
                 Value = x.Count,
                 Color = BarPalette[index % BarPalette.Length],
                 Url = "/Approvals?tab=Pending"
@@ -862,7 +923,7 @@ WHERE Outstanding >= @threshold;
         return rows;
     }
 
-    private string BuildDashboardCacheKey(string segment, int roleId, int userId, decimal? threshold = null, int? departmentId = null)
+    private string BuildDashboardCacheKey(string segment, int roleId, int userId, decimal? threshold = null)
     {
         var parts = new List<string>
         {
@@ -871,9 +932,6 @@ WHERE Outstanding >= @threshold;
             $"role:{roleId}",
             $"user:{userId}"
         };
-
-        if (departmentId.HasValue)
-            parts.Add($"dept:{departmentId.Value}");
 
         if (threshold.HasValue)
             parts.Add($"threshold:{threshold.Value:0.##}");
@@ -926,7 +984,6 @@ WHERE Outstanding >= @threshold;
     private IQueryable<ApplicationWorkflowTask> PendingWorkflowTasksQuery()
         => _db.ApplicationWorkflowTasks
             .Include(x => x.Stage)
-                .ThenInclude(x => x.Department)
             .Include(x => x.WorkflowInstance)
             .AsNoTracking()
             .Where(x => !x.IsDeleted
@@ -938,33 +995,21 @@ WHERE Outstanding >= @threshold;
 
     // ── IMPORTANT: This filter MUST match ApprovalsController.ApplyWorkflowAssignmentFilter exactly.
     // If they differ the dashboard count and the Approvals list will not match.
-    // Rule: if AssignedUserId is set, ONLY that specific user can see the task (role/dept are ignored).
+    // Rule: if AssignedUserId is set, ONLY that specific user can see the task; otherwise role-based assignment is used.
     private static IQueryable<ApplicationWorkflowTask> ApplyWorkflowAssignmentFilter(
         IQueryable<ApplicationWorkflowTask> query,
         int userId,
-        int roleId,
-        int? departmentId)
+        int roleId)
         => query.Where(x =>
             // 1. Task assigned to this specific user
             (x.AssignedUserId.HasValue && x.AssignedUserId == userId)
-            // 2. Task assigned by dept+role (no specific user)
+            // 2. Task assigned by role only (no specific user)
             || (!x.AssignedUserId.HasValue
-                && x.AssignedDepartmentId.HasValue
                 && x.AssignedRoleId.HasValue
-                && x.AssignedRoleId == roleId
-                && departmentId.HasValue
-                && x.AssignedDepartmentId == departmentId.Value)
-            // 3. Task assigned by dept only (no specific user, no role)
+                && x.AssignedRoleId == roleId)
+            // 3. Open task visible to all authorized approval users
             || (!x.AssignedUserId.HasValue
-                && x.AssignedDepartmentId.HasValue
-                && !x.AssignedRoleId.HasValue
-                && departmentId.HasValue
-                && x.AssignedDepartmentId == departmentId.Value)
-            // 4. Task assigned by role only (no specific user, no dept)
-            || (!x.AssignedUserId.HasValue
-                && !x.AssignedDepartmentId.HasValue
-                && x.AssignedRoleId.HasValue
-                && x.AssignedRoleId == roleId));
+                && !x.AssignedRoleId.HasValue));
 
     private static DashboardStatCardViewModel MakeCard(
         string label, string value, string caption,
@@ -1040,8 +1085,6 @@ WHERE Outstanding >= @threshold;
             return userName;
         if (task.AssignedRoleId.HasValue && roles.TryGetValue(task.AssignedRoleId.Value, out var roleName))
             return roleName;
-        if (task.AssignedDepartmentId.HasValue)
-            return "Department Queue";
         return "Direct Queue";
     }
 

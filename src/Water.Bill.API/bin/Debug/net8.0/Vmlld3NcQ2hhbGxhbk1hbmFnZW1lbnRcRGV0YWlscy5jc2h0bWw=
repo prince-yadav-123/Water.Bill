@@ -81,28 +81,28 @@
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="PaymentPost.ChallanId" />
             <div class="col-md-3">
-                <label asp-for="PaymentPost.PaymentDate" class="form-label"></label>
+                <label asp-for="PaymentPost.PaymentDate" class="form-label required"></label>
                 <input asp-for="PaymentPost.PaymentDate" class="form-control" type="date" />
                 <span asp-validation-for="PaymentPost.PaymentDate" class="text-danger"></span>
             </div>
             <div class="col-md-3">
-                <label asp-for="PaymentPost.Amount" class="form-label"></label>
+                <label asp-for="PaymentPost.Amount" class="form-label required"></label>
                 <input asp-for="PaymentPost.Amount" class="form-control" type="number" min="1" step="0.01" />
                 <span asp-validation-for="PaymentPost.Amount" class="text-danger"></span>
             </div>
             <div class="col-md-3">
-                <label asp-for="PaymentPost.PaymentMode" class="form-label"></label>
+                <label asp-for="PaymentPost.PaymentMode" class="form-label required"></label>
                 <select asp-for="PaymentPost.PaymentMode" asp-items="Model.PaymentPost.PaymentModeOptions" class="form-select"></select>
                 <span asp-validation-for="PaymentPost.PaymentMode" class="text-danger"></span>
             </div>
             <div class="col-md-3">
-                <label asp-for="PaymentPost.BankCode" class="form-label"></label>
+                <label asp-for="PaymentPost.BankCode" class="form-label required"></label>
                 <select asp-for="PaymentPost.BankCode" asp-items="Model.PaymentPost.BankOptions" class="form-select">
                     <option value="">Select bank / counter</option>
                 </select>
             </div>
             <div class="col-md-6">
-                <label asp-for="PaymentPost.TransactionReferenceNo" class="form-label"></label>
+                <label asp-for="PaymentPost.TransactionReferenceNo" class="form-label required"></label>
                 <input asp-for="PaymentPost.TransactionReferenceNo" class="form-control" placeholder="Receipt / transaction / cheque no" />
                 <span asp-validation-for="PaymentPost.TransactionReferenceNo" class="text-danger"></span>
             </div>

@@ -208,7 +208,7 @@
                         <div><h2>Query Status Snapshot</h2><p>Consumer support queue at a glance.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/ConsumerQueryManagement">View All</a>
                     </div>
-                    <div class="wb-widget-loading-shell" data-admin-widget-target="service-desk"></div>
+                    <div class="wb-dashboard-dynamic" data-admin-widget-target="service-desk" data-widget-state="idle"></div>
                 </section>
             </div>
         </div>
@@ -219,7 +219,7 @@
                     <div class="wb-section-hdr">
                         <div><h2>Division-wise Consumers</h2><p>Consumer count and percentage share by division.</p></div>
                     </div>
-                    <div class="wb-widget-loading-shell" data-admin-widget-target="division"></div>
+                    <div class="wb-dashboard-dynamic" data-admin-widget-target="division" data-widget-state="idle"></div>
                 </section>
             </div>
             <div class="col-12 col-xl-4">
@@ -227,7 +227,7 @@
                     <div class="wb-section-hdr">
                         <div><h2>Payment Collection (Offline/Online)</h2><p>Online and offline collection share based on received amount.</p></div>
                     </div>
-                    <div class="wb-widget-loading-shell" data-admin-widget-target="payment"></div>
+                    <div class="wb-dashboard-dynamic" data-admin-widget-target="payment" data-widget-state="idle"></div>
                 </section>
             </div>
             <div class="col-12 col-xl-4">
@@ -235,7 +235,7 @@
                     <div class="wb-section-hdr">
                         <div><h2>Defaulters</h2><p>Outstanding dues above the configured threshold.</p></div>
                     </div>
-                    <div class="wb-widget-loading-shell" data-admin-widget-target="defaulter"></div>
+                    <div class="wb-dashboard-dynamic" data-admin-widget-target="defaulter" data-widget-state="idle"></div>
                 </section>
             </div>
         </div>
@@ -244,10 +244,10 @@
             <div class="col-12 col-xl-6">
                 <section class="wb-card h-100" data-admin-widget="workload">
                     <div class="wb-section-hdr">
-                        <div><h2>Pending Workload by Department</h2><p>Current active workflow queue.</p></div>
+                        <div><h2>Pending Workload by User Role</h2><p>Current active workflow queue grouped by role.</p></div>
                         <a class="btn btn-outline-primary btn-sm" href="/Approvals?tab=Pending">View Queue</a>
                     </div>
-                    <div class="wb-widget-loading-shell" data-admin-widget-target="workload"></div>
+                    <div class="wb-dashboard-dynamic" data-admin-widget-target="workload" data-widget-state="idle"></div>
                 </section>
             </div>
             <div class="col-12 col-xl-6">
@@ -255,7 +255,7 @@
                     <div class="wb-section-hdr">
                         <div><h2>New Applications Received vs Approved</h2><p>Month-wise comparison for the last 6 months.</p></div>
                     </div>
-                    <div class="wb-widget-loading-shell" data-admin-widget-target="trend"></div>
+                    <div class="wb-dashboard-dynamic" data-admin-widget-target="trend" data-widget-state="idle"></div>
                 </section>
             </div>
         </div>
@@ -844,7 +844,7 @@
         .wb-qrow-secondary .wb-qrow-accent { background: #94a3b8; }
         .wb-qrow-secondary .wb-qrow-count  { color: #475569; }
 
-        /* â”€â”€â”€ Department workload bars â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+        /* â”€â”€â”€ Workload bars â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .wb-dept-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
@@ -1001,6 +1001,9 @@
         .wb-widget-loading-shell,
         .wb-dashboard-dynamic {
             width: 100%;
+            min-height: 10rem;
+        }
+        .wb-dashboard-dynamic[data-widget-state="idle"] {
             min-height: 10rem;
         }
         .wb-widget-loading-shell {
@@ -1380,19 +1383,44 @@
                 return html;
             }
 
-            function renderAdminWidgets(bundle) {
-                var division = document.querySelector('[data-admin-widget-target="division"]');
-                var payment = document.querySelector('[data-admin-widget-target="payment"]');
-                var defaulter = document.querySelector('[data-admin-widget-target="defaulter"]');
-                var workload = document.querySelector('[data-admin-widget-target="workload"]');
-                var trend = document.querySelector('[data-admin-widget-target="trend"]');
-                var serviceDesk = document.querySelector('[data-admin-widget-target="service-desk"]');
+            var adminWidgetBundlePromise = null;
 
-                if (division) {
-                    division.outerHTML = renderDivisionWidget(bundle.divisionConsumerChart);
+            function getAdminWidgetBundle() {
+                if (adminWidgetBundlePromise) {
+                    return adminWidgetBundlePromise;
                 }
-                if (payment) {
-                    payment.outerHTML = renderPaymentWidget(bundle.paymentCollectionChart);
+
+                var url = new URL('/Dashboard/AdminWidgets', window.location.origin);
+                var threshold = getQueryValue('defaulterThreshold');
+                if (threshold) url.searchParams.set('defaulterThreshold', threshold);
+
+                adminWidgetBundlePromise = fetch(url.toString(), { credentials: 'same-origin' })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('Dashboard widget request failed');
+                        return response.json();
+                    })
+                    .catch(function (error) {
+                        adminWidgetBundlePromise = null;
+                        throw error;
+                    });
+
+                return adminWidgetBundlePromise;
+            }
+
+            function renderAdminWidget(section, bundle) {
+                if (!section) return;
+
+                var key = section.getAttribute('data-admin-widget');
+                var shell = section.querySelector('[data-admin-widget-target]');
+                if (!shell) return;
+
+                if (key === 'division') {
+                    shell.outerHTML = renderDivisionWidget(bundle.divisionConsumerChart);
+                    return;
+                }
+
+                if (key === 'payment') {
+                    shell.outerHTML = renderPaymentWidget(bundle.paymentCollectionChart);
                     if (bundle.paymentCollectionChart) {
                         initChart('paymentCollectionChart', {
                             labels: (bundle.paymentCollectionChart.items || []).map(function (item) { return item.label; }),
@@ -1402,9 +1430,11 @@
                             type: 'amount'
                         });
                     }
+                    return;
                 }
-                if (defaulter) {
-                    defaulter.outerHTML = renderDefaulterWidget(bundle.defaulterWidget);
+
+                if (key === 'defaulter') {
+                    shell.outerHTML = renderDefaulterWidget(bundle.defaulterWidget);
                     if (bundle.defaulterWidget) {
                         initChart('defaulterChart', {
                             labels: ['Defaulters', 'Non-Defaulters'],
@@ -1419,42 +1449,85 @@
                             circumference: 180
                         });
                     }
+                    return;
                 }
-                if (workload) {
-                    workload.outerHTML = renderWorkloadWidget(bundle.secondaryBarChart);
+
+                if (key === 'workload') {
+                    shell.outerHTML = renderWorkloadWidget(bundle.secondaryBarChart);
+                    return;
                 }
-                if (trend) {
-                    trend.outerHTML = renderTrendWidget(bundle.trendChart);
+
+                if (key === 'trend') {
+                    shell.outerHTML = renderTrendWidget(bundle.trendChart);
+                    return;
                 }
-                if (serviceDesk) {
-                    serviceDesk.outerHTML = renderServiceDeskWidget(bundle.serviceDeskPanel);
+
+                if (key === 'service-desk') {
+                    shell.outerHTML = renderServiceDeskWidget(bundle.serviceDeskPanel);
                 }
             }
 
-            function loadAdminWidgets() {
-                var targets = document.querySelectorAll('[data-admin-widget]');
-                if (!targets.length) return;
+            function showAdminWidgetError(section) {
+                var shell = section.querySelector('[data-admin-widget-target]');
+                if (shell) {
+                    shell.classList.add('wb-widget-loading-shell');
+                    shell.setAttribute('data-widget-state', 'error');
+                    shell.innerHTML = '<div class="wb-widget-shell-empty">Unable to load widget.</div>';
+                }
+            }
 
-                var url = new URL('/Dashboard/AdminWidgets', window.location.origin);
-                var threshold = getQueryValue('defaulterThreshold');
-                if (threshold) url.searchParams.set('defaulterThreshold', threshold);
+            function showAdminWidgetLoading(section) {
+                var shell = section.querySelector('[data-admin-widget-target]');
+                if (!shell) return;
 
-                fetch(url.toString(), { credentials: 'same-origin' })
-                    .then(function (response) {
-                        if (!response.ok) throw new Error('Dashboard widget request failed');
-                        return response.json();
-                    })
+                shell.classList.add('wb-widget-loading-shell');
+                shell.setAttribute('data-widget-state', 'loading');
+                shell.innerHTML = '<div class="wb-widget-loading">Loading...</div>';
+            }
+
+            function loadAdminWidget(section) {
+                if (!section || section.getAttribute('data-widget-loaded') === 'true') {
+                    return;
+                }
+
+                showAdminWidgetLoading(section);
+
+                getAdminWidgetBundle()
                     .then(function (data) {
-                        renderAdminWidgets(data || {});
+                        renderAdminWidget(section, data || {});
+                        section.setAttribute('data-widget-loaded', 'true');
                     })
                     .catch(function () {
-                        targets.forEach(function (target) {
-                            var shell = target.querySelector('[data-admin-widget-target]');
-                            if (shell) {
-                                shell.innerHTML = '<div class="wb-widget-shell-empty">Unable to load widget.</div>';
-                            }
-                        });
+                        showAdminWidgetError(section);
                     });
+            }
+
+            function loadAdminWidgets() {
+                var sections = Array.prototype.slice.call(document.querySelectorAll('[data-admin-widget]'));
+                if (!sections.length) return;
+
+                sections.forEach(function (section) {
+                    section.setAttribute('data-widget-loaded', 'false');
+                });
+
+                if (typeof window.IntersectionObserver !== 'function') {
+                    sections.forEach(loadAdminWidget);
+                    return;
+                }
+
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        observer.unobserve(entry.target);
+                        loadAdminWidget(entry.target);
+                    });
+                }, {
+                    rootMargin: '140px 0px'
+                });
+
+                sections.forEach(function (section) {
+                    observer.observe(section);
+                });
             }
 
             function scheduleLazyLoad(action) {

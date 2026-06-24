@@ -38,27 +38,27 @@
                 <span asp-validation-for="IsActive" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="ConsumerName" class="form-label"></label>
+                <label asp-for="ConsumerName" class="form-label required"></label>
                 <input asp-for="ConsumerName" class="form-control" />
                 <span asp-validation-for="ConsumerName" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="FatherName" class="form-label"></label>
+                <label asp-for="FatherName" class="form-label required"></label>
                 <input asp-for="FatherName" class="form-control" />
                 <span asp-validation-for="FatherName" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="MobileNo" class="form-label"></label>
+                <label asp-for="MobileNo" class="form-label required"></label>
                 <input asp-for="MobileNo" class="form-control" />
                 <span asp-validation-for="MobileNo" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="Email" class="form-label"></label>
+                <label asp-for="Email" class="form-label required"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="wb-form-field" style="grid-column: 1 / -1;">
-                <label asp-for="Address" class="form-label"></label>
+                <label asp-for="Address" class="form-label required"></label>
                 <textarea asp-for="Address" class="form-control" rows="2"></textarea>
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
@@ -70,46 +70,46 @@
 
         <div class="wb-form-grid wb-form-grid-2">
             <div class="wb-form-field">
-                <label asp-for="DevType" class="form-label"></label>
+                <label asp-for="DevType" class="form-label required"></label>
                 <select asp-for="DevType" asp-items="Model.DivisionOptions" class="form-select">
                     <option value="">Select division</option>
                 </select>
                 <span asp-validation-for="DevType" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="Sector" class="form-label"></label>
+                <label asp-for="Sector" class="form-label required"></label>
                 <input asp-for="Sector" class="form-control" />
                 <span asp-validation-for="Sector" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="Block" class="form-label"></label>
+                <label asp-for="Block" class="form-label required"></label>
                 <input asp-for="Block" class="form-control" />
                 <span asp-validation-for="Block" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="FlatNo" class="form-label"></label>
+                <label asp-for="FlatNo" class="form-label required"></label>
                 <input asp-for="FlatNo" class="form-control" />
                 <span asp-validation-for="FlatNo" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="PlotSize" class="form-label"></label>
+                <label asp-for="PlotSize" class="form-label required"></label>
                 <input asp-for="PlotSize" class="form-control" type="number" min="0" />
                 <span asp-validation-for="PlotSize" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="FlatType" class="form-label"></label>
+                <label asp-for="FlatType" class="form-label required"></label>
                 <select asp-for="FlatType" asp-items="Model.FlatTypeOptions" class="form-select">
                     <option value="">Select / leave blank</option>
                 </select>
                 <span asp-validation-for="FlatType" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="VillageName" class="form-label"></label>
+                <label asp-for="VillageName" class="form-label required"></label>
                 <input asp-for="VillageName" class="form-control" />
                 <span asp-validation-for="VillageName" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="KhasraNo" class="form-label"></label>
+                <label asp-for="KhasraNo" class="form-label required"></label>
                 <input asp-for="KhasraNo" class="form-control" />
                 <span asp-validation-for="KhasraNo" class="text-danger"></span>
             </div>
@@ -121,58 +121,58 @@
 
         <div class="wb-form-grid wb-form-grid-2">
             <div class="wb-form-field">
-                <label asp-for="ConnectionType" class="form-label"></label>
+                <label asp-for="ConnectionType" class="form-label required"></label>
                 <select asp-for="ConnectionType" asp-items="Model.ConnectionTypeOptions" class="form-select">
                     <option value="">Select connection type</option>
                 </select>
                 <span asp-validation-for="ConnectionType" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="Category" class="form-label"></label>
+                <label asp-for="Category" class="form-label required"></label>
                 <select asp-for="Category" asp-items="Model.CategoryOptions" class="form-select">
                     <option value="">Select category</option>
                 </select>
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="PipeSize" class="form-label"></label>
+                <label asp-for="PipeSize" class="form-label required"></label>
                 <select asp-for="PipeSize" asp-items="Model.PipeSizeOptions" class="form-select">
                     <option value="">Select pipe size</option>
                 </select>
                 <span asp-validation-for="PipeSize" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="Purpose" class="form-label"></label>
+                <label asp-for="Purpose" class="form-label required"></label>
                 <input asp-for="Purpose" class="form-control" />
                 <span asp-validation-for="Purpose" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="ConnectionDate" class="form-label"></label>
+                <label asp-for="ConnectionDate" class="form-label required"></label>
                 <input asp-for="ConnectionDate" class="form-control" type="date" />
                 <span asp-validation-for="ConnectionDate" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="TypeChangeDate" class="form-label"></label>
+                <label asp-for="TypeChangeDate" class="form-label required"></label>
                 <input asp-for="TypeChangeDate" class="form-control" type="date" />
                 <span asp-validation-for="TypeChangeDate" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="MonthlyRate" class="form-label"></label>
+                <label asp-for="MonthlyRate" class="form-label required"></label>
                 <input asp-for="MonthlyRate" class="form-control" type="number" step="0.01" min="0" />
                 <span asp-validation-for="MonthlyRate" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="MonthlyCharges" class="form-label"></label>
+                <label asp-for="MonthlyCharges" class="form-label required"></label>
                 <input asp-for="MonthlyCharges" class="form-control" type="number" step="0.01" min="0" />
                 <span asp-validation-for="MonthlyCharges" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="CessAmount" class="form-label"></label>
+                <label asp-for="CessAmount" class="form-label required"></label>
                 <input asp-for="CessAmount" class="form-control" type="number" step="0.01" min="0" />
                 <span asp-validation-for="CessAmount" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="OtherConnection" class="form-label"></label>
+                <label asp-for="OtherConnection" class="form-label required"></label>
                 <input asp-for="OtherConnection" class="form-control" />
                 <span asp-validation-for="OtherConnection" class="text-danger"></span>
             </div>
@@ -184,47 +184,47 @@
 
         <div class="wb-form-grid wb-form-grid-2">
             <div class="wb-form-field">
-                <label asp-for="RegistrationNo" class="form-label"></label>
+                <label asp-for="RegistrationNo" class="form-label required"></label>
                 <input asp-for="RegistrationNo" class="form-control" />
                 <span asp-validation-for="RegistrationNo" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="EstimateNo" class="form-label"></label>
+                <label asp-for="EstimateNo" class="form-label required"></label>
                 <input asp-for="EstimateNo" class="form-control" />
                 <span asp-validation-for="EstimateNo" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="EstimateAmount" class="form-label"></label>
+                <label asp-for="EstimateAmount" class="form-label required"></label>
                 <input asp-for="EstimateAmount" class="form-control" type="number" min="0" />
                 <span asp-validation-for="EstimateAmount" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="SecurityAmount" class="form-label"></label>
+                <label asp-for="SecurityAmount" class="form-label required"></label>
                 <input asp-for="SecurityAmount" class="form-control" type="number" min="0" />
                 <span asp-validation-for="SecurityAmount" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="EstimateDate" class="form-label"></label>
+                <label asp-for="EstimateDate" class="form-label required"></label>
                 <input asp-for="EstimateDate" class="form-control" type="date" />
                 <span asp-validation-for="EstimateDate" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="IssueOfficer" class="form-label"></label>
+                <label asp-for="IssueOfficer" class="form-label required"></label>
                 <input asp-for="IssueOfficer" class="form-control" />
                 <span asp-validation-for="IssueOfficer" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="PlotMapId" class="form-label"></label>
+                <label asp-for="PlotMapId" class="form-label required"></label>
                 <input asp-for="PlotMapId" class="form-control" />
                 <span asp-validation-for="PlotMapId" class="text-danger"></span>
             </div>
             <div class="wb-form-field">
-                <label asp-for="KiloLiter" class="form-label"></label>
+                <label asp-for="KiloLiter" class="form-label required"></label>
                 <input asp-for="KiloLiter" class="form-control" />
                 <span asp-validation-for="KiloLiter" class="text-danger"></span>
             </div>
             <div class="wb-form-field" style="grid-column: 1 / -1;">
-                <label asp-for="Narration" class="form-label"></label>
+                <label asp-for="Narration" class="form-label required"></label>
                 <textarea asp-for="Narration" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Narration" class="text-danger"></span>
             </div>

@@ -1,15 +1,14 @@
-@model UserFormViewModel
+﻿@model UserFormViewModel
 @{
     ViewData["Title"] = "Create User";
     var divisions = ViewBag.DivisionOptions as IEnumerable<Water.Bill.Core.Common.AppConstants.DivisionOption> ?? Enumerable.Empty<Water.Bill.Core.Common.AppConstants.DivisionOption>();
     var roles = ViewBag.Roles as IEnumerable<Approle> ?? Enumerable.Empty<Approle>();
-    var departments = ViewBag.Departments as IEnumerable<MasterDeptDetail> ?? Enumerable.Empty<MasterDeptDetail>();
 }
 
 <div class="wb-page-head">
     <div>
         <h1>Create User</h1>
-        <p>Create an authority user and assign a role.</p>
+        <p>Create an authority user and assign a role and division.</p>
     </div>
     <a class="btn btn-outline-primary" asp-action="Users">Back</a>
 </div>
@@ -52,7 +51,7 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label required" asp-for="DivisionDevType">Division</label>
-                <select class="form-select" asp-for="DivisionDevType" required data-user-division>
+                <select class="form-select" asp-for="DivisionDevType" required>
                     <option value="">Select Division</option>
                     @foreach (var division in divisions)
                     {
@@ -60,17 +59,6 @@
                     }
                 </select>
                 <span class="text-danger small" asp-validation-for="DivisionDevType"></span>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label" asp-for="DeptId">Department</label>
-                <select class="form-select" asp-for="DeptId" data-user-department>
-                    <option value="">Select Department</option>
-                    @foreach (var department in departments)
-                    {
-                        <option value="@department.Id" data-dev-type="@department.DevType">@department.DeptName</option>
-                    }
-                </select>
-                <span class="text-danger small" asp-validation-for="DeptId"></span>
             </div>
             <div class="col-md-6">
                 <label class="form-label required" asp-for="Password">Password</label>
@@ -110,34 +98,6 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         (() => {
-            const division = document.querySelector('[data-user-division]');
-            const department = document.querySelector('[data-user-department]');
-
-            const syncDepartments = () => {
-                if (!division || !department) return;
-
-                const selectedDivision = division.value;
-                const options = Array.from(department.options);
-
-                options.forEach(option => {
-                    if (!option.value) {
-                        option.hidden = false;
-                        return;
-                    }
-
-                    const optionDivision = option.getAttribute('data-dev-type');
-                    const showOption = !selectedDivision || selectedDivision === '4' || optionDivision === selectedDivision;
-                    option.hidden = !showOption;
-
-                    if (!showOption && option.selected) {
-                        department.value = '';
-                    }
-                });
-            };
-
-            division?.addEventListener('change', syncDepartments);
-            syncDepartments();
-
             document.querySelectorAll('[data-password-toggle]').forEach(button => {
                 button.addEventListener('click', () => {
                     const group = button.closest('.wb-password-group');

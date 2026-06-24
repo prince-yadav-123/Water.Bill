@@ -41,7 +41,7 @@
             <div class="form-text">Click a placeholder to insert it at the cursor position.</div>
         </div>
         <div class="wb-field wb-field-wide" data-subject-field>
-            <label class="form-label" asp-for="Subject">Subject</label>
+            <label class="form-label required" asp-for="Subject">Subject</label>
             <input class="form-control" asp-for="Subject" data-template-subject />
             <div class="form-text">Used for Email subject and In-App notification title.</div>
             <span class="text-danger" asp-validation-for="Subject"></span>

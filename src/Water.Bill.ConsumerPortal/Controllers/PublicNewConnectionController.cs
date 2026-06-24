@@ -140,11 +140,12 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
 
         ViewData["Title"] = "Apply for New Connection";
         ViewData["FormAction"] = nameof(Apply);
-        await LoadLookupDataAsync(ct);
-        return View("~/Views/NewConnection/Apply.cshtml", new NewConnectionApplicationFormDto
+        var model = new NewConnectionApplicationFormDto
         {
             MobileNumber = mobile
-        });
+        };
+        await LoadLookupDataAsync(model, ct);
+        return View("~/Views/NewConnection/Apply.cshtml", model);
     }
 
     [HttpPost("/NewConnection/Apply")]
@@ -157,8 +158,9 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
 
         ViewData["Title"] = "Apply for New Connection";
         ViewData["FormAction"] = nameof(Apply);
-        await LoadLookupDataAsync(ct);
         model.MobileNumber = mobile;
+        await PopulateSectorDevTypeAsync(model, ct);
+        await LoadLookupDataAsync(model, ct);
         NormalizeDeclarationFromRequest(model);
         ValidateDeclaration(model);
 
@@ -232,8 +234,8 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["FormRouteId"] = id;
         ViewData["ExistingFeeQuote"] = existingFee;
         ViewData["ExistingDocumentTypes"] = existing?.Documents.Select(x => x.DocumentType).ToArray() ?? [];
-        await LoadLookupDataAsync(ct);
         model.MobileNumber = mobile;
+        await LoadLookupDataAsync(model, ct);
         return View("~/Views/NewConnection/Apply.cshtml", model);
     }
 
@@ -254,8 +256,9 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["FormRouteId"] = id;
         ViewData["ExistingFeeQuote"] = await _applicationService.GetApplicationFeeAsync(id, ct);
         ViewData["ExistingDocumentTypes"] = existing.Documents.Select(x => x.DocumentType).ToArray();
-        await LoadLookupDataAsync(ct);
         model.MobileNumber = mobile;
+        await PopulateSectorDevTypeAsync(model, ct);
+        await LoadLookupDataAsync(model, ct);
         NormalizeDeclarationFromRequest(model);
         ValidateDeclaration(model);
 
@@ -437,7 +440,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["ApplicationNo"] = details.ApplicationNo;
         ViewData["IsResubmit"] = true;
         ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
-        await LoadLookupDataAsync(ct);
+        await LoadLookupDataAsync(model, ct);
         return View("~/Views/NewConnection/Resubmit.cshtml", model);
     }
 
@@ -462,7 +465,8 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["ApplicationNo"] = details.ApplicationNo;
         ViewData["IsResubmit"] = true;
         ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
-        await LoadLookupDataAsync(ct);
+        await PopulateSectorDevTypeAsync(model, ct);
+        await LoadLookupDataAsync(model, ct);
 
         NormalizeDeclarationFromRequest(model);
         ValidateDeclaration(model);
@@ -500,11 +504,15 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
 
     [HttpGet("/NewConnection/Lookups/Blocks")]
     public async Task<IActionResult> Blocks(string sectorId, CancellationToken ct)
-        => Json(await _lookupService.GetBlocksBySectorAsync(sectorId, ResolveDevType(), ct));
+        => Json((await _lookupService.GetSectorContextAsync(sectorId, ct)).Blocks);
+
+    [HttpGet("/NewConnection/Lookups/SectorContext")]
+    public async Task<IActionResult> SectorContext(string sectorId, CancellationToken ct)
+        => Json(await _lookupService.GetSectorContextAsync(sectorId, ct));
 
     [HttpGet("/NewConnection/Lookups/ConnectionSubTypes")]
-    public async Task<IActionResult> ConnectionSubTypes(string connectionCategoryId, CancellationToken ct)
-        => Json(await _lookupService.GetConnectionSubTypesAsync(connectionCategoryId, ResolveDevType(), ct));
+    public async Task<IActionResult> ConnectionSubTypes(string connectionCategoryId, int? devType, CancellationToken ct)
+        => Json(await _lookupService.GetConnectionSubTypesAsync(connectionCategoryId, devType, ct));
 
     private string? GetVerifiedMobile() => HttpContext.Session.GetString(SessionMobileKey);
 
@@ -517,12 +525,31 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
     private static string NormalizeMode(string? mode)
         => IsTrackOnly(mode) ? "track" : "apply";
 
-    private async Task LoadLookupDataAsync(CancellationToken ct)
+    private async Task LoadLookupDataAsync(NewConnectionApplicationFormDto? model, CancellationToken ct)
     {
-        var lookups = await _lookupService.GetLookupDataAsync(ResolveDevType(), ct);
+        var lookups = await _lookupService.GetLookupDataAsync(ct: ct);
+        lookups.ConnectionCategories = [];
+        lookups.PipeSizes = [];
+        lookups.ConnectionSubTypes = [];
+        lookups.Villages = [];
+
+        if (!string.IsNullOrWhiteSpace(model?.Sector))
+        {
+            var sectorContext = await _lookupService.GetSectorContextAsync(model.Sector, ct);
+            lookups.ConnectionCategories = sectorContext.ConnectionCategories;
+            lookups.PipeSizes = sectorContext.PipeSizes;
+            lookups.Villages = sectorContext.Villages;
+
+            if (!string.IsNullOrWhiteSpace(model.ConnectionCategory))
+                lookups.ConnectionSubTypes = await _lookupService.GetConnectionSubTypesAsync(model.ConnectionCategory, sectorContext.DevType, ct);
+
+            ViewData["DivisionDisplay"] = sectorContext.DivisionDisplay;
+        }
+
         ViewData["LookupData"] = lookups;
         ViewData["DocumentTypes"] = lookups.DocumentTypes.Select(x => x.Text).ToArray();
         ViewData["BlocksUrl"] = Url.Action(nameof(Blocks), "PublicNewConnection");
+        ViewData["SectorContextUrl"] = Url.Action(nameof(SectorContext), "PublicNewConnection");
         ViewData["ConnectionSubTypesUrl"] = Url.Action(nameof(ConnectionSubTypes), "PublicNewConnection");
         ViewData["FeePreviewUrl"] = Url.Action(nameof(FeePreview), "PublicNewConnection");
         ViewData["LockMobileNumber"] = true;
@@ -534,8 +561,18 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         return documentTypes.Select(x => x.Text).ToArray();
     }
 
-    private int? ResolveDevType()
-        => int.TryParse(_configuration["NewConnection:DefaultDevType"], out var devType) ? devType : null;
+    private async Task PopulateSectorDevTypeAsync(NewConnectionApplicationFormDto model, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(model.Sector))
+        {
+            model.DevType = null;
+            return;
+        }
+
+        model.DevType = await _lookupService.GetSectorDevTypeAsync(model.Sector, ct);
+        if (!model.DevType.HasValue)
+            ModelState.AddModelError(nameof(model.Sector), "Division could not be determined for the selected Sector.");
+    }
 
     private PaymentActorContextDto BuildPaymentActorContext()
         => new()

@@ -81,7 +81,6 @@ public class WorkflowsController : Controller
         if (workflow is null) return NotFound();
         ViewBag.Workflow = workflow;
         var rows = await _db.WorkflowStages
-            .Include(x => x.Department)
             .AsNoTracking()
             .Where(x => x.WorkflowId == workflowId && !x.IsDeleted)
             .OrderBy(x => x.StageOrder)
@@ -102,7 +101,7 @@ public class WorkflowsController : Controller
     {
         ViewData["Title"] = "Create Stage";
         ViewData["ActiveMenu"] = "Workflow Master";
-        await LoadStageLists(null, null, null, ct);
+        await LoadStageLists(null, null, ct);
         var nextOrder = await _db.WorkflowStages
             .Where(x => x.WorkflowId == workflowId && !x.IsDeleted)
             .MaxAsync(x => (int?)x.StageOrder, ct) is { } maxOrder
@@ -118,11 +117,12 @@ public class WorkflowsController : Controller
     {
         ViewData["Title"] = "Create Stage";
         ViewData["ActiveMenu"] = "Workflow Master";
-        await LoadStageLists(model.DepartmentId, model.ApproverRoleId, model.ApproverUserId, ct);
+        await LoadStageLists(model.ApproverRoleId, model.ApproverUserId, ct);
         SuppressStageNavigationValidation();
         await ValidateStageAsync(model, null, ct);
         if (!ModelState.IsValid) return View("StageForm", model);
         model.StageName = model.StageName.Trim();
+        model.DepartmentId = null;
         model.CreatedOn = DateTime.Now;
         _db.WorkflowStages.Add(model);
         await _db.SaveChangesAsync(ct);
@@ -137,7 +137,7 @@ public class WorkflowsController : Controller
         var model = await _db.WorkflowStages.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (model is not null)
         {
-            await LoadStageLists(model.DepartmentId, model.ApproverRoleId, model.ApproverUserId, ct);
+            await LoadStageLists(model.ApproverRoleId, model.ApproverUserId, ct);
             var notification = await _db.WorkflowStageNotifications.AsNoTracking().FirstOrDefaultAsync(x => x.WorkflowStageId == id && x.EventType == "StageAssigned" && !x.IsDeleted, ct);
             LoadNotificationDefaults(notification);
         }
@@ -150,7 +150,7 @@ public class WorkflowsController : Controller
     {
         ViewData["Title"] = "Edit Stage";
         ViewData["ActiveMenu"] = "Workflow Master";
-        await LoadStageLists(model.DepartmentId, model.ApproverRoleId, model.ApproverUserId, ct);
+        await LoadStageLists(model.ApproverRoleId, model.ApproverUserId, ct);
         SuppressStageNavigationValidation();
         await ValidateStageAsync(model, id, ct);
         if (!ModelState.IsValid) return View("StageForm", model);
@@ -158,7 +158,7 @@ public class WorkflowsController : Controller
         if (entity is null) return NotFound();
         entity.StageName = model.StageName.Trim();
         entity.StageOrder = model.StageOrder;
-        entity.DepartmentId = model.DepartmentId;
+        entity.DepartmentId = null;
         entity.ApproverRoleId = model.ApproverRoleId;
         entity.ApproverUserId = model.ApproverUserId;
         entity.ApprovalType = model.ApprovalType;
@@ -208,9 +208,9 @@ public class WorkflowsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> FilterUsers(int? departmentId, int? roleId, CancellationToken ct)
+    public async Task<IActionResult> FilterUsers(int? roleId, CancellationToken ct)
     {
-        var users = await GetFilteredUsersQuery(departmentId, roleId)
+        var users = await GetFilteredUsersQuery(roleId)
             .OrderBy(x => x.FullName)
             .ThenBy(x => x.Username)
             .Select(x => new
@@ -223,11 +223,10 @@ public class WorkflowsController : Controller
         return Json(users);
     }
 
-    private async Task LoadStageLists(int? departmentId, int? roleId, int? selectedUserId, CancellationToken ct)
+    private async Task LoadStageLists(int? roleId, int? selectedUserId, CancellationToken ct)
     {
-        ViewBag.Departments = new SelectList(await _db.MasterDeptDetails.AsNoTracking().Where(x => x.Status == "1").OrderBy(x => x.DeptName).ToListAsync(ct), "Id", "DeptName");
         ViewBag.Roles = new SelectList(await _db.Approles.AsNoTracking().Where(x => !x.IsDeleted).OrderBy(x => x.Name).ToListAsync(ct), "Id", "Name");
-        var users = await GetFilteredUsersQuery(departmentId, roleId)
+        var users = await GetFilteredUsersQuery(roleId)
             .OrderBy(x => x.FullName)
             .ThenBy(x => x.Username)
             .ToListAsync(ct);
@@ -248,7 +247,7 @@ public class WorkflowsController : Controller
         }), "Id", "Name", selectedUserId);
     }
 
-    private IQueryable<Appuser> GetFilteredUsersQuery(int? departmentId, int? roleId)
+    private IQueryable<Appuser> GetFilteredUsersQuery(int? roleId)
     {
         var query = _db.Appusers
             .AsNoTracking()
@@ -256,9 +255,6 @@ public class WorkflowsController : Controller
 
         if (roleId.HasValue)
             query = query.Where(x => x.RoleId == roleId.Value);
-
-        if (departmentId.HasValue)
-            query = query.Where(x => x.DeptId == departmentId.Value);
 
         return query;
     }
@@ -318,19 +314,14 @@ public class WorkflowsController : Controller
         if (model.StageOrder <= 0) ModelState.AddModelError(nameof(model.StageOrder), "Stage order is required.");
         var approvalType = model.ApprovalType?.Trim();
 
-        if (string.Equals(approvalType, "SpecificUser", StringComparison.OrdinalIgnoreCase) && !model.ApproverUserId.HasValue)
+        var isSpecificUserApproval = string.Equals(approvalType, "SpecificUser", StringComparison.OrdinalIgnoreCase);
+        var isRoleBasedApproval = IsRoleBasedApprovalType(approvalType);
+
+        if (isSpecificUserApproval && !model.ApproverUserId.HasValue)
             ModelState.AddModelError(nameof(model.ApproverUserId), "Specific user is required when approval type is Specific User.");
 
-        if (string.Equals(approvalType, "DepartmentRole", StringComparison.OrdinalIgnoreCase)
-            && !model.DepartmentId.HasValue
-            && !model.ApproverRoleId.HasValue)
-            ModelState.AddModelError(nameof(model.ApprovalType), "Department or role is required for department role-based approval.");
-
-        if (string.Equals(approvalType, "AllApprovers", StringComparison.OrdinalIgnoreCase))
-            ModelState.AddModelError(nameof(model.ApprovalType), "All Approvers workflow is not implemented yet. Please use Any One Approver, Specific User, or Department Role Based.");
-
-        if (!model.ApproverUserId.HasValue && !model.DepartmentId.HasValue && !model.ApproverRoleId.HasValue)
-            ModelState.AddModelError(nameof(model.ApproverUserId), "Select at least one assignment target: department, role, or specific user.");
+        if (isRoleBasedApproval && !model.ApproverRoleId.HasValue)
+            ModelState.AddModelError(nameof(model.ApproverRoleId), "Approver role is required for the selected approval type.");
 
         var workflow = await _db.WorkflowMasters
             .AsNoTracking()
@@ -352,6 +343,9 @@ public class WorkflowsController : Controller
     private void SuppressStageNavigationValidation()
     {
         ModelState.Remove(nameof(WorkflowStage.Workflow));
-        ModelState.Remove(nameof(WorkflowStage.Department));
     }
+
+    private static bool IsRoleBasedApprovalType(string? approvalType)
+        => string.Equals(approvalType, "DepartmentRole", StringComparison.OrdinalIgnoreCase)
+           || string.Equals(approvalType, "RoleBased", StringComparison.OrdinalIgnoreCase);
 }

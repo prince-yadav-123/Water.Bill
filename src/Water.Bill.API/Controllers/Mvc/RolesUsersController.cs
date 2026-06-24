@@ -85,7 +85,6 @@ public class RolesUsersController : Controller
 
         var query = _db.Appusers
             .Include(x => x.Role)
-            .Include(x => x.Department)
             .AsNoTracking()
             .Where(x => !x.IsDeleted);
         if (!string.IsNullOrWhiteSpace(search))
@@ -93,8 +92,7 @@ public class RolesUsersController : Controller
             var s = search.Trim();
             query = query.Where(x => x.FullName.Contains(s)
                 || x.Username.Contains(s)
-                || x.Email.Contains(s)
-                || (x.Department != null && x.Department.DeptName != null && x.Department.DeptName.Contains(s)));
+                || x.Email.Contains(s));
         }
         var paged = await query.OrderBy(x => x.FullName).ToPagedResultAsync(page, pageSize, ct);
         ViewBag.Pagination = PaginationViewModel.Create(paged);
@@ -194,7 +192,6 @@ public class RolesUsersController : Controller
         ViewData["Title"] = "Create User";
         ViewData["ActiveMenu"] = "User Management";
         await PopulateRoles(ct);
-        await PopulateDepartments(ct);
         PopulateDivisionOptions();
         return View(new UserFormViewModel());
     }
@@ -212,11 +209,9 @@ public class RolesUsersController : Controller
             ModelState.AddModelError(nameof(model.DivisionDevType), "Division is required.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
-        await ValidateUserReferencesAsync(model, null, ct);
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
-            await PopulateDepartments(ct);
             PopulateDivisionOptions();
             return View(model);
         }
@@ -228,7 +223,6 @@ public class RolesUsersController : Controller
             Username = model.Username,
             PasswordHash = AuthService.HashPassword(model.Password!),
             RoleId = model.RoleId,
-            DeptId = model.DeptId,
             DivisionDevType = model.DivisionDevType,
             PhoneNumber = model.PhoneNumber,
             IsActive = model.IsActive,
@@ -243,7 +237,6 @@ public class RolesUsersController : Controller
         catch (DbUpdateException ex) when (TryAddUserSaveErrors(ex, model))
         {
             await PopulateRoles(ct);
-            await PopulateDepartments(ct);
             PopulateDivisionOptions();
             return View(model);
         }
@@ -259,7 +252,6 @@ public class RolesUsersController : Controller
         var user = await _db.Appusers.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (user is null) return NotFound();
         await PopulateRoles(ct);
-        await PopulateDepartments(ct);
         PopulateDivisionOptions();
         return View(new UserFormViewModel
         {
@@ -268,7 +260,6 @@ public class RolesUsersController : Controller
             Email = user.Email,
             Username = user.Username,
             RoleId = user.RoleId,
-            DeptId = user.DeptId,
             DivisionDevType = user.DivisionDevType,
             PhoneNumber = user.PhoneNumber,
             IsActive = user.IsActive == true
@@ -288,11 +279,9 @@ public class RolesUsersController : Controller
             ModelState.AddModelError(nameof(model.DivisionDevType), "Division is required.");
         if (await IsConsumerRoleAsync(model.RoleId, ct))
             ModelState.AddModelError(nameof(model.RoleId), "Consumer role cannot be assigned to Authority users.");
-        await ValidateUserReferencesAsync(model, user.Id, ct);
         if (!ModelState.IsValid)
         {
             await PopulateRoles(ct);
-            await PopulateDepartments(ct);
             PopulateDivisionOptions();
             return View(model);
         }
@@ -300,7 +289,6 @@ public class RolesUsersController : Controller
         user.Email = model.Email;
         user.Username = model.Username;
         user.RoleId = model.RoleId;
-        user.DeptId = model.DeptId;
         user.DivisionDevType = model.DivisionDevType;
         user.PhoneNumber = model.PhoneNumber;
         user.IsActive = model.IsActive;
@@ -317,7 +305,6 @@ public class RolesUsersController : Controller
         catch (DbUpdateException ex) when (TryAddUserSaveErrors(ex, model))
         {
             await PopulateRoles(ct);
-            await PopulateDepartments(ct);
             PopulateDivisionOptions();
             return View(model);
         }
@@ -332,7 +319,6 @@ public class RolesUsersController : Controller
         ViewData["ActiveMenu"] = "User Management";
         var user = await _db.Appusers
             .Include(x => x.Role)
-            .Include(x => x.Department)
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         return user is null ? NotFound() : View("UserDetails", user);
     }
@@ -427,13 +413,6 @@ public class RolesUsersController : Controller
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
 
-    private async Task PopulateDepartments(CancellationToken ct)
-        => ViewBag.Departments = await _db.MasterDeptDetails
-            .AsNoTracking()
-            .Where(x => x.Status == "1")
-            .OrderBy(x => x.DeptName)
-            .ToListAsync(ct);
-
     private void PopulateDivisionOptions()
         => ViewBag.DivisionOptions = AppConstants.Divisions.Options;
 
@@ -443,47 +422,6 @@ public class RolesUsersController : Controller
         model.Email = model.Email?.Trim() ?? string.Empty;
         model.Username = model.Username?.Trim() ?? string.Empty;
         model.PhoneNumber = model.PhoneNumber?.Trim();
-    }
-
-    private async Task ValidateUserReferencesAsync(UserFormViewModel model, int? currentUserId, CancellationToken ct)
-    {
-        if (!string.IsNullOrWhiteSpace(model.Username))
-        {
-            var usernameExists = await _db.Appusers.AnyAsync(x =>
-                !x.IsDeleted &&
-                x.Username == model.Username &&
-                x.Id != currentUserId, ct);
-            if (usernameExists)
-                ModelState.AddModelError(nameof(model.Username), "Username already exists.");
-        }
-
-        if (!string.IsNullOrWhiteSpace(model.Email))
-        {
-            var emailExists = await _db.Appusers.AnyAsync(x =>
-                !x.IsDeleted &&
-                x.Email == model.Email &&
-                x.Id != currentUserId, ct);
-            if (emailExists)
-                ModelState.AddModelError(nameof(model.Email), "Email already exists.");
-        }
-
-        if (model.DeptId.HasValue)
-        {
-            var department = await _db.MasterDeptDetails.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == model.DeptId.Value && x.Status == "1", ct);
-
-            if (department is null)
-            {
-                ModelState.AddModelError(nameof(model.DeptId), "Selected department was not found.");
-            }
-            else if (model.DivisionDevType.HasValue
-                && model.DivisionDevType.Value != AppConstants.Divisions.AllDivision.DevType
-                && department.DevType.HasValue
-                && department.DevType.Value != model.DivisionDevType.Value)
-            {
-                ModelState.AddModelError(nameof(model.DeptId), "Selected department does not belong to the selected division.");
-            }
-        }
     }
 
     private bool TryAddUserSaveErrors(DbUpdateException ex, UserFormViewModel model)
@@ -504,7 +442,7 @@ public class RolesUsersController : Controller
 
             if (sqlEx.Number == 547)
             {
-                ModelState.AddModelError(nameof(model.DeptId), "The selected department is no longer valid. Please select it again.");
+                ModelState.AddModelError(string.Empty, "Could not save user changes because one of the referenced records is no longer available.");
                 return true;
             }
         }

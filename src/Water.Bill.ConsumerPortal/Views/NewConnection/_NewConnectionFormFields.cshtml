@@ -7,18 +7,20 @@
     var lookupData = ViewData["LookupData"] as NewConnectionLookupDataDto ?? new NewConnectionLookupDataDto();
     var selectedPipeSize = Model.PipeSize?.ToString("0.##", CultureInfo.InvariantCulture);
     var blocksUrl = ViewData["BlocksUrl"] as string ?? Url.Action("Blocks", "NewConnection");
+    var sectorContextUrl = ViewData["SectorContextUrl"] as string ?? Url.Action("SectorContext", "NewConnection");
     var subtypesUrl = ViewData["ConnectionSubTypesUrl"] as string ?? Url.Action("ConnectionSubTypes", "NewConnection");
+    var divisionDisplay = ViewData["DivisionDisplay"] as string ?? string.Empty;
 }
 
 <style>
     .wb-newconn-layout { grid-template-columns: 1fr !important; }
 </style>
 
-<div class="wb-newconn-wizard" data-newconn-wizard data-blocks-url="@blocksUrl" data-subtypes-url="@subtypesUrl">
+<div class="wb-newconn-wizard" data-newconn-wizard data-blocks-url="@blocksUrl" data-sector-context-url="@sectorContextUrl" data-subtypes-url="@subtypesUrl">
     <div class="wb-newconn-stepper" aria-label="New connection application steps">
-        <button class="wb-step-pill is-active" type="button" data-step-target="1"><span>1</span> Connection Type</button>
+        <button class="wb-step-pill is-active" type="button" data-step-target="1"><span>1</span> Applicant Details</button>
         <button class="wb-step-pill" type="button" data-step-target="2"><span>2</span> Property Details</button>
-        <button class="wb-step-pill" type="button" data-step-target="3"><span>3</span> Applicant Details</button>
+        <button class="wb-step-pill" type="button" data-step-target="3"><span>3</span> Connection Type</button>
         <button class="wb-step-pill" type="button" data-step-target="4"><span>4</span> Documents</button>
         <button class="wb-step-pill" type="button" data-step-target="5"><span>5</span> Review</button>
     </div>
@@ -27,7 +29,7 @@
         <div class="wb-newconn-main">
             <div class="wb-step-alert" data-step-alert hidden></div>
 
-            <section class="wb-form-section wb-wizard-step is-active" data-step="1">
+            <section class="wb-form-section wb-wizard-step" data-step="3">
                 <div>
                     <h2>What type of connection?</h2>
                     <p>Choose the category and basic connection details. Tariff and document requirements may vary by category.</p>
@@ -36,7 +38,7 @@
                     <div class="wb-field">
                         <label asp-for="ConnectionCategory" class="form-label required">Connection Category</label>
                         <select asp-for="ConnectionCategory" class="form-select" data-review-label="Connection category" data-connection-category-select>
-                            <option value="">Select</option>
+                            <option value="">Select sector first</option>
                             @foreach (var category in lookupData.ConnectionCategories)
                             {
                                 <option value="@category.Value">@category.Text</option>
@@ -61,7 +63,7 @@
                     <div class="wb-field">
                         <label asp-for="FlatType" class="form-label required">Flat Type</label>
                         <select asp-for="FlatType" class="form-select" data-review-label="Flat type" data-subtype-select>
-                            <option value="">Select</option>
+                            <option value="">Select category first</option>
                             @foreach (var subType in lookupData.ConnectionSubTypes)
                             {
                                 <option value="@subType.Value" data-parent-value="@subType.ParentValue">@subType.Text</option>
@@ -72,7 +74,7 @@
                     <div class="wb-field">
                         <label asp-for="PipeSize" class="form-label required">Pipe Size</label>
                         <select asp-for="PipeSize" class="form-select" data-review-label="Pipe size">
-                            <option value="">Select</option>
+                            <option value="">Select sector first</option>
                             @foreach (var pipeSize in lookupData.PipeSizes)
                             {
                                 <option value="@pipeSize.Value" selected="@(pipeSize.Value == selectedPipeSize)">@pipeSize.Text</option>
@@ -92,7 +94,7 @@
                         <input asp-for="OtherConnection" class="form-control" data-review-label="Other connection details" data-other-connection-input />
                         <span asp-validation-for="OtherConnection" class="text-danger"></span>
                     </div>
-                    <div class="wb-field wb-field-wide">
+                    <div class="wb-field">
                         <label asp-for="PurposeOfConnection" class="form-label">Purpose of Connection</label>
                         <textarea asp-for="PurposeOfConnection" class="form-control" rows="2" data-review-label="Purpose"></textarea>
                     </div>
@@ -104,6 +106,7 @@
                     <h2>Property Details</h2>
                     <p>Tell us where the new water connection should be installed.</p>
                 </div>
+                <input asp-for="DevType" type="hidden" data-devtype-input />
                 <div class="wb-form-grid">
                     <div class="wb-field">
                         <label asp-for="Sector" class="form-label required">Sector</label>
@@ -115,6 +118,10 @@
                             }
                         </select>
                         <span asp-validation-for="Sector" class="text-danger"></span>
+                    </div>
+                    <div class="wb-field">
+                        <label class="form-label">Division</label>
+                        <input class="form-control" value="@divisionDisplay" readonly data-review-label="Division" data-division-display placeholder="Select sector first" />
                     </div>
                     <div class="wb-field">
                         <label asp-for="Block" class="form-label required">Block</label>
@@ -137,7 +144,7 @@
                         <input asp-for="PlotSize" class="form-control" type="number" step="0.01" data-review-label="Plot size" />
                         <span asp-validation-for="PlotSize" class="text-danger"></span>
                     </div>
-                    <div class="wb-field wb-field-wide">
+                    <div class="wb-field">
                         <label asp-for="Address" class="form-label required">Property Address</label>
                         <textarea asp-for="Address" class="form-control" rows="3" data-review-label="Property address"></textarea>
                         <span asp-validation-for="Address" class="text-danger"></span>
@@ -149,7 +156,7 @@
                     <div class="wb-field">
                         <label asp-for="VillageName" class="form-label">Village Name</label>
                         <select asp-for="VillageId" class="form-select" data-review-label="Village" data-village-select>
-                            <option value="">Select village if applicable</option>
+                            <option value="">Select sector first</option>
                             @foreach (var village in lookupData.Villages)
                             {
                                 <option value="@village.Value">@village.Text</option>
@@ -160,7 +167,7 @@
                 </div>
             </section>
 
-            <section class="wb-form-section wb-wizard-step" data-step="3">
+            <section class="wb-form-section wb-wizard-step is-active" data-step="1">
                 <div>
                     <h2>Applicant Details</h2>
                     <p>These details will be used for verification and application tracking.</p>
@@ -172,7 +179,7 @@
                         <span asp-validation-for="ApplicantName" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
-                        <label asp-for="FatherName" class="form-label">Father Name</label>
+                        <label asp-for="FatherName" class="form-label">Father/Husband Name</label>
                         <input asp-for="FatherName" class="form-control" data-review-label="Father name" />
                         <span asp-validation-for="FatherName" class="text-danger"></span>
                     </div>
@@ -264,8 +271,11 @@
     const reviewPanel = wizard.querySelector("[data-review-panel]");
     const sectorSelect = wizard.querySelector("[data-sector-select]");
     const blockSelect = wizard.querySelector("[data-block-select]");
+    const divisionDisplayInput = wizard.querySelector("[data-division-display]");
+    const devTypeInput = wizard.querySelector("[data-devtype-input]");
     const subTypeSelect = wizard.querySelector("[data-subtype-select]");
     const connectionCategorySelect = wizard.querySelector("[data-connection-category-select]");
+    const pipeSizeSelect = wizard.querySelector('[name="PipeSize"]');
     const villageSelect = wizard.querySelector("[data-village-select]");
     const villageNameInput = wizard.querySelector("[data-village-name]");
     const previousConnectionSelect = wizard.querySelector("[data-previous-connection-select]");
@@ -384,8 +394,14 @@
 
     function buildReview() {
         const rows = [...wizard.querySelectorAll("[data-review-label]")]
-            .map(input => ({ label: input.dataset.reviewLabel, value: fieldValue(input) || "Not provided" }))
+            .map((input, index) => ({
+                label: input.dataset.reviewLabel,
+                value: fieldValue(input) || "Not provided",
+                step: Number(input.closest("[data-step]")?.dataset.step || 999),
+                index
+            }))
             .filter(row => row.label !== "Declaration");
+        rows.sort((left, right) => left.step === right.step ? left.index - right.index : left.step - right.step);
         const files = [...wizard.querySelectorAll("input[type=file]")]
             .filter(input => input.files.length)
             .map(input => input.dataset.documentType);
@@ -412,24 +428,55 @@
         }
     }
 
-    async function loadBlocks(selectedValue) {
-        if (!sectorSelect || !blockSelect) return;
+    function setDivisionState(devType, divisionDisplay) {
+        if (devTypeInput) {
+            devTypeInput.value = devType ?? "";
+        }
+        if (divisionDisplayInput) {
+            divisionDisplayInput.value = divisionDisplay || "";
+            divisionDisplayInput.placeholder = divisionDisplay ? "" : "Select sector first";
+        }
+    }
+
+    async function loadSectorContext(selectedValues = {}) {
+        if (!sectorSelect) return;
         const sectorId = sectorSelect.value;
         if (!sectorId) {
             setSelectOptions(blockSelect, [], "Select sector first", "");
+            setSelectOptions(connectionCategorySelect, [], "Select sector first", "");
+            setSelectOptions(subTypeSelect, [], "Select category first", "");
+            setSelectOptions(pipeSizeSelect, [], "Select sector first", "");
+            setSelectOptions(villageSelect, [], "Select sector first", "");
+            setDivisionState("", "");
+            syncVillageName();
             return;
         }
 
-        const url = new URL(wizard.dataset.blocksUrl, window.location.origin);
+        const url = new URL(wizard.dataset.sectorContextUrl, window.location.origin);
         url.searchParams.set("sectorId", sectorId);
         const response = await fetch(url, { headers: { "Accept": "application/json" } });
-        const blocks = response.ok ? await response.json() : [];
-        setSelectOptions(blockSelect, blocks, blocks.length ? "Select" : "No blocks found", selectedValue || blockSelect.value);
+        const context = response.ok ? await response.json() : null;
+        const blocks = context?.blocks ?? [];
+        const categories = context?.connectionCategories ?? [];
+        const pipeSizes = context?.pipeSizes ?? [];
+        const villages = context?.villages ?? [];
+        const devType = context?.devType ?? "";
+        const divisionDisplay = context?.divisionDisplay ?? "";
+
+        setDivisionState(devType, divisionDisplay);
+        setSelectOptions(blockSelect, blocks, blocks.length ? "Select" : "No blocks found for selected division", selectedValues.block || "");
+        setSelectOptions(connectionCategorySelect, categories, categories.length ? "Select" : "No connection categories found for selected division", selectedValues.connectionCategory || "");
+        setSelectOptions(pipeSizeSelect, pipeSizes, pipeSizes.length ? "Select" : "No pipe sizes found for selected division", selectedValues.pipeSize || "");
+        setSelectOptions(villageSelect, villages, villages.length ? "Select village if applicable" : "No villages found for selected division", selectedValues.villageId || "");
+        syncVillageName();
+
+        await loadSubTypes(selectedValues.flatType || "");
     }
 
     async function loadSubTypes(selectedValue) {
         if (!subTypeSelect) return;
         const category = connectionCategorySelect?.value;
+        const devType = devTypeInput?.value;
         if (!category) {
             setSelectOptions(subTypeSelect, [], "Select category first", "");
             return;
@@ -437,9 +484,12 @@
 
         const url = new URL(wizard.dataset.subtypesUrl, window.location.origin);
         url.searchParams.set("connectionCategoryId", category);
+        if (devType) {
+            url.searchParams.set("devType", devType);
+        }
         const response = await fetch(url, { headers: { "Accept": "application/json" } });
         const subTypes = response.ok ? await response.json() : [];
-        setSelectOptions(subTypeSelect, subTypes, subTypes.length ? "Select" : "No sub-types found", selectedValue || subTypeSelect.value);
+        setSelectOptions(subTypeSelect, subTypes, subTypes.length ? "Select" : "No flat types found for selected division", selectedValue || subTypeSelect.value);
     }
 
     function syncVillageName() {
@@ -471,7 +521,7 @@
             row?.classList.toggle("is-uploaded", input.files.length > 0);
         }
         if (input === sectorSelect) {
-            loadBlocks("");
+            loadSectorContext();
         }
         if (input === connectionCategorySelect) {
             loadSubTypes("");
@@ -510,9 +560,16 @@
         }
     });
 
-    loadBlocks(blockSelect?.value || "");
-    loadSubTypes(subTypeSelect?.value || "");
-    syncVillageName();
+    loadSectorContext({
+        block: blockSelect?.value || "",
+        connectionCategory: connectionCategorySelect?.value || "",
+        flatType: subTypeSelect?.value || "",
+        pipeSize: pipeSizeSelect?.value || "",
+        villageId: villageSelect?.value || ""
+    }).catch(() => {
+        setDivisionState(devTypeInput?.value || "", divisionDisplayInput?.value || "");
+        syncVillageName();
+    });
     toggleOtherConnectionField();
     setStep(1);
 })();

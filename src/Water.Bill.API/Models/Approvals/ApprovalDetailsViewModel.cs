@@ -58,15 +58,11 @@ public class ApprovalListViewModel
 
     public DateTime? ToDate { get; set; }
 
-    public int? DepartmentId { get; set; }
-
     public int? StageId { get; set; }
 
     public string? ApplicationType { get; set; }
 
     public IReadOnlyList<ApprovalListItemViewModel> Items { get; set; } = [];
-
-    public IReadOnlyList<MasterDeptDetail> Departments { get; set; } = [];
 
     public IReadOnlyList<WorkflowStage> Stages { get; set; } = [];
 }

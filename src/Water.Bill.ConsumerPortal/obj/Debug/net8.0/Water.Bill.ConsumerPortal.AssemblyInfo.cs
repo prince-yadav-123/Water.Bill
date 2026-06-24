@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Water Billing MVC consumer and staff portal.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e6194407ea58acd7066a133ad5a98dcadc7dfe4a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fa6da1538feb55aff809fdc77f65955256d9463")]
 [assembly: System.Reflection.AssemblyProductAttribute("Water.Bill.ConsumerPortal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Water.Bill.ConsumerPortal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

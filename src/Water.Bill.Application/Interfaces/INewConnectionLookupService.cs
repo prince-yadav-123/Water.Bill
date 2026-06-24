@@ -6,6 +6,10 @@ public interface INewConnectionLookupService
 {
     Task<NewConnectionLookupDataDto> GetLookupDataAsync(int? devType = null, CancellationToken ct = default);
 
+    Task<NewConnectionSectorContextDto> GetSectorContextAsync(string sectorId, CancellationToken ct = default);
+
+    Task<int?> GetSectorDevTypeAsync(string sectorId, CancellationToken ct = default);
+
     Task<IReadOnlyList<NewConnectionLookupOptionDto>> GetBlocksBySectorAsync(string sectorId, int? devType = null, CancellationToken ct = default);
 
     Task<IReadOnlyList<NewConnectionLookupOptionDto>> GetConnectionSubTypesAsync(string connectionCategoryId, int? devType = null, CancellationToken ct = default);

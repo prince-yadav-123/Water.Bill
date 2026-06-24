@@ -41,7 +41,6 @@ public class ApprovalsController : Controller
         string? status = null,
         DateTime? fromDate = null,
         DateTime? toDate = null,
-        int? departmentId = null,
         int? stageId = null,
         string? applicationType = null,
         int page = 1,
@@ -55,7 +54,6 @@ public class ApprovalsController : Controller
         var isAdmin = IsAdminUser();
         var roleId = int.TryParse(User.FindFirstValue("RoleId"), out var parsedRoleId) ? parsedRoleId : 0;
         var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId) ? parsedUserId : 0;
-        var currentDepartmentId = await ResolveDepartmentIdAsync(ct);
 
         pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
         page = PagingConstants.ValidatePage(page);
@@ -67,10 +65,12 @@ public class ApprovalsController : Controller
 
         var query = _db.ApplicationWorkflowTasks
             .Include(x => x.Stage)
-                .ThenInclude(x => x.Department)
             .Include(x => x.WorkflowInstance)
             .AsNoTracking()
             .Where(x => !x.IsDeleted && !x.WorkflowInstance.IsDeleted);
+
+        var divisionDevType = await ResolveDivisionDevTypeAsync(ct);
+        query = ApplyDivisionFilter(query, divisionDevType);
 
         if (!isAdmin)
         {
@@ -87,10 +87,10 @@ public class ApprovalsController : Controller
         }
 
         // Admin sees ALL applications — no assignment filter
-        // Non-admin sees only applications assigned to their user/role/department
+        // Non-admin sees only applications assigned to their user or role
         if (!isAdmin)
         {
-            query = ApplyWorkflowAssignmentFilter(query, userId, roleId, currentDepartmentId);
+            query = ApplyWorkflowAssignmentFilter(query, userId, roleId);
         }
 
         if (!string.IsNullOrWhiteSpace(status) && !isAdmin)
@@ -103,8 +103,6 @@ public class ApprovalsController : Controller
             query = query.Where(x => x.AssignedOn.Date >= fromDate.Value.Date);
         if (toDate.HasValue && !isAdmin)
             query = query.Where(x => x.AssignedOn.Date <= toDate.Value.Date);
-        if (departmentId.HasValue && !isAdmin)
-            query = query.Where(x => x.AssignedDepartmentId == departmentId.Value);
         if (stageId.HasValue && !isAdmin)
             query = query.Where(x => x.StageId == stageId.Value);
         if (!string.IsNullOrWhiteSpace(applicationType))
@@ -158,9 +156,6 @@ public class ApprovalsController : Controller
                     || (status == "SentBackToApplicant" && string.Equals(x.WorkflowInstance.CurrentStatus, "SentBackToApplicant", StringComparison.OrdinalIgnoreCase)))
                     .ToList();
             }
-
-            if (departmentId.HasValue)
-                rows = rows.Where(x => x.AssignedDepartmentId == departmentId.Value).ToList();
 
             if (stageId.HasValue)
                 rows = rows.Where(x => x.StageId == stageId.Value).ToList();
@@ -310,11 +305,9 @@ public class ApprovalsController : Controller
             Status = status,
             FromDate = fromDate,
             ToDate = toDate,
-            DepartmentId = departmentId,
             StageId = stageId,
             ApplicationType = applicationType,
             Items = items,
-            Departments = await _db.MasterDeptDetails.AsNoTracking().Where(x => x.Status == "1").OrderBy(x => x.DeptName).ToListAsync(ct),
             Stages = await _db.WorkflowStages.AsNoTracking().Where(x => x.IsActive && !x.IsDeleted).OrderBy(x => x.StageOrder).ToListAsync(ct)
         });
     }
@@ -323,7 +316,8 @@ public class ApprovalsController : Controller
     [RequirePermission("My Pending Applications.view")]
     public async Task<IActionResult> Details(long id, CancellationToken ct)
     {
-        var task = await GetAllowedTaskQuery(pendingOnly: false)
+        var taskQuery = await GetAllowedTaskQueryAsync(pendingOnly: false, ct);
+        var task = await taskQuery
             .Include(x => x.WorkflowInstance)
             .Include(x => x.Stage)
             .FirstOrDefaultAsync(x => x.Id == id, ct);
@@ -367,7 +361,6 @@ public class ApprovalsController : Controller
             .ToListAsync(ct);
 
         var stages = await _db.WorkflowStages
-            .Include(x => x.Department)
             .AsNoTracking()
             .Where(x => x.WorkflowId == task.WorkflowInstance.WorkflowId && x.IsActive && !x.IsDeleted)
             .OrderBy(x => x.StageOrder)
@@ -453,7 +446,8 @@ public class ApprovalsController : Controller
     [RequirePermission("My Pending Applications.view")]
     public async Task<IActionResult> OpenCurrent(long id, CancellationToken ct)
     {
-        var task = await GetAllowedTaskQuery(pendingOnly: false)
+        var taskQuery = await GetAllowedTaskQueryAsync(pendingOnly: false, ct);
+        var task = await taskQuery
             .Include(x => x.WorkflowInstance)
             .Where(x => x.WorkflowInstanceId == id)
             .OrderByDescending(x => x.WorkflowInstance.CurrentStageId == x.StageId && x.IsActive && x.Status == "Pending" ? 1 : 0)
@@ -471,7 +465,8 @@ public class ApprovalsController : Controller
     [RequirePermission("My Pending Applications.view")]
     public async Task<IActionResult> Document(long taskId, long documentId, CancellationToken ct)
     {
-        var task = await GetAllowedTaskQuery(pendingOnly: false)
+        var taskQuery = await GetAllowedTaskQueryAsync(pendingOnly: false, ct);
+        var task = await taskQuery
             .FirstOrDefaultAsync(x => x.Id == taskId, ct);
         if (task is null || !string.Equals(task.WorkflowInstance.ApplicationType, "NewConnection", StringComparison.OrdinalIgnoreCase))
             return NotFound();
@@ -500,7 +495,8 @@ public class ApprovalsController : Controller
         if (!await HasPermissionAsync(AppConstants.Modules.MyPendingApplications, permissionAction, ct))
             return PermissionDenied(AppConstants.Modules.MyPendingApplications, permissionAction);
 
-        var taskExists = await GetAllowedPendingTaskQuery().AnyAsync(x => x.Id == taskId, ct);
+        var pendingTaskQuery = await GetAllowedPendingTaskQuery(ct);
+        var taskExists = await pendingTaskQuery.AnyAsync(x => x.Id == taskId, ct);
         if (!taskExists)
             return NotFound();
 
@@ -516,7 +512,7 @@ public class ApprovalsController : Controller
                 ActorRoleId = ResolveRoleId(),
                 ActorName = User.FindFirstValue("FullName") ?? User.Identity?.Name,
                 ActorRole = ResolveRoleName(),
-                ActorDepartmentIds = BuildDepartmentSet(await ResolveDepartmentIdAsync(ct)),
+                ActorDepartmentIds = [],
                 IsAdmin = IsAdminUser(),
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
                 UserAgent = Request.Headers.UserAgent.ToString()
@@ -542,10 +538,10 @@ public class ApprovalsController : Controller
         }
     }
 
-    private IQueryable<ApplicationWorkflowTask> GetAllowedPendingTaskQuery()
-        => GetAllowedTaskQuery(pendingOnly: true);
+    private Task<IQueryable<ApplicationWorkflowTask>> GetAllowedPendingTaskQuery(CancellationToken ct)
+        => GetAllowedTaskQueryAsync(pendingOnly: true, ct);
 
-    private IQueryable<ApplicationWorkflowTask> GetAllowedTaskQuery(bool pendingOnly)
+    private async Task<IQueryable<ApplicationWorkflowTask>> GetAllowedTaskQueryAsync(bool pendingOnly, CancellationToken ct)
     {
         var query = _db.ApplicationWorkflowTasks
             .Include(x => x.WorkflowInstance)
@@ -561,54 +557,58 @@ public class ApprovalsController : Controller
         query = query.Where(x => x.WorkflowInstance.ApplicationType != "NewConnection"
             || _db.NewConnectionApplications.Any(app => app.Id == x.ApplicationId && !app.IsDeleted));
 
+        var divisionDevType = await ResolveDivisionDevTypeAsync(ct);
+        query = ApplyDivisionFilter(query, divisionDevType);
+
         // Admin can view any task; other roles limited to assigned tasks
         if (IsAdminUser()) return query;
 
         var userId = ResolveUserId() ?? 0;
         var roleId = ResolveRoleId() ?? 0;
-        var currentDepartmentId = _db.Appusers
-            .Where(x => x.Id == userId && !x.IsDeleted)
-            .Select(x => x.DeptId)
-            .FirstOrDefault();
 
-        return ApplyWorkflowAssignmentFilter(query, userId, roleId, currentDepartmentId);
+        return ApplyWorkflowAssignmentFilter(query, userId, roleId);
     }
 
     private static IQueryable<ApplicationWorkflowTask> ApplyWorkflowAssignmentFilter(
         IQueryable<ApplicationWorkflowTask> query,
         int userId,
-        int roleId,
-        int? departmentId)
+        int roleId)
         => query.Where(x =>
             (x.AssignedUserId.HasValue && x.AssignedUserId == userId)
             || (!x.AssignedUserId.HasValue
-                && x.AssignedDepartmentId.HasValue
                 && x.AssignedRoleId.HasValue
-                && x.AssignedRoleId == roleId
-                && departmentId.HasValue
-                && x.AssignedDepartmentId == departmentId.Value)
+                && x.AssignedRoleId == roleId)
             || (!x.AssignedUserId.HasValue
-                && x.AssignedDepartmentId.HasValue
-                && !x.AssignedRoleId.HasValue
-                && departmentId.HasValue
-                && x.AssignedDepartmentId == departmentId.Value)
-            || (!x.AssignedUserId.HasValue
-                && !x.AssignedDepartmentId.HasValue
-                && x.AssignedRoleId.HasValue
-                && x.AssignedRoleId == roleId));
+                && !x.AssignedRoleId.HasValue));
 
-    private async Task<int?> ResolveDepartmentIdAsync(CancellationToken ct)
+    private IQueryable<ApplicationWorkflowTask> ApplyDivisionFilter(
+        IQueryable<ApplicationWorkflowTask> query,
+        int? divisionDevType)
     {
-        var userId = ResolveUserId() ?? 0;
-        return await _db.Appusers
-            .AsNoTracking()
-            .Where(x => x.Id == userId && !x.IsDeleted)
-            .Select(x => x.DeptId)
-            .FirstOrDefaultAsync(ct);
+        if (!divisionDevType.HasValue
+            || divisionDevType.Value == AppConstants.Divisions.AllDivision.DevType)
+            return query;
+
+        return query.Where(x =>
+            x.WorkflowInstance.ApplicationType != WorkflowService.ApplicationTypeNewConnection
+            || _db.NewConnectionApplications.Any(app =>
+                app.Id == x.ApplicationId
+                && !app.IsDeleted
+                && app.DevType == divisionDevType.Value));
     }
 
-    private static IReadOnlyCollection<int> BuildDepartmentSet(int? departmentId)
-        => departmentId.HasValue ? [departmentId.Value] : [];
+    private async Task<int?> ResolveDivisionDevTypeAsync(CancellationToken ct)
+    {
+        var userId = ResolveUserId();
+        if (!userId.HasValue)
+            return null;
+
+        return await _db.Appusers
+            .AsNoTracking()
+            .Where(x => x.Id == userId.Value && !x.IsDeleted)
+            .Select(x => x.DivisionDevType)
+            .FirstOrDefaultAsync(ct);
+    }
 
     private async Task<bool> HasPermissionAsync(string module, string action, CancellationToken ct)
     {
@@ -680,13 +680,10 @@ public class ApprovalsController : Controller
         if (task.AssignedUserId.HasValue && users.TryGetValue(task.AssignedUserId.Value, out var userName))
             return userName;
 
-        var parts = new List<string>();
-        if (task.Stage.Department?.DeptName is { Length: > 0 } departmentName)
-            parts.Add(departmentName);
         if (task.AssignedRoleId.HasValue && roles.TryGetValue(task.AssignedRoleId.Value, out var roleName))
-            parts.Add(roleName);
+            return roleName;
 
-        return parts.Count == 0 ? "Unassigned" : string.Join(" / ", parts);
+        return "Unassigned";
     }
 
     private static string ResolveSlaState(ApplicationWorkflowTask task, DateTime now)

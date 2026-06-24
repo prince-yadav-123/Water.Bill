@@ -113,7 +113,7 @@ public class WorkflowService : IWorkflowService
             ApplicationId = applicationId,
             ApplicationNo = applicationNo,
             StageId = firstStage.Id,
-            AssignedDepartmentId = firstStage.DepartmentId,
+            AssignedDepartmentId = null,
             AssignedRoleId = firstStage.ApproverRoleId,
             AssignedUserId = firstStage.ApproverUserId,
             StatusCode = WorkflowCodes.TaskStatus.Pending,
@@ -151,7 +151,6 @@ public class WorkflowService : IWorkflowService
             Channel = "InApp",
             Recipient = firstStage.ApproverUserId?.ToString()
                 ?? firstStage.ApproverRoleId?.ToString()
-                ?? firstStage.DepartmentId?.ToString()
                 ?? "Unassigned",
             Message = $"Application {applicationNo} assigned to {firstStage.StageName}.",
             Status = "PendingIntegration",
@@ -324,7 +323,7 @@ public class WorkflowService : IWorkflowService
                     ApplicationId      = task.ApplicationId,
                     ApplicationNo      = task.ApplicationNo,
                     StageId            = nextStage.Id,
-                    AssignedDepartmentId = nextStage.DepartmentId,
+                    AssignedDepartmentId = null,
                     AssignedRoleId     = nextStage.ApproverRoleId,
                     AssignedUserId     = nextStage.ApproverUserId,
                     StatusCode = WorkflowCodes.TaskStatus.Pending,
@@ -402,7 +401,7 @@ public class WorkflowService : IWorkflowService
                     ApplicationId      = task.ApplicationId,
                     ApplicationNo      = task.ApplicationNo,
                     StageId            = previousStage.Id,
-                    AssignedDepartmentId = previousStage.DepartmentId,
+                    AssignedDepartmentId = null,
                     AssignedRoleId     = previousStage.ApproverRoleId,
                     AssignedUserId     = previousStage.ApproverUserId,
                     StatusCode = WorkflowCodes.TaskStatus.Pending,
@@ -760,7 +759,6 @@ public class WorkflowService : IWorkflowService
     private static string ResolveNotificationRecipient(WorkflowStage stage)
         => stage.ApproverUserId?.ToString()
             ?? stage.ApproverRoleId?.ToString()
-            ?? stage.DepartmentId?.ToString()
             ?? "Unassigned";
 
     private async Task EnsureSingleCurrentPendingTaskAsync(ApplicationWorkflowInstance instance, CancellationToken ct)
@@ -809,20 +807,10 @@ public class WorkflowService : IWorkflowService
         if (task.AssignedUserId.HasValue)
             return request.ActorUserId.HasValue && task.AssignedUserId == request.ActorUserId;
 
-        if (task.AssignedDepartmentId.HasValue && task.AssignedRoleId.HasValue)
-        {
-            return request.ActorRoleId.HasValue
-                && task.AssignedRoleId == request.ActorRoleId
-                && request.ActorDepartmentIds.Contains(task.AssignedDepartmentId.Value);
-        }
-
-        if (task.AssignedDepartmentId.HasValue)
-            return request.ActorDepartmentIds.Contains(task.AssignedDepartmentId.Value);
-
         if (task.AssignedRoleId.HasValue)
             return request.ActorRoleId.HasValue && task.AssignedRoleId == request.ActorRoleId;
 
-        return false;
+        return true;
     }
 
     private static void ValidateStagePermission(WorkflowStage stage, string action)
@@ -849,17 +837,13 @@ public class WorkflowService : IWorkflowService
 
     private static void ValidateApprovalTypeAssignment(WorkflowStage stage)
     {
-        if (string.Equals(stage.ApprovalType, "AllApprovers", StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("All Approvers workflow is not implemented yet.");
-
         if (string.Equals(stage.ApprovalType, "SpecificUser", StringComparison.OrdinalIgnoreCase)
             && !stage.ApproverUserId.HasValue)
             throw new InvalidOperationException("Specific user is required for this workflow stage.");
 
-        if (string.Equals(stage.ApprovalType, "DepartmentRole", StringComparison.OrdinalIgnoreCase)
-            && !stage.DepartmentId.HasValue
+        if (IsRoleBasedApprovalType(stage.ApprovalType)
             && !stage.ApproverRoleId.HasValue)
-            throw new InvalidOperationException("Department or role is required for this workflow stage.");
+            throw new InvalidOperationException("Approver role is required for role-based approval.");
     }
 
     private static string ResolveTaskStatus(string action)
@@ -874,6 +858,10 @@ public class WorkflowService : IWorkflowService
             ActionSendBackToPrevious                => TaskStatusSentBackToPrevious,
             _ => throw new InvalidOperationException($"Unsupported workflow action: {action}")
         };
+
+    private static bool IsRoleBasedApprovalType(string? approvalType)
+        => string.Equals(approvalType, "DepartmentRole", StringComparison.OrdinalIgnoreCase)
+           || string.Equals(approvalType, "RoleBased", StringComparison.OrdinalIgnoreCase);
 
     private static string ResolveApplicationStatus(string action, WorkflowStage stage)
         => action switch
@@ -1173,6 +1161,7 @@ public class WorkflowService : IWorkflowService
         var title = $"New Application Assigned — {stage.StageName}";
         var message = $"Application {applicationNo} has been assigned to your stage '{stage.StageName}' for review.";
         var batch = new List<InAppNotification>();
+        var applicationDevType = await ResolveWorkflowDivisionDevTypeAsync(instanceId, ct);
 
         // Specific user
         if (stage.ApproverUserId.HasValue)
@@ -1180,7 +1169,7 @@ public class WorkflowService : IWorkflowService
             batch.Add(MakeStageInApp(stage.ApproverUserId.Value, title, message, instanceId, applicationNo));
         }
         // Role-based users
-        else if (stage.ApproverRoleId.HasValue || stage.DepartmentId.HasValue)
+        else if (stage.ApproverRoleId.HasValue)
         {
             var usersQuery = _db.Appusers.AsNoTracking()
                 .Where(x => x.IsActive == true && !x.IsDeleted);
@@ -1188,8 +1177,7 @@ public class WorkflowService : IWorkflowService
             if (stage.ApproverRoleId.HasValue)
                 usersQuery = usersQuery.Where(x => x.RoleId == stage.ApproverRoleId.Value);
 
-            if (stage.DepartmentId.HasValue)
-                usersQuery = usersQuery.Where(x => x.DeptId == stage.DepartmentId.Value);
+            usersQuery = ApplyDivisionRecipientFilter(usersQuery, applicationDevType);
 
             var userIds = await usersQuery.Select(x => x.Id).ToListAsync(ct);
             foreach (var uid in userIds)
@@ -1198,6 +1186,32 @@ public class WorkflowService : IWorkflowService
 
         if (batch.Count > 0)
             await _db.InAppNotifications.AddRangeAsync(batch, ct);
+    }
+
+    private IQueryable<Appuser> ApplyDivisionRecipientFilter(IQueryable<Appuser> query, int? applicationDevType)
+    {
+        if (!applicationDevType.HasValue)
+            return query;
+
+        return query.Where(x =>
+            !x.DivisionDevType.HasValue
+            || x.DivisionDevType == applicationDevType.Value
+            || x.DivisionDevType == AppConstants.Divisions.AllDivision.DevType);
+    }
+
+    private async Task<int?> ResolveWorkflowDivisionDevTypeAsync(long workflowInstanceId, CancellationToken ct)
+    {
+        return await _db.ApplicationWorkflowInstances
+            .AsNoTracking()
+            .Where(x => x.Id == workflowInstanceId
+                && !x.IsDeleted
+                && x.ApplicationType == ApplicationTypeNewConnection)
+            .Join(
+                _db.NewConnectionApplications.AsNoTracking().Where(x => !x.IsDeleted),
+                instance => instance.ApplicationId,
+                app => app.Id,
+                (_, app) => app.DevType)
+            .FirstOrDefaultAsync(ct);
     }
 
     private static InAppNotification MakeStageInApp(

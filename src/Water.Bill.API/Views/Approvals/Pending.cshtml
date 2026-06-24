@@ -60,7 +60,7 @@
             }
             else
             {
-                <span>Applications assigned to your stage, role, or department.</span>
+                <span>Applications assigned to your stage, role, or user.</span>
             }
         </p>
     </div>
@@ -115,16 +115,6 @@
         <div class="wb-filter-field">
             <label class="form-label">To</label>
             <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
-        </div>
-        <div class="wb-filter-field">
-            <label class="form-label">Department</label>
-            <select class="form-select" name="departmentId">
-                <option value="">All Departments</option>
-                @foreach (var d in Model.Departments)
-                {
-                    <option value="@d.Id" selected="@(Model.DepartmentId == d.Id)">@d.DeptName</option>
-                }
-            </select>
         </div>
         <div class="wb-filter-actions">
             <button class="btn btn-primary" type="submit">Filter</button>

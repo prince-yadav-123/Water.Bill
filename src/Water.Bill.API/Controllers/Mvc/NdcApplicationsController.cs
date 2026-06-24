@@ -48,7 +48,6 @@ public class NdcApplicationsController : Controller
 
         var userId = ResolveUserId() ?? 0;
         var roleId = ResolveRoleId() ?? 0;
-        var departmentId = await ResolveDepartmentIdAsync(userId, ct);
 
         var assignedTasks = await _db.ApplicationWorkflowTasks
             .Include(x => x.WorkflowInstance)
@@ -64,7 +63,7 @@ public class NdcApplicationsController : Controller
             .ToListAsync(ct);
 
         assignedTasks = assignedTasks
-            .Where(x => IsAssignedToCurrentUser(x, userId, roleId, departmentId))
+            .Where(x => IsAssignedToCurrentUser(x, userId, roleId))
             .ToList();
 
         var assignedApplicationIds = assignedTasks
@@ -170,13 +169,12 @@ public class NdcApplicationsController : Controller
             .AnyAsync(x => x.ApplicationType == WorkflowService.ApplicationTypeNdc && x.IsActive && !x.IsDeleted, ct);
         var userId = ResolveUserId() ?? 0;
         var roleId = ResolveRoleId() ?? 0;
-        var departmentId = await ResolveDepartmentIdAsync(userId, ct);
         var activeTask = tasks.FirstOrDefault(x => workflow is not null
             && x.IsActive
             && !x.IsDeleted
             && x.Status == WorkflowService.TaskStatusPending
             && x.StageId == workflow.CurrentStageId
-            && IsAssignedToCurrentUser(x, userId, roleId, departmentId));
+            && IsAssignedToCurrentUser(x, userId, roleId));
 
         return View(new NdcApplicationDetailsViewModel
         {
@@ -234,13 +232,6 @@ public class NdcApplicationsController : Controller
     private string? ResolveRoleName()
         => User.FindFirstValue(ClaimTypes.Role) ?? User.FindFirstValue(AppConstants.Claims.RoleName);
 
-    private async Task<int?> ResolveDepartmentIdAsync(int userId, CancellationToken ct)
-        => await _db.Appusers
-            .AsNoTracking()
-            .Where(x => x.Id == userId && !x.IsDeleted)
-            .Select(x => x.DeptId)
-            .FirstOrDefaultAsync(ct);
-
     private static string? Normalize(string? value)
         => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
@@ -256,20 +247,14 @@ public class NdcApplicationsController : Controller
     private static string BuildProperty(string? sector, string? block, string? plotNo)
         => string.Join(" / ", new[] { sector, $"{block}-{plotNo}".Trim('-') }.Where(x => !string.IsNullOrWhiteSpace(x)));
 
-    private static bool IsAssignedToCurrentUser(ApplicationWorkflowTask task, int userId, int roleId, int? departmentId)
+    private static bool IsAssignedToCurrentUser(ApplicationWorkflowTask task, int userId, int roleId)
     {
         if (task.AssignedUserId.HasValue)
             return task.AssignedUserId.Value == userId;
 
-        if (task.AssignedDepartmentId.HasValue && task.AssignedRoleId.HasValue)
-            return task.AssignedRoleId.Value == roleId && departmentId.HasValue && task.AssignedDepartmentId == departmentId.Value;
-
-        if (task.AssignedDepartmentId.HasValue)
-            return departmentId.HasValue && task.AssignedDepartmentId == departmentId.Value;
-
         if (task.AssignedRoleId.HasValue)
             return task.AssignedRoleId.Value == roleId;
 
-        return false;
+        return true;
     }
 }

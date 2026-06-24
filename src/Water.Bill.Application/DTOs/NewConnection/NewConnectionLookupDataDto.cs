@@ -17,6 +17,21 @@ public class NewConnectionLookupDataDto
     public IReadOnlyList<NewConnectionLookupOptionDto> Villages { get; set; } = [];
 }
 
+public class NewConnectionSectorContextDto
+{
+    public int? DevType { get; set; }
+
+    public string DivisionDisplay { get; set; } = string.Empty;
+
+    public IReadOnlyList<NewConnectionLookupOptionDto> Blocks { get; set; } = [];
+
+    public IReadOnlyList<NewConnectionLookupOptionDto> ConnectionCategories { get; set; } = [];
+
+    public IReadOnlyList<NewConnectionLookupOptionDto> PipeSizes { get; set; } = [];
+
+    public IReadOnlyList<NewConnectionLookupOptionDto> Villages { get; set; } = [];
+}
+
 public class NewConnectionLookupOptionDto
 {
     public string Value { get; set; } = string.Empty;
