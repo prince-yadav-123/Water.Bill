@@ -1,6 +1,0 @@
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\codex-build2\Debug\net8.0\Water.Bill.Application.csproj.AssemblyReference.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\codex-build2\Debug\net8.0\Water.Bill.Application.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\codex-build2\Debug\net8.0\Water.Bill.Application.AssemblyInfoInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\codex-build2\Debug\net8.0\Water.Bill.Application.AssemblyInfo.cs
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\codex-build2\Debug\net8.0\Water.Bill.Application.csproj.CoreCompileInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\codex-build2\Debug\net8.0\Water.Bill.Application.sourcelink.json

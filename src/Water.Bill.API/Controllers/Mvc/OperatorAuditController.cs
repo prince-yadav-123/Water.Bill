@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.Audit;
@@ -16,8 +17,13 @@ namespace Water.Bill.API.Controllers.Mvc;
 public class OperatorAuditController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public OperatorAuditController(ApplicationDbContext db) => _db = db;
+    public OperatorAuditController(ApplicationDbContext db, IMemoryCache cache)
+    {
+        _db = db;
+        _cache = cache;
+    }
 
     [HttpGet("/OperatorAudit")]
     [HttpGet("/UserActivityLogs")]
@@ -46,7 +52,20 @@ public class OperatorAuditController : Controller
         ViewData["Title"] = config.Title;
         ViewData["ActiveMenu"] = config.ActiveMenu;
 
-        var query = BuildAudienceQuery(audience);
+        var query = BuildAudienceQuery(audience)
+            .Select(x => new ActivityLogListProjection
+            {
+                Id = x.Id,
+                Timestamp = x.Timestamp,
+                UserId = x.UserId,
+                Username = x.Username,
+                Action = x.Action,
+                Module = x.Module,
+                EntityId = x.EntityId,
+                IpAddress = x.IpAddress,
+                Details = x.Details,
+                Success = x.Success
+            });
         if (!string.IsNullOrWhiteSpace(model.Search))
         {
             var term = model.Search.Trim();
@@ -199,31 +218,35 @@ public class OperatorAuditController : Controller
     }
 
     private async Task<IReadOnlyList<SelectListItem>> BuildActionOptionsAsync(ActivityLogAudience audience, CancellationToken ct)
-    {
-        var actions = await BuildAudienceQuery(audience)
-            .Select(x => x.Action)
-            .Distinct()
-            .OrderBy(x => x)
-            .ToListAsync(ct);
+        => await _cache.GetOrCreateAsync($"lookup:activity-log-actions:{audience}", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+            var actions = await BuildAudienceQuery(audience)
+                .Select(x => x.Action)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync(ct);
 
-        return actions
-            .Select(x => new SelectListItem(AuditLogDisplayHelper.GetActionLabel(x), x.ToString()))
-            .ToList();
-    }
+            return actions
+                .Select(x => new SelectListItem(AuditLogDisplayHelper.GetActionLabel(x), x.ToString()))
+                .ToList();
+        }) ?? [];
 
     private async Task<IReadOnlyList<SelectListItem>> BuildModuleOptionsAsync(ActivityLogAudience audience, CancellationToken ct)
-    {
-        var modules = await BuildAudienceQuery(audience)
-            .Where(x => x.Module != null && x.Module != string.Empty)
-            .Select(x => x.Module!)
-            .Distinct()
-            .OrderBy(x => x)
-            .ToListAsync(ct);
+        => await _cache.GetOrCreateAsync($"lookup:activity-log-modules:{audience}", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+            var modules = await BuildAudienceQuery(audience)
+                .Where(x => x.Module != null && x.Module != string.Empty)
+                .Select(x => x.Module!)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync(ct);
 
-        return modules
-            .Select(x => new SelectListItem(AuditLogDisplayHelper.GetModuleLabel(x), x))
-            .ToList();
-    }
+            return modules
+                .Select(x => new SelectListItem(AuditLogDisplayHelper.GetModuleLabel(x), x))
+                .ToList();
+        }) ?? [];
 
     private static string ResolvePortalType(ActivityLogAudience audience)
         => audience == ActivityLogAudience.Consumer ? AppConstants.PortalTypes.Consumer : AppConstants.PortalTypes.Admin;
@@ -243,5 +266,19 @@ public class OperatorAuditController : Controller
                 AppConstants.Modules.UserActivityLogs,
                 nameof(Details),
                 nameof(Index));
+    }
+
+    private sealed class ActivityLogListProjection
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public int? UserId { get; set; }
+        public string? Username { get; set; }
+        public int Action { get; set; }
+        public string? Module { get; set; }
+        public string? EntityId { get; set; }
+        public string? IpAddress { get; set; }
+        public string? Details { get; set; }
+        public bool? Success { get; set; }
     }
 }

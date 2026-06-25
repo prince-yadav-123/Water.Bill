@@ -1,13 +1,12 @@
-using System.Security.Claims;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.NotificationManagement;
 using Water.Bill.Application.Interfaces;
-using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -22,19 +21,22 @@ public class NotificationManagementController : Controller
     private readonly IEmailSender _emailSender;
     private readonly ICommunicationConfigurationService _communicationConfigurationService;
     private readonly ILogger<NotificationManagementController> _logger;
+    private readonly IMemoryCache _cache;
 
     public NotificationManagementController(
         ApplicationDbContext db,
         INotificationDispatchService dispatch,
         IEmailSender emailSender,
         ICommunicationConfigurationService communicationConfigurationService,
-        ILogger<NotificationManagementController> logger)
+        ILogger<NotificationManagementController> logger,
+        IMemoryCache cache)
     {
         _db = db;
         _dispatch = dispatch;
         _emailSender = emailSender;
         _communicationConfigurationService = communicationConfigurationService;
         _logger = logger;
+        _cache = cache;
     }
 
     // ── List ─────────────────────────────────────────────────────────────────
@@ -94,7 +96,10 @@ public class NotificationManagementController : Controller
 
         ViewBag.Pagination = PaginationViewModel.Create(new Application.Models.PagedResult<NotificationListRowViewModel>
         {
-            Items = items, TotalCount = total, Page = page, PageSize = validPageSize
+            Items = items,
+            TotalCount = total,
+            Page = page,
+            PageSize = validPageSize
         });
         return View(new NotificationListViewModel
         {
@@ -480,15 +485,23 @@ public class NotificationManagementController : Controller
 
     private async Task<NotificationCreateViewModel> BuildCreateViewModelAsync(NotificationCreateViewModel vm, CancellationToken ct)
     {
-        vm.RoleOptions = await _db.Approles.AsNoTracking()
-            .Where(x => !x.IsDeleted)
-            .Select(x => new SelectOption { Value = x.Id, Text = x.Name })
-            .ToListAsync(ct);
+        vm.RoleOptions = await _cache.GetOrCreateAsync("lookup:notification-role-options", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.Approles.AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .Select(x => new SelectOption { Value = x.Id, Text = x.Name })
+                .ToListAsync(ct);
+        }) ?? [];
 
-        vm.DepartmentOptions = await _db.MasterDeptDetails.AsNoTracking()
-            .Select(x => new SelectOption { Value = x.Id, Text = x.DeptName ?? x.Id.ToString() })
-            .OrderBy(x => x.Text)
-            .ToListAsync(ct);
+        vm.DepartmentOptions = await _cache.GetOrCreateAsync("lookup:notification-department-options", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.MasterDeptDetails.AsNoTracking()
+                .Select(x => new SelectOption { Value = x.Id, Text = x.DeptName ?? x.Id.ToString() })
+                .OrderBy(x => x.Text)
+                .ToListAsync(ct);
+        }) ?? [];
 
         vm.UserOptions = await _db.Appusers.AsNoTracking()
             .Where(x => x.IsActive == true && !x.IsDeleted)

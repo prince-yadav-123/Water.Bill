@@ -126,6 +126,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
 
         ViewData["Title"] = "My Applications";
         ViewData["IsPublicNewConnection"] = true;
+        MarkPublicVerificationFlow();
         ViewData["IsTrackOnly"] = IsTrackOnlySession();
         var applications = await _applicationService.GetPublicApplicationsByMobileAsync(mobile, ct);
         return View("~/Views/NewConnection/MyApplications.cshtml", applications);
@@ -140,6 +141,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
 
         ViewData["Title"] = "Apply for New Connection";
         ViewData["FormAction"] = nameof(Apply);
+        MarkPublicVerificationFlow();
         var model = new NewConnectionApplicationFormDto
         {
             MobileNumber = mobile
@@ -158,6 +160,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
 
         ViewData["Title"] = "Apply for New Connection";
         ViewData["FormAction"] = nameof(Apply);
+        MarkPublicVerificationFlow();
         model.MobileNumber = mobile;
         await PopulateSectorDevTypeAsync(model, ct);
         await LoadLookupDataAsync(model, ct);
@@ -234,6 +237,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["FormRouteId"] = id;
         ViewData["ExistingFeeQuote"] = existingFee;
         ViewData["ExistingDocumentTypes"] = existing?.Documents.Select(x => x.DocumentType).ToArray() ?? [];
+        MarkPublicVerificationFlow();
         model.MobileNumber = mobile;
         await LoadLookupDataAsync(model, ct);
         return View("~/Views/NewConnection/Apply.cshtml", model);
@@ -256,6 +260,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["FormRouteId"] = id;
         ViewData["ExistingFeeQuote"] = await _applicationService.GetApplicationFeeAsync(id, ct);
         ViewData["ExistingDocumentTypes"] = existing.Documents.Select(x => x.DocumentType).ToArray();
+        MarkPublicVerificationFlow();
         model.MobileNumber = mobile;
         await PopulateSectorDevTypeAsync(model, ct);
         await LoadLookupDataAsync(model, ct);
@@ -326,6 +331,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
             return NotFound();
 
         ViewData["Title"] = "Application Details";
+        MarkPublicVerificationFlow();
         return View("~/Views/NewConnection/Details.cshtml", details);
     }
 
@@ -337,6 +343,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
             return RedirectToAction(nameof(Start));
 
         ViewData["IsDevelopmentPayment"] = _paymentService.IsDevelopmentMode();
+        MarkPublicVerificationFlow();
         var model = await BuildPaymentModelAsync(id, mobile, true, step, paymentMethod, paymentIdentifier, ct);
         if (model is null)
             return NotFound();
@@ -407,6 +414,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
 
         ViewData["Title"] = "Payment Initiated";
         ViewData["IsPublicFlow"] = true;
+        MarkPublicVerificationFlow();
         var result = await _paymentService.GetInitiatedPaymentAsync(referenceId, null, ct);
         if (result is null)
         {
@@ -440,6 +448,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["ApplicationNo"] = details.ApplicationNo;
         ViewData["IsResubmit"] = true;
         ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
+        MarkPublicVerificationFlow();
         await LoadLookupDataAsync(model, ct);
         return View("~/Views/NewConnection/Resubmit.cshtml", model);
     }
@@ -465,6 +474,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["ApplicationNo"] = details.ApplicationNo;
         ViewData["IsResubmit"] = true;
         ViewData["ExistingDocumentTypes"] = details.Documents.Select(x => x.DocumentType).ToArray();
+        MarkPublicVerificationFlow();
         await PopulateSectorDevTypeAsync(model, ct);
         await LoadLookupDataAsync(model, ct);
 

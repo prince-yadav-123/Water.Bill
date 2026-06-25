@@ -5,8 +5,6 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\bin\Release\net8.0\Water.Bill.Core.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Release\net8.0\Water.Bill.Application.csproj.AssemblyReference.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Release\net8.0\Water.Bill.Application.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Release\net8.0\Water.Bill.Application.AssemblyInfoInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Release\net8.0\Water.Bill.Application.AssemblyInfo.cs
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Release\net8.0\Water.Bill.Application.csproj.CoreCompileInputs.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Release\net8.0\Water.Bill.Application.sourcelink.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Release\net8.0\Water.Bi.1B5E7071.Up2Date

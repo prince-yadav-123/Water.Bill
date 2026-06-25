@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Water.Bill.ConsumerPortal</RootNamespace>
     <AssemblyName>Water.Bill.ConsumerPortal</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <Description>Water Billing MVC consumer and staff portal.</Description>
   </PropertyGroup>
 
@@ -24,6 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="artifacts\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\**\*.cshtml" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Update="EmailTemplates\**\*.html" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

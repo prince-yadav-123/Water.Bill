@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Security.Claims;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
@@ -24,13 +25,20 @@ public class RolesUsersController : Controller
     private readonly IPermissionService _permissionService;
     private readonly IAuditLogService _auditLogService;
     private readonly ISessionService _sessionService;
+    private readonly IMemoryCache _cache;
 
-    public RolesUsersController(ApplicationDbContext db, IPermissionService permissionService, IAuditLogService auditLogService, ISessionService sessionService)
+    public RolesUsersController(
+        ApplicationDbContext db,
+        IPermissionService permissionService,
+        IAuditLogService auditLogService,
+        ISessionService sessionService,
+        IMemoryCache cache)
     {
         _db = db;
         _permissionService = permissionService;
         _auditLogService = auditLogService;
         _sessionService = sessionService;
+        _cache = cache;
     }
 
     public IActionResult Index()
@@ -63,6 +71,7 @@ public class RolesUsersController : Controller
             .OrderBy(x => x.Name)
             .ToPagedResultAsync(page, pageSize, ct);
         var userCounts = await _db.Appusers
+            .AsNoTracking()
             .Where(x => !x.IsDeleted)
             .GroupBy(x => x.RoleId)
             .Select(x => new { RoleId = x.Key, Count = x.Count() })
@@ -110,8 +119,8 @@ public class RolesUsersController : Controller
         ViewData["Title"] = "Roles & Users";
         var model = new RolesUsersViewModel
         {
-            Roles = await _db.Approles.Where(x => !x.IsDeleted).OrderBy(x => x.Name).ToListAsync(ct),
-            Users = await _db.Appusers.Include(x => x.Role).Where(x => !x.IsDeleted).OrderBy(x => x.FullName).ToListAsync(ct)
+            Roles = await GetAuthorityRolesAsync(ct),
+            Users = await _db.Appusers.AsNoTracking().Include(x => x.Role).Where(x => !x.IsDeleted).OrderBy(x => x.FullName).ToListAsync(ct)
         };
         return View(model);
     }
@@ -145,7 +154,7 @@ public class RolesUsersController : Controller
     {
         ViewData["Title"] = "Edit Role";
         ViewData["ActiveMenu"] = "Role Management";
-        var role = await _db.Approles.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var role = await _db.Approles.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         return role is null ? NotFound() : View(role);
     }
 
@@ -169,10 +178,10 @@ public class RolesUsersController : Controller
     {
         ViewData["Title"] = "Role Details";
         ViewData["ActiveMenu"] = "Role Management";
-        var role = await _db.Approles.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var role = await _db.Approles.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (role is null) return NotFound();
 
-        ViewBag.UserCount = await _db.Appusers.CountAsync(x => x.RoleId == id && !x.IsDeleted, ct);
+        ViewBag.UserCount = await _db.Appusers.AsNoTracking().CountAsync(x => x.RoleId == id && !x.IsDeleted, ct);
         return View("RoleDetails", role);
     }
 
@@ -253,7 +262,7 @@ public class RolesUsersController : Controller
     {
         ViewData["Title"] = "Edit User";
         ViewData["ActiveMenu"] = "User Management";
-        var user = await _db.Appusers.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var user = await _db.Appusers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (user is null) return NotFound();
         await PopulateRoles(ct);
         PopulateDivisionOptions();
@@ -352,6 +361,7 @@ public class RolesUsersController : Controller
         ViewData["Title"] = "User Details";
         ViewData["ActiveMenu"] = "User Management";
         var user = await _db.Appusers
+            .AsNoTracking()
             .Include(x => x.Role)
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         return user is null ? NotFound() : View("UserDetails", user);
@@ -377,18 +387,20 @@ public class RolesUsersController : Controller
     {
         ViewData["Title"] = "Role Permission";
         ViewData["ActiveMenu"] = "Role Permission";
-        var roles = await _db.Approles.Where(x => !x.IsDeleted).OrderBy(x => x.Name).ToListAsync(ct);
+        var roles = await GetAuthorityRolesAsync(ct);
         var selectedRole = roleId.HasValue ? roles.FirstOrDefault(x => x.Id == roleId.Value) : roles.FirstOrDefault();
         var selectedPortalScope = selectedRole is not null && await IsConsumerRoleAsync(selectedRole.Id, ct)
             ? AppConstants.PortalScopes.Consumer
             : AppConstants.PortalScopes.Authority;
         var modules = await _db.PermissionModules
+            .AsNoTracking()
             .Where(x => x.IsActive && !x.IsDeleted && EF.Property<string>(x, "PortalScope") == selectedPortalScope)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
         var permissions = selectedRole is null
             ? []
             : await _db.Rolepermissions
+                .AsNoTracking()
                 .Include(x => x.PermissionModule)
                 .Where(x => x.RoleId == selectedRole.Id && !x.IsDeleted)
                 .ToListAsync(ct);
@@ -442,10 +454,18 @@ public class RolesUsersController : Controller
     }
 
     private async Task PopulateRoles(CancellationToken ct)
-        => ViewBag.Roles = await _db.Approles
-            .Where(x => !x.IsDeleted && x.Name != AppConstants.Roles.Consumer)
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+        => ViewBag.Roles = await GetAuthorityRolesAsync(ct);
+
+    private async Task<IReadOnlyList<Approle>> GetAuthorityRolesAsync(CancellationToken ct)
+        => await _cache.GetOrCreateAsync("lookup:authority-roles", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.Approles
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Name != AppConstants.Roles.Consumer)
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
+        }) ?? [];
 
     private void PopulateDivisionOptions()
         => ViewBag.DivisionOptions = AppConstants.Divisions.Options;

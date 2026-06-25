@@ -19,7 +19,8 @@
     var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
     var displayName = string.IsNullOrWhiteSpace(fullName) ? userName : fullName;
     var isPublicNewConnectionFlow = ViewData["IsPublicNewConnectionFlow"] as bool? == true;
-    var isPublicCompactFlow = (ViewData["IsPublicCompactFlow"] as bool? == true) || isPublicNewConnectionFlow;
+    var isPublicNewConnectionRoute = Context?.Request?.Path.StartsWithSegments("/NewConnection") == true;
+    var isPublicCompactFlow = (ViewData["IsPublicCompactFlow"] as bool? == true) || isPublicNewConnectionFlow || isPublicNewConnectionRoute;
     var showConsumerShell = isAuthenticated && !isPublicCompactFlow;
 
     if (showConsumerShell && !string.IsNullOrWhiteSpace(consumerNo))

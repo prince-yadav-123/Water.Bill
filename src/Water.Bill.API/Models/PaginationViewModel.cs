@@ -22,13 +22,13 @@ public sealed class PaginationViewModel
     public static PaginationViewModel Create<T>(PagedResult<T> result)
         => new()
         {
-            Page       = result.Page,
-            PageSize   = result.PageSize,
+            Page = result.Page,
+            PageSize = result.PageSize,
             TotalCount = result.TotalCount,
             TotalPages = result.TotalPages,
-            From       = result.From,
-            To         = result.To,
-            HasPrev    = result.HasPrev,
-            HasNext    = result.HasNext
+            From = result.From,
+            To = result.To,
+            HasPrev = result.HasPrev,
+            HasNext = result.HasNext
         };
 }

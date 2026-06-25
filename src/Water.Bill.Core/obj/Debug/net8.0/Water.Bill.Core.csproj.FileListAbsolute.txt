@@ -34,6 +34,15 @@ C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Core.pdb
 C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Core.deps.json
 C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Core.dll
 C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Core.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api\Water.Bill.Core.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api\Water.Bill.Core.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api-final\Water.Bill.Core.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api-final\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api-final\Water.Bill.Core.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api-latest\Water.Bill.Core.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api-latest\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\artifacts\build-check\api-latest\Water.Bill.Core.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.deps.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Core\bin\Debug\net8.0\Water.Bill.Core.pdb

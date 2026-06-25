@@ -38,8 +38,32 @@ public class GlobalExceptionLoggingMiddleware
         }
         catch (Exception exception)
         {
+            if (IsClientCancellation(context, exception))
+            {
+                HandleClientCancellation(context, exception);
+                return;
+            }
+
             await HandleExceptionAsync(context, exception);
         }
+    }
+
+    private void HandleClientCancellation(HttpContext context, Exception exception)
+    {
+        var rawRequestPath = $"{context.Request.Path}{context.Request.QueryString}";
+        var safeRequestPath = SensitiveDataRedactionHelper.Redact(rawRequestPath);
+
+        _logger.LogInformation(
+            exception,
+            "Request was canceled by the client for {Path}. TraceId: {TraceId}",
+            safeRequestPath,
+            context.TraceIdentifier);
+
+        if (context.Response.HasStarted)
+            return;
+
+        context.Response.Clear();
+        context.Response.StatusCode = 499;
     }
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
@@ -81,6 +105,14 @@ public class GlobalExceptionLoggingMiddleware
             traceId,
             context.User.Identity?.IsAuthenticated == true,
             _hostEnvironment.ApplicationName ?? string.Empty));
+    }
+
+    private static bool IsClientCancellation(HttpContext context, Exception exception)
+    {
+        if (!context.RequestAborted.IsCancellationRequested)
+            return false;
+
+        return exception is OperationCanceledException or TaskCanceledException;
     }
 
     private ErrorLogWriteModel BuildLogModel(

@@ -117,7 +117,7 @@ public class ConsumerLoginManagementController : Controller
     {
         ViewData["Title"] = "Edit Consumer Login";
         ViewData["ActiveMenu"] = "Consumer Login Management";
-        var user = await _db.ConsumerUsers.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var user = await _db.ConsumerUsers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (user is null) return NotFound();
 
         var consumer = await FindConsumerAsync(user.ConsumerNo, ct);

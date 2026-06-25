@@ -1,10 +1,9 @@
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using System.Security.Claims;
+using System.Text;
 using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Application.Interfaces;
@@ -44,7 +43,10 @@ public class MastersController : Controller
         var pagedRows = allRows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         ViewBag.Pagination = PaginationViewModel.Create(new Application.Models.PagedResult<MasterRowViewModel>
         {
-            Items = pagedRows, TotalCount = totalCount, Page = page, PageSize = pageSize
+            Items = pagedRows,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
         });
 
         return View("Index", new MasterListViewModel
@@ -212,291 +214,291 @@ public class MastersController : Controller
         switch (key)
         {
             case "sectors":
-            {
-                var rows = await _db.SectorDetails.AsNoTracking()
-                .OrderBy(x => x.OrderBy ?? int.MaxValue).ThenBy(x => x.SectorNo)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
                 {
-                    Key = EncodeKey(x.SNo.ToString()),
-                    IsActive = x.Status == null || x.Status == 1,
-                    Values = new()
+                    var rows = await _db.SectorDetails.AsNoTracking()
+                    .OrderBy(x => x.OrderBy ?? int.MaxValue).ThenBy(x => x.SectorNo)
+                    .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
                     {
-                        ["SectorId"] = x.SectorId,
-                        ["SectorNo"] = x.SectorNo,
-                        ["OrderBy"] = x.OrderBy.ToString(),
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
+                        Key = EncodeKey(x.SNo.ToString()),
+                        IsActive = x.Status == null || x.Status == 1,
+                        Values = new()
+                        {
+                            ["SectorId"] = x.SectorId,
+                            ["SectorNo"] = x.SectorNo,
+                            ["OrderBy"] = x.OrderBy.ToString(),
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
             case "blocks":
-            {
-                var rows = await _db.BlockDetails.AsNoTracking()
-                .OrderBy(x => x.SectorId).ThenBy(x => x.Block)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
                 {
-                    Key = EncodeKey($"{x.SectorId}||{x.Block}"),
-                    IsActive = x.Status == null || x.Status == 1,
-                    Values = new()
+                    var rows = await _db.BlockDetails.AsNoTracking()
+                    .OrderBy(x => x.SectorId).ThenBy(x => x.Block)
+                    .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
                     {
-                        ["SectorId"] = x.SectorId,
-                        ["Block"] = x.Block,
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
+                        Key = EncodeKey($"{x.SectorId}||{x.Block}"),
+                        IsActive = x.Status == null || x.Status == 1,
+                        Values = new()
+                        {
+                            ["SectorId"] = x.SectorId,
+                            ["Block"] = x.Block,
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
             case "pipe-sizes":
-            {
-                var rows = await _db.PipeSizeMasters.AsNoTracking()
-                .OrderBy(x => x.PipeSize)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
                 {
-                    Key = EncodeKey(x.PipeSizeId.ToString()),
-                    IsActive = x.Status == null || x.Status == 1,
-                    Values = new()
+                    var rows = await _db.PipeSizeMasters.AsNoTracking()
+                    .OrderBy(x => x.PipeSize)
+                    .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
                     {
-                        ["PipeSize"] = x.PipeSize.ToString(),
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
+                        Key = EncodeKey(x.PipeSizeId.ToString()),
+                        IsActive = x.Status == null || x.Status == 1,
+                        Values = new()
+                        {
+                            ["PipeSize"] = x.PipeSize.ToString(),
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
             case "connection-categories":
-            {
-                var rows = await _db.MasterConnectionTypeDetails.AsNoTracking()
-                .OrderBy(x => x.ConName)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
                 {
-                    Key = EncodeKey(x.ConId),
-                    IsActive = x.Status == null || x.Status == "1",
-                    Values = new()
-                    {
-                        ["ConId"] = x.ConId,
-                        ["ConName"] = x.ConName,
-                        ["ConMainId"] = x.ConMainId,
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
-            case "connection-sub-types":
-            {
-                var rows = await _db.MasterConnectionTypeDetailsTrans.AsNoTracking()
-                .OrderBy(x => x.ConId).ThenBy(x => x.SubConName)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.SubConId.ToString()),
-                    IsActive = x.Status == null || x.Status == "1",
-                    Values = new()
-                    {
-                        ["ConId"] = x.ConId,
-                        ["SubConName"] = x.SubConName,
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
-            case "connection-types":
-            {
-                var rows = await _db.ConnectionTypeMsts.AsNoTracking()
-                .OrderBy(x => x.ConnectionName)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.AutoId.ToString()),
-                    IsActive = x.Status == null || x.Status == true,
-                    Values = new()
-                    {
-                        ["ConnectionName"] = x.ConnectionName,
-                        ["ConnectionMainId"] = x.ConnectionMainId,
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
-            case "villages":
-            {
-                var rows = await _db.VillageDetails.AsNoTracking()
-                .OrderBy(x => x.VillageName)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.VillageNo.ToString()),
-                    IsActive = x.Status == null || x.Status == 1,
-                    Values = new()
-                    {
-                        ["VillageId"] = x.VillageId.ToString(),
-                        ["VillageName"] = x.VillageName,
-                        ["VillageStr"] = x.VillageStr,
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
-            case "document-types":
-            {
-                var rows = await _db.MasterDocumentUploads.AsNoTracking()
-                .OrderBy(x => x.DocumentId)
-                .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.DocumentId.ToString()),
-                    IsActive = x.Status == null || x.Status == 1,
-                    Values = new()
-                    {
-                        ["DocumentId"] = x.DocumentId.ToString(),
-                        ["DocumentName"] = x.DocumentName,
-                        ["DocFor"] = x.DocFor,
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
-            case "payment-modes":
-            {
-                var rows = await _db.PaymentModeMsts.AsNoTracking()
-                    .OrderBy(x => x.PaymentModeName)
-                    .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.AutoId.ToString()),
-                    IsActive = IsActive(x.IsActive),
-                    Values = new()
-                    {
-                        ["AutoId"] = x.AutoId.ToString(),
-                        ["PaymentModeName"] = x.PaymentModeName,
-                        ["Status"] = FormatStatus(x.IsActive)
-                    }
-                }).ToList();
-            }
-            case "payment-types":
-            {
-                var rows = await _db.PaymentTypeMsts.AsNoTracking()
-                    .OrderBy(x => x.PaymentTypeName)
-                    .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.AutoId.ToString()),
-                    IsActive = x.IsActive != false,
-                    Values = new()
-                    {
-                        ["AutoId"] = x.AutoId.ToString(),
-                        ["PaymentTypeName"] = x.PaymentTypeName,
-                        ["Status"] = FormatStatus(x.IsActive)
-                    }
-                }).ToList();
-            }
-            case "banks":
-            {
-                var rows = await _db.JalBankMasters.AsNoTracking()
-                    .OrderBy(x => x.BankName)
-                    .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.Id.ToString()),
-                    IsActive = x.Status == null || x.Status == 1,
-                    Values = new()
-                    {
-                        ["BankId"] = x.BankId,
-                        ["BankName"] = x.BankName,
-                        ["AccountNo"] = x.AccountNo,
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
-            case "ndc-amounts":
-            {
-                var rows = await _db.MasterNocAmts.AsNoTracking()
+                    var rows = await _db.MasterConnectionTypeDetails.AsNoTracking()
                     .OrderBy(x => x.ConName)
                     .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
-                {
-                    Key = EncodeKey(x.ConId),
-                    IsActive = IsActive(x.Status),
-                    Values = new()
+                    return rows.Select(x => new MasterRowViewModel
                     {
-                        ["ConId"] = x.ConId,
-                        ["ConName"] = x.ConName,
-                        ["ConMainId"] = x.ConMainId,
-                        ["NocAmt"] = x.NocAmt.ToString(),
-                        ["Amount"] = x.Amount,
-                        ["Sgst"] = x.Sgst,
-                        ["Cgst"] = x.Cgst,
-                        ["ExpiryTime"] = x.ExpiryTime,
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
+                        Key = EncodeKey(x.ConId),
+                        IsActive = x.Status == null || x.Status == "1",
+                        Values = new()
+                        {
+                            ["ConId"] = x.ConId,
+                            ["ConName"] = x.ConName,
+                            ["ConMainId"] = x.ConMainId,
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
+            case "connection-sub-types":
+                {
+                    var rows = await _db.MasterConnectionTypeDetailsTrans.AsNoTracking()
+                    .OrderBy(x => x.ConId).ThenBy(x => x.SubConName)
+                    .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.SubConId.ToString()),
+                        IsActive = x.Status == null || x.Status == "1",
+                        Values = new()
+                        {
+                            ["ConId"] = x.ConId,
+                            ["SubConName"] = x.SubConName,
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
+            case "connection-types":
+                {
+                    var rows = await _db.ConnectionTypeMsts.AsNoTracking()
+                    .OrderBy(x => x.ConnectionName)
+                    .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.AutoId.ToString()),
+                        IsActive = x.Status == null || x.Status == true,
+                        Values = new()
+                        {
+                            ["ConnectionName"] = x.ConnectionName,
+                            ["ConnectionMainId"] = x.ConnectionMainId,
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
+            case "villages":
+                {
+                    var rows = await _db.VillageDetails.AsNoTracking()
+                    .OrderBy(x => x.VillageName)
+                    .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.VillageNo.ToString()),
+                        IsActive = x.Status == null || x.Status == 1,
+                        Values = new()
+                        {
+                            ["VillageId"] = x.VillageId.ToString(),
+                            ["VillageName"] = x.VillageName,
+                            ["VillageStr"] = x.VillageStr,
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
+            case "document-types":
+                {
+                    var rows = await _db.MasterDocumentUploads.AsNoTracking()
+                    .OrderBy(x => x.DocumentId)
+                    .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.DocumentId.ToString()),
+                        IsActive = x.Status == null || x.Status == 1,
+                        Values = new()
+                        {
+                            ["DocumentId"] = x.DocumentId.ToString(),
+                            ["DocumentName"] = x.DocumentName,
+                            ["DocFor"] = x.DocFor,
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
+            case "payment-modes":
+                {
+                    var rows = await _db.PaymentModeMsts.AsNoTracking()
+                        .OrderBy(x => x.PaymentModeName)
+                        .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.AutoId.ToString()),
+                        IsActive = IsActive(x.IsActive),
+                        Values = new()
+                        {
+                            ["AutoId"] = x.AutoId.ToString(),
+                            ["PaymentModeName"] = x.PaymentModeName,
+                            ["Status"] = FormatStatus(x.IsActive)
+                        }
+                    }).ToList();
+                }
+            case "payment-types":
+                {
+                    var rows = await _db.PaymentTypeMsts.AsNoTracking()
+                        .OrderBy(x => x.PaymentTypeName)
+                        .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.AutoId.ToString()),
+                        IsActive = x.IsActive != false,
+                        Values = new()
+                        {
+                            ["AutoId"] = x.AutoId.ToString(),
+                            ["PaymentTypeName"] = x.PaymentTypeName,
+                            ["Status"] = FormatStatus(x.IsActive)
+                        }
+                    }).ToList();
+                }
+            case "banks":
+                {
+                    var rows = await _db.JalBankMasters.AsNoTracking()
+                        .OrderBy(x => x.BankName)
+                        .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.Id.ToString()),
+                        IsActive = x.Status == null || x.Status == 1,
+                        Values = new()
+                        {
+                            ["BankId"] = x.BankId,
+                            ["BankName"] = x.BankName,
+                            ["AccountNo"] = x.AccountNo,
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
+            case "ndc-amounts":
+                {
+                    var rows = await _db.MasterNocAmts.AsNoTracking()
+                        .OrderBy(x => x.ConName)
+                        .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
+                    {
+                        Key = EncodeKey(x.ConId),
+                        IsActive = IsActive(x.Status),
+                        Values = new()
+                        {
+                            ["ConId"] = x.ConId,
+                            ["ConName"] = x.ConName,
+                            ["ConMainId"] = x.ConMainId,
+                            ["NocAmt"] = x.NocAmt.ToString(),
+                            ["Amount"] = x.Amount,
+                            ["Sgst"] = x.Sgst,
+                            ["Cgst"] = x.Cgst,
+                            ["ExpiryTime"] = x.ExpiryTime,
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
             case "application-statuses":
-            {
-                var rows = await _db.ApplicationStatuses.AsNoTracking()
-                    .OrderBy(x => x.StatusName)
-                    .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
                 {
-                    Key = EncodeKey(x.AutoId.ToString()),
-                    IsActive = x.IsActive != false,
-                    Values = new()
+                    var rows = await _db.ApplicationStatuses.AsNoTracking()
+                        .OrderBy(x => x.StatusName)
+                        .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
                     {
-                        ["AutoId"] = x.AutoId.ToString(),
-                        ["StatusName"] = x.StatusName,
-                        ["Status"] = FormatStatus(x.IsActive)
-                    }
-                }).ToList();
-            }
+                        Key = EncodeKey(x.AutoId.ToString()),
+                        IsActive = x.IsActive != false,
+                        Values = new()
+                        {
+                            ["AutoId"] = x.AutoId.ToString(),
+                            ["StatusName"] = x.StatusName,
+                            ["Status"] = FormatStatus(x.IsActive)
+                        }
+                    }).ToList();
+                }
             case "rate-categories":
-            {
-                var rows = await _db.JalRateMasters.AsNoTracking()
-                    .OrderBy(x => x.PropertyType)
-                    .ThenBy(x => x.IdT)
-                    .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
                 {
-                    Key = EncodeKey(x.Id.ToString()),
-                    IsActive = IsActive(x.Status),
-                    Values = new()
+                    var rows = await _db.JalRateMasters.AsNoTracking()
+                        .OrderBy(x => x.PropertyType)
+                        .ThenBy(x => x.IdT)
+                        .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
                     {
-                        ["Id"] = x.Id.ToString(),
-                        ["PropertyType"] = x.PropertyType,
-                        ["IdT"] = x.IdT,
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
+                        Key = EncodeKey(x.Id.ToString()),
+                        IsActive = IsActive(x.Status),
+                        Values = new()
+                        {
+                            ["Id"] = x.Id.ToString(),
+                            ["PropertyType"] = x.PropertyType,
+                            ["IdT"] = x.IdT,
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
             case "rates":
-            {
-                var rows = await _db.JalRateTrans.AsNoTracking()
-                    .Include(x => x.IdNavigation)
-                    .OrderBy(x => x.IdNavigation!.PropertyType)
-                    .ThenBy(x => x.PipeSize)
-                    .ThenBy(x => x.AreaStart)
-                    .ThenByDescending(x => x.EffFrom)
-                    .ToListAsync(ct);
-                return rows.Select(x => new MasterRowViewModel
                 {
-                    Key = EncodeKey(x.Sid.ToString()),
-                    IsActive = IsActive(x.Status),
-                    Values = new()
+                    var rows = await _db.JalRateTrans.AsNoTracking()
+                        .Include(x => x.IdNavigation)
+                        .OrderBy(x => x.IdNavigation!.PropertyType)
+                        .ThenBy(x => x.PipeSize)
+                        .ThenBy(x => x.AreaStart)
+                        .ThenByDescending(x => x.EffFrom)
+                        .ToListAsync(ct);
+                    return rows.Select(x => new MasterRowViewModel
                     {
-                        ["Category"] = x.IdNavigation?.PropertyType ?? x.Id.ToString(),
-                        ["AreaStart"] = x.AreaStart.ToString(),
-                        ["AreaEnd"] = x.AreaEnd.ToString(),
-                        ["PipeSize"] = x.PipeSize.ToString(),
-                        ["Regular"] = x.Regular.ToString(),
-                        ["Temporary"] = x.Temporary.ToString(),
-                        ["CessRate"] = x.CessRate.ToString(),
-                        ["EffFrom"] = ToDisplayDate(x.EffFrom),
-                        ["EffTo"] = ToDisplayDate(x.EffTo),
-                        ["DevType"] = FormatDivision(x.DevType),
-                        ["Status"] = FormatStatus(x.Status)
-                    }
-                }).ToList();
-            }
+                        Key = EncodeKey(x.Sid.ToString()),
+                        IsActive = IsActive(x.Status),
+                        Values = new()
+                        {
+                            ["Category"] = x.IdNavigation?.PropertyType ?? x.Id.ToString(),
+                            ["AreaStart"] = x.AreaStart.ToString(),
+                            ["AreaEnd"] = x.AreaEnd.ToString(),
+                            ["PipeSize"] = x.PipeSize.ToString(),
+                            ["Regular"] = x.Regular.ToString(),
+                            ["Temporary"] = x.Temporary.ToString(),
+                            ["CessRate"] = x.CessRate.ToString(),
+                            ["EffFrom"] = ToDisplayDate(x.EffFrom),
+                            ["EffTo"] = ToDisplayDate(x.EffTo),
+                            ["DevType"] = FormatDivision(x.DevType),
+                            ["Status"] = FormatStatus(x.Status)
+                        }
+                    }).ToList();
+                }
             default:
                 return [];
         }

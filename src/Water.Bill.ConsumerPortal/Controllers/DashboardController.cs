@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Water.Bill.ConsumerPortal.Helpers;
 using Water.Bill.ConsumerPortal.Filters;
 using Water.Bill.ConsumerPortal.ViewModels;
@@ -16,9 +17,15 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 [RequirePermission("Consumer Dashboard.view")]
 public class DashboardController : Controller
 {
+    private static readonly TimeSpan DashboardCacheTtl = TimeSpan.FromMinutes(2);
     private readonly ApplicationDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public DashboardController(ApplicationDbContext db) => _db = db;
+    public DashboardController(ApplicationDbContext db, IMemoryCache cache)
+    {
+        _db = db;
+        _cache = cache;
+    }
 
     [HttpGet("/Consumer/Dashboard")]
     [HttpGet("/Dashboard")]
@@ -44,61 +51,10 @@ public class DashboardController : Controller
             });
         }
 
-        var consumer = await _db.ConsumerDetailsMasters
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.ConsNo == consumerNo, ct);
+        var model = await GetCachedDashboardValueAsync(
+            BuildDashboardCacheKey("consumer-dashboard", consumerNo),
+            () => BuildDashboardModelAsync(consumerNo, ct));
 
-        // Top 5 bills for display
-        var bills = await _db.JalPrintBillMasters
-            .AsNoTracking()
-            .Where(x => x.ConsNo == consumerNo && x.BillType != null && x.BillCount != null && x.BillCount != 0)
-            .OrderByDescending(x => x.BillDateTo ?? x.BillDate ?? x.EntryDate)
-            .Take(5)
-            .ToListAsync(ct);
-
-        var latestBill = bills.FirstOrDefault();
-        var recentBills = bills.Select(MapRecentBill).ToList();
-
-        // Match the legacy consumer-facing flow: show the current payable bill amount,
-        // not the sum of every unpaid record.
-        var currentPayable = latestBill is null || IsBillPaid(latestBill)
-            ? 0
-            : BillAmountCalculator.ResolveCurrentPayableAmount(latestBill);
-
-        var totalUnpaidDue = currentPayable;
-
-        var unpaidBillCount = await _db.JalPrintBillMasters
-            .AsNoTracking()
-            .Where(x => x.ConsNo == consumerNo
-                && x.BillType != null
-                && x.BillCount != null
-                && x.BillCount != 0
-                && (x.TotalBillAmt ?? 0) > 0
-                && x.PaidStatus != "Y"
-                && x.PaidStatus != "1")
-            .CountAsync(ct);
-
-        var recentPayments = await GetRecentPaymentsAsync(consumerNo, ct);
-        var latestChallans = await GetLatestChallansAsync(consumerNo, ct);
-        var querySummary = await GetQuerySummaryAsync(consumerNo, ct);
-        var billingTrend = await GetBillingTrendAsync(consumerNo, ct);
-
-        var model = new ConsumerDashboardViewModel
-        {
-            ConsumerNo = consumerNo,
-            Consumer = consumer is null ? null : MapConsumer(consumer),
-            CurrentBill = latestBill is null ? null : MapBill(latestBill),
-            TotalUnpaidDue = totalUnpaidDue,
-            UnpaidBillCount = unpaidBillCount,
-            RecentBills = recentBills,
-            RecentPayments = recentPayments,
-            LatestChallans = latestChallans,
-            QuerySummary = querySummary,
-            BillingTrend = billingTrend,
-            Metrics = BuildMetrics(consumer, latestBill, totalUnpaidDue, recentPayments, recentBills)
-        };
-
-        model.Alerts = BuildAlerts(model);
         return View(model);
     }
 
@@ -307,6 +263,92 @@ public class DashboardController : Controller
                 PaidAmount = paidRows.GetValueOrDefault(year, 0)
             };
         }).ToList();
+    }
+
+    private async Task<ConsumerDashboardViewModel> BuildDashboardModelAsync(string consumerNo, CancellationToken ct)
+    {
+        var consumer = await _db.ConsumerDetailsMasters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ConsNo == consumerNo, ct);
+
+        var bills = await _db.JalPrintBillMasters
+            .AsNoTracking()
+            .Where(x => x.ConsNo == consumerNo && x.BillType != null && x.BillCount != null && x.BillCount != 0)
+            .OrderByDescending(x => x.BillDateTo ?? x.BillDate ?? x.EntryDate)
+            .Take(5)
+            .ToListAsync(ct);
+
+        var latestBill = bills.FirstOrDefault();
+        var recentBills = bills.Select(MapRecentBill).ToList();
+
+        var currentPayable = latestBill is null || IsBillPaid(latestBill)
+            ? 0
+            : BillAmountCalculator.ResolveCurrentPayableAmount(latestBill);
+
+        var totalUnpaidDue = currentPayable;
+
+        var unpaidBillCount = await _db.JalPrintBillMasters
+            .AsNoTracking()
+            .CountAsync(x => x.ConsNo == consumerNo
+                && x.BillType != null
+                && x.BillCount != null
+                && x.BillCount != 0
+                && (x.TotalBillAmt ?? 0) > 0
+                && x.PaidStatus != "Y"
+                && x.PaidStatus != "1", ct);
+
+        var recentPayments = await GetRecentPaymentsCachedAsync(consumerNo, ct);
+        var latestChallans = await GetLatestChallansCachedAsync(consumerNo, ct);
+        var querySummary = await GetQuerySummaryCachedAsync(consumerNo, ct);
+        var billingTrend = await GetBillingTrendCachedAsync(consumerNo, ct);
+
+        var model = new ConsumerDashboardViewModel
+        {
+            ConsumerNo = consumerNo,
+            Consumer = consumer is null ? null : MapConsumer(consumer),
+            CurrentBill = latestBill is null ? null : MapBill(latestBill),
+            TotalUnpaidDue = totalUnpaidDue,
+            UnpaidBillCount = unpaidBillCount,
+            RecentBills = recentBills,
+            RecentPayments = recentPayments,
+            LatestChallans = latestChallans,
+            QuerySummary = querySummary,
+            BillingTrend = billingTrend,
+            Metrics = BuildMetrics(consumer, latestBill, totalUnpaidDue, recentPayments, recentBills)
+        };
+
+        model.Alerts = BuildAlerts(model);
+        return model;
+    }
+
+    private Task<IReadOnlyList<RecentPaymentViewModel>> GetRecentPaymentsCachedAsync(string consumerNo, CancellationToken ct)
+        => GetCachedDashboardValueAsync(BuildDashboardCacheKey("recent-payments", consumerNo), () => GetRecentPaymentsAsync(consumerNo, ct));
+
+    private Task<IReadOnlyList<ConsumerChallanRowViewModel>> GetLatestChallansCachedAsync(string consumerNo, CancellationToken ct)
+        => GetCachedDashboardValueAsync(BuildDashboardCacheKey("latest-challans", consumerNo), () => GetLatestChallansAsync(consumerNo, ct));
+
+    private Task<ConsumerQuerySummaryViewModel> GetQuerySummaryCachedAsync(string consumerNo, CancellationToken ct)
+        => GetCachedDashboardValueAsync(BuildDashboardCacheKey("query-summary", consumerNo), () => GetQuerySummaryAsync(consumerNo, ct));
+
+    private Task<IReadOnlyList<BillingYearTrendViewModel>> GetBillingTrendCachedAsync(string consumerNo, CancellationToken ct)
+        => GetCachedDashboardValueAsync(BuildDashboardCacheKey("billing-trend", consumerNo), () => GetBillingTrendAsync(consumerNo, ct));
+
+    private string BuildDashboardCacheKey(string segment, string consumerNo)
+        => string.Join(":", "consumer-dashboard", segment, consumerNo.Trim().ToUpperInvariant());
+
+    private async Task<T> GetCachedDashboardValueAsync<T>(string key, Func<Task<T>> factory)
+    {
+        if (_cache.TryGetValue(key, out T? cachedValue) && cachedValue is not null)
+            return cachedValue;
+
+        var value = await factory();
+        _cache.Set(key, value, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = DashboardCacheTtl,
+            Priority = CacheItemPriority.Low
+        });
+
+        return value;
     }
 
     private async Task<bool> TableExistsAsync(string tableName, CancellationToken ct)

@@ -29,6 +29,7 @@ public class PermissionModulesController : Controller
         ViewData["Title"] = "Permission Modules";
         ViewData["ActiveMenu"] = "Permission Modules";
         var modules = await _db.PermissionModules
+            .AsNoTracking()
             .Where(x => !x.IsDeleted)
             .OrderBy(x => EF.Property<string>(x, "PortalScope"))
             .ThenBy(x => x.Name)
@@ -50,6 +51,7 @@ public class PermissionModulesController : Controller
         ViewData["Title"] = "View Permission Module";
         ViewData["ActiveMenu"] = "Permission Modules";
         var module = await _db.PermissionModules
+            .AsNoTracking()
             .Where(x => x.Id == id && !x.IsDeleted)
             .Select(x => new PermissionModuleViewModel
             {
@@ -102,6 +104,7 @@ public class PermissionModulesController : Controller
         ViewData["Title"] = "Edit Permission Module";
         ViewData["ActiveMenu"] = "Permission Modules";
         var module = await _db.PermissionModules
+            .AsNoTracking()
             .Where(x => x.Id == id && !x.IsDeleted)
             .Select(x => new PermissionModuleFormViewModel
             {

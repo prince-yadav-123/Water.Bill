@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json;
 using Water.Bill.API.Filters;
+using Water.Bill.API.Models;
 using Water.Bill.API.Models.Communication;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
-using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
-using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Extensions;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
@@ -21,11 +22,13 @@ public class CommunicationTemplatesController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly ITemplateRenderer _renderer;
+    private readonly IMemoryCache _cache;
 
-    public CommunicationTemplatesController(ApplicationDbContext db, ITemplateRenderer renderer)
+    public CommunicationTemplatesController(ApplicationDbContext db, ITemplateRenderer renderer, IMemoryCache cache)
     {
         _db = db;
         _renderer = renderer;
+        _cache = cache;
     }
 
     [HttpGet("/CommunicationTemplates")]
@@ -312,12 +315,16 @@ public class CommunicationTemplatesController : Controller
     }
 
     private async Task<List<SelectListItem>> BuildPurposeItemsAsync(CancellationToken ct)
-        => await _db.CommunicationPurposes
-            .AsNoTracking()
-            .Where(x => x.IsActive)
-            .OrderBy(x => x.DisplayName)
-            .Select(x => new SelectListItem($"{x.DisplayName} ({x.PurposeKey})", x.Id.ToString()))
-            .ToListAsync(ct);
+        => await _cache.GetOrCreateAsync("lookup:communication-purposes:active", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.CommunicationPurposes
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.DisplayName)
+                .Select(x => new SelectListItem($"{x.DisplayName} ({x.PurposeKey})", x.Id.ToString()))
+                .ToListAsync(ct);
+        }) ?? [];
 
     private static List<SelectListItem> BuildChannelItems()
         => CommunicationChannels.All.Select(x => new SelectListItem(x, x)).ToList();

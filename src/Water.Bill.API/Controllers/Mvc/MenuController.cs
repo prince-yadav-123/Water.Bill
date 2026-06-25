@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Water.Bill.API.Filters;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Application.Interfaces;
@@ -11,24 +12,27 @@ using Water.Bill.Infrastructure.Data.Entities;
 
 namespace Water.Bill.API.Controllers.Mvc;
 
-    [Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
-    public class MenuController : Controller
-    {
-        private const int DefaultTenantId = AppConstants.DefaultTenantId;
-        private const int ConsumerTenantId = AppConstants.ConsumerTenantId;
+[Authorize(AuthenticationSchemes = AppConstants.CookieScheme)]
+public class MenuController : Controller
+{
+    private const int DefaultTenantId = AppConstants.DefaultTenantId;
+    private const int ConsumerTenantId = AppConstants.ConsumerTenantId;
 
     private readonly ApplicationDbContext _db;
     private readonly IPermissionService _permissionService;
     private readonly IAuditLogService _auditLogService;
+    private readonly IMemoryCache _cache;
 
     public MenuController(
         ApplicationDbContext db,
         IPermissionService permissionService,
-        IAuditLogService auditLogService)
+        IAuditLogService auditLogService,
+        IMemoryCache cache)
     {
         _db = db;
         _permissionService = permissionService;
         _auditLogService = auditLogService;
+        _cache = cache;
     }
 
     [RequirePermission("Menu Management.view")]
@@ -37,6 +41,7 @@ namespace Water.Bill.API.Controllers.Mvc;
         ViewData["Title"] = "Menu Management";
         ViewData["ActiveMenu"] = "Menu Management";
         var items = await _db.Menuitems
+            .AsNoTracking()
             .Include(x => x.Parent)
             .Include(x => x.PermissionModule)
             .Where(x => !x.IsDeleted)
@@ -88,7 +93,7 @@ namespace Water.Bill.API.Controllers.Mvc;
     {
         ViewData["Title"] = "Edit Menu Item";
         ViewData["ActiveMenu"] = "Menu Management";
-        var item = await _db.Menuitems.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        var item = await _db.Menuitems.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
         if (item is null) return NotFound();
 
         return View(await BuildMenuFormViewModelAsync(item, ct, id));
@@ -170,6 +175,7 @@ namespace Water.Bill.API.Controllers.Mvc;
 
     private async Task<IReadOnlyList<Menuitem>> GetParentItemsAsync(int tenantId, CancellationToken ct, int? excludeId = null)
         => await _db.Menuitems
+            .AsNoTracking()
             .Where(x => !x.IsDeleted && x.TenantId == tenantId && (!excludeId.HasValue || x.Id != excludeId.Value))
             .OrderBy(x => x.Order)
             .ThenBy(x => x.Label)
@@ -181,10 +187,16 @@ namespace Water.Bill.API.Controllers.Mvc;
             ? AppConstants.PortalScopes.Consumer
             : AppConstants.PortalScopes.Authority;
 
-        return await _db.PermissionModules
-            .Where(x => x.IsActive && !x.IsDeleted && EF.Property<string>(x, "PortalScope") == portalScope)
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+        var cacheKey = $"lookup:permission-modules:{portalScope}";
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.PermissionModules
+                .AsNoTracking()
+                .Where(x => x.IsActive && !x.IsDeleted && EF.Property<string>(x, "PortalScope") == portalScope)
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
+        }) ?? [];
     }
 
     private void ValidateMenuItem(Menuitem item)
@@ -215,6 +227,7 @@ namespace Water.Bill.API.Controllers.Mvc;
         var parentItems = await GetParentItemsAsync(item.TenantId, ct, excludeId);
         var permissionModules = await GetPermissionModulesAsync(item.TenantId, ct);
         var allParentOptions = await _db.Menuitems
+            .AsNoTracking()
             .Where(x => !x.IsDeleted && (!excludeId.HasValue || x.Id != excludeId.Value))
             .OrderBy(x => x.TenantId)
             .ThenBy(x => x.Order)
@@ -234,16 +247,21 @@ namespace Water.Bill.API.Controllers.Mvc;
             PermissionModules = permissionModules,
             PortalOptions = GetPortalOptions(),
             ParentOptions = allParentOptions,
-            PermissionModuleOptions = await _db.PermissionModules
-                .Where(x => x.IsActive && !x.IsDeleted)
-                .OrderBy(x => x.Name)
-                .Select(x => new MenuPermissionModuleOptionViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    PortalScope = EF.Property<string>(x, "PortalScope")
-                })
-                .ToListAsync(ct),
+            PermissionModuleOptions = await _cache.GetOrCreateAsync("lookup:permission-module-options:all", async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+                return await _db.PermissionModules
+                    .AsNoTracking()
+                    .Where(x => x.IsActive && !x.IsDeleted)
+                    .OrderBy(x => x.Name)
+                    .Select(x => new MenuPermissionModuleOptionViewModel
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        PortalScope = EF.Property<string>(x, "PortalScope")
+                    })
+                    .ToListAsync(ct);
+            }) ?? [],
             IconCategories = GetIconCategories()
         };
     }

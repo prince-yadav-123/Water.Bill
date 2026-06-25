@@ -300,7 +300,7 @@
       },
       {
         "Name": "PreviewRows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Billing.BulkBillPreviewRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Billing.BulkBillPreviewRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
@@ -471,7 +471,7 @@
       },
       {
         "Name": "PreviewRows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Billing.BulkBillPreviewRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Billing.BulkBillPreviewRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
@@ -750,7 +750,7 @@
       },
       {
         "Name": "Consumers",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Challans.ChallanConsumerSearchRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Challans.ChallanConsumerSearchRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
@@ -1655,17 +1655,17 @@
       },
       {
         "Name": "Consumer.ConsumerDetailsTrans",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerDetailsTran, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerDetailsTran, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Consumer.ConsumerNodues",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerNodue, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerNodue, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Consumer.ConsumerTransfers",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerTransfer, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerTransfer, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
@@ -2061,7 +2061,7 @@
       },
       {
         "Name": "Rows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],
@@ -3146,7 +3146,7 @@
       },
       {
         "Name": "Rows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ErrorLogRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ErrorLogRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],
@@ -3872,17 +3872,17 @@
       },
       {
         "Name": "Consumer.ConsumerDetailsTrans",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerDetailsTran, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerDetailsTran, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Consumer.ConsumerNodues",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerNodue, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerNodue, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Consumer.ConsumerTransfers",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerTransfer, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.ConsumerTransfer, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
@@ -4411,17 +4411,17 @@
       },
       {
         "Name": "Result.Documents",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionDocumentDto, Water.Bill.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionDocumentDto, Water.Bill.Application, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Result.Timeline",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionApprovalHistoryDto, Water.Bill.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionApprovalHistoryDto, Water.Bill.Application, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Result.WorkflowStages",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionWorkflowStageDto, Water.Bill.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.Application.DTOs.NewConnection.NewConnectionWorkflowStageDto, Water.Bill.Application, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
@@ -4977,7 +4977,7 @@
       },
       {
         "Name": "Rows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],
@@ -5058,7 +5058,7 @@
       },
       {
         "Name": "Rows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Reports.MisReportRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Reports.MisReportRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],
@@ -5177,12 +5177,12 @@
       },
       {
         "Name": "Appusers",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Appuser, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Appuser, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Rolepermissions",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Rolepermission, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Rolepermission, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],
@@ -5286,12 +5286,12 @@
       },
       {
         "Name": "Appusers",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Appuser, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Appuser, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
         "Name": "Rolepermissions",
-        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Rolepermission, Water.Bill.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.ICollection\u00601[[Water.Bill.Infrastructure.Data.Entities.Rolepermission, Water.Bill.Infrastructure, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],
@@ -5434,7 +5434,7 @@
       },
       {
         "Name": "Rows",
-        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[Water.Bill.API.Models.Audit.ActivityLogRowViewModel, Water.Bill.API, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       }
     ],

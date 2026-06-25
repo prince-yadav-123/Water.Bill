@@ -23,6 +23,966 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xBY2NvdW50XEFjY2Vzc0RlbmllZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xBY2NvdW50XExvZ2luLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Account/VerifyTwoFactor.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xBY2NvdW50XFZlcmlmeVR3b0ZhY3Rvci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Approvals/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xBcHByb3ZhbHNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Approvals/Pending.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xBcHByb3ZhbHNcUGVuZGluZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/BillRevision/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xCaWxsUmV2aXNpb25cRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/BillRevision/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xCaWxsUmV2aXNpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/BillSearchPrint/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xCaWxsU2VhcmNoUHJpbnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/BillSearchPrint/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xCaWxsU2VhcmNoUHJpbnRcUHJpbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/BulkBillGeneration/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xCdWxrQmlsbEdlbmVyYXRpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ChallanManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ChallanManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ChallanManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ChallanManagement/PaymentHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxQYXltZW50SGlzdG9yeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ChallanManagement/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ChallanManagement/Receipt.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxSZWNlaXB0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/CommunicationTemplates/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/CommunicationTemplates/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXEZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/CommunicationTemplates/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/CommunicationTemplates/Preview.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXFByZXZpZXcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ComplaintManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb21wbGFpbnRNYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ComplaintManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb21wbGFpbnRNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConnectionTypeCategoryChange/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConnectionTypeCategoryChange/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConnectionTypeCategoryChange/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConnectionTypeCategoryChange/SearchConsumer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXFNlYXJjaENvbnN1bWVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerAccountAdjustments/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckFjY291bnRBZGp1c3RtZW50c1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerAccountAdjustments/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckFjY291bnRBZGp1c3RtZW50c1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerAccountAdjustments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckFjY291bnRBZGp1c3RtZW50c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerLedger/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckxlZGdlclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerLedger/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckxlZGdlclxQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerLoginManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerLoginManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerLoginManagement/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerLoginManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerLoginManagement/_ConsumerLoginForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxfQ29uc3VtZXJMb2dpbkZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerMasterMaintenance/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lck1hc3Rlck1haW50ZW5hbmNlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerMasterMaintenance/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lck1hc3Rlck1haW50ZW5hbmNlXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerMasterMaintenance/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lck1hc3Rlck1haW50ZW5hbmNlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerQueryManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lclF1ZXJ5TWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ConsumerQueryManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xDb25zdW1lclF1ZXJ5TWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xEYXNoYm9hcmRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Departments/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xEZXBhcnRtZW50c1xGb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Departments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xEZXBhcnRtZW50c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/DisconnectionManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/DisconnectionManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/DisconnectionManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/DisconnectionManagement/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ErrorLogs/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xFcnJvckxvZ3NcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ErrorLogs/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xFcnJvckxvZ3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/IntegrationHub/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xJbnRlZ3JhdGlvbkh1YlxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/IntegrationHub/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xJbnRlZ3JhdGlvbkh1YlxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Landing/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xMYW5kaW5nXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Masters/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNYXN0ZXJzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Masters/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNYXN0ZXJzXEZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Masters/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNYXN0ZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Menu/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNZW51XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Menu/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNZW51XEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Menu/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNZW51XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Menu/_MenuForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNZW51XF9NZW51Rm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/MeterReadingManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNZXRlclJlYWRpbmdNYW5hZ2VtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/MeterReadingManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNZXRlclJlYWRpbmdNYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/MeterReadingManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xNZXRlclJlYWRpbmdNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NameTransferMutation/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NameTransferMutation/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NameTransferMutation/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NameTransferMutation/SearchConsumer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxTZWFyY2hDb25zdW1lci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NdcApplications/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZGNBcHBsaWNhdGlvbnNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NdcApplications/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZGNBcHBsaWNhdGlvbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NdcCertificates/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZGNDZXJ0aWZpY2F0ZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NdcCertificates/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZGNDZXJ0aWZpY2F0ZXNcUHJpbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NewConnectionFeeConfigurations/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZXdDb25uZWN0aW9uRmVlQ29uZmlndXJhdGlvbnNcRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NewConnectionFeeConfigurations/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZXdDb25uZWN0aW9uRmVlQ29uZmlndXJhdGlvbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NewConnection/Apply.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZXdDb25uZWN0aW9uXEFwcGx5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NewConnection/Track.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZXdDb25uZWN0aW9uXFRyYWNrLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NewConnection/_NewConnectionDetailsCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZXdDb25uZWN0aW9uXF9OZXdDb25uZWN0aW9uRGV0YWlsc0NhcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NewConnection/_NewConnectionFormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOZXdDb25uZWN0aW9uXF9OZXdDb25uZWN0aW9uRm9ybUZpZWxkcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NoticeManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NoticeManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NoticeManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NoticeManagement/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XFByaW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NoticeManagement/Templates.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XFRlbXBsYXRlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NotificationManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NotificationManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NotificationManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NotificationManagement/MyNotifications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XE15Tm90aWZpY2F0aW9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/NotificationManagement/TestEmail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XFRlc3RFbWFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/OnlinePaymentHistory/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xPbmxpbmVQYXltZW50SGlzdG9yeVxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/OnlinePaymentHistory/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xPbmxpbmVQYXltZW50SGlzdG9yeVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/OperatorAudit/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xPcGVyYXRvckF1ZGl0XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/OperatorAudit/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xPcGVyYXRvckF1ZGl0XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/PermissionModules/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/PermissionModules/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/PermissionModules/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/PermissionModules/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/PermissionModules/_PermissionModuleForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xfUGVybWlzc2lvbk1vZHVsZUZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Profile/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xQcm9maWxlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/ReportsMis/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSZXBvcnRzTWlzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/CreateRole.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXENyZWF0ZVJvbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/CreateUser.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXENyZWF0ZVVzZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/EditRole.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXEVkaXRSb2xlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/EditUser.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXEVkaXRVc2VyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/Permissions.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXFBlcm1pc3Npb25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/RoleDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXFJvbGVEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/Roles.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXFJvbGVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/UserDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXFVzZXJEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/RolesUsers/Users.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xSb2xlc1VzZXJzXFVzZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/SecuritySettings/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xTZWN1cml0eVNldHRpbmdzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xTaGFyZWRcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Shared/_Pagination.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xTaGFyZWRcX1BhZ2luYXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xTaGFyZWRcX1ZhbGlkYXRpb25TY3JpcHRzUGFydGlhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Shared/_WaterLoader.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xTaGFyZWRcX1dhdGVyTG9hZGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Unauthorized/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xVbmF1dGhvcml6ZWRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Workflows/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xXb3JrZmxvd3NcRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Workflows/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xXb3JrZmxvd3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Workflows/StageForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xXb3JrZmxvd3NcU3RhZ2VGb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/Workflows/Stages.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xXb3JrZmxvd3NcU3RhZ2VzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xfVmlld0ltcG9ydHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api-final/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaS1maW5hbFxWaWV3c1xfVmlld1N0YXJ0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xBY2NvdW50XEFjY2Vzc0RlbmllZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xBY2NvdW50XExvZ2luLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Account/VerifyTwoFactor.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xBY2NvdW50XFZlcmlmeVR3b0ZhY3Rvci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Approvals/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xBcHByb3ZhbHNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Approvals/Pending.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xBcHByb3ZhbHNcUGVuZGluZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/BillRevision/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xCaWxsUmV2aXNpb25cRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/BillRevision/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xCaWxsUmV2aXNpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/BillSearchPrint/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xCaWxsU2VhcmNoUHJpbnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/BillSearchPrint/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xCaWxsU2VhcmNoUHJpbnRcUHJpbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/BulkBillGeneration/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xCdWxrQmlsbEdlbmVyYXRpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ChallanManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ChallanManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ChallanManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ChallanManagement/PaymentHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxQYXltZW50SGlzdG9yeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ChallanManagement/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ChallanManagement/Receipt.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDaGFsbGFuTWFuYWdlbWVudFxSZWNlaXB0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/CommunicationTemplates/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/CommunicationTemplates/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXEZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/CommunicationTemplates/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/CommunicationTemplates/Preview.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb21tdW5pY2F0aW9uVGVtcGxhdGVzXFByZXZpZXcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ComplaintManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb21wbGFpbnRNYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ComplaintManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb21wbGFpbnRNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConnectionTypeCategoryChange/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConnectionTypeCategoryChange/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConnectionTypeCategoryChange/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConnectionTypeCategoryChange/SearchConsumer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25uZWN0aW9uVHlwZUNhdGVnb3J5Q2hhbmdlXFNlYXJjaENvbnN1bWVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerAccountAdjustments/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckFjY291bnRBZGp1c3RtZW50c1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerAccountAdjustments/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckFjY291bnRBZGp1c3RtZW50c1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerAccountAdjustments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckFjY291bnRBZGp1c3RtZW50c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerLedger/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckxlZGdlclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerLedger/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckxlZGdlclxQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerLoginManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerLoginManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerLoginManagement/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerLoginManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerLoginManagement/_ConsumerLoginForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lckxvZ2luTWFuYWdlbWVudFxfQ29uc3VtZXJMb2dpbkZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerMasterMaintenance/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lck1hc3Rlck1haW50ZW5hbmNlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerMasterMaintenance/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lck1hc3Rlck1haW50ZW5hbmNlXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerMasterMaintenance/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lck1hc3Rlck1haW50ZW5hbmNlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerQueryManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lclF1ZXJ5TWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ConsumerQueryManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xDb25zdW1lclF1ZXJ5TWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xEYXNoYm9hcmRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Departments/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xEZXBhcnRtZW50c1xGb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Departments/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xEZXBhcnRtZW50c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/DisconnectionManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/DisconnectionManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/DisconnectionManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/DisconnectionManagement/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xEaXNjb25uZWN0aW9uTWFuYWdlbWVudFxQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ErrorLogs/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xFcnJvckxvZ3NcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ErrorLogs/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xFcnJvckxvZ3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/IntegrationHub/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xJbnRlZ3JhdGlvbkh1YlxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/IntegrationHub/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xJbnRlZ3JhdGlvbkh1YlxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Landing/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xMYW5kaW5nXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Masters/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNYXN0ZXJzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Masters/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNYXN0ZXJzXEZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Masters/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNYXN0ZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Menu/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNZW51XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Menu/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNZW51XEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Menu/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNZW51XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Menu/_MenuForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNZW51XF9NZW51Rm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/MeterReadingManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNZXRlclJlYWRpbmdNYW5hZ2VtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/MeterReadingManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNZXRlclJlYWRpbmdNYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/MeterReadingManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xNZXRlclJlYWRpbmdNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NameTransferMutation/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NameTransferMutation/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NameTransferMutation/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NameTransferMutation/SearchConsumer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOYW1lVHJhbnNmZXJNdXRhdGlvblxTZWFyY2hDb25zdW1lci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NdcApplications/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZGNBcHBsaWNhdGlvbnNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NdcApplications/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZGNBcHBsaWNhdGlvbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NdcCertificates/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZGNDZXJ0aWZpY2F0ZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NdcCertificates/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZGNDZXJ0aWZpY2F0ZXNcUHJpbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NewConnectionFeeConfigurations/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZXdDb25uZWN0aW9uRmVlQ29uZmlndXJhdGlvbnNcRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NewConnectionFeeConfigurations/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZXdDb25uZWN0aW9uRmVlQ29uZmlndXJhdGlvbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NewConnection/Apply.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZXdDb25uZWN0aW9uXEFwcGx5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NewConnection/Track.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZXdDb25uZWN0aW9uXFRyYWNrLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NewConnection/_NewConnectionDetailsCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZXdDb25uZWN0aW9uXF9OZXdDb25uZWN0aW9uRGV0YWlsc0NhcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NewConnection/_NewConnectionFormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOZXdDb25uZWN0aW9uXF9OZXdDb25uZWN0aW9uRm9ybUZpZWxkcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NoticeManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NoticeManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NoticeManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NoticeManagement/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XFByaW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NoticeManagement/Templates.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpY2VNYW5hZ2VtZW50XFRlbXBsYXRlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NotificationManagement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NotificationManagement/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NotificationManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NotificationManagement/MyNotifications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XE15Tm90aWZpY2F0aW9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/NotificationManagement/TestEmail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xOb3RpZmljYXRpb25NYW5hZ2VtZW50XFRlc3RFbWFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/OnlinePaymentHistory/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xPbmxpbmVQYXltZW50SGlzdG9yeVxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/OnlinePaymentHistory/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xPbmxpbmVQYXltZW50SGlzdG9yeVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/OperatorAudit/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xPcGVyYXRvckF1ZGl0XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/OperatorAudit/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xPcGVyYXRvckF1ZGl0XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/PermissionModules/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/PermissionModules/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/PermissionModules/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/PermissionModules/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/PermissionModules/_PermissionModuleForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xQZXJtaXNzaW9uTW9kdWxlc1xfUGVybWlzc2lvbk1vZHVsZUZvcm0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Profile/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xQcm9maWxlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/ReportsMis/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSZXBvcnRzTWlzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/CreateRole.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXENyZWF0ZVJvbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/CreateUser.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXENyZWF0ZVVzZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/EditRole.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXEVkaXRSb2xlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/EditUser.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXEVkaXRVc2VyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/Permissions.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXFBlcm1pc3Npb25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/RoleDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXFJvbGVEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/Roles.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXFJvbGVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/UserDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXFVzZXJEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/RolesUsers/Users.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xSb2xlc1VzZXJzXFVzZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/SecuritySettings/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xTZWN1cml0eVNldHRpbmdzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xTaGFyZWRcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Shared/_Pagination.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xTaGFyZWRcX1BhZ2luYXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xTaGFyZWRcX1ZhbGlkYXRpb25TY3JpcHRzUGFydGlhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Shared/_WaterLoader.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xTaGFyZWRcX1dhdGVyTG9hZGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Unauthorized/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xVbmF1dGhvcml6ZWRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Workflows/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xXb3JrZmxvd3NcRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Workflows/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xXb3JrZmxvd3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Workflows/StageForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xXb3JrZmxvd3NcU3RhZ2VGb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/Workflows/Stages.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xXb3JrZmxvd3NcU3RhZ2VzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xfVmlld0ltcG9ydHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/artifacts/build-check/api/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = YXJ0aWZhY3RzXGJ1aWxkLWNoZWNrXGFwaVxWaWV3c1xfVmlld1N0YXJ0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Lekesh/Prince Yadav/Vedang Projects/Water Bill/VedangSoft.BPMS/Water.Bill/src/Water.Bill.API/Views/Account/AccessDenied.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

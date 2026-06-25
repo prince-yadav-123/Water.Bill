@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Water.Bill.Infrastructure</RootNamespace>
     <AssemblyName>Water.Bill.Infrastructure</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <Description>Water Billing data access, EF Core DbContext, repositories, and infrastructure service implementations.</Description>
   </PropertyGroup>
 

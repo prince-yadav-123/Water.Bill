@@ -1,12 +1,11 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Water.Bill.API.Filters;
-using Water.Bill.API.Models.Disconnections;
 using Water.Bill.API.Models;
+using Water.Bill.API.Models.Disconnections;
 using Water.Bill.Core.Common;
-using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -66,7 +65,10 @@ public class DisconnectionManagementController : Controller
         model.Cases = cases;
         ViewBag.Pagination = PaginationViewModel.Create(new Application.Models.PagedResult<DisconnectionCaseRowViewModel>
         {
-            Items = cases, TotalCount = caseTotal, Page = page, PageSize = pageSize
+            Items = cases,
+            TotalCount = caseTotal,
+            Page = page,
+            PageSize = pageSize
         });
         return View(model);
     }
@@ -401,12 +403,19 @@ public class DisconnectionManagementController : Controller
         var items = await orderedQ.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(x => new DisconnectionCaseRowViewModel
             {
-                Id = x.row.Id, CaseNo = x.row.CaseNo, ConsumerNo = x.row.ConsumerNo,
+                Id = x.row.Id,
+                CaseNo = x.row.CaseNo,
+                ConsumerNo = x.row.ConsumerNo,
                 ConsumerName = x.consumer != null ? x.consumer.ConsNm1 : null,
                 MobileNo = x.consumer != null ? x.consumer.MobNo : null,
                 PropertyNo = x.consumer != null ? x.consumer.Sector + "/" + x.consumer.BlkNo + "-" + x.consumer.FlatNo : null,
-                Reason = x.row.Reason, Status = x.row.Status, NoticeDate = x.row.NoticeDate, DueDate = x.row.DueDate,
-                OutstandingAmount = x.row.OutstandingAmount, DisconnectionFee = x.row.DisconnectionFee, ReconnectionFee = x.row.ReconnectionFee
+                Reason = x.row.Reason,
+                Status = x.row.Status,
+                NoticeDate = x.row.NoticeDate,
+                DueDate = x.row.DueDate,
+                OutstandingAmount = x.row.OutstandingAmount,
+                DisconnectionFee = x.row.DisconnectionFee,
+                ReconnectionFee = x.row.ReconnectionFee
             })
             .ToListAsync(ct);
         return (items, totalCount);

@@ -1,8 +1,9 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Security.Claims;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models.Complaints;
 using Water.Bill.Core.Common;
@@ -32,11 +33,13 @@ public class ComplaintManagementController : Controller
 
     private readonly ApplicationDbContext _db;
     private readonly IConfiguration _configuration;
+    private readonly IMemoryCache _cache;
 
-    public ComplaintManagementController(ApplicationDbContext db, IConfiguration configuration)
+    public ComplaintManagementController(ApplicationDbContext db, IConfiguration configuration, IMemoryCache cache)
     {
         _db = db;
         _configuration = configuration;
+        _cache = cache;
     }
 
     [HttpGet("/ComplaintManagement")]
@@ -177,12 +180,16 @@ public class ComplaintManagementController : Controller
     }
 
     private async Task<List<SelectListItem>> BuildCategoriesAsync(CancellationToken ct)
-        => await _db.ComplaintCategories.AsNoTracking()
-            .Where(x => x.IsActive && !x.IsDeleted)
-            .OrderBy(x => x.DisplayOrder)
-            .ThenBy(x => x.CategoryName)
-            .Select(x => new SelectListItem(x.CategoryName, x.Id.ToString()))
-            .ToListAsync(ct);
+        => await _cache.GetOrCreateAsync("lookup:complaint-categories:active", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.ComplaintCategories.AsNoTracking()
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.CategoryName)
+                .Select(x => new SelectListItem(x.CategoryName, x.Id.ToString()))
+                .ToListAsync(ct);
+        }) ?? [];
 
     private string GetStorageBasePath()
         => _configuration["FileStorage:ConsumerComplaintDocumentBasePath"]

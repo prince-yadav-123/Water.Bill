@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +27,18 @@ public class SupportQueriesController : Controller
     private readonly ApplicationDbContext _db;
     private readonly IConfiguration _configuration;
     private readonly ICommunicationService _communicationService;
+    private readonly IMemoryCache _cache;
 
-    public SupportQueriesController(ApplicationDbContext db, IConfiguration configuration, ICommunicationService communicationService)
+    public SupportQueriesController(
+        ApplicationDbContext db,
+        IConfiguration configuration,
+        ICommunicationService communicationService,
+        IMemoryCache cache)
     {
         _db = db;
         _configuration = configuration;
         _communicationService = communicationService;
+        _cache = cache;
     }
 
     [HttpGet("/Consumer/SupportQueries")]
@@ -215,13 +222,17 @@ public class SupportQueriesController : Controller
         => _db.ConsumerSupportQueries.Where(x => x.Id == id && !x.IsDeleted && x.ConsumerNo == ResolveConsumerNo());
 
     private async Task<List<SelectListItem>> BuildCategoriesAsync(CancellationToken ct)
-        => await _db.SupportQueryCategories
-            .AsNoTracking()
-            .Where(x => x.IsActive && !x.IsDeleted)
-            .OrderBy(x => x.DisplayOrder)
-            .ThenBy(x => x.CategoryName)
-            .Select(x => new SelectListItem(x.CategoryName, x.Id.ToString()))
-            .ToListAsync(ct);
+        => await _cache.GetOrCreateAsync("lookup:support-query-categories:active", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.SupportQueryCategories
+                .AsNoTracking()
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.CategoryName)
+                .Select(x => new SelectListItem(x.CategoryName, x.Id.ToString()))
+                .ToListAsync(ct);
+        }) ?? [];
 
     private async Task SaveDocumentsAsync(ConsumerSupportQuery query, IEnumerable<IFormFile>? files, CancellationToken ct)
     {

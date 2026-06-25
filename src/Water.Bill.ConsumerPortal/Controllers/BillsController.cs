@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Water.Bill.Application.DTOs.Payments;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.ConsumerPortal.Filters;
@@ -18,13 +19,16 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 [Route("Consumer/Bills")]
 public class BillsController : Controller
 {
+    private static readonly TimeSpan LinkedConsumersCacheTtl = TimeSpan.FromMinutes(10);
     private readonly ApplicationDbContext _db;
     private readonly IConsumerPaymentService _paymentService;
+    private readonly IMemoryCache _cache;
 
-    public BillsController(ApplicationDbContext db, IConsumerPaymentService paymentService)
+    public BillsController(ApplicationDbContext db, IConsumerPaymentService paymentService, IMemoryCache cache)
     {
         _db = db;
         _paymentService = paymentService;
+        _cache = cache;
     }
 
     [HttpGet("History")]
@@ -385,6 +389,10 @@ public class BillsController : Controller
 
     private async Task<IReadOnlyList<ConsumerDetailsMaster>> GetLinkedConsumersAsync(string primaryConsumerNo, CancellationToken ct)
     {
+        var cacheKey = $"consumer-linked:{primaryConsumerNo.Trim().ToUpperInvariant()}";
+        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<ConsumerDetailsMaster>? cached) && cached is not null)
+            return cached;
+
         var primary = await GetConsumerAsync(primaryConsumerNo, ct);
         if (primary is null)
             return [];
@@ -392,7 +400,7 @@ public class BillsController : Controller
         var mobile = primary.MobNo?.Trim();
         var email = primary.EmailId?.Trim();
 
-        return await _db.ConsumerDetailsMasters
+        var linked = await _db.ConsumerDetailsMasters
             .AsNoTracking()
             .Where(x => x.ConsNo == primaryConsumerNo
                 || (!string.IsNullOrWhiteSpace(mobile) && x.MobNo == mobile)
@@ -401,6 +409,14 @@ public class BillsController : Controller
             .ThenBy(x => x.ConsNo)
             .Take(10)
             .ToListAsync(ct);
+
+        _cache.Set(cacheKey, linked, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = LinkedConsumersCacheTtl,
+            Priority = CacheItemPriority.Low
+        });
+
+        return linked;
     }
 
     private string? ResolveConsumerNo()

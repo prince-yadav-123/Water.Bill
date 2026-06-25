@@ -40,20 +40,20 @@ public class ReportsMisController : Controller
         };
 
         query = ApplyCommonSearch(query, model.Search);
-        var totalCount = await query.CountAsync(ct);
+        var summaryQuery = query.Select(x => new { x.Amount, x.PaidAmount });
 
-        model.Summary = totalCount == 0
-            ? new MisReportSummaryViewModel()
-            : await query
-                .GroupBy(_ => 1)
-                .Select(g => new MisReportSummaryViewModel
-                {
-                    TotalCount = g.Count(),
-                    TotalAmount = g.Sum(x => x.Amount),
-                    PaidAmount = g.Sum(x => x.PaidAmount),
-                    PendingAmount = g.Sum(x => x.Amount > x.PaidAmount ? x.Amount - x.PaidAmount : 0)
-                })
-                .FirstAsync(ct);
+        model.Summary = await summaryQuery
+            .GroupBy(_ => 1)
+            .Select(g => new MisReportSummaryViewModel
+            {
+                TotalCount = g.Count(),
+                TotalAmount = g.Sum(x => x.Amount),
+                PaidAmount = g.Sum(x => x.PaidAmount),
+                PendingAmount = g.Sum(x => x.Amount > x.PaidAmount ? x.Amount - x.PaidAmount : 0)
+            })
+            .FirstOrDefaultAsync(ct) ?? new MisReportSummaryViewModel();
+
+        var totalCount = model.Summary.TotalCount;
 
         model.Rows = totalCount == 0
             ? []

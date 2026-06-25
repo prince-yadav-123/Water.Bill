@@ -1,0 +1,41 @@
+# Build outputs
+bin/
+obj/
+artifacts/
+TestResults/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Logs / temp files
+*.log
+*.tmp
+*.temp
+*.cache
+*.pid
+
+# Package / node outputs
+node_modules/
+dist/
+coverage/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Publish output
+publish/
+wwwroot/dist/
+
+# Misc generated files
+*.csproj.user
+*.VC.db
+*.vspscc
+*.vssscc

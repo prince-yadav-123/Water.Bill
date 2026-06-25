@@ -1,16 +1,17 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Security.Claims;
+using Water.Bill.API.Models;
+using Water.Bill.API.Models.SupportQueries;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
-using Water.Bill.API.Models.SupportQueries;
-using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
-using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
+using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Security;
 
 namespace Water.Bill.API.Controllers.Mvc;
@@ -37,12 +38,18 @@ public class ConsumerQueryManagementController : Controller
     private readonly ApplicationDbContext _db;
     private readonly IConfiguration _configuration;
     private readonly ICommunicationService _communicationService;
+    private readonly IMemoryCache _cache;
 
-    public ConsumerQueryManagementController(ApplicationDbContext db, IConfiguration configuration, ICommunicationService communicationService)
+    public ConsumerQueryManagementController(
+        ApplicationDbContext db,
+        IConfiguration configuration,
+        ICommunicationService communicationService,
+        IMemoryCache cache)
     {
         _db = db;
         _configuration = configuration;
         _communicationService = communicationService;
+        _cache = cache;
     }
 
     public async Task<IActionResult> Index(
@@ -230,13 +237,17 @@ public class ConsumerQueryManagementController : Controller
     }
 
     private async Task<List<SelectListItem>> BuildCategoriesAsync(CancellationToken ct)
-        => await _db.SupportQueryCategories
-            .AsNoTracking()
-            .Where(x => x.IsActive && !x.IsDeleted)
-            .OrderBy(x => x.DisplayOrder)
-            .ThenBy(x => x.CategoryName)
-            .Select(x => new SelectListItem(x.CategoryName, x.Id.ToString()))
-            .ToListAsync(ct);
+        => await _cache.GetOrCreateAsync("lookup:support-query-categories:active", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await _db.SupportQueryCategories
+                .AsNoTracking()
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.CategoryName)
+                .Select(x => new SelectListItem(x.CategoryName, x.Id.ToString()))
+                .ToListAsync(ct);
+        }) ?? [];
 
     private string GetStorageBasePath()
         => _configuration["FileStorage:ConsumerSupportDocumentBasePath"]

@@ -1,36 +1,62 @@
-C:\Temp\wb-consumer-out\appsettings.Development.json
-C:\Temp\wb-consumer-out\appsettings.json
-C:\Temp\wb-consumer-out\dotnet-tools.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.exe
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.deps.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.runtimeconfig.json
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.dll
-C:\Temp\wb-consumer-out\Water.Bill.ConsumerPortal.pdb
-C:\Temp\wb-consumer-fast-out\appsettings.Development.json
-C:\Temp\wb-consumer-fast-out\appsettings.json
-C:\Temp\wb-consumer-fast-out\dotnet-tools.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.exe
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.deps.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.runtimeconfig.json
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.dll
-C:\Temp\wb-consumer-fast-out\Water.Bill.ConsumerPortal.pdb
-C:\Temp\wb-consumer-out-2\appsettings.Development.json
-C:\Temp\wb-consumer-out-2\appsettings.json
-C:\Temp\wb-consumer-out-2\dotnet-tools.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.exe
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.deps.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.runtimeconfig.json
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.dll
-C:\Temp\wb-consumer-out-2\Water.Bill.ConsumerPortal.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\appsettings.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\obj-consumer\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\obj-consumer\Debug\net8.0\Water.Bill.ConsumerPortal.sourcelink.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\obj-consumer\project.assets.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\obj-consumer\Water.Bill.ConsumerPortal.csproj.nuget.dgspec.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\dotnet-tools.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Account\AccessDenied.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Account\Login.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Account\VerifyOtp.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Bills\Current.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Bills\History.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Bills\Pay.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Bills\PaymentStarted.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Bills\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Challans\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Challans\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Challans\Pay.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Challans\PaymentStarted.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Challans\Print.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Challans\Success.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Complaints\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Complaints\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Complaints\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Dashboard\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Home\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Home\Privacy.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Ndc\Apply.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Ndc\Certificate.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Ndc\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Ndc\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\Apply.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\MyApplications.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\Payment.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\PaymentStarted.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\Resubmit.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\_NewConnectionDetailsCard.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\NewConnection\_NewConnectionFormFields.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Notifications\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Profile\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Profile\UpdateContact.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\PublicConsumerMobileRegistration\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\PublicNewConnection\Start.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\PublicNewConnection\VerifyOtp.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\ServiceRequests\ConnectionChange.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\ServiceRequests\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\ServiceRequests\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\ServiceRequests\NameTransfer.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Shared\Error.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Shared\_Layout.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Shared\_ValidationScriptsPartial.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Shared\_WaterLoader.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\SupportQueries\Create.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\SupportQueries\Details.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\SupportQueries\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\Unauthorized\Index.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\_ViewImports.cshtml
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Views\_ViewStart.cshtml
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Water.Bill.ConsumerPortal.staticwebassets.runtime.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Water.Bill.ConsumerPortal.staticwebassets.endpoints.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\Water.Bill.ConsumerPortal.exe
@@ -87,8 +113,6 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.csproj.AssemblyReference.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\rpswa.dswa.cache.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.AssemblyInfoInputs.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.AssemblyInfo.cs
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.csproj.CoreCompileInputs.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.RazorAssemblyInfo.cache
@@ -105,10 +129,56 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bi.CA36D660.Up2Date
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\refint\Water.Bill.ConsumerPortal.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.genruntimeconfig.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\ref\Water.Bill.ConsumerPortal.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Azure.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Azure.Identity.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\FluentValidation.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\FluentValidation.DependencyInjectionExtensions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.Data.SqlClient.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.EntityFrameworkCore.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.EntityFrameworkCore.SqlServer.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.Identity.Client.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.IdentityModel.Logging.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.SqlServer.Server.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Microsoft.Win32.SystemEvents.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.Configuration.ConfigurationManager.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.Drawing.Common.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.Memory.Data.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.Runtime.Caching.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.Security.Permissions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\System.Windows.Extensions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\unix\lib\net6.0\Microsoft.Data.SqlClient.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win\lib\net6.0\Microsoft.Data.SqlClient.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Water.Bill.Application.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Water.Bill.Core.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\artifacts\consumer-verify\Water.Bill.Infrastructure.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\consumer-verify\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\consumer-verify\obj\Debug\net8.0\Water.Bill.ConsumerPortal.sourcelink.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\consumer-verify\obj\project.assets.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\bin\Debug\net8.0\artifacts\consumer-verify\obj\Water.Bill.ConsumerPortal.csproj.nuget.dgspec.json

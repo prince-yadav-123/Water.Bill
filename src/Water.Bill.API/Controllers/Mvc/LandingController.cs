@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Water.Bill.Core.Common;
 
 namespace Water.Bill.API.Controllers.Mvc;

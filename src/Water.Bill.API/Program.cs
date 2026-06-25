@@ -1,8 +1,8 @@
-using Serilog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
-using Water.Bill.API.Security;
+using Serilog;
 using Water.Bill.API.Extensions;
+using Water.Bill.API.Security;
 using Water.Bill.Application.DependencyInjection;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.DependencyInjection;

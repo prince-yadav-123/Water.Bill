@@ -1,15 +1,14 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Water.Bill.API.Filters;
+using Water.Bill.API.Models;
 using Water.Bill.API.Models.Challans;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
-using Water.Bill.API.Models;
 using Water.Bill.Core.Common;
-using Water.Bill.Infrastructure.Extensions;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
 
@@ -588,11 +587,16 @@ public class ChallanManagementController : Controller
 
         var rows = entities.Select(x => new ChallanListRowViewModel
         {
-            Id = x.challan.Id, ChallanNo = x.challan.RecpNo ?? x.challan.ReceiptId,
-            ConsumerNo = x.challan.ConsNo, ConsumerName = x.consumer?.ConsNm1, MobileNo = x.consumer?.MobNo,
+            Id = x.challan.Id,
+            ChallanNo = x.challan.RecpNo ?? x.challan.ReceiptId,
+            ConsumerNo = x.challan.ConsNo,
+            ConsumerName = x.consumer?.ConsNm1,
+            MobileNo = x.consumer?.MobNo,
             PropertyNo = x.challan.Sec + "/" + x.challan.Blk + "-" + x.challan.FlatNo,
-            Purpose = x.challan.RevBilFr, Amount = ResolvePayableAmount(x.challan),
-            Status = ResolveStatus(x.challan), GeneratedOn = x.challan.EntryDate
+            Purpose = x.challan.RevBilFr,
+            Amount = ResolvePayableAmount(x.challan),
+            Status = ResolveStatus(x.challan),
+            GeneratedOn = x.challan.EntryDate
         }).ToList();
 
         IReadOnlyList<ChallanListRowViewModel> result = string.IsNullOrWhiteSpace(model.Status)

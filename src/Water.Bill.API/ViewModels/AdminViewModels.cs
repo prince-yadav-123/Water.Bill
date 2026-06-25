@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Water.Bill.Application.DTOs.Auth;
-using Water.Bill.Application.DTOs.Menu;
 using Water.Bill.Application.DTOs.Security;
 using Water.Bill.Infrastructure.Data.Entities;
 

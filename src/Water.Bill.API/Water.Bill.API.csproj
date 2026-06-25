@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Water.Bill.API</RootNamespace>
     <AssemblyName>Water.Bill.API</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <Description>Water Billing backend API.</Description>
   </PropertyGroup>
 
@@ -33,7 +35,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\**\*.cshtml" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Remove="artifacts\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\**\*.cshtml" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Update="EmailTemplates\**\*.html" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

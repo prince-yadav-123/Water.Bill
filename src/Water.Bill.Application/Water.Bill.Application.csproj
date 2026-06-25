@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Water.Bill.Application</RootNamespace>
     <AssemblyName>Water.Bill.Application</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <Description>Water Billing application contracts, DTOs, validators, and service abstractions.</Description>
   </PropertyGroup>
 

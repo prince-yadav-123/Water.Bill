@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Application.DTOs.Auth;
 using Water.Bill.Application.Interfaces;

@@ -1,10 +1,10 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.Approvals;
-using Water.Bill.API.Filters;
 using Water.Bill.Application.DTOs.Workflow;
 using Water.Bill.Application.Interfaces;
 using Water.Bill.Application.Models;
@@ -111,6 +111,22 @@ public class ApprovalsController : Controller
         var rows = await query
             .OrderByDescending(x => x.AssignedOn)
             .ToListAsync(ct);
+
+        if (rows.Count == 0)
+        {
+            return View(new ApprovalListViewModel
+            {
+                ActiveTab = normalizedTab,
+                Search = search,
+                Status = status,
+                FromDate = fromDate,
+                ToDate = toDate,
+                StageId = stageId,
+                ApplicationType = applicationType,
+                Items = [],
+                Stages = await _db.WorkflowStages.AsNoTracking().Where(x => x.IsActive && !x.IsDeleted).OrderBy(x => x.StageOrder).ToListAsync(ct)
+            });
+        }
 
         Dictionary<long, ApplicationWorkflowHistory> latestHistoryByInstance = [];
         if (rows.Count > 0)
@@ -295,7 +311,10 @@ public class ApprovalsController : Controller
 
         ViewBag.Pagination = PaginationViewModel.Create(new PagedResult<ApprovalListItemViewModel>
         {
-            Items = items, TotalCount = totalCount, Page = page, PageSize = pageSize
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
         });
 
         return View(new ApprovalListViewModel
