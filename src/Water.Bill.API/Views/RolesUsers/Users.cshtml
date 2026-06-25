@@ -24,6 +24,7 @@
             <input name="search" class="form-control wb-search flex-grow-1" type="search"
                    value="@ViewBag.Search" placeholder="Search name, email, username" style="min-width:240px;max-width:100%;" />
             <button class="btn btn-outline-primary btn-sm flex-shrink-0" type="submit">Search</button>
+            <button class="btn btn-outline-success btn-sm flex-shrink-0" type="submit" formaction="@Url.Action("ExportUsersExcel")" formmethod="get" require-permission="User Management.download" data-no-loader>Download</button>
             @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
             {
                 <a class="btn btn-outline-secondary btn-sm flex-shrink-0" asp-action="Users">Clear</a>

@@ -24,6 +24,7 @@ public class ActivityLogIndexViewModel
     public string ActiveMenu { get; set; } = string.Empty;
     public string DetailsRouteName { get; set; } = string.Empty;
     public string LegacyRouteName { get; set; } = string.Empty;
+    public string ExportRouteName { get; set; } = string.Empty;
     public IReadOnlyList<SelectListItem> ActionOptions { get; set; } = [];
     public IReadOnlyList<SelectListItem> ModuleOptions { get; set; } = [];
     public IReadOnlyList<ActivityLogRowViewModel> Rows { get; set; } = [];

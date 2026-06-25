@@ -22,6 +22,7 @@
             <input name="search" class="form-control wb-search flex-grow-1" type="search"
                    value="@ViewBag.Search" placeholder="Search consumer no, username, email" style="min-width:240px;max-width:100%;" />
             <button class="btn btn-outline-primary btn-sm flex-shrink-0" type="submit">Search</button>
+            <button class="btn btn-outline-success btn-sm flex-shrink-0" type="submit" formaction="@Url.Action("ExportExcel")" formmethod="get" require-permission="Consumer Login Management.download" data-no-loader>Download</button>
             @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
             {
                 <a class="btn btn-outline-secondary btn-sm flex-shrink-0" asp-action="Index">Clear</a>
@@ -58,9 +59,9 @@
                         <div class="wb-row-actions justify-content-end">
                             <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@user.Id">View</a>
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
-                            <form asp-action="ToggleStatus" asp-route-id="@user.Id" method="post" onsubmit="return confirm('@(user.IsActive ? "Deactivate" : "Activate") this consumer login user?');">
+                            <form asp-action="ToggleStatus" asp-route-id="@user.Id" method="post" onsubmit="return confirm('@(user.IsActive ? "Delete" : "Activate") this consumer login user?');">
                                 @Html.AntiForgeryToken()
-                                <button class="btn btn-sm @(user.IsActive ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(user.IsActive ? "Deactivate" : "Activate")</button>
+                                <button class="btn btn-sm @(user.IsActive ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(user.IsActive ? "Delete" : "Activate")</button>
                             </form>
                         </div>
                     </td>

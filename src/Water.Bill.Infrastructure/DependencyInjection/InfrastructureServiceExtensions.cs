@@ -56,6 +56,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<ICommunicationService, CommunicationService>();
         services.AddScoped<INotificationDispatchService, NotificationDispatchService>();
         services.AddSingleton<IAuthorityLoginEncryptionService, AuthorityLoginEncryptionService>();
+        services.AddScoped<IExcelExportService, ExcelExportService>();
 
         return services;
     }

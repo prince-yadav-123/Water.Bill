@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.Reports;
+using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -14,8 +16,13 @@ namespace Water.Bill.API.Controllers.Mvc;
 public class ReportsMisController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IExcelExportService _excelExportService;
 
-    public ReportsMisController(ApplicationDbContext db) => _db = db;
+    public ReportsMisController(ApplicationDbContext db, IExcelExportService excelExportService)
+    {
+        _db = db;
+        _excelExportService = excelExportService;
+    }
 
     [HttpGet("/ReportsMis")]
     [RequirePermission("Reports / MIS.view")]
@@ -73,6 +80,52 @@ public class ReportsMisController : Controller
         });
 
         return View(model);
+    }
+
+    [HttpGet("/ReportsMis/ExportExcel")]
+    [RequirePermission("Reports / MIS.download")]
+    public async Task<IActionResult> ExportExcel(MisReportIndexViewModel model, CancellationToken ct)
+    {
+        model.ReportType = NormalizeReportType(model.ReportType);
+        model.Search = Normalize(model.Search);
+        model.ConsumerNo = Normalize(model.ConsumerNo)?.ToUpperInvariant();
+        model.Status = Normalize(model.Status);
+
+        var query = model.ReportType switch
+        {
+            "Dues" => BuildDuesQuery(model),
+            "Challan" => BuildChallanQuery(model),
+            "Bill" => BuildBillQuery(model),
+            _ => BuildCollectionQuery(model)
+        };
+
+        var rows = await ApplyCommonSearch(query, model.Search)
+            .OrderByDescending(x => x.Date)
+            .ThenByDescending(x => x.ReferenceNo)
+            .ToListAsync(ct);
+
+        var bytes = _excelExportService.Export(new ExcelExportRequest<MisReportRowViewModel>
+        {
+            SheetName = $"{model.ReportType} Report",
+            Rows = rows,
+            Columns =
+            [
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Reference", ValueFactory = x => x.ReferenceNo ?? "-", Width = 24 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Consumer No", ValueFactory = x => x.ConsumerNo ?? "-", Width = 18 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Consumer Name", ValueFactory = x => x.ConsumerName ?? "-", Width = 26 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Property No", ValueFactory = x => x.PropertyNo ?? "-", Width = 24 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Division", ValueFactory = x => x.Division ?? "-", Width = 16 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Status", ValueFactory = x => x.Status ?? "-", Width = 16 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Date", ValueFactory = x => x.Date, NumberFormat = "dd mmm yyyy", Width = 16 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Amount", ValueFactory = x => x.Amount, NumberFormat = "#,##0.00", Width = 16 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Paid Amount", ValueFactory = x => x.PaidAmount, NumberFormat = "#,##0.00", Width = 16 },
+                new ExcelColumnDefinition<MisReportRowViewModel> { Header = "Pending Amount", ValueFactory = x => Math.Max(0, x.Amount - x.PaidAmount), NumberFormat = "#,##0.00", Width = 18 }
+            ]
+        });
+
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"reports-mis-{model.ReportType?.ToLowerInvariant()}-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
     }
 
     private IQueryable<MisReportRowViewModel> BuildCollectionQuery(MisReportIndexViewModel model)

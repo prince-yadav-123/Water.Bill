@@ -19,6 +19,7 @@ TestResults/
 *.temp
 *.cache
 *.pid
+msbuild-payment.log
 
 # Package / node outputs
 node_modules/
@@ -37,6 +38,17 @@ ExistingProjectWaterBill/
 
 # Misc generated files
 *.csproj.user
+*.pubxml.user
 *.VC.db
 *.vspscc
 *.vssscc
+*.slnLaunch.user
+
+# Custom local/generated build folders
+**/.codex-build-security/
+**/.tmp_track*/
+**/PubTmp/
+
+# Local tooling/workspace folders
+.agents/
+.claude/

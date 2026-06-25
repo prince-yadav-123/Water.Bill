@@ -64,6 +64,9 @@
         </div>
         <div class="wb-filter-actions wb-activitylog-filter-actions">
             <button class="btn btn-primary" type="submit">Filter</button>
+            <button class="btn btn-outline-success" type="submit" formaction="@Url.Action(Model.ExportRouteName)" formmethod="get" require-permission="@(Model.Title).download" data-no-loader>
+                Download
+            </button>
             <a class="btn btn-outline-secondary" asp-action="@Model.LegacyRouteName">Reset</a>
         </div>
     </form>

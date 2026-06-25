@@ -30,7 +30,7 @@
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                             <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post">
                                 @Html.AntiForgeryToken()
-                                <button class="btn btn-sm @(item.Status == "1" ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(item.Status == "1" ? "Deactivate" : "Activate")</button>
+                                <button class="btn btn-sm @(item.Status == "1" ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(item.Status == "1" ? "Delete" : "Activate")</button>
                             </form>
                         </div>
                     </td>

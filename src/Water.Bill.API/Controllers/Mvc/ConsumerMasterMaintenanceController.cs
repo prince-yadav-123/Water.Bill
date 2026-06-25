@@ -6,6 +6,8 @@ using System.Security.Claims;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.Consumers;
+using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Application.Models;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
@@ -19,10 +21,12 @@ public class ConsumerMasterMaintenanceController : Controller
 {
     private const string ModuleName = "Consumer Master Maintenance";
     private readonly ApplicationDbContext _db;
+    private readonly IExcelExportService _excelExportService;
 
-    public ConsumerMasterMaintenanceController(ApplicationDbContext db)
+    public ConsumerMasterMaintenanceController(ApplicationDbContext db, IExcelExportService excelExportService)
     {
         _db = db;
+        _excelExportService = excelExportService;
     }
 
     [HttpGet("/ConsumerMasterMaintenance")]
@@ -64,6 +68,81 @@ public class ConsumerMasterMaintenanceController : Controller
         model.Consumers = paged.Items;
         ViewBag.Pagination = PaginationViewModel.Create(paged);
         return View(model);
+    }
+
+    [HttpGet("/ConsumerMasterMaintenance/ExportExcel")]
+    [RequirePermission("Consumer Master Maintenance.download")]
+    public async Task<IActionResult> ExportExcel(
+        string? search,
+        string? consumerNo,
+        string? consumerName,
+        string? mobileNo,
+        string? sector,
+        string? block,
+        string? plotNo,
+        int? devType,
+        int? status,
+        CancellationToken ct = default)
+    {
+        var model = new ConsumerMasterMaintenanceIndexViewModel
+        {
+            Search = Normalize(search),
+            ConsumerNo = Normalize(consumerNo)?.ToUpperInvariant(),
+            ConsumerName = Normalize(consumerName),
+            MobileNo = Normalize(mobileNo),
+            Sector = Normalize(sector),
+            Block = Normalize(block),
+            PlotNo = Normalize(plotNo),
+            DevType = devType,
+            Status = status ?? 1
+        };
+
+        var rows = await BuildConsumerSearchQuery(model)
+            .OrderBy(x => x.DevType)
+            .ThenBy(x => x.Sector)
+            .ThenBy(x => x.Block)
+            .ThenBy(x => x.PlotNo)
+            .Select(x => new ConsumerMasterMaintenanceExportRow
+            {
+                ConsumerNo = x.ConsumerNo,
+                ConsumerName = x.ConsumerName,
+                FatherName = x.FatherName,
+                MobileNo = x.MobileNo,
+                Email = x.Email,
+                Sector = x.Sector,
+                Block = x.Block,
+                PlotNo = x.PlotNo,
+                ConnectionType = x.ConnectionType,
+                Category = x.Category,
+                DevType = x.DevType,
+                Status = x.Status == 1 ? "Active" : "Inactive",
+                ConnectionDate = x.ConnectionDate
+            })
+            .ToListAsync(ct);
+
+        var bytes = _excelExportService.Export(new ExcelExportRequest<ConsumerMasterMaintenanceExportRow>
+        {
+            SheetName = "Consumer Master",
+            Rows = rows,
+            Columns =
+            [
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Consumer No", ValueFactory = x => x.ConsumerNo, Width = 18 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Consumer Name", ValueFactory = x => string.IsNullOrWhiteSpace(x.ConsumerName) ? "-" : x.ConsumerName, Width = 26 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Father / Guardian", ValueFactory = x => string.IsNullOrWhiteSpace(x.FatherName) ? "-" : x.FatherName, Width = 24 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Mobile", ValueFactory = x => string.IsNullOrWhiteSpace(x.MobileNo) ? "-" : x.MobileNo, Width = 18 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Email", ValueFactory = x => string.IsNullOrWhiteSpace(x.Email) ? "-" : x.Email, Width = 28 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Property", ValueFactory = x => BuildPropertyNo(x.Sector, x.Block, x.PlotNo), Width = 18 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Connection Type", ValueFactory = x => string.IsNullOrWhiteSpace(x.ConnectionType) ? "-" : x.ConnectionType, Width = 18 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Category", ValueFactory = x => string.IsNullOrWhiteSpace(x.Category) ? "-" : x.Category, Width = 16 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Division", ValueFactory = x => string.IsNullOrWhiteSpace(AppConstants.Divisions.FormatDisplay(x.DevType)) ? "-" : AppConstants.Divisions.FormatDisplay(x.DevType), Width = 16 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Status", ValueFactory = x => x.Status, Width = 14 },
+                new ExcelColumnDefinition<ConsumerMasterMaintenanceExportRow> { Header = "Connection Date", ValueFactory = x => x.ConnectionDate, NumberFormat = "dd mmm yyyy", Width = 18 }
+            ]
+        });
+
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"consumer-master-maintenance-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
     }
 
     [HttpGet("/ConsumerMasterMaintenance/Details")]
@@ -234,6 +313,38 @@ public class ConsumerMasterMaintenanceController : Controller
         int pageSize,
         CancellationToken ct)
     {
+        var paged = await BuildConsumerSearchQuery(model)
+            .OrderBy(x => x.DevType)
+            .ThenBy(x => x.Sector)
+            .ThenBy(x => x.Block)
+            .ThenBy(x => x.PlotNo)
+            .ToPagedResultAsync(page, pageSize, ct);
+
+        return new PagedResult<ConsumerMasterMaintenanceListItemViewModel>
+        {
+            Items = paged.Items.Select(x => new ConsumerMasterMaintenanceListItemViewModel
+            {
+                ConsumerNo = x.ConsumerNo,
+                ConsumerName = x.ConsumerName,
+                FatherName = x.FatherName,
+                MobileNo = x.MobileNo,
+                Email = x.Email,
+                PropertyNo = BuildPropertyNo(x.Sector, x.Block, x.PlotNo),
+                ConnectionType = x.ConnectionType,
+                Category = x.Category,
+                DevType = x.DevType,
+                Status = x.Status,
+                ConnectionDate = x.ConnectionDate,
+                ModifiedOn = x.ModifiedOn
+            }).ToList(),
+            TotalCount = paged.TotalCount,
+            Page = paged.Page,
+            PageSize = paged.PageSize
+        };
+    }
+
+    private IQueryable<ConsumerMasterMaintenanceSearchProjection> BuildConsumerSearchQuery(ConsumerMasterMaintenanceIndexViewModel model)
+    {
         var query = _db.ConsumerDetailsMasters.AsNoTracking().AsQueryable();
 
         if (model.Status.HasValue && model.Status.Value >= 0)
@@ -266,51 +377,58 @@ public class ConsumerMasterMaintenanceController : Controller
         if (model.DevType.HasValue && model.DevType.Value != AppConstants.Divisions.AllDivision.DevType)
             query = query.Where(x => x.DevType == model.DevType.Value);
 
-        var paged = await query
-            .OrderBy(x => x.DevType)
-            .ThenBy(x => x.Sector)
-            .ThenBy(x => x.BlkNo)
-            .ThenBy(x => x.FlatNo)
-            .Select(x => new
-            {
-                x.ConsNo,
-                x.ConsNm1,
-                x.ConsNm2,
-                x.MobNo,
-                x.EmailId,
-                x.Sector,
-                x.BlkNo,
-                x.FlatNo,
-                x.ConTp,
-                x.ConsCtg,
-                x.DevType,
-                x.Status,
-                x.ConnDt,
-                x.ModifyDate
-            })
-            .ToPagedResultAsync(page, pageSize, ct);
-
-        return new PagedResult<ConsumerMasterMaintenanceListItemViewModel>
+        return query.Select(x => new ConsumerMasterMaintenanceSearchProjection
         {
-            Items = paged.Items.Select(x => new ConsumerMasterMaintenanceListItemViewModel
-            {
-                ConsumerNo = x.ConsNo,
-                ConsumerName = x.ConsNm1,
-                FatherName = x.ConsNm2,
-                MobileNo = x.MobNo,
-                Email = x.EmailId,
-                PropertyNo = BuildPropertyNo(x.Sector, x.BlkNo, x.FlatNo),
-                ConnectionType = x.ConTp,
-                Category = x.ConsCtg,
-                DevType = x.DevType,
-                Status = x.Status,
-                ConnectionDate = x.ConnDt,
-                ModifiedOn = x.ModifyDate
-            }).ToList(),
-            TotalCount = paged.TotalCount,
-            Page = paged.Page,
-            PageSize = paged.PageSize
-        };
+            ConsumerNo = x.ConsNo,
+            ConsumerName = x.ConsNm1,
+            FatherName = x.ConsNm2,
+            MobileNo = x.MobNo,
+            Email = x.EmailId,
+            Sector = x.Sector,
+            Block = x.BlkNo,
+            PlotNo = x.FlatNo,
+            ConnectionType = x.ConTp,
+            Category = x.ConsCtg,
+            DevType = x.DevType,
+            Status = x.Status,
+            ConnectionDate = x.ConnDt,
+            ModifiedOn = x.ModifyDate
+        });
+    }
+
+    private sealed class ConsumerMasterMaintenanceSearchProjection
+    {
+        public string ConsumerNo { get; set; } = string.Empty;
+        public string? ConsumerName { get; set; }
+        public string? FatherName { get; set; }
+        public string? MobileNo { get; set; }
+        public string? Email { get; set; }
+        public string? Sector { get; set; }
+        public string? Block { get; set; }
+        public string? PlotNo { get; set; }
+        public string? ConnectionType { get; set; }
+        public string? Category { get; set; }
+        public int? DevType { get; set; }
+        public int? Status { get; set; }
+        public DateTime? ConnectionDate { get; set; }
+        public DateTime? ModifiedOn { get; set; }
+    }
+
+    private sealed class ConsumerMasterMaintenanceExportRow
+    {
+        public string ConsumerNo { get; set; } = string.Empty;
+        public string? ConsumerName { get; set; }
+        public string? FatherName { get; set; }
+        public string? MobileNo { get; set; }
+        public string? Email { get; set; }
+        public string? Sector { get; set; }
+        public string? Block { get; set; }
+        public string? PlotNo { get; set; }
+        public string? ConnectionType { get; set; }
+        public string? Category { get; set; }
+        public int? DevType { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime? ConnectionDate { get; set; }
     }
 
     private async Task PrepareFormOptionsAsync(ConsumerMasterMaintenanceFormViewModel model, CancellationToken ct)

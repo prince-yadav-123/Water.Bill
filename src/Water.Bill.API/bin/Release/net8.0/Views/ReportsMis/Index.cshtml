@@ -54,6 +54,7 @@
         </div>
         <div class="wb-filter-actions">
             <button class="btn btn-primary" type="submit">Run Report</button>
+            <button class="btn btn-outline-success" type="submit" formaction="@Url.Action("ExportExcel")" formmethod="get" require-permission="Reports / MIS.download" data-no-loader>Download</button>
             <a class="btn btn-outline-secondary" asp-action="Index" asp-route-reportType="@Model.ReportType">Reset</a>
         </div>
     </form>

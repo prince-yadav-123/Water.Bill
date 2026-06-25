@@ -35,11 +35,33 @@
         }, wait);
     }
 
+    function isDownloadSubmission(form, submitter) {
+        if (form.matches("[data-no-loader]") || submitter?.matches?.("[data-no-loader]")) {
+            return true;
+        }
+
+        const action = (submitter?.getAttribute?.("formaction")
+            || form.getAttribute("action")
+            || "")
+            .toLowerCase();
+
+        return action.includes("exportexcel")
+            || action.includes("downloadexcel")
+            || action.includes("/export")
+            || action.includes("/download");
+    }
+
     window.WaterBillLoader = { show, hide: () => hide(false), hideAll: () => hide(true) };
 
     document.addEventListener("submit", (event) => {
         const form = event.target;
-        if (!(form instanceof HTMLFormElement) || form.matches("[data-no-loader]")) return;
+        if (!(form instanceof HTMLFormElement)) return;
+
+        const submitter = event.submitter instanceof HTMLElement ? event.submitter : null;
+        if (isDownloadSubmission(form, submitter)) {
+            hide(true);
+            return;
+        }
 
         window.setTimeout(() => {
             if (!event.defaultPrevented && form.checkValidity()) {

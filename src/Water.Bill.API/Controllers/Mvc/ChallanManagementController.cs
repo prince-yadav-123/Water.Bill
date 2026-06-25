@@ -8,6 +8,7 @@ using Water.Bill.API.Models;
 using Water.Bill.API.Models.Challans;
 using Water.Bill.Application.DTOs.Communication;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -19,11 +20,13 @@ public class ChallanManagementController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly ICommunicationService _communicationService;
+    private readonly IExcelExportService _excelExportService;
 
-    public ChallanManagementController(ApplicationDbContext db, ICommunicationService communicationService)
+    public ChallanManagementController(ApplicationDbContext db, ICommunicationService communicationService, IExcelExportService excelExportService)
     {
         _db = db;
         _communicationService = communicationService;
+        _excelExportService = excelExportService;
     }
 
     [HttpGet("/ChallanManagement")]
@@ -73,6 +76,63 @@ public class ChallanManagementController : Controller
         });
 
         return View(model);
+    }
+
+    [HttpGet("/ChallanManagement/ExportExcel")]
+    [RequirePermission("Challan Management.download")]
+    public async Task<IActionResult> ExportExcel(
+        string? search,
+        string? consumerNo,
+        string? consumerName,
+        string? mobileNo,
+        string? sector,
+        string? block,
+        string? plotNo,
+        string? status,
+        DateTime? fromDate,
+        DateTime? toDate,
+        CancellationToken ct = default)
+    {
+        var model = new ChallanManagementIndexViewModel
+        {
+            Search = Normalize(search),
+            ConsumerNo = Normalize(consumerNo),
+            ConsumerName = Normalize(consumerName),
+            MobileNo = Normalize(mobileNo),
+            Sector = Normalize(sector),
+            Block = Normalize(block),
+            PlotNo = Normalize(plotNo),
+            Status = Normalize(status),
+            FromDate = fromDate,
+            ToDate = toDate
+        };
+
+        var rows = await BuildChallanListQuery(model)
+            .OrderByDescending(x => x.GeneratedOn)
+            .ThenByDescending(x => x.Id)
+            .ToListAsync(ct);
+
+        var bytes = _excelExportService.Export(new ExcelExportRequest<ChallanListRowViewModel>
+        {
+            SheetName = "Challan Management",
+            Rows = rows,
+            Columns =
+            [
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Challan No", ValueFactory = x => x.ChallanNo ?? "-", Width = 22 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Consumer No", ValueFactory = x => x.ConsumerNo ?? "-", Width = 18 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Consumer Name", ValueFactory = x => x.ConsumerName ?? "-", Width = 26 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Mobile", ValueFactory = x => x.MobileNo ?? "-", Width = 18 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Property", ValueFactory = x => x.PropertyNo ?? "-", Width = 20 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Purpose", ValueFactory = x => ChallanPurposes.Display(MapPurposeKey(x.Purpose)), Width = 24 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Amount", ValueFactory = x => x.Amount, NumberFormat = "#,##0.00", Width = 16 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Status", ValueFactory = x => x.Status, Width = 16 },
+                new ExcelColumnDefinition<ChallanListRowViewModel> { Header = "Generated On", ValueFactory = x => x.GeneratedOn, NumberFormat = "dd mmm yyyy", Width = 18 }
+            ]
+        });
+
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"challan-management-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
     }
 
     [HttpGet("/ChallanManagement/Create")]
@@ -563,46 +623,10 @@ public class ChallanManagementController : Controller
     private async Task<(IReadOnlyList<ChallanListRowViewModel> Items, int TotalCount)> SearchChallansPagedAsync(
         ChallanManagementIndexViewModel model, int page, int pageSize, CancellationToken ct)
     {
-        var baseQ =
-            from challan in _db.Challans.AsNoTracking()
-            join consumer in _db.ConsumerDetailsMasters.AsNoTracking() on challan.ConsNo equals consumer.ConsNo into cj
-            from consumer in cj.DefaultIfEmpty()
-            where challan.Status != null
-            select new { challan, consumer };
-
-        if (!string.IsNullOrWhiteSpace(model.Search))
-            baseQ = baseQ.Where(x => (x.challan.RecpNo != null && x.challan.RecpNo.Contains(model.Search)) || (x.challan.ConsNo != null && x.challan.ConsNo.Contains(model.Search)) || (x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.Search)) || (x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.Search)));
-        if (!string.IsNullOrWhiteSpace(model.ConsumerNo)) baseQ = baseQ.Where(x => x.challan.ConsNo != null && x.challan.ConsNo.StartsWith(model.ConsumerNo));
-        if (!string.IsNullOrWhiteSpace(model.ConsumerName)) baseQ = baseQ.Where(x => x.consumer != null && x.consumer.ConsNm1 != null && x.consumer.ConsNm1.Contains(model.ConsumerName));
-        if (!string.IsNullOrWhiteSpace(model.MobileNo)) baseQ = baseQ.Where(x => x.consumer != null && x.consumer.MobNo != null && x.consumer.MobNo.Contains(model.MobileNo));
-        if (!string.IsNullOrWhiteSpace(model.Sector)) baseQ = baseQ.Where(x => x.challan.Sec != null && x.challan.Sec.StartsWith(model.Sector));
-        if (!string.IsNullOrWhiteSpace(model.Block)) baseQ = baseQ.Where(x => x.challan.Blk != null && x.challan.Blk.StartsWith(model.Block));
-        if (!string.IsNullOrWhiteSpace(model.PlotNo)) baseQ = baseQ.Where(x => x.challan.FlatNo != null && x.challan.FlatNo.StartsWith(model.PlotNo));
-        if (model.FromDate.HasValue) baseQ = baseQ.Where(x => x.challan.EntryDate >= model.FromDate.Value.Date);
-        if (model.ToDate.HasValue) baseQ = baseQ.Where(x => x.challan.EntryDate < model.ToDate.Value.Date.AddDays(1));
-
-        var orderedQ = baseQ.OrderByDescending(x => x.challan.Id);
+        var orderedQ = BuildChallanListQuery(model).OrderByDescending(x => x.Id);
         var totalCount = await orderedQ.CountAsync(ct);
-        var entities = await orderedQ.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
-
-        var rows = entities.Select(x => new ChallanListRowViewModel
-        {
-            Id = x.challan.Id,
-            ChallanNo = x.challan.RecpNo ?? x.challan.ReceiptId,
-            ConsumerNo = x.challan.ConsNo,
-            ConsumerName = x.consumer?.ConsNm1,
-            MobileNo = x.consumer?.MobNo,
-            PropertyNo = x.challan.Sec + "/" + x.challan.Blk + "-" + x.challan.FlatNo,
-            Purpose = x.challan.RevBilFr,
-            Amount = ResolvePayableAmount(x.challan),
-            Status = ResolveStatus(x.challan),
-            GeneratedOn = x.challan.EntryDate
-        }).ToList();
-
-        IReadOnlyList<ChallanListRowViewModel> result = string.IsNullOrWhiteSpace(model.Status)
-            ? rows : rows.Where(x => x.Status.Equals(model.Status, StringComparison.OrdinalIgnoreCase)).ToList();
-
-        return (result, totalCount);
+        var rows = await orderedQ.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+        return (rows, totalCount);
     }
 
     private IQueryable<dynamic> BuildChallanQuery(ChallanManagementIndexViewModel model)
@@ -669,6 +693,15 @@ public class ChallanManagementController : Controller
 
     private async Task<IReadOnlyList<ChallanListRowViewModel>> SearchChallansAsync(ChallanManagementIndexViewModel model, CancellationToken ct)
     {
+        return await BuildChallanListQuery(model)
+            .OrderByDescending(x => x.GeneratedOn)
+            .ThenByDescending(x => x.Id)
+            .Take(100)
+            .ToListAsync(ct);
+    }
+
+    private IQueryable<ChallanListRowViewModel> BuildChallanListQuery(ChallanManagementIndexViewModel model)
+    {
         var query =
             from challan in _db.Challans.AsNoTracking()
             join consumer in _db.ConsumerDetailsMasters.AsNoTracking() on challan.ConsNo equals consumer.ConsNo into consumerJoin
@@ -702,14 +735,61 @@ public class ChallanManagementController : Controller
         if (model.ToDate.HasValue)
             query = query.Where(x => x.challan.EntryDate < model.ToDate.Value.Date.AddDays(1));
 
-        var entities = await query
-            .OrderByDescending(x => x.challan.EntryDate)
-            .ThenByDescending(x => x.challan.Id)
-            .Take(100)
-            .ToListAsync(ct);
+        var projected = query.Select(x => new ChallanListRowViewModel
+        {
+            Id = x.challan.Id,
+            ChallanNo = x.challan.RecpNo ?? x.challan.ReceiptId,
+            ConsumerNo = x.challan.ConsNo,
+            ConsumerName = x.consumer != null ? x.consumer.ConsNm1 : null,
+            MobileNo = x.consumer != null ? x.consumer.MobNo : null,
+            PropertyNo = x.challan.Sec + "/" + x.challan.Blk + "-" + x.challan.FlatNo,
+            Purpose = x.challan.RevBilFr,
+            Amount = x.challan.PayDate.HasValue
+                ? (x.challan.PaidAmt ?? 0)
+                : (((x.challan.BillAmt ?? 0)
+                    + (x.challan.Surcharge ?? 0)
+                    + (x.challan.Arrear ?? 0)
+                    + (x.challan.Noc ?? 0)
+                    + (x.challan.ConnCharge ?? 0)
+                    + (x.challan.PanalityCharges ?? 0)
+                    + (x.challan.Secu ?? 0)
+                    + (x.challan.TFee ?? 0)
+                    + (x.challan.Rmc ?? 0)
+                    + (x.challan.Gst ?? 0)
+                    - (x.challan.Credit ?? 0)) > 0
+                    ? ((x.challan.BillAmt ?? 0)
+                        + (x.challan.Surcharge ?? 0)
+                        + (x.challan.Arrear ?? 0)
+                        + (x.challan.Noc ?? 0)
+                        + (x.challan.ConnCharge ?? 0)
+                        + (x.challan.PanalityCharges ?? 0)
+                        + (x.challan.Secu ?? 0)
+                        + (x.challan.TFee ?? 0)
+                        + (x.challan.Rmc ?? 0)
+                        + (x.challan.Gst ?? 0)
+                        - (x.challan.Credit ?? 0))
+                    : 0),
+            Status = x.challan.Status == "0" || x.challan.ChallanStatus == 0
+                ? ChallanStatuses.Cancelled
+                : x.challan.PayDate.HasValue
+                    ? ChallanStatuses.Paid
+                    : ChallanStatuses.PendingPayment,
+            GeneratedOn = x.challan.EntryDate
+        });
 
-        return MapChallanRows(entities, model.Status);
+        if (!string.IsNullOrWhiteSpace(model.Status))
+            projected = projected.Where(x => x.Status == model.Status);
+
+        return projected;
     }
+
+    private static string MapPurposeKey(string? rawPurpose) => rawPurpose switch
+    {
+        "NDC" => ChallanPurposes.NdcNoDuesFee,
+        "NEWCONN" => ChallanPurposes.NewConnectionFee,
+        "OTHER" => ChallanPurposes.OtherServiceCharge,
+        _ => ChallanPurposes.ExistingBillDue
+    };
 
     private async Task PrepareCreateModelAsync(ChallanCreateViewModel model, ConsumerDetailsMaster? consumer, CancellationToken ct)
     {

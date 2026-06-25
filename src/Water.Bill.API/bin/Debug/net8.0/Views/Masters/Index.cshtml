@@ -56,10 +56,10 @@
                                 <div class="wb-row-actions justify-content-end">
                                     <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-key="@Model.Key" asp-route-rowKey="@row.Key">View</a>
                                     <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-key="@Model.Key" asp-route-rowKey="@row.Key">Edit</a>
-                                    <form asp-action="ToggleStatus" asp-route-key="@Model.Key" asp-route-rowKey="@row.Key" method="post" onsubmit="return confirm('@(row.IsActive ? "Deactivate" : "Activate") this record?');">
+                                    <form asp-action="ToggleStatus" asp-route-key="@Model.Key" asp-route-rowKey="@row.Key" method="post" onsubmit="return confirm('@(row.IsActive ? "Delete" : "Activate") this record?');">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="Status" value="@(row.IsActive ? "0" : "1")" />
-                                        <button type="submit" class="btn btn-sm @(row.IsActive ? "btn-outline-danger" : "btn-outline-success")">@(row.IsActive ? "Deactivate" : "Activate")</button>
+                                        <button type="submit" class="btn btn-sm @(row.IsActive ? "btn-outline-danger" : "btn-outline-success")">@(row.IsActive ? "Delete" : "Activate")</button>
                                     </form>
                                 </div>
                             </td>

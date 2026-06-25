@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
+using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -16,10 +18,12 @@ namespace Water.Bill.API.Controllers.Mvc;
 public class ConsumerLoginManagementController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IExcelExportService _excelExportService;
 
-    public ConsumerLoginManagementController(ApplicationDbContext db)
+    public ConsumerLoginManagementController(ApplicationDbContext db, IExcelExportService excelExportService)
     {
         _db = db;
+        _excelExportService = excelExportService;
     }
 
     [HttpGet("/ConsumerLoginManagement")]
@@ -72,6 +76,64 @@ public class ConsumerLoginManagementController : Controller
         }).ToList();
 
         return View(model);
+    }
+
+    [HttpGet("/ConsumerLoginManagement/ExportExcel")]
+    [RequirePermission("Consumer Login Management.download")]
+    public async Task<IActionResult> ExportExcel(string? search = null, CancellationToken ct = default)
+    {
+        var query = _db.ConsumerUsers.AsNoTracking().Where(x => !x.IsDeleted);
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim();
+            query = query.Where(x => x.ConsumerNo.Contains(s) || x.Username.Contains(s)
+                || (x.Email != null && x.Email.Contains(s)));
+        }
+
+        var users = await query
+            .OrderBy(x => x.ConsumerNo)
+            .ThenBy(x => x.Username)
+            .ToListAsync(ct);
+
+        var consumerNos = users.Select(x => x.ConsumerNo).Distinct().ToList();
+        var consumerMap = await _db.ConsumerDetailsMasters.AsNoTracking()
+            .Where(x => consumerNos.Contains(x.ConsNo))
+            .ToDictionaryAsync(x => x.ConsNo!, ct);
+
+        var rows = users.Select(x =>
+        {
+            consumerMap.TryGetValue(x.ConsumerNo, out var consumer);
+            return new ConsumerLoginExportProjection
+            {
+                ConsumerNo = x.ConsumerNo,
+                ConsumerName = GetConsumerName(consumer),
+                ConsumerMobileNo = consumer?.MobNo,
+                Username = x.Username,
+                Email = x.Email,
+                IsActive = x.IsActive,
+                LastLoginAt = x.LastLoginAt
+            };
+        }).ToList();
+
+        var bytes = _excelExportService.Export(new ExcelExportRequest<ConsumerLoginExportProjection>
+        {
+            SheetName = "Consumer Login",
+            Rows = rows,
+            Columns =
+            [
+                new ExcelColumnDefinition<ConsumerLoginExportProjection> { Header = "Consumer No", ValueFactory = x => x.ConsumerNo, Width = 18 },
+                new ExcelColumnDefinition<ConsumerLoginExportProjection> { Header = "Consumer Name", ValueFactory = x => string.IsNullOrWhiteSpace(x.ConsumerName) ? "-" : x.ConsumerName, Width = 28 },
+                new ExcelColumnDefinition<ConsumerLoginExportProjection> { Header = "Mobile", ValueFactory = x => string.IsNullOrWhiteSpace(x.ConsumerMobileNo) ? "-" : x.ConsumerMobileNo, Width = 18 },
+                new ExcelColumnDefinition<ConsumerLoginExportProjection> { Header = "Username", ValueFactory = x => x.Username, Width = 22 },
+                new ExcelColumnDefinition<ConsumerLoginExportProjection> { Header = "Email", ValueFactory = x => string.IsNullOrWhiteSpace(x.Email) ? "-" : x.Email, Width = 30 },
+                new ExcelColumnDefinition<ConsumerLoginExportProjection> { Header = "Last Login", ValueFactory = x => x.LastLoginAt, NumberFormat = "dd mmm yyyy hh:mm AM/PM", Width = 24 },
+                new ExcelColumnDefinition<ConsumerLoginExportProjection> { Header = "Status", ValueFactory = x => x.IsActive ? "Active" : "Inactive", Width = 14 }
+            ]
+        });
+
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"consumer-login-management-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
     }
 
     [HttpGet("/ConsumerLoginManagement/Create")]
@@ -270,6 +332,17 @@ public class ConsumerLoginManagementController : Controller
             if (emailExists)
                 ModelState.AddModelError(nameof(model.Email), "Email already exists.");
         }
+    }
+
+    private sealed class ConsumerLoginExportProjection
+    {
+        public string ConsumerNo { get; set; } = string.Empty;
+        public string? ConsumerName { get; set; }
+        public string? ConsumerMobileNo { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime? LastLoginAt { get; set; }
     }
 
     private async Task<ConsumerDetailsMaster?> FindConsumerAsync(string consumerNo, CancellationToken ct)

@@ -6,6 +6,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Water.Bill.API.Filters;
 using Water.Bill.API.Models;
 using Water.Bill.API.Models.Audit;
+using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -18,11 +20,13 @@ public class OperatorAuditController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly IMemoryCache _cache;
+    private readonly IExcelExportService _excelExportService;
 
-    public OperatorAuditController(ApplicationDbContext db, IMemoryCache cache)
+    public OperatorAuditController(ApplicationDbContext db, IMemoryCache cache, IExcelExportService excelExportService)
     {
         _db = db;
         _cache = cache;
+        _excelExportService = excelExportService;
     }
 
     [HttpGet("/OperatorAudit")]
@@ -46,53 +50,23 @@ public class OperatorAuditController : Controller
     public Task<IActionResult> ConsumerDetails(int id, CancellationToken ct)
         => BuildDetailsAsync(ActivityLogAudience.Consumer, id, ct);
 
+    [HttpGet("/UserActivityLogs/ExportExcel")]
+    [RequirePermission("User Activity Logs.download")]
+    public Task<IActionResult> ExportExcel(ActivityLogIndexViewModel model, CancellationToken ct)
+        => ExportIndexAsync(ActivityLogAudience.Authority, model, ct);
+
+    [HttpGet("/ConsumerActivityLogs/ExportExcel")]
+    [RequirePermission("Consumer Activity Logs.download")]
+    public Task<IActionResult> ExportConsumerExcel(ActivityLogIndexViewModel model, CancellationToken ct)
+        => ExportIndexAsync(ActivityLogAudience.Consumer, model, ct);
+
     private async Task<IActionResult> BuildIndexAsync(ActivityLogAudience audience, ActivityLogIndexViewModel model, CancellationToken ct)
     {
         var config = BuildScreenConfig(audience);
         ViewData["Title"] = config.Title;
         ViewData["ActiveMenu"] = config.ActiveMenu;
 
-        var query = BuildAudienceQuery(audience)
-            .Select(x => new ActivityLogListProjection
-            {
-                Id = x.Id,
-                Timestamp = x.Timestamp,
-                UserId = x.UserId,
-                Username = x.Username,
-                Action = x.Action,
-                Module = x.Module,
-                EntityId = x.EntityId,
-                IpAddress = x.IpAddress,
-                Details = x.Details,
-                Success = x.Success
-            });
-        if (!string.IsNullOrWhiteSpace(model.Search))
-        {
-            var term = model.Search.Trim();
-            var hasActionSearch = int.TryParse(term, out var actionSearch);
-            query = query.Where(x =>
-                (x.Username != null && x.Username.Contains(term)) ||
-                (x.Module != null && x.Module.Contains(term)) ||
-                (x.EntityId != null && x.EntityId.Contains(term)) ||
-                (x.Details != null && x.Details.Contains(term)) ||
-                (x.IpAddress != null && x.IpAddress.Contains(term)) ||
-                (hasActionSearch && x.Action == actionSearch));
-        }
-
-        if (model.Action.HasValue)
-            query = query.Where(x => x.Action == model.Action.Value);
-
-        if (!string.IsNullOrWhiteSpace(model.Module))
-            query = query.Where(x => x.Module == model.Module);
-
-        if (model.Success.HasValue)
-            query = query.Where(x => (x.Success ?? true) == model.Success.Value);
-
-        if (model.FromDate.HasValue)
-            query = query.Where(x => x.Timestamp >= model.FromDate.Value.Date);
-
-        if (model.ToDate.HasValue)
-            query = query.Where(x => x.Timestamp < model.ToDate.Value.Date.AddDays(1));
+        var query = BuildFilteredQuery(audience, model);
 
         var page = PagingConstants.ValidatePage(model.Page);
         var pageSize = PagingConstants.Validate(model.PageSize == 0 ? PagingConstants.DefaultPageSize : model.PageSize);
@@ -126,11 +100,40 @@ public class OperatorAuditController : Controller
         model.ActiveMenu = config.ActiveMenu;
         model.DetailsRouteName = config.DetailsRouteName;
         model.LegacyRouteName = config.LegacyRouteName;
+        model.ExportRouteName = config.ExportRouteName;
         model.ActionOptions = await BuildActionOptionsAsync(audience, ct);
         model.ModuleOptions = await BuildModuleOptionsAsync(audience, ct);
         ViewBag.Pagination = PaginationViewModel.Create(paged);
 
         return View("Index", model);
+    }
+
+    private async Task<IActionResult> ExportIndexAsync(ActivityLogAudience audience, ActivityLogIndexViewModel model, CancellationToken ct)
+    {
+        var rows = await BuildFilteredQuery(audience, model)
+            .OrderByDescending(x => x.Timestamp)
+            .ToListAsync(ct);
+
+        var portalType = ResolvePortalType(audience);
+        var bytes = _excelExportService.Export(new ExcelExportRequest<ActivityLogListProjection>
+        {
+            SheetName = audience == ActivityLogAudience.Consumer ? "Consumer Activity Logs" : "User Activity Logs",
+            Rows = rows,
+            Columns =
+            [
+                new ExcelColumnDefinition<ActivityLogListProjection> { Header = "Date / Time", ValueFactory = x => x.Timestamp, NumberFormat = "dd mmm yyyy hh:mm AM/PM", Width = 24 },
+                new ExcelColumnDefinition<ActivityLogListProjection> { Header = "Portal", ValueFactory = _ => portalType, Width = 14 },
+                new ExcelColumnDefinition<ActivityLogListProjection> { Header = "User", ValueFactory = x => x.Username ?? "-", Width = 24 },
+                new ExcelColumnDefinition<ActivityLogListProjection> { Header = "Entity", ValueFactory = x => AuditLogDisplayHelper.GetEntityLabel(x.Module), Width = 22 },
+                new ExcelColumnDefinition<ActivityLogListProjection> { Header = "Action", ValueFactory = x => AuditLogDisplayHelper.GetActionLabel(x.Action, x.Module, x.Details), Width = 24 },
+                new ExcelColumnDefinition<ActivityLogListProjection> { Header = "Result", ValueFactory = x => (x.Success ?? true) ? "Success" : "Failed", Width = 14 },
+                new ExcelColumnDefinition<ActivityLogListProjection> { Header = "Summary", ValueFactory = x => string.IsNullOrWhiteSpace(x.Details) ? AuditLogDisplayHelper.GetModuleLabel(x.Module) : x.Details, Width = 60 }
+            ]
+        });
+
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            BuildFileName(audience == ActivityLogAudience.Consumer ? "consumer-activity-logs" : "user-activity-logs"));
     }
 
     private async Task<IActionResult> BuildDetailsAsync(ActivityLogAudience audience, int id, CancellationToken ct)
@@ -251,7 +254,58 @@ public class OperatorAuditController : Controller
     private static string ResolvePortalType(ActivityLogAudience audience)
         => audience == ActivityLogAudience.Consumer ? AppConstants.PortalTypes.Consumer : AppConstants.PortalTypes.Admin;
 
-    private static (string Title, string Description, string ActiveMenu, string DetailsRouteName, string LegacyRouteName) BuildScreenConfig(ActivityLogAudience audience)
+    private IQueryable<ActivityLogListProjection> BuildFilteredQuery(ActivityLogAudience audience, ActivityLogIndexViewModel model)
+    {
+        var query = BuildAudienceQuery(audience)
+            .Select(x => new ActivityLogListProjection
+            {
+                Id = x.Id,
+                Timestamp = x.Timestamp,
+                UserId = x.UserId,
+                Username = x.Username,
+                Action = x.Action,
+                Module = x.Module,
+                EntityId = x.EntityId,
+                IpAddress = x.IpAddress,
+                Details = x.Details,
+                Success = x.Success
+            });
+
+        if (!string.IsNullOrWhiteSpace(model.Search))
+        {
+            var term = model.Search.Trim();
+            var hasActionSearch = int.TryParse(term, out var actionSearch);
+            query = query.Where(x =>
+                (x.Username != null && x.Username.Contains(term)) ||
+                (x.Module != null && x.Module.Contains(term)) ||
+                (x.EntityId != null && x.EntityId.Contains(term)) ||
+                (x.Details != null && x.Details.Contains(term)) ||
+                (x.IpAddress != null && x.IpAddress.Contains(term)) ||
+                (hasActionSearch && x.Action == actionSearch));
+        }
+
+        if (model.Action.HasValue)
+            query = query.Where(x => x.Action == model.Action.Value);
+
+        if (!string.IsNullOrWhiteSpace(model.Module))
+            query = query.Where(x => x.Module == model.Module);
+
+        if (model.Success.HasValue)
+            query = query.Where(x => (x.Success ?? true) == model.Success.Value);
+
+        if (model.FromDate.HasValue)
+            query = query.Where(x => x.Timestamp >= model.FromDate.Value.Date);
+
+        if (model.ToDate.HasValue)
+            query = query.Where(x => x.Timestamp < model.ToDate.Value.Date.AddDays(1));
+
+        return query;
+    }
+
+    private static string BuildFileName(string prefix)
+        => $"{prefix}-{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+
+    private static (string Title, string Description, string ActiveMenu, string DetailsRouteName, string LegacyRouteName, string ExportRouteName) BuildScreenConfig(ActivityLogAudience audience)
     {
         return audience == ActivityLogAudience.Consumer
             ? (
@@ -259,13 +313,15 @@ public class OperatorAuditController : Controller
                 "Review Consumer Portal actions separately from authority-side operations.",
                 AppConstants.Modules.ConsumerActivityLogs,
                 nameof(ConsumerDetails),
-                nameof(ConsumerIndex))
+                nameof(ConsumerIndex),
+                nameof(ExportConsumerExcel))
             : (
                 AppConstants.Modules.UserActivityLogs,
                 "Review admin and authority user activity captured in the audit trail.",
                 AppConstants.Modules.UserActivityLogs,
                 nameof(Details),
-                nameof(Index));
+                nameof(Index),
+                nameof(ExportExcel));
     }
 
     private sealed class ActivityLogListProjection

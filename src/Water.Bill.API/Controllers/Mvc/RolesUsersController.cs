@@ -9,6 +9,7 @@ using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Application.DTOs.Menu;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Core.Common;
 using Water.Bill.Core.Enums;
 using Water.Bill.Infrastructure.Data;
@@ -26,19 +27,22 @@ public class RolesUsersController : Controller
     private readonly IAuditLogService _auditLogService;
     private readonly ISessionService _sessionService;
     private readonly IMemoryCache _cache;
+    private readonly IExcelExportService _excelExportService;
 
     public RolesUsersController(
         ApplicationDbContext db,
         IPermissionService permissionService,
         IAuditLogService auditLogService,
         ISessionService sessionService,
-        IMemoryCache cache)
+        IMemoryCache cache,
+        IExcelExportService excelExportService)
     {
         _db = db;
         _permissionService = permissionService;
         _auditLogService = auditLogService;
         _sessionService = sessionService;
         _cache = cache;
+        _excelExportService = excelExportService;
     }
 
     public IActionResult Index()
@@ -96,20 +100,49 @@ public class RolesUsersController : Controller
         page = PagingConstants.ValidatePage(page);
         ViewBag.Search = search;
 
-        var query = _db.Appusers
-            .Include(x => x.Role)
-            .AsNoTracking()
-            .Where(x => !x.IsDeleted);
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            var s = search.Trim();
-            query = query.Where(x => x.FullName.Contains(s)
-                || x.Username.Contains(s)
-                || x.Email.Contains(s));
-        }
+        var query = BuildUserListQuery(search);
         var paged = await query.OrderBy(x => x.FullName).ToPagedResultAsync(page, pageSize, ct);
         ViewBag.Pagination = PaginationViewModel.Create(paged);
         return View("Users", paged.Items.ToList());
+    }
+
+    [HttpGet("/Users/ExportExcel")]
+    [RequirePermission("User Management.download")]
+    public async Task<IActionResult> ExportUsersExcel(string? search = null, CancellationToken ct = default)
+    {
+        var rows = await BuildUserListQuery(search)
+            .OrderBy(x => x.FullName)
+            .Select(x => new UserExportRow
+            {
+                FullName = x.FullName,
+                Username = x.Username,
+                RoleName = x.Role != null ? x.Role.Name : null,
+                DivisionDevType = x.DivisionDevType,
+                Mobile = x.PhoneNumber,
+                Email = x.Email,
+                IsActive = x.IsActive == true
+            })
+            .ToListAsync(ct);
+
+        var bytes = _excelExportService.Export(new ExcelExportRequest<UserExportRow>
+        {
+            SheetName = "User Management",
+            Rows = rows,
+            Columns =
+            [
+                new ExcelColumnDefinition<UserExportRow> { Header = "Full Name", ValueFactory = x => x.FullName, Width = 28 },
+                new ExcelColumnDefinition<UserExportRow> { Header = "Username", ValueFactory = x => x.Username, Width = 22 },
+                new ExcelColumnDefinition<UserExportRow> { Header = "Role", ValueFactory = x => string.IsNullOrWhiteSpace(x.RoleName) ? "Unassigned" : x.RoleName, Width = 22 },
+                new ExcelColumnDefinition<UserExportRow> { Header = "Division", ValueFactory = x => string.IsNullOrWhiteSpace(AppConstants.Divisions.FormatDisplay(x.DivisionDevType)) ? "-" : AppConstants.Divisions.FormatDisplay(x.DivisionDevType), Width = 18 },
+                new ExcelColumnDefinition<UserExportRow> { Header = "Mobile", ValueFactory = x => string.IsNullOrWhiteSpace(x.Mobile) ? "-" : x.Mobile, Width = 18 },
+                new ExcelColumnDefinition<UserExportRow> { Header = "Email", ValueFactory = x => string.IsNullOrWhiteSpace(x.Email) ? "-" : x.Email, Width = 30 },
+                new ExcelColumnDefinition<UserExportRow> { Header = "Status", ValueFactory = x => x.IsActive ? "Active" : "Inactive", Width = 14 }
+            ]
+        });
+
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"user-management-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
     }
 
     [HttpGet("/RolesUsers/Combined")]
@@ -510,4 +543,33 @@ public class RolesUsersController : Controller
             x.Id == roleId &&
             !x.IsDeleted &&
             x.Name == AppConstants.Roles.Consumer, ct);
+
+    private IQueryable<Appuser> BuildUserListQuery(string? search)
+    {
+        var query = _db.Appusers
+            .Include(x => x.Role)
+            .AsNoTracking()
+            .Where(x => !x.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim();
+            query = query.Where(x => x.FullName.Contains(s)
+                || x.Username.Contains(s)
+                || x.Email.Contains(s));
+        }
+
+        return query;
+    }
+
+    private sealed class UserExportRow
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string? RoleName { get; set; }
+        public int? DivisionDevType { get; set; }
+        public string? Mobile { get; set; }
+        public string? Email { get; set; }
+        public bool IsActive { get; set; }
+    }
 }
