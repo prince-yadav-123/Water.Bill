@@ -1,0 +1,149 @@
+@model Water.Bill.API.Models.Communication.CommunicationTemplateFormViewModel
+
+<div class="wb-page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p>Use only the system placeholders shown for the selected purpose.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="post" class="wb-form-grid" data-template-form data-placeholder-url="@Url.Action("AllowedPlaceholders")">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger wb-field-wide"></div>
+
+        <div class="wb-field">
+            <label class="form-label required" asp-for="PurposeId">Purpose</label>
+            <select class="form-select" asp-for="PurposeId" asp-items="Model.Purposes"></select>
+            <span class="text-danger" asp-validation-for="PurposeId"></span>
+        </div>
+        <div class="wb-field">
+            <label class="form-label required" asp-for="Channel">Channel</label>
+            <select class="form-select" asp-for="Channel" asp-items="Model.Channels"></select>
+            <span class="text-danger" asp-validation-for="Channel"></span>
+        </div>
+        <div class="wb-field">
+            <label class="form-label required" asp-for="TemplateName">Template Name</label>
+            <input class="form-control" asp-for="TemplateName" />
+            <span class="text-danger" asp-validation-for="TemplateName"></span>
+        </div>
+        <input asp-for="Language" type="hidden" value="" />
+        <div class="wb-field wb-field-wide">
+            <label class="form-label">Available Placeholders</label>
+            <div class="d-flex flex-wrap gap-2" data-placeholder-list>
+                @foreach (var placeholder in Model.AllowedPlaceholders)
+                {
+                    var token = $"{{{{{placeholder}}}}}";
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-placeholder="@token">@token</button>
+                }
+            </div>
+            <div class="form-text">Click a placeholder to insert it at the cursor position.</div>
+        </div>
+        <div class="wb-field wb-field-wide" data-subject-field>
+            <label class="form-label required" asp-for="Subject">Subject</label>
+            <input class="form-control" asp-for="Subject" data-template-subject />
+            <div class="form-text">Used for Email subject and In-App notification title.</div>
+            <span class="text-danger" asp-validation-for="Subject"></span>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label required" asp-for="Body">Body</label>
+            <textarea class="form-control" asp-for="Body" rows="8" data-template-body></textarea>
+            <span class="text-danger" asp-validation-for="Body"></span>
+        </div>
+        <div class="wb-field" data-external-template-field>
+            <label class="form-label" asp-for="ExternalTemplateId">External Template Id</label>
+            <input class="form-control" asp-for="ExternalTemplateId" />
+            <div class="form-text">Used only when SMS/WhatsApp provider requires an approved template id.</div>
+        </div>
+        <div class="wb-field">
+            <label class="form-label">Options</label>
+            <div class="form-check">
+                <input class="form-check-input" asp-for="IsDefault" />
+                <label class="form-check-label" asp-for="IsDefault">Default template</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" asp-for="IsActive" />
+                <label class="form-check-label" asp-for="IsActive">Active</label>
+            </div>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <button class="btn btn-primary" type="submit">Save Template</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+<script>
+(function () {
+    const form = document.querySelector('[data-template-form]');
+    if (!form) return;
+    const purpose = form.querySelector('[name="PurposeId"]');
+    const channel = form.querySelector('[name="Channel"]');
+    const list = form.querySelector('[data-placeholder-list]');
+    const body = form.querySelector('[data-template-body]');
+    const subject = form.querySelector('[data-template-subject]');
+    const subjectField = form.querySelector('[data-subject-field]');
+    const externalTemplateField = form.querySelector('[data-external-template-field]');
+    const externalTemplateInput = form.querySelector('[name="ExternalTemplateId"]');
+    let target = body;
+    [body, subject].forEach(function (el) { if (el) el.addEventListener('focus', function () { target = el; }); });
+
+    function insertAtCursor(text) {
+        target = target || body;
+        if (!target) return;
+        const start = target.selectionStart || 0;
+        const end = target.selectionEnd || 0;
+        target.value = target.value.substring(0, start) + text + target.value.substring(end);
+        target.focus();
+        target.selectionStart = target.selectionEnd = start + text.length;
+    }
+
+    function bindButtons() {
+        list.querySelectorAll('[data-placeholder]').forEach(function (button) {
+            button.addEventListener('click', function () { insertAtCursor(button.dataset.placeholder); });
+        });
+    }
+
+    purpose.addEventListener('change', function () {
+        fetch(form.dataset.placeholderUrl + '?purposeId=' + encodeURIComponent(purpose.value))
+            .then(function (r) { return r.json(); })
+            .then(function (items) {
+                list.innerHTML = '';
+                items.forEach(function (item) {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'btn btn-sm btn-outline-secondary';
+                    button.dataset.placeholder = '{{' + item + '}}';
+                    button.textContent = '{{' + item + '}}';
+                    list.appendChild(button);
+                });
+                bindButtons();
+            });
+    });
+
+    function syncChannelFields() {
+        const selected = channel.value;
+        const showSubject = selected === 'Email' || selected === 'InApp';
+        const showExternal = selected === 'SMS' || selected === 'WhatsApp';
+        subjectField.style.display = showSubject ? '' : 'none';
+        subject.disabled = !showSubject;
+        if (!showSubject) subject.value = '';
+        externalTemplateField.style.display = showExternal ? '' : 'none';
+        externalTemplateInput.disabled = !showExternal;
+        if (!showExternal) externalTemplateInput.value = '';
+        body.placeholder = selected === 'SMS'
+            ? 'Keep SMS text short and plain. Use placeholders from above.'
+            : selected === 'WhatsApp'
+                ? 'Write WhatsApp provider-approved message content.'
+                : selected === 'InApp'
+                    ? 'Write a short in-app notification message.'
+                    : 'Write email body. Basic HTML such as <br> is allowed.';
+    }
+
+    channel.addEventListener('change', syncChannelFields);
+    syncChannelFields();
+    bindButtons();
+})();
+</script>
+}

@@ -1,0 +1,120 @@
+@model Water.Bill.API.Models.Audit.ActivityLogIndexViewModel
+@using Water.Bill.Core.Common
+@{
+    string DateText(DateTime value) => value.ToString("dd MMM yyyy hh:mm tt");
+    string PortalBadgeClass(string portalType) => portalType switch
+    {
+        AppConstants.PortalTypes.Consumer => "wb-portal-badge wb-portal-badge-consumer",
+        AppConstants.PortalTypes.Public => "wb-portal-badge wb-portal-badge-public",
+        AppConstants.PortalTypes.Api => "wb-portal-badge wb-portal-badge-api",
+        AppConstants.PortalTypes.Admin => "wb-portal-badge wb-portal-badge-admin",
+        _ => "wb-portal-badge wb-portal-badge-unknown"
+    };
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>@Model.Title</h1>
+        <p>@Model.Description</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar wb-activitylog-filterbar">
+        <input type="hidden" name="Page" value="1" />
+        <div class="wb-filter-field wb-filter-search wb-activitylog-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" name="Search" value="@Model.Search" placeholder="User / module / entity / details / IP / action code" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Action</label>
+            <select class="form-select" name="Action">
+                <option value="">All actions</option>
+                @foreach (var option in Model.ActionOptions)
+                {
+                    <option value="@option.Value" selected="@(Model.Action?.ToString() == option.Value)">@option.Text</option>
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Entity / Module</label>
+            <select class="form-select" name="Module">
+                <option value="">All entities</option>
+                @foreach (var option in Model.ModuleOptions)
+                {
+                    <option value="@option.Value" selected="@(Model.Module == option.Value)">@option.Text</option>
+                }
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Result</label>
+            <select class="form-select" name="Success">
+                <option value="">All results</option>
+                <option value="true" selected="@(Model.Success == true)">Success</option>
+                <option value="false" selected="@(Model.Success == false)">Failed</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="ToDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="wb-filter-actions wb-activitylog-filter-actions">
+            <button class="btn btn-primary" type="submit">Filter</button>
+            <a class="btn btn-outline-secondary" asp-action="@Model.LegacyRouteName">Reset</a>
+        </div>
+    </form>
+
+    <div class="table-responsive wb-approval-table-wrap wb-activitylog-table-wrap mt-3">
+        <table class="table align-middle wb-table wb-admin-table wb-approval-table wb-activitylog-table">
+            <thead>
+                <tr>
+                    <th>Date / Time</th>
+                    <th>Portal</th>
+                    <th>User</th>
+                    <th>Entity</th>
+                    <th>Action</th>
+                    <th>Result</th>
+                    <th>Summary</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (!Model.Rows.Any())
+            {
+                <tr>
+                    <td colspan="8" class="wb-empty-row">No activity logs found for the selected filters.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td class="wb-activitylog-date">@DateText(row.Timestamp)</td>
+                        <td><span class="@PortalBadgeClass(row.PortalType)">@row.PortalType</span></td>
+                        <td class="wb-activitylog-user">
+                            <div class="fw-semibold">@(row.Username ?? "-")</div>
+                            <small class="text-muted">@(row.UserId?.ToString() ?? "No user id")</small>
+                        </td>
+                        <td class="wb-activitylog-entity">
+                            <div class="fw-semibold">@row.EntityLabel</div>
+                            <small class="text-muted">@(string.IsNullOrWhiteSpace(row.EntityId) ? row.ModuleLabel : $"Ref: {row.EntityId}")</small>
+                        </td>
+                        <td class="wb-activitylog-action">@row.ActionLabel</td>
+                        <td><span class="badge @AdminStatusBadgeHelper.CssClass(row.Success ? "Success" : "Failed")">@AdminStatusBadgeHelper.Label(row.Success ? "Success" : "Failed")</span></td>
+                        <td class="wb-activitylog-summary">@(string.IsNullOrWhiteSpace(row.Details) ? row.ModuleLabel : row.Details)</td>
+                        <td>
+                            <a class="btn btn-outline-primary btn-sm" asp-action="@Model.DetailsRouteName" asp-route-id="@row.Id">Details</a>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+    @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
+</section>

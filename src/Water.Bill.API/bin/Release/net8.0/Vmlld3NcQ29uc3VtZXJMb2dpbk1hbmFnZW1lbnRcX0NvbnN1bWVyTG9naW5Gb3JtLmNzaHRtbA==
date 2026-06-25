@@ -1,0 +1,103 @@
+@model ConsumerLoginUserFormViewModel
+@{
+    var isEdit = Model.Id > 0;
+    var actionName = isEdit ? "Edit" : "Create";
+}
+
+<section class="wb-page-card wb-form-card wb-form-card-wide">
+    <form asp-action="@actionName" asp-route-id="@(isEdit ? Model.Id : null)" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ConsumerName) || !string.IsNullOrWhiteSpace(Model.ConsumerMobileNo))
+        {
+            <div class="alert alert-info mb-4">
+                <span class="wb-toast-icon">i</span>
+                <span>
+                    Consumer found:
+                    <strong>@Model.ConsumerName</strong>
+                    @if (!string.IsNullOrWhiteSpace(Model.ConsumerMobileNo))
+                    {
+                        <span> | Mobile: @Model.ConsumerMobileNo</span>
+                    }
+                </span>
+            </div>
+        }
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label required" asp-for="ConsumerNo">Consumer Number</label>
+                <input class="form-control" asp-for="ConsumerNo" required maxlength="10" placeholder="Enter consumer number" />
+                <span class="text-danger small" asp-validation-for="ConsumerNo"></span>
+                <div class="form-text">Consumer number must exist in consumer master data.</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label required" asp-for="Username">Username</label>
+                <input class="form-control" asp-for="Username" required maxlength="100" autocomplete="username" />
+                <span class="text-danger small" asp-validation-for="Username"></span>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" asp-for="Email">Email</label>
+                <input class="form-control" asp-for="Email" type="email" maxlength="150" autocomplete="email" />
+                <span class="text-danger small" asp-validation-for="Email"></span>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" asp-for="IsActive">Account Status</label>
+                <select class="form-select" asp-for="IsActive">
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label @(isEdit ? "" : "required")" asp-for="Password">@(isEdit ? "New Password" : "Password")</label>
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="Password" type="password" autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
+                <span class="text-danger small" asp-validation-for="Password"></span>
+                @if (isEdit)
+                {
+                    <div class="form-text">Leave blank to keep the existing password.</div>
+                }
+            </div>
+            <div class="col-md-6">
+                <label class="form-label @(isEdit ? "" : "required")" asp-for="ConfirmPassword">Confirm Password</label>
+                <div class="input-group wb-password-group">
+                    <input class="form-control" asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+                    <button class="btn btn-outline-secondary wb-password-toggle" type="button" data-password-toggle aria-label="Show confirm password" aria-pressed="false">
+                        <span aria-hidden="true">&#128065;</span>
+                    </button>
+                </div>
+                <span class="text-danger small" asp-validation-for="ConfirmPassword"></span>
+            </div>
+        </div>
+
+        <div class="wb-actions mt-4">
+            <button class="btn btn-primary" type="submit">@(isEdit ? "Save Changes" : "Create Consumer Login")</button>
+            <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    (() => {
+        document.querySelectorAll('[data-password-toggle]').forEach(button => {
+            if (button.dataset.bound === 'true') return;
+            button.dataset.bound = 'true';
+
+            button.addEventListener('click', () => {
+                const group = button.closest('.wb-password-group');
+                const input = group?.querySelector('input');
+                if (!input) return;
+
+                const showing = input.type === 'text';
+                input.type = showing ? 'password' : 'text';
+                button.setAttribute('aria-pressed', (!showing).toString());
+                button.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                button.classList.toggle('active', !showing);
+            });
+        });
+    })();
+</script>

@@ -1,0 +1,42 @@
+@model IReadOnlyList<Water.Bill.Infrastructure.Data.Entities.MasterDeptDetail>
+
+<div class="wb-page-head">
+    <div>
+        <h1>Department Master</h1>
+        <p>Configure departments used by approval workflow stages.</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">Add Department</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="wb-admin-toolbar">
+        <div>
+            <h2 class="wb-section-title">Departments</h2>
+            <span>@Model.Count record@(Model.Count == 1 ? "" : "s")</span>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle wb-table wb-admin-table">
+            <thead><tr><th>Code</th><th>Department</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><strong>@item.DeptId</strong></td>
+                    <td>@item.DeptName</td>
+                    <td><span class="badge @(item.Status == "1" ? "text-bg-success" : "text-bg-secondary")">@(item.Status == "1" ? "Active" : "Inactive")</span></td>
+                    <td>
+                        <div class="wb-row-actions justify-content-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm @(item.Status == "1" ? "btn-outline-danger" : "btn-outline-success")" type="submit">@(item.Status == "1" ? "Deactivate" : "Activate")</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

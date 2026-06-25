@@ -28,6 +28,12 @@ C:\Temp\WBVerifyAPI5\Water.Bill.Application.pdb
 C:\Temp\WBVerifySessionInvalidate\Water.Bill.Application.deps.json
 C:\Temp\WBVerifySessionInvalidate\Water.Bill.Application.dll
 C:\Temp\WBVerifySessionInvalidate\Water.Bill.Application.pdb
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Application.deps.json
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Application.dll
+C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Application.pdb
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Application.deps.json
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Application.dll
+C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Application.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\bin\Debug\net8.0\Water.Bill.Application.deps.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\bin\Debug\net8.0\Water.Bill.Application.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\bin\Debug\net8.0\Water.Bill.Application.pdb
@@ -44,9 +50,3 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Debug\net8.0\refint\Water.Bill.Application.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Debug\net8.0\Water.Bill.Application.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Debug\net8.0\ref\Water.Bill.Application.dll
-C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Application.deps.json
-C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Application.dll
-C:\Temp\WBVerifyNonAdminDashboard\Water.Bill.Application.pdb
-C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Application.deps.json
-C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Application.dll
-C:\Users\Lekesh\AppData\Local\Temp\wb-build-notify\Water.Bill.Application.pdb

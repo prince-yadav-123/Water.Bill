@@ -105,10 +105,10 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bi.CA36D660.Up2Date
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\refint\Water.Bill.ConsumerPortal.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\Water.Bill.ConsumerPortal.genruntimeconfig.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\ref\Water.Bill.ConsumerPortal.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.ConsumerPortal\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

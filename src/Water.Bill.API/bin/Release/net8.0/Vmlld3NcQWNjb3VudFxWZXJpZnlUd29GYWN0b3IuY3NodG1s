@@ -1,0 +1,259 @@
+@model Water.Bill.API.ViewModels.AuthorityLoginOtpViewModel
+
+@{
+    ViewData["Title"] = "Verify Authority Login";
+}
+
+<div class="wb-admin-login">
+    <section class="wb-admin-login-hero" aria-label="Noida Jal administration verification">
+        <div class="wb-admin-login-brand">
+            <img class="wb-admin-login-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" />
+            <div>
+                <div class="wb-admin-login-brand-title">Noida Jal</div>
+                <div class="wb-admin-login-brand-sub">Authority Verification</div>
+            </div>
+        </div>
+
+        <div class="wb-admin-login-copy">
+            <span class="wb-admin-login-eyebrow">Two-Factor Authentication</span>
+            <h1>Verify your login before entering the authority portal.</h1>
+            <p>Your username and password were accepted. Enter the 6-digit OTP sent through the configured verification channel to complete sign-in.</p>
+        </div>
+    </section>
+
+    <section class="wb-admin-login-form-wrap" aria-label="Authority OTP verification">
+        <div class="wb-admin-login-card wb-admin-otp-card">
+            <div class="wb-admin-otp-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 1a2 2 0 0 0-2 2v2H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zm1 4H7V3a1 1 0 1 1 2 0v2z"/>
+                </svg>
+            </div>
+
+            <div class="wb-admin-otp-header">
+                <p class="wb-admin-login-eyebrow">Two-Factor Authentication</p>
+                <h2>Verify your login</h2>
+                <p>@(string.IsNullOrWhiteSpace(Model.DeliverySummary) ? "Use the 6-digit OTP sent to your configured channel." : $"Sent via {Model.DeliverySummary}")</p>
+            </div>
+
+            <form class="wb-admin-login-form wb-admin-otp-form" asp-action="VerifyTwoFactor" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ChallengeToken" />
+                <input type="hidden" asp-for="RememberMe" />
+                <input type="hidden" asp-for="DeliverySummary" />
+                <input type="hidden" asp-for="ExpiresAt" />
+                <input type="hidden" asp-for="ResendAvailableInSeconds" />
+                <input type="hidden" asp-for="Otp" data-otp-value />
+
+                <div asp-validation-summary="ModelOnly" class="wb-admin-login-summary"></div>
+
+                <div class="wb-admin-login-field">
+                    <label asp-for="Otp" class="form-label required">One-Time Password</label>
+                    <div class="wb-admin-otp-boxes" role="group" aria-label="Enter 6 digit OTP">
+                        @for (var i = 0; i < 6; i++)
+                        {
+                            <input class="wb-admin-otp-box" type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" spellcheck="false" aria-label="OTP digit @(i + 1)" data-otp-box />
+                        }
+                    </div>
+                    <span asp-validation-for="Otp" class="text-danger"></span>
+                    @if (Model.ExpiresAt.HasValue)
+                    {
+                        <div class="form-text mt-2">OTP valid until @Model.ExpiresAt.Value.ToLocalTime().ToString("dd MMM yyyy hh:mm tt").</div>
+                    }
+                </div>
+
+                <button type="submit" class="wb-admin-login-submit">Verify &amp; Sign In</button>
+            </form>
+
+            <form asp-action="ResendTwoFactorOtp" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="wb-admin-otp-resend mt-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="challengeToken" value="@Model.ChallengeToken" />
+                <input type="hidden" name="rememberMe" value="@Model.RememberMe" />
+                <div class="wb-admin-otp-resend-meta">
+                    <div class="wb-admin-otp-resend-text">Resend available in @Model.ResendAvailableInSeconds second(s).</div>
+                </div>
+                <div class="wb-admin-otp-resend-row">
+                    <a class="btn btn-outline-secondary" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">Back to Login</a>
+                    <button type="submit" class="btn btn-outline-primary">Resend OTP</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <style>
+        .wb-admin-otp-card {
+            padding: 28px 30px 26px;
+            gap: 14px;
+        }
+
+        .wb-admin-otp-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #eff6ff;
+            border: 2px solid #bfdbfe;
+            color: #2563eb;
+        }
+
+        .wb-admin-otp-header {
+            text-align: center;
+        }
+
+        .wb-admin-otp-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .wb-admin-otp-header p {
+            margin: 6px 0 0;
+            color: #475569;
+            line-height: 1.55;
+        }
+
+        .wb-admin-otp-form {
+            margin-top: 4px;
+        }
+
+        .wb-admin-otp-boxes {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .wb-admin-otp-box {
+            width: 100%;
+            min-width: 0;
+            height: 56px;
+            border-radius: 12px;
+            border: 2px solid #dbe4ef;
+            background: #f8fafc;
+            color: #0f172a;
+            font-size: 1.45rem;
+            font-weight: 800;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .wb-admin-otp-box:focus {
+            border-color: #2563eb;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .wb-admin-otp-box.is-filled {
+            border-color: #64748b;
+            background: #fff;
+        }
+
+        .wb-admin-otp-resend {
+            display: block;
+        }
+
+        .wb-admin-otp-resend-meta {
+            display: flex;
+            justify-content: center;
+            padding-top: 2px;
+            padding-bottom: 10px;
+        }
+
+        .wb-admin-otp-resend-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 6px;
+        }
+
+        .wb-admin-otp-resend-text {
+            color: #475569;
+            font-size: 0.9rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .wb-admin-otp-resend-row .btn {
+            min-width: 132px;
+        }
+
+        @@media (max-width: 480px) {
+            .wb-admin-otp-card {
+                padding: 22px 18px 20px;
+            }
+
+            .wb-admin-otp-box {
+                height: 50px;
+                font-size: 1.25rem;
+            }
+
+            .wb-admin-otp-resend-row {
+                justify-content: center;
+            }
+
+            .wb-admin-otp-resend-row .btn {
+                min-width: 0;
+                flex: 1 1 140px;
+            }
+        }
+    </style>
+    <script>
+        (function () {
+            const boxes = Array.from(document.querySelectorAll('[data-otp-box]'));
+            const hidden = document.querySelector('[data-otp-value]');
+            if (!boxes.length || !hidden) return;
+
+            const syncOtp = () => {
+                hidden.value = boxes.map(box => box.value).join('');
+            };
+
+            const fillFromValue = (value) => {
+                const digits = (value || '').replace(/\D/g, '').slice(0, boxes.length);
+                boxes.forEach((box, index) => {
+                    box.value = digits[index] || '';
+                    box.classList.toggle('is-filled', !!box.value);
+                });
+                syncOtp();
+                const focusIndex = Math.min(digits.length, boxes.length - 1);
+                boxes[focusIndex]?.focus();
+            };
+
+            boxes.forEach((box, index) => {
+                box.addEventListener('input', () => {
+                    const digit = box.value.replace(/\D/g, '').slice(-1);
+                    box.value = digit;
+                    box.classList.toggle('is-filled', !!digit);
+                    syncOtp();
+                    if (digit && index < boxes.length - 1) {
+                        boxes[index + 1].focus();
+                    }
+                });
+
+                box.addEventListener('keydown', (event) => {
+                    if (event.key === 'Backspace' && !box.value && index > 0) {
+                        boxes[index - 1].focus();
+                    }
+                });
+
+                box.addEventListener('paste', (event) => {
+                    event.preventDefault();
+                    fillFromValue(event.clipboardData?.getData('text') || '');
+                });
+            });
+
+            document.querySelector('.wb-admin-otp-form')?.addEventListener('submit', function () {
+                syncOtp();
+            });
+
+            fillFromValue(hidden.value);
+        })();
+    </script>
+}

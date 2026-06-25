@@ -1,0 +1,286 @@
+@model Water.Bill.Infrastructure.Data.Entities.WorkflowStage
+@{
+    var sendEmail = ViewBag.SendEmail == true;
+    var sendSms = ViewBag.SendSms == true;
+    var sendWhatsApp = ViewBag.SendWhatsApp == true;
+    var sendInAppNotification = ViewBag.SendInAppNotification != false;
+    var hasValidationSummaryErrors = ViewData.ModelState.Values.Any(x => x.Errors.Count > 0);
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p>Choose role or user assignment for this approval stage.</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-action="Stages" asp-route-workflowId="@Model.WorkflowId">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="post" class="wb-form-grid">
+        @Html.AntiForgeryToken()
+        <input asp-for="WorkflowId" type="hidden" />
+        <div asp-validation-summary="All"
+             class="text-danger wb-field-wide wb-validation-summary"
+             style="display:@(hasValidationSummaryErrors ? "block" : "none");"></div>
+        <div class="wb-field">
+            <label asp-for="StageName" class="form-label required">Stage Name</label>
+            <input asp-for="StageName" class="form-control" />
+            <span asp-validation-for="StageName" class="text-danger"></span>
+        </div>
+        <div class="wb-field">
+            <label asp-for="StageOrder" class="form-label required">Stage Order</label>
+            <input asp-for="StageOrder" class="form-control" type="number" />
+            <span asp-validation-for="StageOrder" class="text-danger"></span>
+        </div>
+        <div class="wb-field">
+            <label asp-for="ApprovalType" class="form-label required">Approval Type</label>
+            <select asp-for="ApprovalType" class="form-select" data-workflow-approval-type>
+                @* <option value="AnyOne">Any one approver</option> *@
+                <option value="AllApprovers">All approvers</option>
+                <option value="SpecificUser">Specific user</option>
+                <option value="DepartmentRole">Role based</option>
+            </select>
+            <span asp-validation-for="ApprovalType" class="text-danger"></span>
+        </div>
+        <div class="wb-field" data-workflow-role-field>
+            <label asp-for="ApproverRoleId" class="form-label required" data-workflow-role-label>Approver Role</label>
+            <select asp-for="ApproverRoleId" asp-items="ViewBag.Roles" class="form-select" data-workflow-role><option value="">Select</option></select>
+            <span asp-validation-for="ApproverRoleId" class="text-danger"></span>
+        </div>
+        <div class="wb-field" data-workflow-user-field>
+            <label asp-for="ApproverUserId" class="form-label" data-workflow-user-label>Specific User</label>
+            <select asp-for="ApproverUserId" asp-items="ViewBag.Users" class="form-select" data-workflow-user><option value="">Select</option></select>
+            <span asp-validation-for="ApproverUserId" class="text-danger"></span>
+            <div class="form-text text-muted" data-workflow-user-message></div>
+        </div>
+        <div class="wb-field">
+            <label asp-for="SlaDays" class="form-label">SLA Days</label>
+            <input asp-for="SlaDays" class="form-control" type="number" />
+            <span asp-validation-for="SlaDays" class="text-danger"></span>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label fw-semibold">Allowed Actions</label>
+            <small class="text-muted d-block mb-2">Select which actions are permitted at this stage. <em>Active</em> is always managed internally.</small>
+            <div class="wb-status-choice">
+                <label class="wb-action-choice">
+                    <input asp-for="CanApprove" />
+                    <span>
+                        <strong>Accept &amp; Move Next</strong>
+                        <small>Review passed — move to the next workflow stage</small>
+                    </span>
+                </label>
+                <label class="wb-action-choice">
+                    <input asp-for="IsFinalStage" />
+                    <span>
+                        <strong>Final Approval</strong>
+                        <small>This stage is the last — completes the workflow and triggers finalization</small>
+                    </span>
+                </label>
+                <label class="wb-action-choice">
+                    <input asp-for="CanReject" />
+                    <span>
+                        <strong>Reject</strong>
+                        <small>Reject the application and close the workflow (remarks required)</small>
+                    </span>
+                </label>
+                @* Forward to Specific User — hidden for current phase; CanForwardToUser value is preserved in DB *@
+                <input asp-for="CanForwardToUser" type="hidden" value="false" />
+                <label class="wb-action-choice">
+                    <input asp-for="CanSendBackToApplicant" />
+                    <span>
+                        <strong>Send Back to Applicant</strong>
+                        <small>Return to the consumer/applicant for correction and resubmission (remarks required)</small>
+                    </span>
+                </label>
+                <label class="wb-action-choice">
+                    <input asp-for="CanSendBackToPrevious" />
+                    <span>
+                        <strong>Send Back to Previous Stage</strong>
+                        <small>Return to the previous authority stage for re-review (not available on first stage)</small>
+                    </span>
+                </label>
+            </div>
+            @* IsActive is not shown — always true (managed internally by the controller) *@
+            <input type="hidden" name="IsActive" value="true" />
+        </div>
+        <div class="wb-field wb-field-wide">
+            <label class="form-label">Stage Assigned Notifications</label>
+            <div class="wb-notification-choice">
+                <label class="wb-notification-option"><input type="checkbox" name="SendEmail" value="true" checked="@sendEmail" /> <span>Email</span></label>
+                <label class="wb-notification-option"><input type="checkbox" name="SendSms" value="true" checked="@sendSms" /> <span>SMS</span></label>
+                <label class="wb-notification-option"><input type="checkbox" name="SendWhatsApp" value="true" checked="@sendWhatsApp" /> <span>WhatsApp</span></label>
+                <label class="wb-notification-option"><input type="checkbox" name="SendInAppNotification" value="true" checked="@sendInAppNotification" /> <span>In-app</span></label>
+            </div>
+        </div>
+        <div class="wb-field wb-field-wide">
+            <button class="btn btn-primary" type="submit">Save Stage</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <style>
+        .wb-action-choice {
+            display: flex; align-items: flex-start; gap: .6rem;
+            padding: .7rem .85rem; border: 1px solid #e2e8f0;
+            border-radius: .65rem; background: #f8fafc; cursor: pointer;
+            transition: border-color .15s, background .15s;
+            width: 100%;
+        }
+        .wb-action-choice:has(input:checked) {
+            border-color: #2563eb; background: #eff6ff;
+        }
+        .wb-action-choice input { margin-top: 3px; flex-shrink: 0; }
+        .wb-action-choice span { display: flex; flex-direction: column; gap: 1px; }
+        .wb-action-choice strong { font-size: .88rem; }
+        .wb-action-choice small  { color: #64748b; font-size: .78rem; }
+        .wb-status-choice { display: flex; flex-direction: column; gap: .5rem; }
+        .wb-notification-choice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .75rem;
+            align-items: center;
+        }
+        .wb-notification-option {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            padding: .55rem .8rem;
+            border: 1px solid #dbe4f0;
+            border-radius: .7rem;
+            background: #f8fafc;
+            cursor: pointer;
+            min-width: 9rem;
+            justify-content: center;
+        }
+        .wb-notification-option input { margin: 0; }
+        .wb-validation-summary.validation-summary-valid { display: none; }
+        @@media (max-width: 767.98px) {
+            .wb-notification-option {
+                width: calc(50% - .4rem);
+                min-width: 0;
+            }
+        }
+    </style>
+    <script>
+        (function () {
+            var approvalTypeSelect = document.querySelector('[data-workflow-approval-type]');
+            var roleSelect = document.querySelector('[data-workflow-role]');
+            var userSelect = document.querySelector('[data-workflow-user]');
+            var userField = document.querySelector('[data-workflow-user-field]');
+            var roleLabel = document.querySelector('[data-workflow-role-label]');
+            var userLabel = document.querySelector('[data-workflow-user-label]');
+            var userMessage = document.querySelector('[data-workflow-user-message]');
+            var form = document.querySelector('.wb-form-grid');
+            var validationSummary = document.querySelector('.wb-validation-summary');
+
+            function syncValidationSummary() {
+                if (!validationSummary) return;
+
+                var hasVisibleErrors = Array.from(validationSummary.querySelectorAll('li'))
+                    .some(function (item) {
+                        return item.textContent && item.textContent.trim().length > 0
+                            && window.getComputedStyle(item).display !== 'none';
+                    });
+
+                validationSummary.style.display = hasVisibleErrors ? 'block' : 'none';
+            }
+
+            if (form) {
+                form.addEventListener('submit', function () {
+                    window.setTimeout(syncValidationSummary, 0);
+                });
+                form.addEventListener('change', function () {
+                    window.setTimeout(syncValidationSummary, 0);
+                });
+                form.addEventListener('input', function () {
+                    window.setTimeout(syncValidationSummary, 0);
+                });
+            }
+
+            window.setTimeout(syncValidationSummary, 0);
+
+            if (!approvalTypeSelect || !roleSelect || !userSelect || !userField) return;
+
+            function isSpecificUserApproval() {
+                return approvalTypeSelect.value === 'SpecificUser';
+            }
+
+            function isRoleBasedApproval() {
+                return approvalTypeSelect.value === 'DepartmentRole' || approvalTypeSelect.value === 'RoleBased';
+            }
+
+            function syncAssignmentFields() {
+                var specificUserSelected = isSpecificUserApproval();
+                var roleBasedSelected = isRoleBasedApproval();
+
+                userField.style.display = specificUserSelected ? '' : 'none';
+
+                if (roleLabel) {
+                    roleLabel.classList.toggle('required', roleBasedSelected);
+                }
+
+                if (userLabel) {
+                    userLabel.classList.toggle('required', specificUserSelected);
+                }
+
+                if (!specificUserSelected) {
+                    userSelect.value = '';
+                    if (userMessage) userMessage.textContent = '';
+                }
+            }
+
+            async function refreshUsers() {
+                if (!isSpecificUserApproval()) {
+                    if (userMessage) userMessage.textContent = '';
+                    return;
+                }
+
+                var previousUser = userSelect.value;
+                var params = new URLSearchParams();
+                if (roleSelect.value) params.append('roleId', roleSelect.value);
+
+                userSelect.innerHTML = '';
+                userSelect.appendChild(new Option('Select', ''));
+                userSelect.disabled = true;
+                if (userMessage) userMessage.textContent = 'Loading users...';
+
+                try {
+                    var response = await fetch('@Url.Action("FilterUsers", "Workflows")?' + params.toString(), {
+                        cache: 'no-store',
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) throw new Error('Unable to load users.');
+
+                    var users = await response.json();
+                    users.forEach(function (user) {
+                        userSelect.appendChild(new Option(user.name, user.id));
+                    });
+
+                    var matchingPrevious = users.some(function (user) {
+                        return String(user.id) === String(previousUser);
+                    });
+                    userSelect.value = matchingPrevious ? previousUser : '';
+                    userSelect.disabled = false;
+
+                    if (userMessage) {
+                        userMessage.textContent = users.length === 0
+                            ? 'No users available for selected role.'
+                            : '';
+                    }
+                } catch {
+                    userSelect.disabled = false;
+                    if (userMessage) userMessage.textContent = 'Unable to load users right now.';
+                }
+            }
+
+            approvalTypeSelect.addEventListener('change', function () {
+                syncAssignmentFields();
+                refreshUsers();
+            });
+            roleSelect.addEventListener('change', refreshUsers);
+            syncAssignmentFields();
+        })();
+    </script>
+}

@@ -1,0 +1,127 @@
+@model Water.Bill.API.Models.Billing.BillSearchPrintIndexViewModel
+@using Water.Bill.Core.Common
+@{
+    string Amount(double? value) => value.HasValue ? value.Value.ToString("N2") : "-";
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Bill Search & Print</h1>
+        <p>Search existing consumers and print generated water bill challans.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" type="search" name="consumerNo" value="@Model.ConsumerNo" placeholder="Consumer No" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Bill No</label>
+            <input class="form-control" type="search" name="billNo" value="@Model.BillNo" placeholder="Bill No" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Division</label>
+            <select class="form-select" name="devType" asp-items="Model.DivisionOptions">
+                <option value="">All Divisions</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Sector</label>
+            <input class="form-control" type="search" name="sector" value="@Model.Sector" placeholder="Sector" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Block</label>
+            <input class="form-control" type="search" name="block" value="@Model.Block" placeholder="Block" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Plot / Flat</label>
+            <input class="form-control" type="search" name="plotNo" value="@Model.PlotNo" placeholder="Plot / Flat" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    @if (!Model.HasSearched)
+    {
+        <div class="wb-empty">Enter a consumer number, bill number, or property filter to search bills.</div>
+    }
+    else if (Model.Consumers.Count == 0)
+    {
+        <div class="wb-empty">No consumer bills found for the selected filters.</div>
+    }
+    else
+    {
+        <div class="wb-bill-search-results">
+            @foreach (var consumer in Model.Consumers)
+            {
+                <section class="wb-bill-consumer-card">
+                    <div class="wb-bill-consumer-head">
+                        <div>
+                            <span class="wb-kicker">Consumer</span>
+                            <h2>@consumer.ConsumerNo</h2>
+                            <p>@(consumer.ConsumerName ?? "-")</p>
+                        </div>
+                        <div class="wb-bill-consumer-meta">
+                            <span class="badge text-bg-info">@AppConstants.Divisions.FormatDisplay(consumer.DevType)</span>
+                            <span>@(consumer.PropertyNo ?? "-")</span>
+                            <span>@(consumer.MobileNo ?? "-")</span>
+                        </div>
+                    </div>
+
+                    @if (consumer.Bills.Count == 0)
+                    {
+                        <div class="wb-empty wb-empty-sm">No generated bill records found for this consumer.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive wb-approval-table-wrap">
+                            <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                                <thead>
+                                    <tr>
+                                        <th>Bill No</th>
+                                        <th>Bill Period</th>
+                                        <th>Bill Date</th>
+                                        <th>Due Date</th>
+                                        <th>Bill Amount</th>
+                                        <th>Total Amount</th>
+                                        <th>Challan No</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var bill in consumer.Bills)
+                                {
+                                    <tr>
+                                        <td><strong>@bill.BillNo</strong></td>
+                                        <td>@DateText(bill.BillDateFrom) - @DateText(bill.BillDateTo)</td>
+                                        <td>@DateText(bill.BillDate)</td>
+                                        <td>@DateText(bill.DueDate)</td>
+                                        <td>@Amount(bill.BillAmount)</td>
+                                        <td>@Amount(bill.TotalBillAmount)</td>
+                                        <td>@(bill.ChallanNo ?? "-")</td>
+                                        <td class="text-end">
+                                            @if (bill.HasPrintableContent)
+                                            {
+                                                <a class="btn btn-sm btn-outline-primary" asp-action="Print" asp-route-consumerNo="@consumer.ConsumerNo" asp-route-billNo="@bill.BillNo" target="_blank">View</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge text-bg-secondary">No Print Content</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </section>
+            }
+        </div>
+    }
+</section>

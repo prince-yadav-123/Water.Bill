@@ -11,12 +11,12 @@
             <p>Application details and status timeline.</p>
         </div>
         <div class="d-flex gap-2 flex-wrap justify-content-end">
-            @if (User?.Identity?.IsAuthenticated == true)
+            @* @if (User?.Identity?.IsAuthenticated == true)
             {
                 <a class="btn btn-outline-secondary" href="/Notifications" title="View notifications" aria-label="View notifications">
                     &#128276; Notifications
                 </a>
-            }
+            } *@
             <a class="btn btn-outline-primary" asp-action="MyApplications">Back to Applications</a>
         </div>
     </div>

@@ -1,0 +1,219 @@
+@model Water.Bill.API.Models.Challans.ChallanCreateViewModel
+@using Water.Bill.API.Models.Challans
+@using Water.Bill.Core.Common
+@{
+    string ValueOrDash(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Generate Challan</h1>
+        <p>Create an old-compatible challan record for the selected consumer.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+        <div>
+            <h2 class="wb-section-title mb-1">Find Consumer</h2>
+            <p class="text-muted mb-0">Search and select the consumer for whom the challan should be generated.</p>
+        </div>
+    </div>
+
+    <form method="get" asp-action="Create" class="wb-filter-bar wb-bill-filter-bar mb-3">
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" type="search" name="consumerNo" value="@Model.ConsumerNo" placeholder="Consumer No" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Name</label>
+            <input class="form-control" type="search" name="consumerName" value="@Model.ConsumerName" placeholder="Consumer name" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Mobile</label>
+            <input class="form-control" type="search" name="mobileNo" value="@Model.MobileNo" placeholder="Mobile no" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Sector</label>
+            <input class="form-control" type="search" name="sector" value="@Model.Sector" placeholder="Sector" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Block</label>
+            <input class="form-control" type="search" name="block" value="@Model.Block" placeholder="Block" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Plot / Flat</label>
+            <input class="form-control" type="search" name="plotNo" value="@Model.PlotNo" placeholder="Plot / Flat" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-outline-secondary" asp-action="Create">Reset</a>
+        </div>
+    </form>
+
+    @if (Model.Consumer is null)
+    {
+        if (Model.HasConsumerSearch)
+        {
+            if (Model.Consumers.Count == 0)
+            {
+                <div class="wb-empty">No active consumers found for the selected filters.</div>
+            }
+            else
+            {
+                <div class="table-responsive wb-approval-table-wrap mt-3">
+                    <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+                        <thead>
+                            <tr>
+                                <th>Consumer No</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Property</th>
+                                <th>Connection</th>
+                                <th>Division</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var row in Model.Consumers)
+                        {
+                            <tr>
+                                <td><strong>@row.ConsumerNo</strong></td>
+                                <td>@ValueOrDash(row.ConsumerName)</td>
+                                <td>@ValueOrDash(row.MobileNo)</td>
+                                <td>@ValueOrDash(row.PropertyNo)</td>
+                                <td>@ValueOrDash(row.ConnectionType)</td>
+                                <td><span class="badge text-bg-info">@AppConstants.Divisions.FormatDisplay(row.DevType)</span></td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-primary"
+                                       asp-action="Create"
+                                       asp-route-consumerNo="@row.ConsumerNo"
+                                       asp-route-purpose="@Model.Purpose">Select Consumer</a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="wb-empty">Search a consumer to start challan generation.</div>
+        }
+    }
+    else
+    {
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="border rounded-3 p-3 h-100 bg-light">
+                <span class="wb-kicker">Selected Consumer</span>
+                <h2 class="h5 mt-1 mb-2">@Model.ConsumerNo</h2>
+                <dl class="row small mb-0">
+                    <dt class="col-5">Name</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.ConsumerName)</dd>
+                    <dt class="col-5">Mobile</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.MobileNo)</dd>
+                    <dt class="col-5">Property</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.PropertyNo)</dd>
+                    <dt class="col-5">Connection</dt>
+                    <dd class="col-7">@ValueOrDash(Model.Consumer?.ConnectionType)</dd>
+                    <dt class="col-5">Division</dt>
+                    <dd class="col-7">@AppConstants.Divisions.FormatDisplay(Model.Consumer?.DevType)</dd>
+                    <dt class="col-5">Pipe / Plot</dt>
+                    <dd class="col-7">@((Model.Consumer?.PipeSize?.ToString() ?? "-")) / @((Model.Consumer?.PlotSize?.ToString() ?? "-"))</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <form asp-action="Create" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ConsumerNo" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="col-md-6">
+                    <label asp-for="Purpose" class="form-label required"></label>
+                    <select asp-for="Purpose" asp-items="Model.PurposeOptions" class="form-select" id="challanPurpose"></select>
+                    <span asp-validation-for="Purpose" class="text-danger"></span>
+                </div>
+
+                @if (Model.Purpose == ChallanPurposes.ExistingBillDue)
+                {
+                    <div class="col-md-6">
+                        <label asp-for="BillNo" class="form-label required"></label>
+                        <select asp-for="BillNo" asp-items="Model.BillOptions" class="form-select" id="sourceBillNo">
+                            <option value="">Latest generated bill</option>
+                        </select>
+                        <span asp-validation-for="BillNo" class="text-danger"></span>
+                    </div>
+                }
+
+                <div class="col-md-6">
+                    <label asp-for="Amount" class="form-label required"></label>
+                    <input asp-for="Amount" class="form-control" type="number" min="1" step="0.01" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                    @if (!string.IsNullOrWhiteSpace(Model.SuggestedAmountNote))
+                    {
+                        <small class="text-muted">@Model.SuggestedAmountNote</small>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BillPeriodFrom" class="form-label"></label>
+                    <input asp-for="BillPeriodFrom" class="form-control" type="date" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BillPeriodTo" class="form-label"></label>
+                    <input asp-for="BillPeriodTo" class="form-control" type="date" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="DueDate" class="form-label required"></label>
+                    <input asp-for="DueDate" class="form-control" type="date" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="BankCode" class="form-label required"></label>
+                    <select asp-for="BankCode" asp-items="Model.BankOptions" class="form-select">
+                        <option value="">Select bank / counter</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Remarks" class="form-label"></label>
+                    <input asp-for="Remarks" class="form-control" maxlength="100" placeholder="Internal note, if any" />
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                    <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+                    <button class="btn btn-primary" type="submit">Generate Challan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('challanPurpose')?.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            url.searchParams.set('purpose', this.value);
+            url.searchParams.delete('billNo');
+            window.location.href = url.toString();
+        });
+        document.getElementById('sourceBillNo')?.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            if (this.value) {
+                url.searchParams.set('billNo', this.value);
+            } else {
+                url.searchParams.delete('billNo');
+            }
+            window.location.href = url.toString();
+        });
+    </script>
+}

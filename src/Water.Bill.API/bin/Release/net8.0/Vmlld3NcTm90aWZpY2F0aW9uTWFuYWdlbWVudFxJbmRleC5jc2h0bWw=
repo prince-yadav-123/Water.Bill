@@ -1,0 +1,99 @@
+@model Water.Bill.API.Models.NotificationManagement.NotificationListViewModel
+@{
+    ViewData["Title"] = "Notification Management";
+    string StatusBadge(string s) => s switch {
+        "Sent" => "bg-success", "Draft" => "bg-secondary",
+        "Cancelled" => "bg-danger", _ => "bg-primary" };
+    string PriBadge(string p) => p switch {
+        "Urgent" => "bg-danger", "High" => "bg-warning text-dark",
+        "Low" => "bg-secondary", _ => "bg-primary" };
+}
+
+<div class="wb-page-head">
+    <div><p class="wb-kicker">Communication</p><h1>Notification Management</h1></div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" asp-action="TestEmail">Test Email</a>
+        <a class="btn btn-primary" asp-action="Create">+ Create Notification</a>
+    </div>
+</div>
+
+<section class="wb-page-card">
+    <form method="get" class="row g-2 mb-3 align-items-end">
+        <div class="col-md-3">
+            <input name="Filter.Search" value="@Model.Filter.Search" class="form-control form-control-sm" placeholder="Search title or message…" />
+        </div>
+        <div class="col-md-2">
+            <select name="Filter.TargetAudience" class="form-select form-select-sm">
+                <option value="">All Audiences</option>
+                <option value="Consumer" selected="@(Model.Filter.TargetAudience == "Consumer")">Consumer</option>
+                <option value="Internal" selected="@(Model.Filter.TargetAudience == "Internal")">Internal</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="Filter.Status" class="form-select form-select-sm">
+                <option value="">All Statuses</option>
+                <option value="Draft" selected="@(Model.Filter.Status == "Draft")">Draft</option>
+                <option value="Sent" selected="@(Model.Filter.Status == "Sent")">Sent</option>
+                <option value="Cancelled" selected="@(Model.Filter.Status == "Cancelled")">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="Filter.Priority" class="form-select form-select-sm">
+                <option value="">All Priorities</option>
+                <option value="Low" selected="@(Model.Filter.Priority == "Low")">Low</option>
+                <option value="Normal" selected="@(Model.Filter.Priority == "Normal")">Normal</option>
+                <option value="High" selected="@(Model.Filter.Priority == "High")">High</option>
+                <option value="Urgent" selected="@(Model.Filter.Priority == "Urgent")">Urgent</option>
+            </select>
+        </div>
+        <div class="col-auto"><button class="btn btn-outline-primary btn-sm" type="submit">Filter</button></div>
+        <div class="col-auto"><a class="btn btn-outline-secondary btn-sm" asp-action="Index">Clear</a></div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table align-middle wb-table mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Audience</th>
+                    <th>Channels</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created</th>
+                    <th>Sent</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="9" class="text-center text-muted py-4">No notifications found.</td></tr>
+                }
+                @foreach (var row in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@row.Id" class="fw-semibold text-decoration-none">@row.Title</a>
+                            <div><small class="text-muted">@row.NotificationType</small></div>
+                        </td>
+                        <td><span class="badge bg-primary-subtle text-primary-emphasis">@row.TargetAudience</span></td>
+                        <td><small>@row.Channels</small></td>
+                        <td><span class="badge @PriBadge(row.Priority)">@row.Priority</span></td>
+                        <td><span class="badge @StatusBadge(row.Status)">@row.Status</span></td>
+                        <td><small>@(row.CreatedByName ?? "-")</small></td>
+                        <td><small>@row.CreatedAt.ToString("dd MMM yyyy")</small></td>
+                        <td><small>@(row.SentAt.HasValue ? row.SentAt.Value.ToString("dd MMM yyyy HH:mm") : "-")</small></td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@row.Id" class="btn btn-outline-primary btn-xs">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
+</section>
+
+<style>.btn-xs{padding:.15rem .45rem;font-size:.78rem;}</style>

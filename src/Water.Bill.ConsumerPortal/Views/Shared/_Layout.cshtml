@@ -20,7 +20,9 @@
     var displayName = string.IsNullOrWhiteSpace(fullName) ? userName : fullName;
     var isPublicNewConnectionFlow = ViewData["IsPublicNewConnectionFlow"] as bool? == true;
     var isPublicCompactFlow = (ViewData["IsPublicCompactFlow"] as bool? == true) || isPublicNewConnectionFlow;
-    if (isAuthenticated && !string.IsNullOrWhiteSpace(consumerNo))
+    var showConsumerShell = isAuthenticated && !isPublicCompactFlow;
+
+    if (showConsumerShell && !string.IsNullOrWhiteSpace(consumerNo))
     {
         var consumerNameOnly = await Db.ConsumerDetailsMasters
             .Where(x => x.ConsNo == consumerNo)
@@ -45,7 +47,7 @@
 
     IReadOnlyList<MenuItemDto> menuItems = [];
     HashSet<int> menuVisibleModuleIds = [];
-    if (isAuthenticated && int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
+    if (showConsumerShell && int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
     {
         menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
         menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
@@ -105,7 +107,7 @@
 <body class="wb-body" data-sidebar-storage-key="water-bill-consumer-sidebar-collapsed">
     @await Html.PartialAsync("_WaterLoader")
 
-    @if (isAuthenticated)
+    @if (showConsumerShell)
     {
         <div class="wb-sidebar-backdrop" data-sidebar-dismiss></div>
         <aside class="wb-sidebar" id="consumerSidebar">
@@ -196,8 +198,8 @@
         </aside>
     }
 
-    <main class="@(isAuthenticated ? "wb-main" : "wb-main-full")">
-        @if (isAuthenticated)
+    <main class="@(showConsumerShell ? "wb-main" : "wb-main-full")">
+        @if (showConsumerShell)
         {
             <header class="wb-topbar">
                 <div class="d-flex align-items-center gap-2">
@@ -287,7 +289,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @if (isAuthenticated)
+    @if (showConsumerShell)
     {
         <style>
             /* ── Notification Bell ─────────────────────────────── */

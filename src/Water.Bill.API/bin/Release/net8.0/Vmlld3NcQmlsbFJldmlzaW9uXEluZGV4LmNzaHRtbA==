@@ -1,0 +1,52 @@
+@model Water.Bill.API.Models.Billing.BillRevisionIndexViewModel
+@{
+    string DateText(DateTime? value) => value.HasValue ? value.Value.ToString("dd MMM yyyy") : "-";
+    string Amount(double? value) => value.HasValue ? value.Value.ToString("N2") : "-";
+}
+
+<div class="wb-page-head">
+    <div>
+        <h1>Advanced Bill Revision / Reversal</h1>
+        <p>Find generated bills, inspect details, and safely reverse unpaid bills with old-table log snapshots.</p>
+    </div>
+</div>
+
+<section class="wb-page-card wb-admin-card">
+    <form method="get" class="wb-filter-bar wb-bill-filter-bar">
+        <div class="wb-filter-field wb-filter-search">
+            <label class="form-label">Search</label>
+            <input class="form-control" name="search" value="@Model.Search" placeholder="Bill no / consumer no" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Consumer No</label>
+            <input class="form-control" name="consumerNo" value="@Model.ConsumerNo" />
+        </div>
+        <div class="wb-filter-field">
+            <label class="form-label">Bill No</label>
+            <input class="form-control" name="billNo" value="@Model.BillNo" />
+        </div>
+        <div class="wb-filter-actions">
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+
+    <div class="table-responsive wb-approval-table-wrap mt-3">
+        <table class="table align-middle wb-table wb-admin-table wb-approval-table">
+            <thead><tr><th>Bill No</th><th>Consumer</th><th>Period</th><th>Amount</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+            @foreach (var row in Model.Bills)
+            {
+                <tr>
+                    <td><strong>@row.BillNo</strong></td>
+                    <td>@row.ConsumerNo<small class="d-block text-muted">@row.ConsumerName</small></td>
+                    <td>@DateText(row.BillDateFrom) - @DateText(row.BillDateTo)</td>
+                    <td>@Amount(row.TotalAmount)</td>
+                    <td><span class="badge text-bg-secondary">@row.Status</span></td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-billNo="@row.BillNo">View</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

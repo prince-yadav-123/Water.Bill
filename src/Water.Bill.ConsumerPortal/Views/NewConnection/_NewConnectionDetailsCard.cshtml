@@ -255,10 +255,6 @@
                                         {
                                             <div><span>Assigned</span><strong>Awaiting assignment</strong></div>
                                         }
-                                        <div>
-                                            <span>Assigned Role</span>
-                                            <strong>@(string.IsNullOrWhiteSpace(stage.AssignedToRole) ? "-" : stage.AssignedToRole)</strong>
-                                        </div>
                                     </div>
 
                                     @if (!string.IsNullOrWhiteSpace(stage.Remarks))

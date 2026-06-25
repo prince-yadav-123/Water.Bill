@@ -1,0 +1,27 @@
+@model Water.Bill.Application.DTOs.NewConnection.NewConnectionApplicationFormDto
+@{
+    ViewData["Title"] = "Apply for New Connection";
+    var documentTypes = ViewData["DocumentTypes"] as string[] ?? [];
+}
+
+<div class="wb-public-shell">
+    <div class="wb-page-head">
+        <div>
+            <p class="wb-kicker">New Connection</p>
+            <h1>Apply for New Water Connection</h1>
+            <p>Submit your request online. A unique application number will be generated for tracking.</p>
+        </div>
+        <a class="btn btn-outline-primary" asp-action="Track">Track Application</a>
+    </div>
+
+    <form asp-action="Apply" method="post" enctype="multipart/form-data" class="wb-page-card wb-newconn-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        @await Html.PartialAsync("_NewConnectionFormFields", Model)
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

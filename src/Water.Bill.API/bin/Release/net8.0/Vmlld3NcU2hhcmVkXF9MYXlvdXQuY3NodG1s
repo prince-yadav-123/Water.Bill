@@ -1,0 +1,478 @@
+@using System.Security.Claims
+@using Water.Bill.Application.DTOs.Menu
+@using Water.Bill.Application.Interfaces
+@using Water.Bill.Core.Common
+@inject IPermissionService PermissionService
+
+@{
+    var currentPath = Context.Request.Path.Value ?? "";
+    var activeMenu = ViewData["ActiveMenu"]?.ToString();
+    var tenantId = AppConstants.DefaultTenantId;
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var userName = User.Identity?.Name ?? "";
+    var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
+    var initial = string.IsNullOrWhiteSpace(userName) ? "U" : userName[..1].ToUpperInvariant();
+
+    IReadOnlyList<MenuItemDto> menuItems = [];
+    HashSet<int> menuVisibleModuleIds = [];
+    if (isAuthenticated && int.TryParse(User.FindFirstValue("RoleId"), out var roleId))
+    {
+        menuItems = await PermissionService.GetMenuTreeAsync(tenantId);
+        menuVisibleModuleIds = await PermissionService.GetMenuVisibleModuleIdsAsync(roleId);
+    }
+
+    bool CanSeeSelf(MenuItemDto item)
+    {
+        if (!item.IsActive || !item.ShowInSidebar) return false;
+        return item.ModuleId.HasValue && menuVisibleModuleIds.Contains(item.ModuleId.Value);
+    }
+
+    IReadOnlyList<MenuItemDto> VisibleChildren(MenuItemDto item)
+        => item.Children.Where(CanSeeSelf).OrderBy(x => x.Order).ToList();
+
+    bool CanRender(MenuItemDto item)
+        => item.Children.Count > 0
+            ? VisibleChildren(item).Count > 0
+            : CanSeeSelf(item);
+
+    bool IsCurrent(MenuItemDto item)
+    {
+        if (!string.IsNullOrWhiteSpace(activeMenu))
+        {
+            if (string.Equals(item.Label, activeMenu, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return item.Children.Any(IsCurrent);
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.Url) &&
+            currentPath.StartsWith(item.Url, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return item.Children.Any(IsCurrent);
+    }
+
+    bool IsBootstrapIcon(string? icon) => !string.IsNullOrWhiteSpace(icon) && icon.StartsWith("bi-", StringComparison.OrdinalIgnoreCase);
+    string GetMenuIconFallback(string? icon, string? label)
+    {
+        if (!string.IsNullOrWhiteSpace(icon))
+            return icon;
+
+        var firstVisibleChar = (label ?? string.Empty).Trim().FirstOrDefault(char.IsLetterOrDigit);
+        return firstVisibleChar == default ? "M" : char.ToUpperInvariant(firstVisibleChar).ToString();
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Noida Jal Authority</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="wb-body" data-sidebar-storage-key="water-bill-admin-sidebar-collapsed">
+    @await Html.PartialAsync("_WaterLoader")
+
+    @if (isAuthenticated)
+    {
+        <div class="wb-sidebar-backdrop" data-sidebar-dismiss></div>
+        <aside class="wb-sidebar" id="adminSidebar">
+            <div class="wb-brand">
+                @* <img class="wb-brand-logo" src="~/images/brand/noida-jal-logo.png" asp-append-version="true" alt="Noida Jal" /> *@
+                <div class="wb-brand-copy">
+                    <div class="wb-brand-title">Noida Jal</div>
+                    <div class="wb-brand-sub">Authority Services</div>
+                </div>
+                <button class="wb-sidebar-toggle" type="button" data-sidebar-toggle aria-label="Toggle sidebar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <nav class="wb-nav">
+                @foreach (var item in menuItems.Where(CanRender).OrderBy(x => x.Order))
+                {
+                    var children = VisibleChildren(item);
+                    var hasChildren = children.Count > 0;
+                    var isOpen = IsCurrent(item);
+                    var itemId = $"menu-{item.Id}";
+
+                    if (hasChildren)
+                    {
+                        <div class="wb-nav-group @(isOpen ? "open" : "")">
+                            <button class="wb-nav-link wb-nav-parent @(isOpen ? "active" : "")" type="button" data-menu-toggle aria-expanded="@isOpen.ToString().ToLowerInvariant()" aria-controls="@itemId">
+                                <span class="wb-nav-icon">
+                                    @if (IsBootstrapIcon(item.Icon))
+                                    {
+                                        <i class="bi @item.Icon"></i>
+                                    }
+                                    else
+                                    {
+                                        @GetMenuIconFallback(item.Icon, item.Label)
+                                    }
+                                </span>
+                                <span class="wb-nav-text">@item.Label</span>
+                                <span class="wb-nav-arrow"></span>
+                            </button>
+                            <div class="wb-nav-children" id="@itemId">
+                                @{
+                                    var childGroups = children
+                                        .GroupBy(child => string.IsNullOrWhiteSpace(child.SectionLabel) ? item.Label : child.SectionLabel)
+                                        .Select(group => new
+                                        {
+                                            Label = group.Key,
+                                            Items = group.OrderBy(child => child.Order).ToList(),
+                                            Order = group.Min(child => child.Order)
+                                        })
+                                        .OrderBy(group => group.Order)
+                                        .ToList();
+                                    var showChildSectionLabels = childGroups.Count > 1;
+                                }
+                                @foreach (var group in childGroups)
+                                {
+                                    var sectionId = $"{itemId}-section-{Math.Abs(group.Label.GetHashCode())}";
+                                    var isSectionOpen = group.Items.Any(IsCurrent);
+                                    if (showChildSectionLabels)
+                                    {
+                                        <button class="wb-nav-section-heading @(isSectionOpen ? "open" : "")" type="button" data-section-toggle aria-expanded="@isSectionOpen.ToString().ToLowerInvariant()" aria-controls="@sectionId">
+                                            <span>@group.Label</span>
+                                            <span class="wb-nav-section-arrow"></span>
+                                        </button>
+                                    }
+                                    <div class="wb-nav-section @(isSectionOpen || !showChildSectionLabels ? "open" : "")" id="@sectionId">
+                                        @foreach (var child in group.Items)
+                                        {
+                                            <a class="wb-nav-link wb-nav-child @(IsCurrent(child) ? "active" : "")" href="@(child.Url ?? "#")" target="@(child.OpenInNewTab ? "_blank" : null)">
+                                                <span class="wb-nav-icon">
+                                                    @if (IsBootstrapIcon(child.Icon))
+                                                    {
+                                                        <i class="bi @child.Icon"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        @GetMenuIconFallback(child.Icon, child.Label)
+                                                    }
+                                                </span>
+                                                <span class="wb-nav-text">@child.Label</span>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="wb-nav-link @(IsCurrent(item) ? "active" : "")" href="@(item.Url ?? "#")" target="@(item.OpenInNewTab ? "_blank" : null)">
+                            <span class="wb-nav-icon">
+                                @if (IsBootstrapIcon(item.Icon))
+                                {
+                                    <i class="bi @item.Icon"></i>
+                                }
+                                else
+                                {
+                                    @GetMenuIconFallback(item.Icon, item.Label)
+                                }
+                            </span>
+                            <span class="wb-nav-text">@item.Label</span>
+                        </a>
+                    }
+                }
+            </nav>
+            <div class="wb-sidebar-bottom">
+                <form asp-controller="Account" asp-action="Logout" method="post" class="wb-nav-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="wb-nav-link wb-nav-button">
+                        <span class="wb-nav-icon">L</span>
+                        <span class="wb-nav-text">Logout</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+    }
+
+    <main class="@(isAuthenticated ? "wb-main" : "wb-main-full")">
+        @if (isAuthenticated)
+        {
+            <header class="wb-topbar">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="wb-mobile-menu" type="button" data-sidebar-toggle aria-label="Open menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="fw-semibold">@ViewData["Title"]</div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    @* ── Notification Bell (Internal) ── *@
+                    <div class="wb-bell-wrap" id="adminBellWrap">
+                        <button class="wb-bell-btn" id="adminBellBtn" type="button" title="Notifications" aria-label="Notifications">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                            </svg>
+                            <span class="wb-bell-count" id="adminBellCount" style="display:none"></span>
+                        </button>
+                        <div class="wb-bell-drop" id="adminBellDrop">
+                            <div class="wb-bell-hdr">
+                                <span class="wb-bell-hdr-title">
+                                    Notifications
+                                    <span class="wb-bell-hdr-badge" id="adminBellHdrBadge" style="display:none"></span>
+                                </span>
+                                <a href="/NotificationManagement/MyNotifications" class="wb-bell-viewall">View All</a>
+                            </div>
+                            <div id="adminBellList" class="wb-bell-list"></div>
+                            <div class="wb-bell-footer">
+                                <a href="/NotificationManagement/MyNotifications">View all notifications →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="badge text-bg-primary">@roleName</span>
+                    <a class="wb-avatar text-decoration-none" href="/Profile" title="My Profile — @userName"
+                       style="cursor:pointer">@initial</a>
+                </div>
+            </header>
+        }
+
+        <section class="wb-content @(isAuthenticated ? "admin-page-container" : "")">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-success wb-toast-message">
+                        <span class="wb-toast-icon">✓</span>
+                        <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-danger wb-toast-message">
+                        <span class="wb-toast-icon">!</span>
+                        <span>@TempData["ErrorMessage"]</span>
+                    </div>
+                </div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="wb-toast-stack">
+                    <div class="alert alert-info wb-toast-message">
+                        <span class="wb-toast-icon">i</span>
+                        <span>@TempData["InfoMessage"]</span>
+                    </div>
+                </div>
+            }
+            @RenderBody()
+        </section>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* ── Notification Bell CSS + JS (internal users) ── *@
+    @if (isAuthenticated)
+    {
+        <style>
+            .wb-bell-wrap  { position: relative; }
+            .wb-bell-btn   {
+                position: relative; background: none; border: none; cursor: pointer;
+                color: #475569; padding: 7px 8px; border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                transition: background .15s, color .15s;
+            }
+            .wb-bell-btn:hover { background: #f1f5f9; color: #0f172a; }
+            .wb-bell-btn.active { background: #e2e8f0; color: #0f172a; }
+            .wb-bell-count {
+                position: absolute; top: 0; right: 0;
+                min-width: 17px; height: 17px; padding: 0 4px;
+                background: #ef4444; color: #fff;
+                border-radius: 999px; font-size: 10px; font-weight: 800;
+                display: flex; align-items: center; justify-content: center;
+                border: 2px solid #fff; line-height: 1;
+            }
+            .wb-bell-drop {
+                display: none;
+                position: absolute; right: 0; top: calc(100% + 10px);
+                width: 360px;
+                background: #fff;
+                border: 1px solid #e2e8f0;
+                border-radius: 14px;
+                box-shadow: 0 8px 32px rgba(15,23,42,.16), 0 2px 8px rgba(15,23,42,.06);
+                z-index: 1200; overflow: hidden;
+                animation: bellFadeIn .18s ease;
+            }
+            .wb-bell-drop.is-open { display: block; }
+            @@keyframes bellFadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+            .wb-bell-hdr {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 13px 16px;
+                background: linear-gradient(135deg, #0f172a, #1e40af);
+                color: #fff;
+            }
+            .wb-bell-hdr-title { font-size: .9rem; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+            .wb-bell-hdr-badge { background: #ef4444; color: #fff; padding: 1px 7px; border-radius: 999px; font-size: .72rem; font-weight: 800; }
+            .wb-bell-viewall { font-size: .78rem; font-weight: 600; color: rgba(255,255,255,.8); text-decoration: none; padding: 4px 10px; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; }
+            .wb-bell-viewall:hover { background: rgba(255,255,255,.12); color: #fff; }
+            .wb-bell-list { max-height: 340px; overflow-y: auto; }
+            .wb-bell-list::-webkit-scrollbar { width: 4px; }
+            .wb-bell-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+            .wb-bell-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 16px; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background .12s; }
+            .wb-bell-item:last-child { border-bottom: none; }
+            .wb-bell-item:hover { background: #f8fafc; }
+            .wb-bell-item.is-unread { background: #eff6ff; }
+            .wb-bell-item.is-unread:hover { background: #dbeafe; }
+            .wb-bell-dot { width: 8px; height: 8px; border-radius: 50%; background: #2563eb; flex-shrink: 0; margin-top: 5px; opacity: 0; }
+            .wb-bell-item.is-unread .wb-bell-dot { opacity: 1; }
+            .wb-bell-body { flex: 1; min-width: 0; }
+            .wb-bell-title { font-size: .875rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .wb-bell-msg   { font-size: .78rem; color: #64748b; margin-top: 2px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+            .wb-bell-meta  { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+            .wb-bell-time  { font-size: .7rem; color: #94a3b8; }
+            .wb-bell-type  { font-size: .68rem; font-weight: 700; color: #2563eb; background: #dbeafe; padding: 1px 6px; border-radius: 999px; }
+            .wb-bell-footer { padding: 10px 16px; border-top: 1px solid #f1f5f9; text-align: center; }
+            .wb-bell-footer a { font-size: .82rem; font-weight: 600; color: #2563eb; text-decoration: none; }
+            .wb-bell-footer a:hover { text-decoration: underline; }
+            .wb-bell-empty, .wb-bell-loading { padding: 2rem 1rem; text-align: center; color: #94a3b8; font-size: .875rem; }
+            .wb-bell-empty-icon { font-size: 2rem; margin-bottom: .5rem; }
+        </style>
+        <script>
+        (function () {
+            if (!@isAuthenticated.ToString().ToLowerInvariant()) return;
+            var wrap     = document.getElementById('adminBellWrap');
+            var btn      = document.getElementById('adminBellBtn');
+            var drop     = document.getElementById('adminBellDrop');
+            var countEl  = document.getElementById('adminBellCount');
+            var listEl   = document.getElementById('adminBellList');
+            var hdrBadge = document.getElementById('adminBellHdrBadge');
+            if (!btn || !drop) return;
+            var isOpen = false;
+
+            function getToken() { var el = document.querySelector('[name="__RequestVerificationToken"]'); return el ? el.value : ''; }
+            function fmtTime(iso) { try { var d = new Date(iso); return d.toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true}); } catch(e){return '';} }
+            function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+            async function loadCount() {
+                try {
+                    var r = await fetch('/NotificationManagement/GetUnreadCount', { credentials:'same-origin', cache:'no-store' });
+                    var d = await r.json(); var n = d.count||0;
+                    countEl.textContent = n > 99 ? '99+' : (n || '');
+                    countEl.style.display = n > 0 ? 'flex' : 'none';
+                    if (hdrBadge) { hdrBadge.textContent = n; hdrBadge.style.display = n > 0 ? 'inline-block' : 'none'; }
+                } catch(e) {}
+            }
+
+            async function loadLatest() {
+                listEl.innerHTML = '<div class="wb-bell-loading">Loading notifications…</div>';
+                try {
+                    var r = await fetch('/NotificationManagement/GetLatest', { credentials:'same-origin', cache:'no-store' });
+                    var items = await r.json();
+                    if (!items||!items.length) { listEl.innerHTML='<div class="wb-bell-empty"><div class="wb-bell-empty-icon">🔔</div>No notifications yet.</div>'; return; }
+                    listEl.innerHTML = '';
+                    items.forEach(function(n) {
+                        var div = document.createElement('div');
+                        div.className = 'wb-bell-item' + (n.isRead ? '' : ' is-unread');
+                        var typeHtml = n.referenceNo ? '<span class="wb-bell-type">'+escHtml(n.referenceNo)+'</span>' : '';
+                        div.innerHTML = '<div class="wb-bell-dot"></div><div class="wb-bell-body"><div class="wb-bell-title">'+escHtml(n.title)+'</div><div class="wb-bell-msg">'+escHtml(n.message)+'</div><div class="wb-bell-meta"><span class="wb-bell-time">'+fmtTime(n.createdAt)+'</span>'+typeHtml+'</div></div>';
+                        div.addEventListener('click', async function() {
+                            if (!n.isRead) {
+                                var fd = new FormData(); fd.append('__RequestVerificationToken', getToken());
+                                await fetch('/NotificationManagement/MarkRead/'+n.id, {method:'POST',body:fd,credentials:'same-origin'});
+                                div.classList.remove('is-unread'); div.querySelector('.wb-bell-dot').style.opacity='0';
+                                n.isRead=true; loadCount();
+                            }
+                            if (n.hasUrl && n.openUrl) {
+                                if (n.openInNewTab) window.open(n.openUrl, '_blank', 'noopener');
+                                else window.location.href = n.openUrl;
+                            }
+                        });
+                        listEl.appendChild(div);
+                    });
+                } catch(e) { listEl.innerHTML='<div class="wb-bell-empty">Could not load notifications.</div>'; }
+            }
+
+            function openDrop()  { isOpen=true;  drop.classList.add('is-open');    btn.classList.add('active');    loadLatest(); loadCount(); }
+            function closeDrop() { isOpen=false; drop.classList.remove('is-open'); btn.classList.remove('active'); }
+
+            btn.addEventListener('click', function(e) { e.stopPropagation(); isOpen ? closeDrop() : openDrop(); });
+            document.addEventListener('click', function(e) { if (isOpen && wrap && !wrap.contains(e.target)) closeDrop(); });
+            document.addEventListener('keydown', function(e) { if (e.key==='Escape' && isOpen) closeDrop(); });
+
+            loadCount();
+            setInterval(loadCount, 60000);
+        })();
+        </script>
+    }
+
+    <script>
+        (function () {
+            var isAuthenticated = @isAuthenticated.ToString().ToLowerInvariant();
+            var dashboardUrl = '/Dashboard';
+            var loginUrl = '/Account/Login';
+
+            async function checkAuthoritySession() {
+                try {
+                    var response = await fetch('/Account/AuthStatus', {
+                        cache: 'no-store',
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (!response.ok) {
+                        if (isAuthenticated) {
+                            window.location.replace(loginUrl);
+                        }
+                        return;
+                    }
+
+                    var result = await response.json();
+                    if (isAuthenticated && (!result || !result.isAuthenticated)) {
+                        window.location.replace(loginUrl);
+                        return;
+                    }
+
+                    if (!isAuthenticated && result && result.isAuthenticated) {
+                        window.location.replace(result.redirectUrl || dashboardUrl);
+                    }
+                } catch {
+                    if (isAuthenticated) {
+                        window.location.replace(loginUrl);
+                    }
+                }
+            }
+
+            if (isAuthenticated && window.history && window.history.pushState) {
+                window.history.replaceState({ waterBillAuthorityPage: true }, document.title, window.location.href);
+                window.history.pushState({ waterBillAuthorityGuard: true }, document.title, window.location.href);
+
+                window.addEventListener('popstate', function () {
+                    window.location.replace(dashboardUrl);
+                });
+            }
+
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) {
+                    checkAuthoritySession();
+                    return;
+                }
+
+                if (isAuthenticated) {
+                    checkAuthoritySession();
+                }
+            });
+
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden && isAuthenticated) {
+                    checkAuthoritySession();
+                }
+            });
+        })();
+    </script>
+    @if (isAuthenticated)
+    {
+        <form id="__bellCsrfForm" style="display:none">@Html.AntiForgeryToken()</form>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
