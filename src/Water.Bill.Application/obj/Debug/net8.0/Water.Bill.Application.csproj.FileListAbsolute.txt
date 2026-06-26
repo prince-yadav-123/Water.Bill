@@ -25,6 +25,12 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\masters-export-build\Water.Bill.Application.deps.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\masters-export-build\Water.Bill.Application.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\masters-export-build\Water.Bill.Application.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Application.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Application.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Application.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\mandatory-docs-app-build\Water.Bill.Application.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\mandatory-docs-app-build\Water.Bill.Application.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\mandatory-docs-app-build\Water.Bill.Application.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\bin\Debug\net8.0\Water.Bill.Application.deps.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\bin\Debug\net8.0\Water.Bill.Application.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\bin\Debug\net8.0\Water.Bill.Application.pdb
@@ -39,9 +45,3 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Debug\net8.0\refint\Water.Bill.Application.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Debug\net8.0\Water.Bill.Application.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Application\obj\Debug\net8.0\ref\Water.Bill.Application.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Application.deps.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Application.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Application.pdb
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\mandatory-docs-app-build\Water.Bill.Application.deps.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\mandatory-docs-app-build\Water.Bill.Application.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\mandatory-docs-app-build\Water.Bill.Application.pdb

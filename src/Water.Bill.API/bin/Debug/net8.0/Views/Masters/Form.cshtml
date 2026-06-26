@@ -43,13 +43,36 @@
                             <input type="hidden" name="@field.Name" value="@(isActive ? "1" : "0")" />
                         }
                     }
+                    else if (field.InputType == "select" && Model.Key == "connection-sub-types" && field.Name == "ConId")
+                    {
+                        var selectedCategory = field.Value?.Trim() ?? "";
+                        <select class="form-select" id="@field.Name" name="@field.Name" data-category-select @(field.IsReadOnly ? "disabled" : "")>
+                            <option value="">Select @field.Label</option>
+                            @foreach (var option in field.Options)
+                            {
+                                if (string.Equals(option.Value?.Trim(), selectedCategory, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <option value="@option.Value" data-devtype="@option.Tag" selected>@option.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@option.Value" data-devtype="@option.Tag">@option.Text</option>
+                                }
+                            }
+                        </select>
+                        @if (field.IsReadOnly)
+                        {
+                            <input type="hidden" name="@field.Name" value="@field.Value" />
+                        }
+                    }
                     else if (field.InputType == "select")
                     {
+                        var selectedValue = field.Value?.Trim() ?? "";
                         <select class="form-select" id="@field.Name" name="@field.Name" @(field.IsReadOnly ? "disabled" : "")>
                             <option value="">Select @field.Label</option>
                             @foreach (var option in field.Options)
                             {
-                                if (string.Equals(option.Value, field.Value, StringComparison.OrdinalIgnoreCase))
+                                if (string.Equals(option.Value?.Trim(), selectedValue, StringComparison.OrdinalIgnoreCase))
                                 {
                                     <option value="@option.Value" selected>@option.Text</option>
                                 }
@@ -82,3 +105,41 @@
         </div>
     </form>
 </section>
+
+@if (Model.Key == "connection-sub-types")
+{
+    var savedCategory = Model.Fields.FirstOrDefault(f => f.Name == "ConId")?.Value ?? "";
+    <script>
+    (function () {
+        var saved = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(savedCategory));
+        var divisionSelect = document.getElementById('DevType');
+        var categorySelect = document.querySelector('[data-category-select]');
+        if (!divisionSelect || !categorySelect) return;
+        categorySelect.dataset.savedValue = saved || "";
+
+        function filterCategories() {
+            var devType = divisionSelect.value;
+            var currentValue = categorySelect.value || categorySelect.dataset.savedValue || "";
+            categorySelect.querySelectorAll('option[data-devtype]').forEach(function (opt) {
+                var matches = !devType || !opt.dataset.devtype || opt.dataset.devtype === devType;
+                var preserveSelection = currentValue && opt.value === currentValue;
+                opt.hidden = !matches && !preserveSelection;
+            });
+            var sel = categorySelect.options[categorySelect.selectedIndex];
+            if (sel && sel.value && sel.dataset.devtype && devType && sel.dataset.devtype !== devType && sel.value !== saved) {
+                categorySelect.value = '';
+            }
+        }
+
+        filterCategories();
+        if (saved) {
+            categorySelect.value = saved;
+        }
+        filterCategories();
+        divisionSelect.addEventListener('change', function () {
+            categorySelect.dataset.savedValue = "";
+            filterCategories();
+        });
+    })();
+    </script>
+}

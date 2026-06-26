@@ -17,7 +17,20 @@
         {
             <div class="col-12 col-md-6">
                 <div class="text-muted small">@field.Label</div>
-                <div class="fw-semibold">@(string.IsNullOrWhiteSpace(field.Value) ? "-" : field.Value)</div>
+                @{
+                    string? displayValue;
+                    if (field.InputType == "select" && field.Options.Any())
+                    {
+                        var matched = field.Options.FirstOrDefault(o =>
+                            string.Equals(o.Value, field.Value, StringComparison.OrdinalIgnoreCase));
+                        displayValue = matched?.Text ?? field.Value;
+                    }
+                    else
+                    {
+                        displayValue = field.Value;
+                    }
+                }
+                <div class="fw-semibold">@(string.IsNullOrWhiteSpace(displayValue) ? "-" : displayValue)</div>
             </div>
         }
     </div>

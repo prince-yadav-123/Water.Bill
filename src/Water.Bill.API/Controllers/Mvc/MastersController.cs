@@ -319,17 +319,29 @@ public class MastersController : Controller
             case "connection-sub-types":
                 {
                     var rows = await _db.MasterConnectionTypeDetailsTrans.AsNoTracking()
-                    .OrderBy(x => x.ConId).ThenBy(x => x.SubConName)
+                    .OrderBy(x => x.DevType).ThenBy(x => x.ConId).ThenBy(x => x.SubConName)
                     .ToListAsync(ct);
+                    var catMap = (await _db.MasterConnectionTypeDetails.AsNoTracking()
+                        .Where(x => x.DevType != null)
+                        .Select(x => new { x.ConId, x.ConMainId, x.ConName, x.DevType })
+                        .ToListAsync(ct))
+                        .SelectMany(x => new[]
+                        {
+                            new { Key = BuildCategoryLookupKey(x.ConMainId, x.DevType), x.ConName },
+                            new { Key = BuildCategoryLookupKey(x.ConId, x.DevType), x.ConName }
+                        })
+                        .Where(x => !string.IsNullOrWhiteSpace(x.Key))
+                        .GroupBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
+                        .ToDictionary(x => x.Key, x => x.First().ConName, StringComparer.OrdinalIgnoreCase);
                     return rows.Select(x => new MasterRowViewModel
                     {
                         Key = EncodeKey(x.SubConId.ToString()),
                         IsActive = x.Status == null || x.Status == "1",
                         Values = new()
                         {
-                            ["ConId"] = x.ConId,
-                            ["SubConName"] = x.SubConName,
                             ["DevType"] = FormatDivision(x.DevType),
+                            ["CategoryDisplay"] = FormatCategoryDisplay(x.ConId, x.DevType, catMap),
+                            ["SubConName"] = x.SubConName,
                             ["Status"] = FormatStatus(x.Status)
                         }
                     }).ToList();
@@ -542,7 +554,7 @@ public class MastersController : Controller
         CancellationToken ct,
         IFormCollection? posted = null)
     {
-        var values = posted is null && rowKey is not null
+        Dictionary<string, string?> values = posted is null && rowKey is not null
             ? await GetRecordValuesAsync(definition.Key, rowKey, ct)
             : posted?.Keys.ToDictionary(x => x, x => posted[x].ToString(), StringComparer.OrdinalIgnoreCase) ?? [];
 
@@ -617,11 +629,16 @@ public class MastersController : Controller
                 };
             case "connection-sub-types":
                 var subtype = await _db.MasterConnectionTypeDetailsTrans.AsNoTracking().FirstOrDefaultAsync(x => x.SubConId == int.Parse(decoded), ct);
-                return subtype is null ? [] : new()
+                if (subtype is null) return [];
+                var masterForDisplay = !string.IsNullOrWhiteSpace(subtype.ConId)
+                    ? await _db.MasterConnectionTypeDetails.AsNoTracking()
+                        .FirstOrDefaultAsync(x => x.DevType == subtype.DevType && (x.ConMainId == subtype.ConId || x.ConId == subtype.ConId), ct)
+                    : null;
+                return new()
                 {
-                    ["ConId"] = subtype.ConId,
+                    ["ConId"] = (masterForDisplay?.ConMainId ?? subtype.ConId)?.Trim(),
                     ["SubConName"] = subtype.SubConName,
-                    ["DevType"] = subtype.DevType.ToString(),
+                    ["DevType"] = subtype.DevType?.ToString() ?? "",
                     ["Status"] = subtype.Status ?? "1"
                 };
             case "connection-types":
@@ -751,11 +768,24 @@ public class MastersController : Controller
 
         if (key == "connection-sub-types" && fieldName == "ConId")
         {
-            return await _db.MasterConnectionTypeDetails.AsNoTracking()
-                .Where(x => x.Status == null || x.Status == "1")
-                .OrderBy(x => x.ConName)
-                .Select(x => new MasterOptionViewModel { Value = x.ConId, Text = x.ConName ?? x.ConId })
+            var cats = await _db.MasterConnectionTypeDetails.AsNoTracking()
+                .Where(x => (x.Status == null || x.Status == "1") && x.ConMainId != null && x.DevType != null)
+                .OrderBy(x => x.DevType)
+                .ThenBy(x => x.ConName)
+                .Select(x => new { x.ConMainId, x.ConName, x.DevType })
                 .ToListAsync(ct);
+            return cats
+                .Where(x => !string.IsNullOrWhiteSpace(x.ConMainId))
+                .GroupBy(x => BuildCategoryLookupKey(x.ConMainId, x.DevType), StringComparer.OrdinalIgnoreCase)
+                .Where(x => x.Key != null)
+                .Select(x => x.First())
+                .Select(x => new MasterOptionViewModel
+                {
+                    Value = x.ConMainId?.Trim() ?? "",
+                    Text = x.ConName ?? x.ConMainId ?? "",
+                    Tag = x.DevType?.ToString() ?? ""
+                })
+                .ToList();
         }
 
         if (key == "rates" && fieldName == "Id")
@@ -1322,6 +1352,19 @@ public class MastersController : Controller
             .ToList();
     }
 
+    private static string? FormatCategoryDisplay(string? conId, int? devType, Dictionary<string, string?> categoryMap)
+    {
+        if (string.IsNullOrWhiteSpace(conId)) return null;
+        var trimmed = conId.Trim();
+        var name = categoryMap.GetValueOrDefault(BuildCategoryLookupKey(trimmed, devType));
+        return string.IsNullOrWhiteSpace(name) ? trimmed : name;
+    }
+
+    private static string BuildCategoryLookupKey(string? conId, int? devType)
+        => string.IsNullOrWhiteSpace(conId) || !devType.HasValue
+            ? string.Empty
+            : $"{conId.Trim()}|{devType.Value}";
+
     private static string FormatStatus(int? status) => status == 0 ? "Inactive" : "Active";
     private static string FormatStatus(string? status) => IsActive(status) ? "Active" : "Inactive";
     private static string FormatStatus(bool? status) => status == false ? "Inactive" : "Active";
@@ -1375,9 +1418,9 @@ public class MastersController : Controller
         new("connection-categories", "Connection Category Master", "Connection Category Master", "Manage connection category codes such as residential, commercial, institutional, and related values.",
             [new("ConId", "Code"), new("ConName", "Name"), new("ConMainId", "Saved Code"), new("DevType", "Division"), new("Status", "Status")],
             [new("ConId", "Code", true, "text", true), new("ConName", "Name", true), new("ConMainId", "Saved Code", false), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
-        new("connection-sub-types", "Connection Sub-Type Master", "Connection Sub-Type Master", "Manage flat/property sub-types linked with connection categories.",
-            [new("ConId", "Category"), new("SubConName", "Sub-Type"), new("DevType", "Division"), new("Status", "Status")],
-            [new("ConId", "Category", true, "select"), new("SubConName", "Sub-Type", true), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
+        new("connection-sub-types", "Connection Subcategory Master", "Connection Subcategory Master", "Manage flat/property subcategories linked with connection categories.",
+            [new("DevType", "Division"), new("CategoryDisplay", "Category"), new("SubConName", "Subcategory"), new("Status", "Status")],
+            [new("DevType", "Division", false, "select"), new("ConId", "Category", true, "select"), new("SubConName", "Subcategory", true), new("Status", "Status", true, "select")]),
         new("connection-types", "Connection Type Master", "Connection Type Master", "Manage regular/temporary and other connection type values.",
             [new("ConnectionName", "Name"), new("ConnectionMainId", "Saved Code"), new("Status", "Status")],
             [new("ConnectionName", "Name", true), new("ConnectionMainId", "Saved Code", false), new("Status", "Status", true, "select")]),

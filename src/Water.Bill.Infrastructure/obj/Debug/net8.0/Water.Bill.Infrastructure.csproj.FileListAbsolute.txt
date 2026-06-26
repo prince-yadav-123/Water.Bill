@@ -38,6 +38,10 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\masters-export-build\Water.Bill.Infrastructure.runtimeconfig.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\masters-export-build\Water.Bill.Infrastructure.dll
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\masters-export-build\Water.Bill.Infrastructure.pdb
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.deps.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.runtimeconfig.json
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.dll
+C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\bin\Debug\net8.0\Water.Bill.Infrastructure.deps.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\bin\Debug\net8.0\Water.Bill.Infrastructure.runtimeconfig.json
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\bin\Debug\net8.0\Water.Bill.Infrastructure.dll
@@ -56,7 +60,3 @@ C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bi
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\obj\Debug\net8.0\Water.Bill.Infrastructure.pdb
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\obj\Debug\net8.0\Water.Bill.Infrastructure.genruntimeconfig.cache
 C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\src\Water.Bill.Infrastructure\obj\Debug\net8.0\ref\Water.Bill.Infrastructure.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.deps.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.runtimeconfig.json
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.dll
-C:\Users\Lekesh\Prince Yadav\Vedang Projects\Water Bill\VedangSoft.BPMS\Water.Bill\artifacts\document-type-mandatory-build\Water.Bill.Infrastructure.pdb

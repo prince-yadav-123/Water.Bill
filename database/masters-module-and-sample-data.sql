@@ -65,7 +65,7 @@ VALUES
   ('Block Master', 1, 0),
   ('Pipe Size Master', 1, 0),
   ('Connection Category Master', 1, 0),
-  ('Connection Sub-Type Master', 1, 0),
+  ('Connection Subcategory Master', 1, 0),
   ('Connection Type Master', 1, 0),
   ('Village Master', 1, 0),
   ('Document Type Master', 1, 0)
@@ -99,7 +99,7 @@ FROM (
   UNION ALL SELECT 'Block Master', 'BK', '/Masters/blocks', 'Block Master', 20
   UNION ALL SELECT 'Pipe Size Master', 'PS', '/Masters/pipe-sizes', 'Pipe Size Master', 30
   UNION ALL SELECT 'Connection Category Master', 'CC', '/Masters/connection-categories', 'Connection Category Master', 40
-  UNION ALL SELECT 'Connection Sub-Type Master', 'ST', '/Masters/connection-sub-types', 'Connection Sub-Type Master', 50
+  UNION ALL SELECT 'Connection Subcategory Master', 'ST', '/Masters/connection-sub-types', 'Connection Subcategory Master', 50
   UNION ALL SELECT 'Connection Type Master', 'CT', '/Masters/connection-types', 'Connection Type Master', 60
   UNION ALL SELECT 'Village Master', 'VG', '/Masters/villages', 'Village Master', 70
   UNION ALL SELECT 'Document Type Master', 'DT', '/Masters/document-types', 'Document Type Master', 80
@@ -127,7 +127,7 @@ WHERE mi.`TenantId` = 1
     'Block Master',
     'Pipe Size Master',
     'Connection Category Master',
-    'Connection Sub-Type Master',
+    'Connection Subcategory Master',
     'Connection Type Master',
     'Village Master',
     'Document Type Master'
@@ -149,7 +149,7 @@ JOIN `PermissionModules` pm ON pm.`Name` IN (
   'Block Master',
   'Pipe Size Master',
   'Connection Category Master',
-  'Connection Sub-Type Master',
+  'Connection Subcategory Master',
   'Connection Type Master',
   'Village Master',
   'Document Type Master'
