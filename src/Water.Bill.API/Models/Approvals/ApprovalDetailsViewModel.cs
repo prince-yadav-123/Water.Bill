@@ -62,6 +62,8 @@ public class ApprovalListViewModel
 
     public string? ApplicationType { get; set; }
 
+    public string? SlaStatus { get; set; }
+
     public IReadOnlyList<ApprovalListItemViewModel> Items { get; set; } = [];
 
     public IReadOnlyList<WorkflowStage> Stages { get; set; } = [];

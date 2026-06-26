@@ -109,6 +109,15 @@
             </select>
         </div>
         <div class="wb-filter-field">
+            <label class="form-label">SLA Status</label>
+            <select class="form-select" name="slaStatus">
+                <option value="">All</option>
+                <option value="Normal" selected="@(Model.SlaStatus == "Normal")">On Time</option>
+                <option value="NearExpiry" selected="@(Model.SlaStatus == "NearExpiry")">Near Due</option>
+                <option value="Expired" selected="@(Model.SlaStatus == "Expired")">Overdue</option>
+            </select>
+        </div>
+        <div class="wb-filter-field">
             <label class="form-label">From</label>
             <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
         </div>

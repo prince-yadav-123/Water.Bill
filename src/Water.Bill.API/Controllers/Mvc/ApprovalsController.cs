@@ -39,6 +39,7 @@ public class ApprovalsController : Controller
         string? tab = null,
         string? search = null,
         string? status = null,
+        string? slaStatus = null,
         DateTime? fromDate = null,
         DateTime? toDate = null,
         int? stageId = null,
@@ -57,6 +58,7 @@ public class ApprovalsController : Controller
 
         pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
         page = PagingConstants.ValidatePage(page);
+        var normalizedSlaStatus = NormalizeSlaStatusFilter(slaStatus);
 
         // Admin defaults to "All" tab so they see everything; others default to "Pending"
         var defaultTab = isAdmin ? "All" : "Pending";
@@ -119,6 +121,7 @@ public class ApprovalsController : Controller
                 ActiveTab = normalizedTab,
                 Search = search,
                 Status = status,
+                SlaStatus = normalizedSlaStatus,
                 FromDate = fromDate,
                 ToDate = toDate,
                 StageId = stageId,
@@ -203,6 +206,14 @@ public class ApprovalsController : Controller
                     ? history.ActionOn
                     : x.ActionOn ?? x.AssignedOn)
                 .ThenByDescending(x => x.Id)
+                .ToList();
+        }
+
+        if (!string.IsNullOrWhiteSpace(normalizedSlaStatus))
+        {
+            var now = DateTime.Now;
+            rows = rows
+                .Where(x => MatchesSlaStatusFilter(ResolveSlaState(x, now), normalizedSlaStatus))
                 .ToList();
         }
 
@@ -322,6 +333,7 @@ public class ApprovalsController : Controller
             ActiveTab = normalizedTab,
             Search = search,
             Status = status,
+            SlaStatus = normalizedSlaStatus,
             FromDate = fromDate,
             ToDate = toDate,
             StageId = stageId,
@@ -693,6 +705,19 @@ public class ApprovalsController : Controller
             "All" => "All",
             _ => "Pending"
         };
+
+    private static string? NormalizeSlaStatusFilter(string? slaStatus)
+        => slaStatus?.Trim() switch
+        {
+            "Normal" => "Normal",
+            "NearExpiry" => "NearExpiry",
+            "Expired" => "Expired",
+            _ => null
+        };
+
+    private static bool MatchesSlaStatusFilter(string resolvedSlaState, string? requestedSlaStatus)
+        => string.IsNullOrWhiteSpace(requestedSlaStatus)
+            || string.Equals(resolvedSlaState, requestedSlaStatus, StringComparison.OrdinalIgnoreCase);
 
     private static string ResolveAssignedTo(ApplicationWorkflowTask task, IDictionary<int, string> users, IDictionary<int, string> roles)
     {
