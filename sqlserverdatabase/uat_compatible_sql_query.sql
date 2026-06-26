@@ -2845,5 +2845,25 @@ BEGIN
 END;
 
 /* ============================================================
+   16) DOCUMENT TYPE MASTER - ISMANDATORY
+   ============================================================ */
+
+IF COL_LENGTH(N'dbo.master_document_upload', N'IsMandatory') IS NULL
+BEGIN
+    ALTER TABLE dbo.master_document_upload
+        ADD IsMandatory INT NOT NULL
+            CONSTRAINT DF_master_document_upload_IsMandatory DEFAULT (0);
+END;
+
+IF COL_LENGTH(N'dbo.master_document_upload', N'IsMandatory') IS NOT NULL
+BEGIN
+    EXEC(N'
+        UPDATE dbo.master_document_upload
+        SET IsMandatory = 0
+        WHERE IsMandatory IS NULL;
+    ');
+END;
+
+/* ============================================================
    END
    ============================================================ */

@@ -4133,6 +4133,18 @@
         }
       }
     },
+    "/Departments/ExportExcel": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/DisconnectionManagement": {
       "get": {
         "tags": [
@@ -4790,6 +4802,13 @@
             }
           },
           {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "schema": {
@@ -4805,6 +4824,35 @@
               "type": "integer",
               "format": "int32",
               "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Masters/{key}/ExportExcel": {
+      "get": {
+        "tags": [
+          "Masters"
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -6795,6 +6843,18 @@
               "type": "string"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/NewConnectionFeeConfigurations/ExportExcel": {
+      "get": {
+        "tags": [
+          "NewConnectionFeeConfigurations"
         ],
         "responses": {
           "200": {

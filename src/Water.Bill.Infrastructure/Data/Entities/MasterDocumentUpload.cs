@@ -12,4 +12,6 @@ public partial class MasterDocumentUpload
     public int? Status { get; set; }
 
     public string? DocFor { get; set; }
+
+    public int? IsMandatory { get; set; }
 }

@@ -128,7 +128,8 @@ public class NewConnectionLookupService : INewConnectionLookupService
                 .Select(x => new NewConnectionLookupOptionDto
                 {
                     Value = x.DocumentName!,
-                    Text = x.DocumentName!
+                    Text = x.DocumentName!,
+                    IsRequired = (x.IsMandatory ?? 0) == 1
                 })
                 .ToListAsync(ct));
 

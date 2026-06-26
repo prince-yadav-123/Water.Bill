@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Water.Bill.API.Filters;
+using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -12,8 +14,13 @@ namespace Water.Bill.API.Controllers.Mvc;
 public class DepartmentsController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IExcelExportService _excelExportService;
 
-    public DepartmentsController(ApplicationDbContext db) => _db = db;
+    public DepartmentsController(ApplicationDbContext db, IExcelExportService excelExportService)
+    {
+        _db = db;
+        _excelExportService = excelExportService;
+    }
 
     [RequirePermission("Department Master.view")]
     public async Task<IActionResult> Index(CancellationToken ct)
@@ -22,6 +29,36 @@ public class DepartmentsController : Controller
         ViewData["ActiveMenu"] = "Department Master";
         var rows = await _db.MasterDeptDetails.AsNoTracking().OrderBy(x => x.DeptName).ToListAsync(ct);
         return View(rows);
+    }
+
+    [HttpGet("/Departments/ExportExcel")]
+    [RequirePermission("Department Master.view")]
+    public async Task<IActionResult> ExportExcel(CancellationToken ct)
+    {
+        var rows = await _db.MasterDeptDetails
+            .AsNoTracking()
+            .OrderBy(x => x.DeptName)
+            .Select(x => new DepartmentExportRow
+            {
+                DeptId = x.DeptId,
+                DeptName = x.DeptName,
+                Status = IsActiveStatus(x.Status) ? "Active" : "Inactive"
+            })
+            .ToListAsync(ct);
+
+        var bytes = _excelExportService.Export(new ExcelExportRequest<DepartmentExportRow>
+        {
+            SheetName = "Department Master",
+            Columns =
+            [
+                new ExcelColumnDefinition<DepartmentExportRow> { Header = "Code", ValueFactory = row => row.DeptId, Width = 12 },
+                new ExcelColumnDefinition<DepartmentExportRow> { Header = "Department", ValueFactory = row => row.DeptName, Width = 28 },
+                new ExcelColumnDefinition<DepartmentExportRow> { Header = "Status", ValueFactory = row => row.Status, Width = 14 }
+            ],
+            Rows = rows
+        });
+
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Department-Master-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
     }
 
     [RequirePermission("Department Master.add")]
@@ -101,4 +138,11 @@ public class DepartmentsController : Controller
         => string.Equals(status, "1", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Y", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "true", StringComparison.OrdinalIgnoreCase);
+
+    private sealed class DepartmentExportRow
+    {
+        public int DeptId { get; set; }
+        public string? DeptName { get; set; }
+        public string Status { get; set; } = string.Empty;
+    }
 }

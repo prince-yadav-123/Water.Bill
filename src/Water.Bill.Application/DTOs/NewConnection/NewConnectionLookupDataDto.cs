@@ -41,4 +41,6 @@ public class NewConnectionLookupOptionDto
     public string? ParentValue { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    public bool IsRequired { get; set; }
 }

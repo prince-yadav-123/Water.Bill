@@ -8,24 +8,47 @@
         <h1>New Connection Fee Configuration</h1>
         <p>Configure payable fee breakdown used on public new connection review.</p>
     </div>
-    <a class="btn btn-primary" asp-action="Create">Add Fee</a>
+    <div class="wb-actions">
+        <form asp-action="ExportExcel" method="get">
+            <button class="btn btn-outline-success" type="submit" data-no-loader>Download</button>
+        </form>
+        <a class="btn btn-primary" asp-action="Create">Add Fee</a>
+    </div>
 </div>
 
 <section class="wb-page-card wb-admin-card">
+    <div class="wb-admin-toolbar">
+        <div>
+            <h2 class="wb-section-title">Fee Configurations</h2>
+            <span>@Model.Count record@(Model.Count == 1 ? "" : "s")</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-nowrap wb-master-searchbar">
+            <input id="feeConfigSearch" class="form-control wb-search flex-grow-1" type="search" placeholder="Search category, type, pipe, plot, total, status" />
+            <button type="button" class="btn btn-primary flex-shrink-0" onclick="applyFeeConfigSearch()">Search</button>
+        </div>
+    </div>
     <div class="table-responsive">
         <table class="table align-middle wb-table wb-admin-table">
             <thead><tr><th>Category</th><th>Type</th><th>Pipe</th><th>Plot Range</th><th>Total</th><th>Effective</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
             <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>@(item.ConnectionCategory ?? "Any")</td>
-                    <td>@(item.ConnectionType ?? "Any")</td>
-                    <td>@(item.PipeSize?.ToString("0.##") ?? "Any")</td>
-                    <td>@(item.PlotSizeFrom?.ToString("0.##") ?? "0") - @(item.PlotSizeTo?.ToString("0.##") ?? "Any")</td>
-                    <td><strong>@item.TotalAmount.ToString("0.00")</strong></td>
-                    <td>@item.EffectiveFrom.ToString("dd MMM yyyy")</td>
-                    <td><span class="badge @(item.IsActive ? "text-bg-success" : "text-bg-secondary")">@(item.IsActive ? "Active" : "Inactive")</span></td>
+                var categoryText = item.ConnectionCategory ?? "Any";
+                var typeText = item.ConnectionType ?? "Any";
+                var pipeText = item.PipeSize?.ToString("0.##") ?? "Any";
+                var plotRangeText = $"{(item.PlotSizeFrom?.ToString("0.##") ?? "0")} - {(item.PlotSizeTo?.ToString("0.##") ?? "Any")}";
+                var totalText = item.TotalAmount.ToString("0.00");
+                var effectiveText = item.EffectiveFrom.ToString("dd MMM yyyy");
+                var statusText = item.IsActive ? "Active" : "Inactive";
+                var searchText = $"{categoryText} {typeText} {pipeText} {plotRangeText} {totalText} {effectiveText} {statusText}".ToLowerInvariant();
+                <tr class="fee-config-row" data-search="@searchText">
+                    <td>@categoryText</td>
+                    <td>@typeText</td>
+                    <td>@pipeText</td>
+                    <td>@plotRangeText</td>
+                    <td><strong>@totalText</strong></td>
+                    <td>@effectiveText</td>
+                    <td><span class="badge @(item.IsActive ? "text-bg-success" : "text-bg-secondary")">@statusText</span></td>
                     <td>
                         <div class="wb-row-actions justify-content-end">
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
@@ -42,3 +65,41 @@
     </div>
     @await Html.PartialAsync("_Pagination", pagination)
 </section>
+
+<style>
+    .wb-master-searchbar {
+        width: min(100%, 420px);
+        margin-left: auto;
+    }
+
+    .wb-master-searchbar .wb-search {
+        min-width: 0;
+    }
+</style>
+
+@section Scripts {
+<script>
+function filterFeeConfigurations() {
+    var q = (document.getElementById('feeConfigSearch').value || '').toLowerCase();
+    document.querySelectorAll('.fee-config-row').forEach(function(row) {
+        row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+    });
+}
+
+function applyFeeConfigSearch() {
+    filterFeeConfigurations();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('feeConfigSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applyFeeConfigSearch();
+            }
+        });
+    }
+});
+</script>
+}

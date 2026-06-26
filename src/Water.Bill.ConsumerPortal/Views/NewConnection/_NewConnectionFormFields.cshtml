@@ -3,6 +3,7 @@
 @using System.Globalization
 @{
     var documentTypes = ViewData["DocumentTypes"] as string[] ?? [];
+    var documentTypeOptions = ViewData["DocumentTypeOptions"] as Water.Bill.Application.DTOs.NewConnection.NewConnectionLookupOptionDto[] ?? [];
     var existingDocumentTypes = ViewData["ExistingDocumentTypes"] as string[] ?? [];
     var lookupData = ViewData["LookupData"] as NewConnectionLookupDataDto ?? new NewConnectionLookupDataDto();
     var selectedPipeSize = Model.PipeSize?.ToString("0.##", CultureInfo.InvariantCulture);
@@ -44,11 +45,19 @@
                                 <option value="@category.Value">@category.Text</option>
                             }
                         </select>
+                        <span asp-validation-for="ConnectionCategory" class="text-danger"></span>
                     </div>
-                </div>
-                <span asp-validation-for="ConnectionCategory" class="text-danger"></span>
-
-                <div class="wb-form-grid">
+                    <div class="wb-field">
+                        <label asp-for="FlatType" class="form-label required">Property/Flat Type</label>
+                        <select asp-for="FlatType" class="form-select" data-review-label="Flat type" data-subtype-select>
+                            <option value="">Select category first</option>
+                            @foreach (var subType in lookupData.ConnectionSubTypes)
+                            {
+                                <option value="@subType.Value" data-parent-value="@subType.ParentValue">@subType.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="FlatType" class="text-danger"></span>
+                    </div>
                     <div class="wb-field">
                         <label asp-for="ConnectionType" class="form-label">Connection Type</label>
                         <select asp-for="ConnectionType" class="form-select" data-review-label="Connection type">
@@ -59,17 +68,6 @@
                             }
                         </select>
                         <span asp-validation-for="ConnectionType" class="text-danger"></span>
-                    </div>
-                    <div class="wb-field">
-                        <label asp-for="FlatType" class="form-label required">Flat Type</label>
-                        <select asp-for="FlatType" class="form-select" data-review-label="Flat type" data-subtype-select>
-                            <option value="">Select category first</option>
-                            @foreach (var subType in lookupData.ConnectionSubTypes)
-                            {
-                                <option value="@subType.Value" data-parent-value="@subType.ParentValue">@subType.Text</option>
-                            }
-                        </select>
-                        <span asp-validation-for="FlatType" class="text-danger"></span>
                     </div>
                     <div class="wb-field">
                         <label asp-for="PipeSize" class="form-label required">Pipe Size</label>
@@ -216,7 +214,7 @@
                     @foreach (var documentType in documentTypes)
                     {
                         var inputName = $"Documents_{documentType.Replace(" ", "_").Replace("/", "_")}";
-                        var isRequired = documentType is "ID Proof" or "Address Proof" or "Property Document";
+                        var isRequired = documentTypeOptions.FirstOrDefault(x => string.Equals(x.Text, documentType, StringComparison.OrdinalIgnoreCase))?.IsRequired == true;
                         var hasExisting = existingDocumentTypes.Contains(documentType, StringComparer.OrdinalIgnoreCase);
                         <label class="wb-document-row @(isRequired ? "is-required" : string.Empty)">
                             <span class="wb-document-icon">File</span>

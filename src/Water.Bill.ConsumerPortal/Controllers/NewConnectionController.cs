@@ -15,13 +15,6 @@ namespace Water.Bill.ConsumerPortal.Controllers;
 [RequirePermission("Consumer New Connection.view")]
 public class NewConnectionController : ConsumerPortalControllerBase
 {
-    private static readonly string[] RequiredDocumentTypes =
-    [
-        "ID Proof",
-        "Address Proof",
-        "Property Document"
-    ];
-
     private readonly IConfiguration _configuration;
     private readonly INewConnectionApplicationService _service;
     private readonly INewConnectionLookupService _lookupService;
@@ -77,7 +70,7 @@ public class NewConnectionController : ConsumerPortalControllerBase
         if (!ModelState.IsValid)
             return View(model);
 
-        ValidateRequiredDocuments(Request.Form.Files, await GetDocumentTypeNamesAsync(ct));
+        ValidateRequiredDocuments(Request.Form.Files, await GetRequiredDocumentTypeNamesAsync(ct));
         if (!ModelState.IsValid)
             return View(model);
 
@@ -203,7 +196,7 @@ public class NewConnectionController : ConsumerPortalControllerBase
         if (!ModelState.IsValid)
             return View("Apply", model);
 
-        ValidateRequiredDocuments(Request.Form.Files, await GetDocumentTypeNamesAsync(ct), existing.Documents.Select(x => x.DocumentType).ToArray());
+        ValidateRequiredDocuments(Request.Form.Files, await GetRequiredDocumentTypeNamesAsync(ct), existing.Documents.Select(x => x.DocumentType).ToArray());
         if (!ModelState.IsValid)
             return View("Apply", model);
 
@@ -511,7 +504,7 @@ public class NewConnectionController : ConsumerPortalControllerBase
         return string.IsNullOrWhiteSpace(normalized) ? "Other" : normalized;
     }
 
-    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> configuredDocumentTypes, IReadOnlyCollection<string>? existingDocumentTypes = null)
+    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> requiredDocumentTypes, IReadOnlyCollection<string>? existingDocumentTypes = null)
     {
         var uploadedTypes = files
             .Where(x => x.Length > 0)
@@ -523,10 +516,7 @@ public class NewConnectionController : ConsumerPortalControllerBase
                 uploadedTypes.Add(existingDocumentType);
         }
 
-        var requiredTypes = RequiredDocumentTypes
-            .Where(requiredType => configuredDocumentTypes.Contains(requiredType, StringComparer.OrdinalIgnoreCase));
-
-        foreach (var requiredType in requiredTypes)
+        foreach (var requiredType in requiredDocumentTypes)
         {
             if (!uploadedTypes.Contains(requiredType))
                 ModelState.AddModelError(string.Empty, $"{requiredType} is required.");
@@ -555,6 +545,7 @@ public class NewConnectionController : ConsumerPortalControllerBase
         }
 
         ViewData["LookupData"] = lookups;
+        ViewData["DocumentTypeOptions"] = lookups.DocumentTypes.ToArray();
         ViewData["DocumentTypes"] = lookups.DocumentTypes.Select(x => x.Text).ToArray();
         ViewData["BlocksUrl"] = Url.Action(nameof(Blocks), "NewConnection");
         ViewData["SectorContextUrl"] = Url.Action(nameof(SectorContext), "NewConnection");
@@ -562,10 +553,10 @@ public class NewConnectionController : ConsumerPortalControllerBase
         ViewData["FeePreviewUrl"] = Url.Action(nameof(FeePreview), "NewConnection");
     }
 
-    private async Task<IReadOnlyList<string>> GetDocumentTypeNamesAsync(CancellationToken ct)
+    private async Task<IReadOnlyList<string>> GetRequiredDocumentTypeNamesAsync(CancellationToken ct)
     {
         var documentTypes = await _lookupService.GetDocumentTypesAsync(ct);
-        return documentTypes.Select(x => x.Text).ToArray();
+        return documentTypes.Where(x => x.IsRequired).Select(x => x.Text).ToArray();
     }
 
     private async Task PopulateSectorDevTypeAsync(NewConnectionApplicationFormDto model, CancellationToken ct)

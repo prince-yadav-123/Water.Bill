@@ -5,7 +5,12 @@
         <h1>Department Master</h1>
         <p>Configure departments used by approval workflow stages.</p>
     </div>
-    <a class="btn btn-primary" asp-action="Create">Add Department</a>
+    <div class="wb-actions">
+        <form asp-action="ExportExcel" method="get">
+            <button class="btn btn-outline-success" type="submit" require-permission="Department Master.view" data-no-loader>Download</button>
+        </form>
+        <a class="btn btn-primary" asp-action="Create">Add Department</a>
+    </div>
 </div>
 
 <section class="wb-page-card wb-admin-card">
@@ -14,6 +19,10 @@
             <h2 class="wb-section-title">Departments</h2>
             <span>@Model.Count record@(Model.Count == 1 ? "" : "s")</span>
         </div>
+        <div class="d-flex align-items-center gap-2 flex-nowrap wb-master-searchbar">
+            <input id="departmentSearch" class="form-control wb-search flex-grow-1" type="search" placeholder="Search code, department, status" />
+            <button type="button" class="btn btn-primary flex-shrink-0" onclick="applyDepartmentSearch()">Search</button>
+        </div>
     </div>
     <div class="table-responsive">
         <table class="table align-middle wb-table wb-admin-table">
@@ -21,7 +30,8 @@
             <tbody>
             @foreach (var item in Model)
             {
-                <tr>
+                var searchText = $"{item.DeptId} {item.DeptName} {(item.Status == "1" ? "Active" : "Inactive")}".ToLowerInvariant();
+                <tr class="department-row" data-search="@searchText">
                     <td><strong>@item.DeptId</strong></td>
                     <td>@item.DeptName</td>
                     <td><span class="badge @(item.Status == "1" ? "text-bg-success" : "text-bg-secondary")">@(item.Status == "1" ? "Active" : "Inactive")</span></td>
@@ -40,3 +50,41 @@
         </table>
     </div>
 </section>
+
+<style>
+    .wb-master-searchbar {
+        width: min(100%, 420px);
+        margin-left: auto;
+    }
+
+    .wb-master-searchbar .wb-search {
+        min-width: 0;
+    }
+</style>
+
+@section Scripts {
+<script>
+function filterDepartments() {
+    var q = (document.getElementById('departmentSearch').value || '').toLowerCase();
+    document.querySelectorAll('.department-row').forEach(function(row) {
+        row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+    });
+}
+
+function applyDepartmentSearch() {
+    filterDepartments();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('departmentSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applyDepartmentSearch();
+            }
+        });
+    }
+});
+</script>
+}

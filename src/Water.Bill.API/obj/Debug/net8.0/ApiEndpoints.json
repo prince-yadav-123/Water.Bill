@@ -3002,6 +3002,16 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.DepartmentsController",
+    "Method": "ExportExcel",
+    "RelativePath": "Departments/ExportExcel",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Water.Bill.API.Controllers.Mvc.DisconnectionManagementController",
     "Method": "Index",
     "RelativePath": "DisconnectionManagement",
@@ -3441,6 +3451,11 @@
         "IsRequired": true
       },
       {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "page",
         "Type": "System.Int32",
         "IsRequired": false
@@ -3574,6 +3589,27 @@
       {
         "Name": "form",
         "Type": "Microsoft.AspNetCore.Http.IFormCollection",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.MastersController",
+    "Method": "ExportExcel",
+    "RelativePath": "Masters/{key}/ExportExcel",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "key",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "search",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],
@@ -4749,6 +4785,16 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Water.Bill.API.Controllers.Mvc.NewConnectionFeeConfigurationsController",
+    "Method": "ExportExcel",
+    "RelativePath": "NewConnectionFeeConfigurations/ExportExcel",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

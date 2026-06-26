@@ -13,8 +13,6 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
     private const string SessionVerifiedAtKey = "PublicNewConnection.VerifiedAt";
     private const string SessionModeKey = "PublicNewConnection.Mode";
     private const string PublicFlowViewDataKey = "IsPublicNewConnectionFlow";
-    private static readonly string[] RequiredDocumentTypes = ["ID Proof", "Address Proof", "Property Document"];
-
     private readonly IConfiguration _configuration;
     private readonly IPublicNewConnectionOtpService _otpService;
     private readonly INewConnectionApplicationService _applicationService;
@@ -170,7 +168,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         if (!ModelState.IsValid)
             return View("~/Views/NewConnection/Apply.cshtml", model);
 
-        ValidateRequiredDocuments(Request.Form.Files, await GetDocumentTypeNamesAsync(ct));
+        ValidateRequiredDocuments(Request.Form.Files, await GetRequiredDocumentTypeNamesAsync(ct));
         if (!ModelState.IsValid)
             return View("~/Views/NewConnection/Apply.cshtml", model);
 
@@ -270,7 +268,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         if (!ModelState.IsValid)
             return View("~/Views/NewConnection/Apply.cshtml", model);
 
-        ValidateRequiredDocuments(Request.Form.Files, await GetDocumentTypeNamesAsync(ct), existing.Documents.Select(x => x.DocumentType).ToArray());
+        ValidateRequiredDocuments(Request.Form.Files, await GetRequiredDocumentTypeNamesAsync(ct), existing.Documents.Select(x => x.DocumentType).ToArray());
         if (!ModelState.IsValid)
             return View("~/Views/NewConnection/Apply.cshtml", model);
 
@@ -557,6 +555,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         }
 
         ViewData["LookupData"] = lookups;
+        ViewData["DocumentTypeOptions"] = lookups.DocumentTypes.ToArray();
         ViewData["DocumentTypes"] = lookups.DocumentTypes.Select(x => x.Text).ToArray();
         ViewData["BlocksUrl"] = Url.Action(nameof(Blocks), "PublicNewConnection");
         ViewData["SectorContextUrl"] = Url.Action(nameof(SectorContext), "PublicNewConnection");
@@ -565,10 +564,10 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         ViewData["LockMobileNumber"] = true;
     }
 
-    private async Task<IReadOnlyList<string>> GetDocumentTypeNamesAsync(CancellationToken ct)
+    private async Task<IReadOnlyList<string>> GetRequiredDocumentTypeNamesAsync(CancellationToken ct)
     {
         var documentTypes = await _lookupService.GetDocumentTypesAsync(ct);
-        return documentTypes.Select(x => x.Text).ToArray();
+        return documentTypes.Where(x => x.IsRequired).Select(x => x.Text).ToArray();
     }
 
     private async Task PopulateSectorDevTypeAsync(NewConnectionApplicationFormDto model, CancellationToken ct)
@@ -665,7 +664,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
         return result;
     }
 
-    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> configuredDocumentTypes, IReadOnlyCollection<string>? existingDocumentTypes = null)
+    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> requiredDocumentTypes, IReadOnlyCollection<string>? existingDocumentTypes = null)
     {
         var uploadedTypes = files.Where(x => x.Length > 0).Select(x => ResolveDocumentType(x.Name)).ToHashSet(StringComparer.OrdinalIgnoreCase);
         if (existingDocumentTypes is not null)
@@ -674,7 +673,7 @@ public class PublicNewConnectionController : ConsumerPortalControllerBase
                 uploadedTypes.Add(existingDocumentType);
         }
 
-        foreach (var requiredType in RequiredDocumentTypes.Where(requiredType => configuredDocumentTypes.Contains(requiredType, StringComparer.OrdinalIgnoreCase)))
+        foreach (var requiredType in requiredDocumentTypes)
         {
             if (!uploadedTypes.Contains(requiredType))
                 ModelState.AddModelError(string.Empty, $"{requiredType} is required.");

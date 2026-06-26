@@ -7,6 +7,7 @@ using System.Text;
 using Water.Bill.API.Models;
 using Water.Bill.API.ViewModels;
 using Water.Bill.Application.Interfaces;
+using Water.Bill.Application.Models.Excel;
 using Water.Bill.Core.Common;
 using Water.Bill.Infrastructure.Data;
 using Water.Bill.Infrastructure.Data.Entities;
@@ -19,15 +20,17 @@ public class MastersController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly IPermissionService _permissionService;
+    private readonly IExcelExportService _excelExportService;
 
-    public MastersController(ApplicationDbContext db, IPermissionService permissionService)
+    public MastersController(ApplicationDbContext db, IPermissionService permissionService, IExcelExportService excelExportService)
     {
         _db = db;
         _permissionService = permissionService;
+        _excelExportService = excelExportService;
     }
 
     [HttpGet("{key}")]
-    public async Task<IActionResult> Index(string key, int page = 1, int pageSize = 0, CancellationToken ct = default)
+    public async Task<IActionResult> Index(string key, string? search = null, int page = 1, int pageSize = 0, CancellationToken ct = default)
     {
         var definition = GetDefinition(key);
         if (definition is null) return NotFound();
@@ -38,7 +41,7 @@ public class MastersController : Controller
         pageSize = PagingConstants.Validate(pageSize == 0 ? PagingConstants.DefaultPageSize : pageSize);
         page = PagingConstants.ValidatePage(page);
 
-        var allRows = await GetRowsAsync(definition.Key, ct);
+        var allRows = ApplySearch(await GetRowsAsync(definition.Key, ct), search);
         var totalCount = allRows.Count;
         var pagedRows = allRows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         ViewBag.Pagination = PaginationViewModel.Create(new Application.Models.PagedResult<MasterRowViewModel>
@@ -55,9 +58,36 @@ public class MastersController : Controller
             Title = definition.Title,
             Module = definition.Module,
             Description = definition.Description,
+            Search = search?.Trim(),
             Columns = definition.Columns.Select(x => new MasterColumnViewModel { Key = x.Key, Label = x.Label }).ToList(),
             Rows = pagedRows
         });
+    }
+
+    [HttpGet("{key}/ExportExcel")]
+    public async Task<IActionResult> ExportExcel(string key, string? search = null, CancellationToken ct = default)
+    {
+        var definition = GetDefinition(key);
+        if (definition is null) return NotFound();
+        if (!await HasPermissionAsync(definition.Module, "view", ct)) return PermissionDenied(definition.Module, "view");
+
+        var rows = ApplySearch(await GetRowsAsync(definition.Key, ct), search);
+        var bytes = _excelExportService.Export(new ExcelExportRequest<MasterRowViewModel>
+        {
+            SheetName = definition.Title,
+            Columns = definition.Columns.Select(column => new ExcelColumnDefinition<MasterRowViewModel>
+            {
+                Header = column.Label,
+                ValueFactory = row => row.Values.TryGetValue(column.Key, out var value) ? value : null,
+                Width = GetExportWidth(column.Key)
+            }).ToList(),
+            Rows = rows
+        });
+
+        return File(
+            bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"{SanitizeFileName(definition.Title)}-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
     }
 
     [HttpGet("{key}/Create")]
@@ -354,6 +384,7 @@ public class MastersController : Controller
                             ["DocumentId"] = x.DocumentId.ToString(),
                             ["DocumentName"] = x.DocumentName,
                             ["DocFor"] = x.DocFor,
+                            ["IsMandatory"] = (x.IsMandatory ?? 0) == 1 ? "Yes" : "No",
                             ["Status"] = FormatStatus(x.Status)
                         }
                     }).ToList();
@@ -618,7 +649,8 @@ public class MastersController : Controller
                     ["DocumentId"] = doc.DocumentId.ToString(),
                     ["DocumentName"] = doc.DocumentName,
                     ["DocFor"] = doc.DocFor,
-                    ["Status"] = (doc.Status ?? 1).ToString()
+                    ["IsMandatory"] = (doc.IsMandatory ?? 0) == 1 ? "Yes" : "No",
+                    ["Status"] = FormatStatus(doc.Status)
                 };
             case "payment-modes":
                 var paymentMode = await _db.PaymentModeMsts.AsNoTracking().FirstOrDefaultAsync(x => x.AutoId == int.Parse(decoded), ct);
@@ -754,6 +786,15 @@ public class MastersController : Controller
             [
                 new() { Value = "1", Text = "Active" },
                 new() { Value = "0", Text = "Inactive" }
+            ];
+        }
+
+        if (fieldName == "IsMandatory")
+        {
+            return
+            [
+                new() { Value = "1", Text = "Yes" },
+                new() { Value = "0", Text = "No" }
             ];
         }
 
@@ -934,7 +975,14 @@ public class MastersController : Controller
                 _db.VillageDetails.Add(new VillageDetail { VillageId = ToNullableInt(form, "VillageId"), VillageName = Get(form, "VillageName"), VillageStr = GetOptional(form, "VillageStr"), DevType = ToNullableInt(form, "DevType"), Status = ToStatusInt(form) });
                 break;
             case "document-types":
-                _db.MasterDocumentUploads.Add(new MasterDocumentUpload { DocumentId = ToInt(form, "DocumentId"), DocumentName = GetOptional(form, "DocumentName"), DocFor = GetOptional(form, "DocFor"), Status = ToStatusInt(form) });
+                _db.MasterDocumentUploads.Add(new MasterDocumentUpload
+                {
+                    DocumentId = ToInt(form, "DocumentId"),
+                    DocumentName = GetOptional(form, "DocumentName"),
+                    DocFor = GetOptional(form, "DocFor"),
+                    IsMandatory = ToNullableInt(form, "IsMandatory") ?? 0,
+                    Status = ToStatusInt(form)
+                });
                 break;
             case "payment-modes":
                 _db.PaymentModeMsts.Add(new PaymentModeMst { PaymentModeName = Get(form, "PaymentModeName"), IsActive = ToStatusString(form), CreatedOn = DateTime.Now });
@@ -1051,6 +1099,7 @@ public class MastersController : Controller
                 if (doc is null) return false;
                 doc.DocumentName = GetOptional(form, "DocumentName");
                 doc.DocFor = GetOptional(form, "DocFor");
+                doc.IsMandatory = ToNullableInt(form, "IsMandatory") ?? 0;
                 doc.Status = ToStatusInt(form);
                 break;
             case "payment-modes":
@@ -1252,6 +1301,27 @@ public class MastersController : Controller
             || status.Trim().Equals("TRUE", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static IReadOnlyList<MasterRowViewModel> ApplySearch(IReadOnlyList<MasterRowViewModel> rows, string? search)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+            return rows;
+
+        var tokens = search
+            .Trim()
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (tokens.Length == 0)
+            return rows;
+
+        return rows
+            .Where(row =>
+            {
+                var haystack = string.Join(' ', row.Values.Values.Where(value => !string.IsNullOrWhiteSpace(value)));
+                return tokens.All(token => haystack.Contains(token, StringComparison.OrdinalIgnoreCase));
+            })
+            .ToList();
+    }
+
     private static string FormatStatus(int? status) => status == 0 ? "Inactive" : "Active";
     private static string FormatStatus(string? status) => IsActive(status) ? "Active" : "Inactive";
     private static string FormatStatus(bool? status) => status == false ? "Inactive" : "Active";
@@ -1269,14 +1339,33 @@ public class MastersController : Controller
         return Encoding.UTF8.GetString(Convert.FromBase64String(base64));
     }
 
+    private static double? GetExportWidth(string key)
+        => key switch
+        {
+            "Status" => 14,
+            "DevType" => 16,
+            "EffFrom" or "EffTo" => 16,
+            "Amount" or "Sgst" or "Cgst" or "Regular" or "Temporary" or "CessRate" or "NocAmt" => 14,
+            _ => null
+        };
+
+    private static string SanitizeFileName(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return "MasterExport";
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        return new string(value.Trim().Select(ch => invalidChars.Contains(ch) ? '_' : ch).ToArray());
+    }
+
     private static MasterDefinition? GetDefinition(string key)
         => Definitions.FirstOrDefault(x => string.Equals(x.Key, key, StringComparison.OrdinalIgnoreCase));
 
     private static readonly IReadOnlyList<MasterDefinition> Definitions =
     [
         new("sectors", "Sector Master", "Sector Master", "Manage Noida sector codes used in new connection and consumer records.",
-            [new("SectorId", "Sector Code"), new("SectorNo", "Display Sector"), new("OrderBy", "Order"), new("DevType", "Division"), new("Status", "Status")],
-            [new("SectorId", "Sector Code", true), new("SectorNo", "Display Sector", true), new("OrderBy", "Order", false, "number"), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
+            [new("SectorId", "Code"), new("SectorNo", "Sector No"), new("OrderBy", "Order"), new("DevType", "Division"), new("Status", "Status")],
+            [new("SectorId", "Code", true), new("SectorNo", "Sector No", true), new("OrderBy", "Order", false, "number"), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("blocks", "Block Master", "Block Master", "Manage blocks linked with sectors.",
             [new("SectorId", "Sector"), new("Block", "Block"), new("DevType", "Division"), new("Status", "Status")],
             [new("SectorId", "Sector", true, "select", true), new("Block", "Block", true, "text", true), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
@@ -1296,8 +1385,8 @@ public class MastersController : Controller
             [new("VillageId", "Village Id"), new("VillageName", "Village Name"), new("VillageStr", "Prefix"), new("DevType", "Division"), new("Status", "Status")],
             [new("VillageId", "Village Id", false, "number"), new("VillageName", "Village Name", true), new("VillageStr", "Prefix", false), new("DevType", "Division", false, "select"), new("Status", "Status", true, "select")]),
         new("document-types", "Document Type Master", "Document Type Master", "Manage document types required for applications.",
-            [new("DocumentId", "Document Id"), new("DocumentName", "Document Name"), new("DocFor", "Document For"), new("Status", "Status")],
-            [new("DocumentId", "Document Id", true, "number", true), new("DocumentName", "Document Name", true), new("DocFor", "Document For", false), new("Status", "Status", true, "select")]),
+            [new("DocumentId", "Document Id"), new("DocumentName", "Document Name"), new("DocFor", "Document For"), new("IsMandatory", "Mandatory"), new("Status", "Status")],
+            [new("DocumentId", "Document Id", true, "number", true), new("DocumentName", "Document Name", true), new("DocFor", "Document For", false), new("IsMandatory", "Mandatory", true, "select"), new("Status", "Status", true, "select")]),
         new("payment-modes", "Payment Mode Master", "Payment Mode Master", "Manage payment modes used during challan and online payment entry.",
             [new("AutoId", "Id"), new("PaymentModeName", "Payment Mode"), new("Status", "Status")],
             [new("PaymentModeName", "Payment Mode", true), new("Status", "Status", true, "select")]),

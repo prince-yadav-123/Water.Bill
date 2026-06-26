@@ -21,6 +21,7 @@ public class MasterDocumentUploadConfiguration : IEntityTypeConfiguration<Master
         entity.Property(e => e.DocumentName)
             .HasMaxLength(100)
             .HasColumnName("Document_Name");
+        entity.Property(e => e.IsMandatory).HasColumnName("IsMandatory");
         entity.Property(e => e.Status).HasColumnName("status");
         
     }

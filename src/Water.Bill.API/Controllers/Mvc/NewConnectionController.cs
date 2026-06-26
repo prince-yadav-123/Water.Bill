@@ -7,13 +7,6 @@ namespace Water.Bill.API.Controllers.Mvc;
 
 public class NewConnectionController : Controller
 {
-    private static readonly string[] RequiredDocumentTypes =
-    [
-        "ID Proof",
-        "Address Proof",
-        "Property Document"
-    ];
-
     private readonly IConfiguration _configuration;
     private readonly INewConnectionApplicationService _service;
     private readonly INewConnectionLookupService _lookupService;
@@ -49,7 +42,7 @@ public class NewConnectionController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        ValidateRequiredDocuments(Request.Form.Files, await GetDocumentTypeNamesAsync(ct));
+        ValidateRequiredDocuments(Request.Form.Files, await GetRequiredDocumentTypeNamesAsync(ct));
         if (!ModelState.IsValid)
             return View(model);
 
@@ -162,17 +155,14 @@ public class NewConnectionController : Controller
         return string.IsNullOrWhiteSpace(normalized) ? "Other" : normalized;
     }
 
-    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> configuredDocumentTypes)
+    private void ValidateRequiredDocuments(IFormFileCollection files, IReadOnlyCollection<string> requiredDocumentTypes)
     {
         var uploadedTypes = files
             .Where(x => x.Length > 0)
             .Select(x => ResolveDocumentType(x.Name))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var requiredTypes = RequiredDocumentTypes
-            .Where(requiredType => configuredDocumentTypes.Contains(requiredType, StringComparer.OrdinalIgnoreCase));
-
-        foreach (var requiredType in requiredTypes)
+        foreach (var requiredType in requiredDocumentTypes)
         {
             if (!uploadedTypes.Contains(requiredType))
                 ModelState.AddModelError(string.Empty, $"{requiredType} is required.");
@@ -183,13 +173,14 @@ public class NewConnectionController : Controller
     {
         var lookups = await _lookupService.GetLookupDataAsync(ResolveDevType(), ct);
         ViewData["LookupData"] = lookups;
+        ViewData["DocumentTypeOptions"] = lookups.DocumentTypes.ToArray();
         ViewData["DocumentTypes"] = lookups.DocumentTypes.Select(x => x.Text).ToArray();
     }
 
-    private async Task<IReadOnlyList<string>> GetDocumentTypeNamesAsync(CancellationToken ct)
+    private async Task<IReadOnlyList<string>> GetRequiredDocumentTypeNamesAsync(CancellationToken ct)
     {
         var documentTypes = await _lookupService.GetDocumentTypesAsync(ct);
-        return documentTypes.Select(x => x.Text).ToArray();
+        return documentTypes.Where(x => x.IsRequired).Select(x => x.Text).ToArray();
     }
 
     private int? ResolveDevType()

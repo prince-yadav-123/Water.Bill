@@ -6,6 +6,10 @@
         <p>@Model.Description</p>
     </div>
     <div class="wb-actions">
+        <form asp-action="ExportExcel" asp-route-key="@Model.Key" method="get">
+            <input type="hidden" id="masterExportSearch" name="search" value="@Model.Search" />
+            <button class="btn btn-outline-success" type="submit" require-permission="@($"{Model.Module}.view")" data-no-loader>Download</button>
+        </form>
         <a class="btn btn-primary" asp-action="Create" asp-route-key="@Model.Key">Add @Model.Title.Replace(" Master", "")</a>
     </div>
 </div>
@@ -16,7 +20,10 @@
             <h2 class="wb-section-title">@Model.Title</h2>
             <span>@Model.Rows.Count record@(Model.Rows.Count == 1 ? "" : "s")</span>
         </div>
-        <input id="masterSearch" class="form-control wb-search" type="search" placeholder="Search code, name, status" oninput="filterMasters()" />
+        <div class="d-flex align-items-center gap-2 flex-nowrap wb-master-searchbar">
+            <input id="masterSearch" class="form-control wb-search flex-grow-1" type="search" value="@Model.Search" placeholder="Search code, name, status" />
+            <button type="button" class="btn btn-primary flex-shrink-0" onclick="applyMasterSearch()">Search</button>
+        </div>
     </div>
 
     @if (Model.Rows.Count == 0)
@@ -31,6 +38,10 @@
                     <tr>
                         @foreach (var column in Model.Columns)
                         {
+                            if (Model.Key == "sectors" && column.Key == "OrderBy")
+                            {
+                                continue;
+                            }
                             <th>@column.Label</th>
                         }
                         <th class="text-end">Actions</th>
@@ -43,6 +54,11 @@
                         <tr class="master-row" data-search="@searchText">
                             @foreach (var column in Model.Columns)
                             {
+                                if (Model.Key == "sectors" && column.Key == "OrderBy")
+                                {
+                                    continue;
+                                }
+
                                 if (column.Key == "Status")
                                 {
                                     <td><span class="badge @(row.IsActive ? "text-bg-success" : "text-bg-secondary")">@(row.IsActive ? "Active" : "Inactive")</span></td>
@@ -72,6 +88,17 @@
     @await Html.PartialAsync("_Pagination", ViewBag.Pagination as Water.Bill.API.Models.PaginationViewModel)
 </section>
 
+<style>
+    .wb-master-searchbar {
+        width: min(100%, 420px);
+        margin-left: auto;
+    }
+
+    .wb-master-searchbar .wb-search {
+        min-width: 0;
+    }
+</style>
+
 @section Scripts {
 <script>
 function filterMasters() {
@@ -80,5 +107,33 @@ function filterMasters() {
         row.style.display = row.dataset.search.includes(q) ? '' : 'none';
     });
 }
+
+function applyMasterSearch() {
+    syncMasterExportSearch();
+    filterMasters();
+}
+
+function syncMasterExportSearch() {
+    var source = document.getElementById('masterSearch');
+    var target = document.getElementById('masterExportSearch');
+    if (source && target) {
+        target.value = source.value || '';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    syncMasterExportSearch();
+    filterMasters();
+
+    var searchInput = document.getElementById('masterSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applyMasterSearch();
+            }
+        });
+    }
+});
 </script>
 }

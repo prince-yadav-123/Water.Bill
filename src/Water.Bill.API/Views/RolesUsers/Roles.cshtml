@@ -23,10 +23,10 @@
             <h2 class="wb-section-title">Roles</h2>
             <span>@(pagination?.TotalCount ?? Model.Count) active role@((pagination?.TotalCount ?? Model.Count) == 1 ? "" : "s")</span>
         </div>
-        <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
-            <input class="form-control wb-search" type="search" name="search" value="@search" placeholder="Search role name or description" />
-            <button class="btn btn-primary" type="submit">Search</button>
-            <a class="btn btn-outline-secondary" asp-action="Roles">Reset</a>
+        <form method="get" class="d-flex align-items-center gap-2 flex-nowrap wb-role-searchbar">
+            <input class="form-control wb-search flex-grow-1" type="search" name="search" value="@search" placeholder="Search role name or description" />
+            <button class="btn btn-primary flex-shrink-0" type="submit">Search</button>
+            <a class="btn btn-outline-secondary flex-shrink-0" asp-action="Roles">Reset</a>
         </form>
     </div>
 
@@ -75,3 +75,14 @@
         @await Html.PartialAsync("_Pagination", pagination)
     }
 </section>
+
+<style>
+    .wb-role-searchbar {
+        width: min(100%, 520px);
+        margin-left: auto;
+    }
+
+    .wb-role-searchbar .wb-search {
+        min-width: 0;
+    }
+</style>

@@ -172,6 +172,7 @@ public class MasterListViewModel
     public string Title { get; set; } = string.Empty;
     public string Module { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public string? Search { get; set; }
     public IReadOnlyList<MasterColumnViewModel> Columns { get; set; } = [];
     public IReadOnlyList<MasterRowViewModel> Rows { get; set; } = [];
 }

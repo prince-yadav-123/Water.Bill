@@ -7,6 +7,11 @@
     string PriBadge(string p) => p switch {
         "Urgent" => "bg-danger", "High" => "bg-warning text-dark",
         "Low" => "bg-secondary", _ => "bg-primary" };
+    string AudienceBadge(string audience) => audience switch {
+        "Consumer" => "text-bg-success",
+        "Internal" => "text-bg-primary",
+        "Public" => "text-bg-warning",
+        _ => "text-bg-secondary" };
 }
 
 <div class="wb-page-head">
@@ -77,7 +82,7 @@
                             <a asp-action="Details" asp-route-id="@row.Id" class="fw-semibold text-decoration-none">@row.Title</a>
                             <div><small class="text-muted">@row.NotificationType</small></div>
                         </td>
-                        <td><span class="badge bg-primary-subtle text-primary-emphasis">@row.TargetAudience</span></td>
+                        <td><span class="badge @AudienceBadge(row.TargetAudience)">@row.TargetAudience</span></td>
                         <td><small>@row.Channels</small></td>
                         <td><span class="badge @PriBadge(row.Priority)">@row.Priority</span></td>
                         <td><span class="badge @StatusBadge(row.Status)">@row.Status</span></td>
